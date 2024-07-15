@@ -34,12 +34,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	// https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
-	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 	// https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
 	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 	
 	// https://mvnrepository.com/artifact/org.hibernate/hibernate-core
-	implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.6.15.Final'
 
 }
 
