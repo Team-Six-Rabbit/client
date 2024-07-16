@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.domain.VoteInfo;
+import com.woowahanrabbits.battle_people.domain.battle.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.VoteInfoRepository;
+import com.woowahanrabbits.battle_people.domain.battle.infrastructure.VoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class BattleServiceImpl implements BattleService {
 	private final BattleRepository battleRepository;
 	private final VoteInfoRepository voteInfoRepository;
 	private final UserRepository userRepository;
+	private final VoteOpinionRepository voteOpinionRepository;
 
 	@Override
 	public void registBattle(BattleRegistDto battleRegistDto) {
@@ -34,6 +37,13 @@ public class BattleServiceImpl implements BattleService {
 		Long voteInfoId = voteInfo.getId();
 		BattleBoard battleBoard = battleRegistDto.getBattleBoard();
 		battleBoard.setVoteInfoId(voteInfoId);
+
+		//VoteOpinion에 본인의 주장 저장
+		VoteOpinion voteOpinion = new VoteOpinion();
+		voteOpinion.setVoteInfoId(voteInfoId);
+		voteOpinion.setOpinion(battleRegistDto.getOpinion());
+		voteOpinion.setUserId(battleBoard.getRegistUserId());
+		voteOpinionRepository.save(voteOpinion);
 
 		// BattleBoard 엔티티를 저장
 		battleRepository.save(battleBoard);
@@ -63,32 +73,22 @@ public class BattleServiceImpl implements BattleService {
 			map.put("battle_rule", battleBoard.getBattleRule());
 			map.put("regist_date", battleBoard.getRegistDate());
 			map.put("current_state", battleBoard.getCurrentState());
-			map.put("vote_opinion", )
-
+			map.put("vote_opinion", voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfoId()));
 
 			return map;
 		}).collect(Collectors.toList());
 	}
 
-	private BattleBoard convertToDto(BattleBoard battleBoard) {
-		BattleBoard dto = new BattleBoard();
-		dto.setId(battleBoard.getId());
-		dto.setRegistUserId(battleBoard.getRegistUserId());
-		dto.setOppositeUserId(battleBoard.getOppositeUserId());
-		dto.setVoteInfoId(battleBoard.getVoteInfoId());
-		dto.setMinPeopleCount(battleBoard.getMinPeopleCount());
-		dto.setMaxPeopleCount(battleBoard.getMaxPeopleCount());
-		dto.setDetail(battleBoard.getDetail());
-		dto.setBattleRule(battleBoard.getBattleRule());
-		dto.setRegistDate(battleBoard.getRegistDate());
-		dto.setCurrentState(battleBoard.getCurrentState());
-		dto.setRejectionReason(battleBoard.getRejectionReason());
-		dto.setImageUrl(battleBoard.getImageUrl());
-		dto.setLiveUri(battleBoard.getLiveUri());
-		dto.setDeleted(battleBoard.isDeleted());
-
-		// 추가로 VoteOpinion, User 정보 등을 설정할 수 있습니다.
-
-		return dto;
+	@Override
+	public void acceptBattle(VoteOpinion voteOpinion, Long battleId) {
+		voteOpinion.setVoteOpinionIndex(1);
+		voteOpinionRepository.save(voteOpinion);
+		battleRepository.updateBattleBoardStatusTo2(battleId);
 	}
+
+	@Override
+	public void declineBattle(String rejectionReason, Long battleId) {
+		battleRepository.updateBattleBoardStatusAndRejectionReason(rejectionReason, battleId);
+	}
+
 }
