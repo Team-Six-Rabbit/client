@@ -1,18 +1,19 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
 public class BattleServiceImpl implements BattleService{
 
 	private final BattleRepository battleRepository;
-
-	public BattleServiceImpl(BattleRepository battleRepository) {
-		this.battleRepository = battleRepository;
-	}
 
 	@Override
 	public void registBattle(BattleRegistDto battleRegistDto) {
