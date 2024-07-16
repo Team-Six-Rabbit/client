@@ -62,5 +62,4 @@ public class BattleBoard {
 	protected void onCreate() {
 		this.registDate = new Date();
 	}
-
 }
