@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 
@@ -34,6 +35,18 @@ public class BattleController {
 	@GetMapping("")
 	public ResponseEntity<?> getBattle(@RequestParam String type, @RequestParam Long user_id ) {
 		battleService.getBattleList(type, user_id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PostMapping("/accept")
+	public ResponseEntity<?> acceptBattle(@RequestBody VoteOpinion voteOpinion, @RequestParam Long battle_id ) {
+		battleService.acceptBattle(voteOpinion, battle_id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PostMapping("/decline")
+	public ResponseEntity<?> declineBattle(@RequestParam Long battle_id, @RequestParam String rejection_reason ) {
+		battleService.declineBattle(rejection_reason, battle_id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }
