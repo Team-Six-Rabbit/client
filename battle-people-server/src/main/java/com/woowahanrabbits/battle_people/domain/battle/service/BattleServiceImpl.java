@@ -1,32 +1,36 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
+import com.woowahanrabbits.battle_people.domain.battle.infrastructure.VoteInfoRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BattleServiceImpl implements BattleService{
+public class BattleServiceImpl implements BattleService {
 
 	private final BattleRepository battleRepository;
+	private final VoteInfoRepository voteInfoRepository;
 
 	@Override
 	public void registBattle(BattleRegistDto battleRegistDto) {
-		// BattleRegistDto를 BattleBoard 엔티티로 변환
-		BattleBoard battleBoard = new BattleBoard();
-		battleBoard.setRegistUserId(battleRegistDto.getRegistUserId());
-		battleBoard.setOppositeUserId(battleRegistDto.getOppositeUserId());
-		battleBoard.setMinPeopleCount(battleRegistDto.getMinPeopleCount());
-		battleBoard.setMaxPeopleCount(battleRegistDto.getMaxPeopleCount());
-		battleBoard.setDetail(battleRegistDto.getDetail());
-		battleBoard.setBattleRule(battleRegistDto.getBattleRule());
+		// VoteInfo 엔티티를 생성하고 저장
+		VoteInfo voteInfo = battleRegistDto.getVoteInfo();
+		voteInfo = voteInfoRepository.save(voteInfo);
 
-		// 리포지토리를 통해 데이터베이스에 저장
+		// 저장된 VoteInfo의 ID를 BattleBoard에 설정
+		Long voteInfoId = voteInfo.getId();
+		BattleBoard battleBoard = battleRegistDto.getBattleBoard();
+		battleBoard.setVoteInfoId(voteInfoId);
+
+		// BattleBoard 엔티티를 저장
 		battleRepository.save(battleBoard);
+
+		System.out.println(battleRegistDto.toString());
 	}
 }
