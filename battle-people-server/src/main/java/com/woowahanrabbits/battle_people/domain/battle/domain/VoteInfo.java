@@ -6,9 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,26 +18,12 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class BattleBoard {
+public class VoteInfo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private Long registUserId;
-	private Long oppositeUserId;
-	private Long voteInfoId;
-	private int minPeopleCount;
-	private int maxPeopleCount;
-	private String detail;
-	private String battleRule;
-	private Date registDate;
-	private int currentState;
-	private String rejectionReason;
-	private String imageUrl;
-	private String liveUri;
-	private boolean isDeleted;
-
-	@PrePersist
-	protected void onCreate() {
-		this.registDate = new Date();
-	}
+	private String title;
+	private Date startDate;
+	private Date endDate;
+	private int category;
 }

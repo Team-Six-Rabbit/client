@@ -6,4 +6,6 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
 
 public interface BattleService {
 	public void registBattle(BattleRegistDto battleRegistDto);
+
+	// List<?> getBattleList(String type, int userId);
 }
