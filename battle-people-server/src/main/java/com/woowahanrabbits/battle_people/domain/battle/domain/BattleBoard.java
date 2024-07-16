@@ -2,11 +2,7 @@ package com.woowahanrabbits.battle_people.domain.battle.domain;
 
 import java.util.Date;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -26,6 +22,9 @@ public class BattleBoard {
 	private Long id;
 	private Long registUserId;
 	private Long oppositeUserId;
+
+	@OneToOne
+	@JoinColumn(name = "vote_info_id", referencedColumnName = "id")
 	private Long voteInfoId;
 	private int minPeopleCount;
 	private int maxPeopleCount;
