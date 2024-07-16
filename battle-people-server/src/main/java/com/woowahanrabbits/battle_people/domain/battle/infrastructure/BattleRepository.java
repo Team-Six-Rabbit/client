@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 
 @Repository
-public interface BattleRepository {
-	void save(BattleBoard battleBoard);
+public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
+
 }
