@@ -33,7 +33,6 @@ public class BattleController {
 
 	@GetMapping("")
 	public ResponseEntity<?> getBattle(@RequestParam String type, @RequestParam Long user_id ) {
-		battleService.getBattleList(type, user_id);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(battleService.getBattleList(type, user_id), HttpStatus.OK);
 	}
 }
