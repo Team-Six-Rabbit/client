@@ -16,6 +16,7 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 
 @RestController
+@RequestMapping("/battle")
 public class BattleController {
 
 	private final BattleService battleService;
@@ -24,15 +25,15 @@ public class BattleController {
 		this.battleService = battleService;
 	}
 
-	@PostMapping("/battle/invite")
+	@PostMapping("/invite")
 	public ResponseEntity<?> registBattle(@RequestBody BattleRegistDto batttleRegistDto) {
 		battleService.registBattle(batttleRegistDto);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	// @GetMapping("/battle")
-	// public ResponseEntity<?> getBattle(@RequestParam String type ) {
-	// 	int user_id = 1;
-	// 	battleService.getBattleList(type, user_id);
-	// }
+	@GetMapping("")
+	public ResponseEntity<?> getBattle(@RequestParam String type, @RequestParam Long user_id ) {
+		battleService.getBattleList(type, user_id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 }
