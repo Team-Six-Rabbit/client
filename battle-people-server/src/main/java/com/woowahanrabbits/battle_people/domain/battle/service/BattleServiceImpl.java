@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
@@ -32,5 +34,10 @@ public class BattleServiceImpl implements BattleService {
 		battleRepository.save(battleBoard);
 
 		System.out.println(battleRegistDto.toString());
+	}
+
+	@Override
+	public List<?> getBattleList(String type, long userId) {
+		return List.of();
 	}
 }
