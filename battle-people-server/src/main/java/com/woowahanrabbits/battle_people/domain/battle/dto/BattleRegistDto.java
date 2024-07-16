@@ -10,6 +10,9 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.domain.VoteInfo;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,18 +21,10 @@ import java.util.Date;
 public class BattleRegistDto {
 
 	// BattleBoard 관련 필드
-	private Long registUserId;
-	private Long oppositeUserId;
-	private int minPeopleCount;
-	private int maxPeopleCount;
-	private String detail;
-	private String battleRule;
+	private BattleBoard battleBoard;
 
 	// VoteInfo 관련 필드
-	private String title;
-	private Date startDate;
-	private Date endDate;
-	private int category;
+	private VoteInfo voteInfo;
 
 	// Opinion 필드
 	private String opinion;
