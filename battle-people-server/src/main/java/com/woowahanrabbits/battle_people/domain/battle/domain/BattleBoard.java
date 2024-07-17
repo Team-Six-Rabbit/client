@@ -2,6 +2,8 @@ package com.woowahanrabbits.battle_people.domain.battle.domain;
 
 import java.util.Date;
 
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,13 +24,14 @@ public class BattleBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @ManyToOne
-    @JoinColumn(name = "regist_user_id")
-    private Long registUserId;
+    @JoinColumn(name = "regist_user_id", nullable = false)
+    private User registUser;
 
     @ManyToOne
     @JoinColumn(name = "opposite_user_id")
-    private Long oppositeUserId;
+    private User oppositeUser;
 
     @OneToOne
     @JoinColumn(name = "vote_info_id")
