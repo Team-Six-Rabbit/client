@@ -17,28 +17,37 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class BattleBoard {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private Long registUserId;
-	private Long oppositeUserId;
 
-	@OneToOne
-	@JoinColumn(name = "vote_info_id", referencedColumnName = "id")
-	private Long voteInfoId;
-	private int minPeopleCount;
-	private int maxPeopleCount;
-	private String detail;
-	private String battleRule;
-	private Date registDate;
-	private int currentState;
-	private String rejectionReason;
-	private String imageUrl;
-	private String liveUri;
-	private boolean isDeleted;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@PrePersist
-	protected void onCreate() {
-		this.registDate = new Date();
-	}
+    @ManyToOne
+    @JoinColumn(name = "regist_user_id")
+    private Long registUserId;
+
+    @ManyToOne
+    @JoinColumn(name = "opposite_user_id")
+    private Long oppositeUserId;
+
+    @OneToOne
+    @JoinColumn(name = "vote_info_id")
+    private Long voteInfoId;
+
+    private int minPeopleCount;
+    private int maxPeopleCount;
+    private String detail;
+    private String battleRule;
+    private Date registDate;
+    private int currentState;
+    private String rejectionReason;
+    private String imageUrl;
+    private String liveUri;
+    private boolean isDeleted;
+
+    @PrePersist
+    protected void onCreate() {
+        this.registDate = new Date();
+    }
+
 }
