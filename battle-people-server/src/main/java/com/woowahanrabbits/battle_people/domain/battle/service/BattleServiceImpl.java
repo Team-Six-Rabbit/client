@@ -52,7 +52,7 @@ public class BattleServiceImpl implements BattleService {
 	}
 
 	@Override
-	public List<?> getBattleList(String type, long userId) {
+	public List<?> getRequestBattleList(String type, long userId) {
 		List<BattleBoard> list = null;
 		if(type.equals("get")) {
 			list = battleRepository.findByRegistUserIdAndCurrentState(userId, 0);
@@ -89,6 +89,12 @@ public class BattleServiceImpl implements BattleService {
 	@Override
 	public void declineBattle(String rejectionReason, Long battleId) {
 		battleRepository.updateBattleBoardStatusAndRejectionReason(rejectionReason, battleId);
+	}
+
+	@Override
+	public List<Map<String, Object>> getBattleList(String category) {
+		List<BattleBoard> list = battleRepository.findAllLiveListByCurrentState(category);
+		return List.of();
 	}
 
 }

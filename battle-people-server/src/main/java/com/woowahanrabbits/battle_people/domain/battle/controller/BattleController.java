@@ -33,8 +33,8 @@ public class BattleController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<?> getBattle(@RequestParam String type, @RequestParam Long user_id ) {
-		return new ResponseEntity<>(battleService.getBattleList(type, user_id), HttpStatus.OK);
+	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long user_id ) {
+		return new ResponseEntity<>(battleService.getRequestBattleList(type, user_id), HttpStatus.OK);
 	}
 
 	@PostMapping("/accept")
@@ -48,4 +48,11 @@ public class BattleController {
 		battleService.declineBattle(rejection_reason, battle_id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
+	@GetMapping("/apply-list")
+	public ResponseEntity<?> getBattleList(@RequestParam String category) {
+		return new ResponseEntity<>(battleService.getBattleList(category), HttpStatus.OK);
+	}
+
+
 }

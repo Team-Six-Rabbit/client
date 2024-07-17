@@ -27,4 +27,6 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
 	@Query("UPDATE BattleBoard b SET b.currentState = 1, b.rejectionReason = :rejectionReason WHERE b.id = :battleId")
 	void updateBattleBoardStatusAndRejectionReason(String rejectionReason, Long battleId);
 
+	@Query("SELECT b FROM BattleBoard b WHERE b.currentState = 4 AND b.category = :category")
+	List<BattleBoard> findAllLiveListByCurrentState(String category);
 }
