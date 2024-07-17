@@ -7,4 +7,6 @@ public interface VoteService {
 	void addVoteInfo(VoteInfo voteInfo);
 
 	void addVoteOpinion(VoteOpinion voteOpinion);
+
+	Long getBattleId(Long voteInfoId);
 }

@@ -57,8 +57,12 @@ public class BattleController {
 	}
 
 	@PostMapping("/accept")
-	public ResponseEntity<?> acceptBattle(@RequestBody VoteOpinion voteOpinion, @RequestParam Long battle_id ) {
-		battleService.acceptBattle(voteOpinion, battle_id);
+	public ResponseEntity<?> acceptBattle(@RequestBody VoteOpinion voteOpinion) {
+		//BattleBoard 내 current_state update해주기
+		battleService.updateBattleStatus(voteOpinion.getVoteInfoId(), null);
+
+		// //voteOpinion에 상대 의견 추가하기
+		// battleService.acceptBattle(voteOpinion);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

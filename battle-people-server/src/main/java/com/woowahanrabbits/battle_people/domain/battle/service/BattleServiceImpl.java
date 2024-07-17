@@ -37,11 +37,13 @@ public class BattleServiceImpl implements BattleService {
 	public List<Map<String, Object>> getRequestBattleList(String type, long userId, Pageable pageable) {
 		Page<BattleBoard> page = null;
 		if(type.equals("get")) {
-			page = battleRepository.findByRegistUserIdAndCurrentState(userId, 0, pageable);
+			page = battleRepository.findByRegistUser_IdAndCurrentState(userId, 0, pageable);
 		}
 		if(type.equals("made")) {
-			page = battleRepository.findByOppositeUserIdAndCurrentState(userId, 0, pageable);
+			page = battleRepository.findByOppositeUser_IdAndCurrentState(userId, 0, pageable);
 		}
+
+		System.out.println(page.toList().toString());
 
 		return page.stream().map(battleBoard -> {
 			Map<String, Object> map = new HashMap<>();
@@ -75,6 +77,12 @@ public class BattleServiceImpl implements BattleService {
 	public List<Map<String, Object>> getBattleList(String category) {
 		// List<BattleBoard> list = battleRepository.findAllLiveListByCurrentState(category);
 		return List.of();
+	}
+
+	@Override
+	public void updateBattleStatus(Long voteInfoId, String rejectionReason) {
+		Long battle_id = battleRepository.findIdByVoteInfoId(voteInfoId);
+		battleRepository.updateBattleBoardStatus(battle_id, rejectionReason);
 	}
 
 }
