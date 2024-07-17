@@ -4,10 +4,18 @@ import java.io.Serializable;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 public class BattleApplyUserId implements Serializable {
-    private Long battleBoardId;
-    private Long userId;
+
+    private Long user;
+    private Long battleBoard;
+
+    // 기본 생성자
+    public BattleApplyUserId() {
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -16,8 +24,15 @@ public class BattleApplyUserId implements Serializable {
 
         BattleApplyUserId that = (BattleApplyUserId) o;
 
-        if (!userId.equals(that.userId)) return false;
-        return battleBoardId.equals(that.battleBoardId);
+
+        if (!user.equals(that.user)) return false;
+        return battleBoard.equals(that.battleBoard);
     }
 
+    @Override
+    public int hashCode() {
+        int result = user.hashCode();
+        result = 31 * result + battleBoard.hashCode();
+        return result;
+    }
 }
