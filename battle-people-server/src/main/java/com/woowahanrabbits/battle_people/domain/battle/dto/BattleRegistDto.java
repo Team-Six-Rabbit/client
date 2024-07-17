@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 
 @Getter
 @Setter
