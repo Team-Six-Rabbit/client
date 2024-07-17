@@ -1,17 +1,12 @@
 package com.woowahanrabbits.battle_people.domain.battle.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
-import com.woowahanrabbits.battle_people.domain.battle.domain.VoteInfo;
 
 @Getter
 @Setter

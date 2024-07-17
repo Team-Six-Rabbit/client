@@ -10,13 +10,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
-import com.woowahanrabbits.battle_people.domain.battle.domain.VoteInfo;
-import com.woowahanrabbits.battle_people.domain.battle.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.VoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +44,7 @@ public class BattleServiceImpl implements BattleService {
 		VoteOpinion voteOpinion = new VoteOpinion();
 		voteOpinion.setVoteInfoId(voteInfoId);
 		voteOpinion.setOpinion(battleRegistDto.getOpinion());
-		voteOpinion.setUserId(battleBoard.getRegistUserId());
+		voteOpinion.setUserId(battleBoard.getRegistUser().getId());
 		voteOpinionRepository.save(voteOpinion);
 
 		// BattleBoard 엔티티를 저장
@@ -66,8 +66,8 @@ public class BattleServiceImpl implements BattleService {
 		return page.stream().map(battleBoard -> {
 			Map<String, Object> map = new HashMap<>();
 			map.put("id", battleBoard.getId());
-			map.put("regist_user", userRepository.findById(battleBoard.getRegistUserId()));
-			map.put("opposite_user", userRepository.findById(battleBoard.getOppositeUserId()));
+			map.put("regist_user", userRepository.findById(battleBoard.getRegistUser().getId()));
+			map.put("opposite_user", userRepository.findById(battleBoard.getOppositeUser().getId()));
 			map.put("vote_info", voteInfoRepository.findById(battleBoard.getVoteInfoId()));
 			map.put("min_people_count", battleBoard.getMinPeopleCount());
 			map.put("max_people_count", battleBoard.getMaxPeopleCount());
