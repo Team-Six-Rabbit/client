@@ -1,6 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.battle.domain;
 
-
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Data;

@@ -34,7 +34,7 @@ public class BattleBoard {
 
     @OneToOne
     @JoinColumn(name = "vote_info_id")
-    private Long voteInfoId;
+    private VoteInfo voteInfo;
 
     private int minPeopleCount;
     private int maxPeopleCount;
