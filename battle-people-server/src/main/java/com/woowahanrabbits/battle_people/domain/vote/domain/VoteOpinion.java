@@ -9,7 +9,6 @@ import lombok.Data;
 @IdClass(VoteOpinionId.class)
 public class VoteOpinion {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer voteOpinionIndex;
 
     @Id

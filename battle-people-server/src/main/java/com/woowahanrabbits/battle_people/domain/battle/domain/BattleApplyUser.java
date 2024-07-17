@@ -14,12 +14,12 @@ public class BattleApplyUser {
     @Id
     @ManyToOne
     @JoinColumn(name = "battle_board_id")
-    private Long battleBoardId;
+    private BattleBoard battleBoard;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Long userId;
+    private User user;
 
     private int selectedOpinion;
     private Date applyDate;

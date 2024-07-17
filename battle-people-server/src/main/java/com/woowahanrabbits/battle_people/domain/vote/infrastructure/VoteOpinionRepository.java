@@ -1,4 +1,4 @@
-package com.woowahanrabbits.battle_people.domain.battle.infrastructure;
+package com.woowahanrabbits.battle_people.domain.vote.infrastructure;
 
 import java.util.List;
 
