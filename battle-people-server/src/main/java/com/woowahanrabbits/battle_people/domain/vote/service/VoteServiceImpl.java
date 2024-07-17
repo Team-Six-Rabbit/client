@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.vote.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
@@ -24,5 +26,10 @@ public class VoteServiceImpl implements VoteService {
 	@Override
 	public void addVoteOpinion(VoteOpinion voteOpinion) {
 		voteOpinionRepository.save(voteOpinion);
+	}
+
+	@Override
+	public Long getBattleId(Long voteInfoId) {
+
 	}
 }

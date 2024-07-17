@@ -19,5 +19,5 @@ public interface BattleService {
 
 	List<?> getBattleList(String category);
 
-
+	void updateBattleStatus(Long voteInfoId, String rejectionReason);
 }
