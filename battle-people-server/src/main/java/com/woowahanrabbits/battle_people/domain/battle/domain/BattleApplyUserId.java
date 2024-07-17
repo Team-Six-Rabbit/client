@@ -1,11 +1,13 @@
 package com.woowahanrabbits.battle_people.domain.battle.domain;
 
+import java.io.Serializable;
+
 import lombok.Data;
 
 @Data
-public class BattleApplyUserId {
+public class BattleApplyUserId implements Serializable {
+    private Long battleBoardId;
     private Long userId;
-    private Long voteInfoId;
 
     @Override
     public boolean equals(Object o) {
@@ -15,7 +17,7 @@ public class BattleApplyUserId {
         BattleApplyUserId that = (BattleApplyUserId) o;
 
         if (!userId.equals(that.userId)) return false;
-        return voteInfoId.equals(that.voteInfoId);
+        return battleBoardId.equals(that.battleBoardId);
     }
 
 }
