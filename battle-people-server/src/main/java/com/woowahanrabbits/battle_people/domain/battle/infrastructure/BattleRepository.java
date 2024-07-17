@@ -2,6 +2,8 @@ package com.woowahanrabbits.battle_people.domain.battle.infrastructure;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,9 +15,9 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
-	List<BattleBoard> findByRegistUserIdAndCurrentState(Long regist_user_id, int currentState);
+	Page<BattleBoard> findByRegistUserIdAndCurrentState(Long regist_user_id, int currentState, Pageable pageable);
 
-	List<BattleBoard> findByOppositeUserIdAndCurrentState(long opposite_user_id, int currentState);
+	Page<BattleBoard> findByOppositeUserIdAndCurrentState(long opposite_user_id, int currentState, Pageable pageable);
 
 	@Modifying
 	@Transactional

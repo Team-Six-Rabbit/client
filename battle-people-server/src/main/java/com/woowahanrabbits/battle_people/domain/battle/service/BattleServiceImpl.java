@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
@@ -52,16 +54,16 @@ public class BattleServiceImpl implements BattleService {
 	}
 
 	@Override
-	public List<?> getRequestBattleList(String type, long userId) {
-		List<BattleBoard> list = null;
+	public List<Map<String, Object>> getRequestBattleList(String type, long userId, Pageable pageable) {
+		Page<BattleBoard> page = null;
 		if(type.equals("get")) {
-			list = battleRepository.findByRegistUserIdAndCurrentState(userId, 0);
+			page = battleRepository.findByRegistUserIdAndCurrentState(userId, 0, pageable);
 		}
 		if(type.equals("made")) {
-			list = battleRepository.findByOppositeUserIdAndCurrentState(userId, 0);
+			page = battleRepository.findByOppositeUserIdAndCurrentState(userId, 0, pageable);
 		}
 
-		return list.stream().map(battleBoard -> {
+		return page.stream().map(battleBoard -> {
 			Map<String, Object> map = new HashMap<>();
 			map.put("id", battleBoard.getId());
 			map.put("regist_user", userRepository.findById(battleBoard.getRegistUserId()));

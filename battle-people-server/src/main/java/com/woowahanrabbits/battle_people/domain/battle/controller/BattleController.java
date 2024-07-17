@@ -1,5 +1,8 @@
 package com.woowahanrabbits.battle_people.domain.battle.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,8 +36,8 @@ public class BattleController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long user_id ) {
-		return new ResponseEntity<>(battleService.getRequestBattleList(type, user_id), HttpStatus.OK);
+	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long user_id, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+		return new ResponseEntity<>(battleService.getRequestBattleList(type, user_id, pageable), HttpStatus.OK);
 	}
 
 	@PostMapping("/accept")
