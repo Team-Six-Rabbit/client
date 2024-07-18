@@ -62,7 +62,7 @@ function Logo() {
 	return (
 		<Link
 			to="/"
-			className="flex items-center no-underline hover:text-white text-white text-2xl font-['BM_HANNA_11yrs_old'] space-x-2 mr-8 lg:mr-16"
+			className="flex items-center no-underline hover:text-white text-white text-2xl font-[BMHANNA\_11yrs] space-x-2 mr-8 lg:mr-16"
 		>
 			<img className="h-[35px]" src={brandIcon} alt="로고" />
 			<span>배틀의 민족</span>
