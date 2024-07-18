@@ -6,6 +6,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.VoteAcceptDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.VoteDeclineDto;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
@@ -101,5 +103,16 @@ public class BattleController {
 		return new ResponseEntity<>(battleService.getAwaitingBattleList(category, pageable), HttpStatus.OK);
 	}
 
+	@GetMapping("/apply-user-list/{battleId}")
+	@Operation(summary = "[불씨] 모집중인 특정 배틀에 참여 신청한 유저를 조회한다.")
+	public ResponseEntity<?> getApplyUserList(@PathVariable Long battleId, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+		return new ResponseEntity<>(battleService.getApplyUserList(battleId, pageable), HttpStatus.OK);
+	}
 
+	@PostMapping("/apply")
+	@Operation(summary = "모집중인 특정 배틀에 참여 신청한다.")
+	public ResponseEntity<?> applyBattle(@RequestBody BattleApplyDto battleApplyDto) {
+		battleService.addBattleApplyUser(battleApplyDto);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 }
