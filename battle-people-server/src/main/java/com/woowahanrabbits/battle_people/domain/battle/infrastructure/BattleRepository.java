@@ -16,25 +16,6 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface BattleRepository extends JpaRepository<BattleBoard, Long>, BattleRepositoryCustom {
-	Page<BattleBoard> findByRegistUser_IdAndCurrentState(Long regist_user_id, int currentState, Pageable pageable);
+		BattleBoard findByVoteInfoId(Long voteInfoId);
 
-	Page<BattleBoard> findByOppositeUser_IdAndCurrentState(Long opposite_user_id, int currentState, Pageable pageable);
-
-	@Modifying
-	@Transactional
-	@Query("UPDATE BattleBoard b SET b.currentState = 2 WHERE b.id = :battleId")
-	void updateBattleBoardStatusTo2(Long battleId);
-
-	@Modifying
-	@Transactional
-	@Query("UPDATE BattleBoard b SET b.currentState = 1, b.rejectionReason = :rejectionReason WHERE b.id = :battleId")
-	void updateBattleBoardStatusAndRejectionReason(String rejectionReason, Long battleId);
-
-	@Query("select b.id from BattleBoard b where b.voteInfo.id = :voteInfoId")
-	Long findIdByVoteInfoId(@Param("voteInfoId") Long voteInfoId);
-
-	BattleBoard findByVoteInfoId(Long voteInfoId);
-
-	// @Query("SELECT b FROM BattleBoard b WHERE b.currentState = 4 AND b.category = :category")
-	// List<BattleBoard> findAllLiveListByCurrentState(String category);
 }
