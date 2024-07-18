@@ -35,39 +35,14 @@ public class BattleServiceImpl implements BattleService {
 		battleRepository.save(battleBoard);
 	}
 
+	//내가 요청한, 요청받은 배틀 리스트 조회
 	@Override
-	public List<Map<String, Object>> getRequestBattleList(String type, long userId, Pageable pageable) {
-		Page<BattleBoard> page = null;
-		if(type.equals("get")) {
-			page = battleRepository.findByRegistUser_IdAndCurrentState(userId, 0, pageable);
-		}
-		if(type.equals("made")) {
-			page = battleRepository.findByOppositeUser_IdAndCurrentState(userId, 0, pageable);
-		}
-
-		System.out.println(page.toList().toString());
-
-		return page.stream().map(battleBoard -> {
-			Map<String, Object> map = new HashMap<>();
-			map.put("id", battleBoard.getId());
-			map.put("regist_user", userRepository.findById(battleBoard.getRegistUser().getId()));
-			map.put("opposite_user", userRepository.findById(battleBoard.getOppositeUser().getId()));
-			map.put("min_people_count", battleBoard.getMinPeopleCount());
-			map.put("max_people_count", battleBoard.getMaxPeopleCount());
-			map.put("detail", battleBoard.getDetail());
-			map.put("battle_rule", battleBoard.getBattleRule());
-			map.put("regist_date", battleBoard.getRegistDate());
-			map.put("current_state", battleBoard.getCurrentState());
-
-			return map;
-		}).collect(Collectors.toList());
+	public Page<BattleBoard> getBattleList(String type, long userId, Pageable pageable) {
+		Page<BattleBoard> page = battleRepository.findByUserIdAndType(userId, type, pageable);
+		// System.out.println(page.toList().toString());
+		return page;
 	}
 
-	@Override
-	public List<Map<String, Object>> getBattleList(String category) {
-		// List<BattleBoard> list = battleRepository.findAllLiveListByCurrentState(category);
-		return List.of();
-	}
 
 	//voteInfoId로 Battle가져오기
 	@Override

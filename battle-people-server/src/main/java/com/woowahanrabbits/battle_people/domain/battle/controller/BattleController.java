@@ -56,7 +56,7 @@ public class BattleController {
 
 	@GetMapping("")
 	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long user_id, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-		return new ResponseEntity<>(battleService.getRequestBattleList(type, user_id, pageable), HttpStatus.OK);
+		return new ResponseEntity<>(battleService.getBattleList(type, user_id, pageable), HttpStatus.OK);
 	}
 
 	@PostMapping("/accept")
@@ -85,10 +85,10 @@ public class BattleController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@GetMapping("/apply-list")
-	public ResponseEntity<?> getBattleList(@RequestParam String category) {
-		return new ResponseEntity<>(battleService.getBattleList(category), HttpStatus.OK);
-	}
+	// @GetMapping("/apply-list")
+	// public ResponseEntity<?> getBattleList(@RequestParam String category) {
+	// 	return new ResponseEntity<>(battleService.getBattleList(category), HttpStatus.OK);
+	// }
 
 
 }
