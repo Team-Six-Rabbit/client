@@ -1,6 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.live.domain;
 
-import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,13 +14,14 @@ public class LiveApplyUser {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "battle_board_id")
-    private BattleBoard battleBoard;
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "participant_id", nullable = false)
+    private User participant;
 
+    @Column(nullable = false)
     private Date inTime;
     private Date outTime;
 
