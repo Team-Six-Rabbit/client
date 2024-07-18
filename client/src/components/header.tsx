@@ -27,14 +27,12 @@ export function ProfileBtn() {
 
 	return (
 		<Menu as="div" className="size-8 relative inline-block text-left">
-			<div>
-				<MenuButton
-					onClick={() => setLoggedIn(isUserLoggedIn())} // TODO: 실제 로그인 상태로 설정하기
-					className="size-8 inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105"
-				>
-					<img className="size-8" src={profileIcon} alt="프로필 이미지" />
-				</MenuButton>
-			</div>
+			<MenuButton
+				onClick={() => setLoggedIn(isUserLoggedIn())} // TODO: 실제 로그인 상태로 설정하기
+				className="size-8 inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105"
+			>
+				<img className="size-8" src={profileIcon} alt="프로필 이미지" />
+			</MenuButton>
 
 			<MenuItems
 				anchor="bottom end"
