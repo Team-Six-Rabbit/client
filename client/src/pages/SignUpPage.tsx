@@ -12,9 +12,12 @@ function SignUpPage() {
             border-color: #F66C23;
             box-shadow: 0 0 0 3px rgba(246, 108, 35, 0.3);
           }
-						a:hover {
-							color: #F66C23;
-						}
+					a:hover {
+						color: #F66C23;
+					}
+					button:hover{
+						background-color: #F66C23;
+					}	
         `}
 				</style>
 				<h1
