@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
-import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.VoteAcceptDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.VoteDeclineDto;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
@@ -21,8 +20,12 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/battle")
+@Tag(name = "BattleController", description = "배틀 컨트롤러")
 public class BattleController {
 
 	private final BattleService battleService;
@@ -33,7 +36,9 @@ public class BattleController {
 		this.voteService = voteService;
 	}
 
+	//배틀 등록
 	@PostMapping("/invite")
+	@Operation(summary = "[점화] 배틀을 요청한다.")
 	public ResponseEntity<?> registBattle(@RequestBody BattleBoard battleBoard, @RequestParam String opinion) {
 		// battleService.registBattle(batttleRegistDto);
 		System.out.println(battleBoard.toString());
@@ -54,12 +59,16 @@ public class BattleController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	//요청한, 요청받은 배틀 조회
 	@GetMapping("")
+	@Operation(summary = "요청한, 요청받는 배틀을 조회한다.")
 	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long user_id, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		return new ResponseEntity<>(battleService.getBattleList(type, user_id, pageable), HttpStatus.OK);
 	}
 
+	//
 	@PostMapping("/accept")
+	@Operation(summary = "[불씨] 배틀을 수락한다.")
 	public ResponseEntity<?> acceptBattle(@RequestBody VoteAcceptDto voteAcceptDto) {
 		//BattleBoard 내 current_state update해주기
 		Long battle_id = battleService.getBattleBoardByVoteInfoId(voteAcceptDto.getVoteInfoId()).getId();
@@ -80,15 +89,17 @@ public class BattleController {
 	}
 
 	@PostMapping("/decline")
+	@Operation(summary = "[불발/연기] 요청받은 배틀을 거절한다.")
 	public ResponseEntity<?> declineBattle(@RequestBody VoteDeclineDto voteDeclineDto) {
 		battleService.updateBattleStatus(voteDeclineDto.getBattleId(), voteDeclineDto.getRejectionReason());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	// @GetMapping("/apply-list")
-	// public ResponseEntity<?> getBattleList(@RequestParam String category) {
-	// 	return new ResponseEntity<>(battleService.getBattleList(category), HttpStatus.OK);
-	// }
+	@GetMapping("/apply-list")
+	@Operation(summary = "[불씨] 모집중인 배틀을 조회한다.")
+	public ResponseEntity<?> getAwaitingBattleList(@RequestParam int category, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+		return new ResponseEntity<>(battleService.getAwaitingBattleList(category, pageable), HttpStatus.OK);
+	}
 
 
 }

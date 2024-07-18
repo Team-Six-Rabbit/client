@@ -10,12 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
-import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
-import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
-import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
-import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
-import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,9 +20,6 @@ import lombok.RequiredArgsConstructor;
 public class BattleServiceImpl implements BattleService {
 
 	private final BattleRepository battleRepository;
-	private final VoteInfoRepository voteInfoRepository;
-	private final UserRepository userRepository;
-	private final VoteOpinionRepository voteOpinionRepository;
 
 
 	//배틀 등록
@@ -37,7 +30,7 @@ public class BattleServiceImpl implements BattleService {
 
 	//내가 요청한, 요청받은 배틀 리스트 조회
 	@Override
-	public Page<BattleBoard> getBattleList(String type, long userId, Pageable pageable) {
+	public Page<BattleReturnDto> getBattleList(String type, long userId, Pageable pageable) {
 		Page<BattleBoard> page = battleRepository.findByUserIdAndType(userId, type, pageable);
 		// System.out.println(page.toList().toString());
 		return page;
@@ -48,6 +41,11 @@ public class BattleServiceImpl implements BattleService {
 	@Override
 	public BattleBoard getBattleBoardByVoteInfoId(Long voteInfoId) {
 		return battleRepository.findByVoteInfoId(voteInfoId);
+	}
+
+	@Override
+	public Page<?> getAwaitingBattleList(int category, Pageable pageable) {
+		return battleRepository.findByVoteInfo_CategoryAndCurrentState(category, 2, pageable);
 	}
 
 	//rejectionReason 여부에 따라 battleBoard 내 currentState update
