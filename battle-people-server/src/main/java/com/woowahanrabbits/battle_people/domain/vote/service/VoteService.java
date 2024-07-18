@@ -8,5 +8,4 @@ public interface VoteService {
 
 	void addVoteOpinion(VoteOpinion voteOpinion);
 
-	Long getBattleId(Long voteInfoId);
 }

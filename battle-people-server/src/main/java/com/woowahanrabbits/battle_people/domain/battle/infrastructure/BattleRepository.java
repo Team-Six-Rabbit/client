@@ -15,7 +15,7 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
+public interface BattleRepository extends JpaRepository<BattleBoard, Long>, BattleRepositoryCustom {
 	Page<BattleBoard> findByRegistUser_IdAndCurrentState(Long regist_user_id, int currentState, Pageable pageable);
 
 	Page<BattleBoard> findByOppositeUser_IdAndCurrentState(Long opposite_user_id, int currentState, Pageable pageable);
@@ -33,10 +33,6 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
 	@Query("select b.id from BattleBoard b where b.voteInfo.id = :voteInfoId")
 	Long findIdByVoteInfoId(@Param("voteInfoId") Long voteInfoId);
 
-	@Modifying
-	@Transactional
-	@Query("UPDATE BattleBoard b SET b.currentState = 1, b.rejectionReason = :rejectionReason WHERE b.id = :battleId")
-	void updateBattleBoardStatus(Long battleId, String rejectionReason);
 
 	// @Query("SELECT b FROM BattleBoard b WHERE b.currentState = 4 AND b.category = :category")
 	// List<BattleBoard> findAllLiveListByCurrentState(String category);

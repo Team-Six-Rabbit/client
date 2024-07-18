@@ -28,8 +28,4 @@ public class VoteServiceImpl implements VoteService {
 		voteOpinionRepository.save(voteOpinion);
 	}
 
-	@Override
-	public Long getBattleId(Long voteInfoId) {
-
-	}
 }
