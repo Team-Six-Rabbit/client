@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.VoteAcceptDto;
+import com.woowahanrabbits.battle_people.domain.battle.dto.VoteDeclineDto;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
@@ -79,8 +80,8 @@ public class BattleController {
 	}
 
 	@PostMapping("/decline")
-	public ResponseEntity<?> declineBattle(@RequestBody BattleBoard battleBoard) {
-		battleService.updateBattleStatus(battleBoard.getId(), battleBoard.getRejectionReason());
+	public ResponseEntity<?> declineBattle(@RequestBody VoteDeclineDto voteDeclineDto) {
+		battleService.updateBattleStatus(voteDeclineDto.getBattleId(), voteDeclineDto.getRejectionReason());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
