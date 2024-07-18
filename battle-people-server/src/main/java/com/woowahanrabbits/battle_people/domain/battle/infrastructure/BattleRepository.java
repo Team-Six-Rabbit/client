@@ -33,6 +33,7 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long>, Batt
 	@Query("select b.id from BattleBoard b where b.voteInfo.id = :voteInfoId")
 	Long findIdByVoteInfoId(@Param("voteInfoId") Long voteInfoId);
 
+	BattleBoard findByVoteInfoId(Long voteInfoId);
 
 	// @Query("SELECT b FROM BattleBoard b WHERE b.currentState = 4 AND b.category = :category")
 	// List<BattleBoard> findAllLiveListByCurrentState(String category);

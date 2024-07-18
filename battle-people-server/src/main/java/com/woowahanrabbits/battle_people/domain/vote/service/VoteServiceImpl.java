@@ -28,4 +28,5 @@ public class VoteServiceImpl implements VoteService {
 		voteOpinionRepository.save(voteOpinion);
 	}
 
+
 }

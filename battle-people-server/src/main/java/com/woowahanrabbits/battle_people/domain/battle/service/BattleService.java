@@ -13,11 +13,9 @@ public interface BattleService {
 
 	List<?> getRequestBattleList(String type, long userId, Pageable pageable);
 
-	void acceptBattle(VoteOpinion voteOpinion, Long battleId);
-
-	void declineBattle(String rejectionReason, Long battleId);
-
 	List<?> getBattleList(String category);
 
-	void updateBattleStatus(Long voteInfoId, String rejectionReason);
+	void updateBattleStatus(Long battleId, String rejectionReason);
+
+	BattleBoard getBattleBoardByVoteInfoId(Long voteInfoId);
 }

@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRegistDto;
+import com.woowahanrabbits.battle_people.domain.battle.dto.VoteAcceptDto;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
 
@@ -57,19 +59,28 @@ public class BattleController {
 	}
 
 	@PostMapping("/accept")
-	public ResponseEntity<?> acceptBattle(@RequestBody VoteOpinion voteOpinion) {
+	public ResponseEntity<?> acceptBattle(@RequestBody VoteAcceptDto voteAcceptDto) {
 		//BattleBoard 내 current_state update해주기
-		battleService.updateBattleStatus(voteOpinion.getVoteInfoId(), null);
+		Long battle_id = battleService.getBattleBoardByVoteInfoId(voteAcceptDto.getVoteInfoId()).getId();
+		battleService.updateBattleStatus(battle_id, null);
+
+		//userId로 User 가져오기
+		User user = new User();
+		user.setId(voteAcceptDto.getUserId());
 
 		//voteOpinion에 상대 의견 추가하기
+		VoteOpinion voteOpinion = new VoteOpinion();
 		voteOpinion.setVoteOpinionIndex(1);
+		voteOpinion.setOpinion(voteAcceptDto.getOpinion());
+		voteOpinion.setUser(user);
+		voteOpinion.setVoteInfoId(voteAcceptDto.getVoteInfoId());
 		voteService.addVoteOpinion(voteOpinion);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@PostMapping("/decline")
-	public ResponseEntity<?> declineBattle(@RequestParam Long battle_id, @RequestParam String rejection_reason ) {
-		battleService.declineBattle(rejection_reason, battle_id);
+	public ResponseEntity<?> declineBattle(@RequestBody BattleBoard battleBoard) {
+		battleService.updateBattleStatus(battleBoard.getId(), battleBoard.getRejectionReason());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
