@@ -1,17 +1,25 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
+import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class BattleServiceImpl implements BattleService {
 
 	private final BattleRepository battleRepository;
-
+	private final VoteOpinionRepository voteOpinionRepository;
+	private final BattleApplyUserRepository battleApplyUserRepository;
 
 	//배틀 등록
 	@Override
@@ -31,9 +40,16 @@ public class BattleServiceImpl implements BattleService {
 	//내가 요청한, 요청받은 배틀 리스트 조회
 	@Override
 	public Page<BattleReturnDto> getBattleList(String type, long userId, Pageable pageable) {
-		Page<BattleBoard> page = battleRepository.findByUserIdAndType(userId, type, pageable);
+		List<BattleBoard> page = battleRepository.findByUserIdAndType(userId, type, pageable).getContent();
+		List<BattleReturnDto> newList = new ArrayList<>();
+		for(BattleBoard battleBoard : page) {
+			BattleReturnDto battleReturnDto = new BattleReturnDto();
+			battleReturnDto.setBattleBoard(battleBoard);
+			battleReturnDto.setOpinionList(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
+			newList.add(battleReturnDto);
+		}
 		// System.out.println(page.toList().toString());
-		return page;
+		return new PageImpl<>(newList);
 	}
 
 
@@ -45,7 +61,38 @@ public class BattleServiceImpl implements BattleService {
 
 	@Override
 	public Page<?> getAwaitingBattleList(int category, Pageable pageable) {
-		return battleRepository.findByVoteInfo_CategoryAndCurrentState(category, 2, pageable);
+		List<BattleBoard> list = battleRepository.findByVoteInfo_CategoryAndCurrentState(category, 2, pageable).getContent();
+		List<BattleReturnDto> newList = new ArrayList<>();
+		for(BattleBoard battleBoard : list) {
+
+			BattleReturnDto battleReturnDto = new BattleReturnDto();
+			battleReturnDto.setBattleBoard(battleBoard);
+			battleReturnDto.setOpinionList(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
+			newList.add(battleReturnDto);
+		}
+		return new PageImpl<>(newList, pageable, list.size());
+	}
+
+	//라이브에 참여 신청한 유저 리스트 리턴
+	@Override
+	public Page<?> getApplyUserList(Long battleId, Pageable pageable) {
+		Page<BattleApplyUser> list = battleApplyUserRepository.findAllByBattleBoard_Id(battleId, pageable);
+
+		return list;
+	}
+
+	//라이브 참여 신청한 유저 넣기
+	@Override
+	public void addBattleApplyUser(BattleApplyDto battleApplyDto) {
+		BattleApplyUser battleApplyUser = new BattleApplyUser();
+		BattleBoard battleBoard	= new BattleBoard();
+		battleBoard.setId(battleApplyDto.getBattleId());
+		battleApplyUser.setBattleBoard(battleBoard);
+		User user = new User();
+		user.setId(battleApplyDto.getUserId());
+		battleApplyUser.setUser(user);
+		battleApplyUser.setSelectedOpinion(battleApplyDto.getSelectedOpinion());
+		battleApplyUserRepository.save(battleApplyUser);
 	}
 
 	//rejectionReason 여부에 따라 battleBoard 내 currentState update

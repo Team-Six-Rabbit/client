@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 public class BattleApplyUserId implements Serializable {
-	private Long user;
 	private Long battleBoard;
+	private Long user;
 
 	// 기본 생성자
 	public BattleApplyUserId() {
