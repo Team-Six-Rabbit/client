@@ -61,8 +61,9 @@ public class BattleController {
 		//BattleBoard 내 current_state update해주기
 		battleService.updateBattleStatus(voteOpinion.getVoteInfoId(), null);
 
-		// //voteOpinion에 상대 의견 추가하기
-		// battleService.acceptBattle(voteOpinion);
+		//voteOpinion에 상대 의견 추가하기
+		voteOpinion.setVoteOpinionIndex(1);
+		voteService.addVoteOpinion(voteOpinion);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
