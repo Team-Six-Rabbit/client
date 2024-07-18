@@ -28,6 +28,8 @@ public class BattleServiceImpl implements BattleService {
 	private final UserRepository userRepository;
 	private final VoteOpinionRepository voteOpinionRepository;
 
+
+	//배틀 등록
 	@Override
 	public void addBattle(BattleBoard battleBoard) {
 		battleRepository.save(battleBoard);
@@ -62,27 +64,21 @@ public class BattleServiceImpl implements BattleService {
 	}
 
 	@Override
-	public void acceptBattle(VoteOpinion voteOpinion, Long battleId) {
-		voteOpinion.setVoteOpinionIndex(1);
-		voteOpinionRepository.save(voteOpinion);
-		battleRepository.updateBattleBoardStatusTo2(battleId);
-	}
-
-	@Override
-	public void declineBattle(String rejectionReason, Long battleId) {
-		battleRepository.updateBattleBoardStatusAndRejectionReason(rejectionReason, battleId);
-	}
-
-	@Override
 	public List<Map<String, Object>> getBattleList(String category) {
 		// List<BattleBoard> list = battleRepository.findAllLiveListByCurrentState(category);
 		return List.of();
 	}
 
+	//voteInfoId로 Battle가져오기
 	@Override
-	public void updateBattleStatus(Long voteInfoId, String rejectionReason) {
-		Long battle_id = battleRepository.findIdByVoteInfoId(voteInfoId);
-		battleRepository.updateBattleBoardStatus(battle_id, rejectionReason);
+	public BattleBoard getBattleBoardByVoteInfoId(Long voteInfoId) {
+		return battleRepository.findByVoteInfoId(voteInfoId);
+	}
+
+	//rejectionReason 여부에 따라 battleBoard 내 currentState update
+	@Override
+	public void updateBattleStatus(Long battleId, String rejectionReason) {
+		battleRepository.updateBattleBoardStatus(battleId, rejectionReason);
 	}
 
 }
