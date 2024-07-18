@@ -72,7 +72,7 @@ function LeftHeader() {
 	return (
 		<>
 			<Logo />
-			<div className="flex space-x-4 lg:space-x-8 text-white text-base">
+			<div className="flex space-x-4 lg:space-x-8 text-white text-lg">
 				<Link className="text-white hover:text-gray-400" to="/boolgugeong">
 					불구경
 				</Link>
