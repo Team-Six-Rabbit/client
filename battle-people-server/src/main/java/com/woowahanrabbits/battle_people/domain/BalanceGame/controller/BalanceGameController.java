@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,5 +41,12 @@ public class BalanceGameController {
 		@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		return new ResponseEntity<>(balanceGameService.getBalanceGameByConditions(category, status, pageable),
 			HttpStatus.OK);
+	}
+
+	@DeleteMapping("")
+	@Operation(summary = "밸런스 게임을 삭제합니다.")
+	public ResponseEntity<?> deleteBalanceGame(@RequestParam Long id) {
+		balanceGameService.deleteBalanceGame(id);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

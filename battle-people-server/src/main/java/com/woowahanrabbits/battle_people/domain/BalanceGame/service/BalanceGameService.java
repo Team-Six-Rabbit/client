@@ -9,4 +9,6 @@ public interface BalanceGameService {
 	void addBalanceGame(BattleReturnDto battleReturnDto);
 
 	Page<?> getBalanceGameByConditions(int category, int status, Pageable pageable);
+
+	void deleteBalanceGame(Long id);
 }
