@@ -1,9 +1,9 @@
-import LoginPage from "./pages/LoginPage";
 import "./assets/fonts/font.css";
 import "./App.css";
+import Header from "./components/header";
 
 function App() {
-	return <LoginPage />;
+	return <Header />;
 }
 
 export default App;

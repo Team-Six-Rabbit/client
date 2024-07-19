@@ -2,35 +2,47 @@ import profileIcon from "@/assets/images/profile.png";
 import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
 import brandIcon from "@/assets/images/Logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { useState } from "react";
+import { useAuthStore } from "@/stores/userAuthStore";
+import { MouseEventHandler } from "react";
+import { logout } from "@/services/userAuthService";
 
-const isUserLoggedIn = () => {
-	return Math.random() > 0.5; // Randomly returns true or false
-};
-
-const dropdownBeforeLogin = [
-	{ link: "/login", text: "로그인" },
-	{ link: "/signup", text: "회원가입" },
-];
-
-const dropdownAfterLogin = [
-	{ link: "/mypage", text: "마이페이지" },
-	{ link: "/logout", text: "로그아웃" },
-];
+interface DropDownMenuItem {
+	link: string;
+	text: string;
+	onClick?: MouseEventHandler;
+}
 
 export function ProfileBtn() {
-	const [loggedIn, setLoggedIn] = useState(false);
+	const { isLogin } = useAuthStore();
+	const navigator = useNavigate();
 
-	const menuItems = loggedIn ? dropdownAfterLogin : dropdownBeforeLogin;
+	const doLogout = async () => {
+		try {
+			await logout();
+		} catch (err) {
+			console.error("로그아웃 실패");
+		} finally {
+			navigator("/");
+		}
+	};
+
+	const dropdownBeforeLogin: DropDownMenuItem[] = [
+		{ link: "/login", text: "로그인" },
+		{ link: "/join", text: "회원가입" },
+	];
+
+	const dropdownAfterLogin: DropDownMenuItem[] = [
+		{ link: "/my-page", text: "마이페이지" },
+		{ link: "/logout", text: "로그아웃", onClick: doLogout },
+	];
+
+	const menuItems = isLogin ? dropdownAfterLogin : dropdownBeforeLogin;
 
 	return (
 		<Menu as="div" className="size-8 relative inline-block text-left">
-			<MenuButton
-				onClick={() => setLoggedIn(isUserLoggedIn())} // TODO: 실제 로그인 상태로 설정하기
-				className="size-8 inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105"
-			>
+			<MenuButton className="size-8 inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105">
 				<img className="size-8" src={profileIcon} alt="프로필 이미지" />
 			</MenuButton>
 
@@ -44,6 +56,7 @@ export function ProfileBtn() {
 						<MenuItem key={item.link}>
 							<Link
 								to={item.link}
+								onClick={item.onClick}
 								className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
 							>
 								{item.text}
@@ -73,13 +86,13 @@ function LeftHeader() {
 		<>
 			<Logo />
 			<div className="flex space-x-4 lg:space-x-8 text-white text-lg">
-				<Link className="text-white hover:text-gray-400" to="/boolgugeong">
+				<Link className="text-white hover:text-gray-400" to="/firework">
 					불구경
 				</Link>
-				<Link className="text-white hover:text-gray-400" to="/buchaejil">
+				<Link className="text-white hover:text-gray-400" to="/fanning">
 					부채질
 				</Link>
-				<Link className="text-white hover:text-gray-400" to="/modackbull">
+				<Link className="text-white hover:text-gray-400" to="/bonfire">
 					모닥불
 				</Link>
 			</div>

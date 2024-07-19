@@ -1,7 +1,9 @@
-import React from "react";
+import React, { ChangeEvent, useState } from "react";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
 import GoogleLoginButton from "@/components/auth/googleLoginBtn";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { LoginRequest } from "@/types/api";
+import { login } from "@/services/userAuthService";
 
 interface CustomCSSProperties extends React.CSSProperties {
 	textShadow?: string;
@@ -13,6 +15,29 @@ const headingTagStyles: CustomCSSProperties = {
 };
 
 function LoginPage() {
+	const navigator = useNavigate();
+	const [formValues, setFormValues] = useState<LoginRequest>({
+		email: "",
+		password: "",
+	});
+
+	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = event.target;
+		setFormValues({
+			...formValues,
+			[name]: value,
+		});
+	};
+
+	const doLogin = async () => {
+		try {
+			await login(formValues);
+			navigator("/");
+		} catch (err) {
+			console.error("로그인 실패"); // TODO: 로그인 실패 시 처리
+		}
+	};
+
 	return (
 		<div className="flex justify-center items-center h-screen bg-white">
 			<div className="bg-white p-8 rounded-3xl shadow-lg scale-100 border-4 border-solid border-black">
@@ -26,15 +51,19 @@ function LoginPage() {
 					label="이메일"
 					type="email"
 					name="email"
+					value={formValues.email}
+					onChange={handleInputChange}
 					placeholder="이메일"
 				/>
 				<AuthInput
 					label="비밀번호"
 					type="password"
 					name="password"
+					value={formValues.password}
+					onChange={handleInputChange}
 					placeholder="비밀번호"
 				/>
-				<AuthSubmitBtn text="로그인" />
+				<AuthSubmitBtn text="로그인" onClick={doLogin} />
 				<GoogleLoginButton />
 				<div className="flex justify-between mt-4">
 					<Link to="/" className="text-black hover:color hover:text-[#F66C23]">
