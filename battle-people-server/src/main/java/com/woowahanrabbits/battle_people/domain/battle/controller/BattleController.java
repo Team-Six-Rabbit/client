@@ -103,10 +103,10 @@ public class BattleController {
 		return new ResponseEntity<>(battleService.getAwaitingBattleList(category, pageable), HttpStatus.OK);
 	}
 
-	@GetMapping("/apply-user-list/{battleId}")
+	@GetMapping("/apply-user-list/{battleBoardId}")
 	@Operation(summary = "[불씨] 모집중인 특정 배틀에 참여 신청한 유저를 조회한다.")
-	public ResponseEntity<?> getApplyUserList(@PathVariable Long battleId, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-		return new ResponseEntity<>(battleService.getApplyUserList(battleId, pageable), HttpStatus.OK);
+	public ResponseEntity<?> getApplyUserList(@PathVariable Long battleBoardId, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+		return new ResponseEntity<>(battleService.getApplyUserList(battleBoardId, pageable), HttpStatus.OK);
 	}
 
 	@PostMapping("/apply")
