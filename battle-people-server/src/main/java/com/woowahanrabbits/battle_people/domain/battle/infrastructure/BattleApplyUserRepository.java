@@ -12,6 +12,6 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUserId;
 
 @Repository
 public interface BattleApplyUserRepository extends JpaRepository<BattleApplyUser, BattleApplyUserId> { // Composite key 적용
-	Page<BattleApplyUser> findAllByBattleBoard_Id(Long battleBoardId, Pageable pageable); // 정확한 필드 이름 사용
+	Page<BattleApplyUser> findByBattleBoard_Id(Long battleBoardId, Pageable pageable); // 정확한 필드 이름 사용
 }
 

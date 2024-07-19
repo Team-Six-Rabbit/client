@@ -75,8 +75,8 @@ public class BattleServiceImpl implements BattleService {
 
 	//라이브에 참여 신청한 유저 리스트 리턴
 	@Override
-	public Page<?> getApplyUserList(Long battleId, Pageable pageable) {
-		Page<BattleApplyUser> list = battleApplyUserRepository.findAllByBattleBoard_Id(battleId, pageable);
+	public Page<?> getApplyUserList(Long battleBoardId, Pageable pageable) {
+		Page<BattleApplyUser> list = battleApplyUserRepository.findByBattleBoard_Id(battleBoardId, pageable);
 
 		return list;
 	}
