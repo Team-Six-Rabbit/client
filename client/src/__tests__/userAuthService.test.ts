@@ -36,11 +36,11 @@ beforeEach(() => {
 
 describe("userAuthService", () => {
 	it("should login successfully", async () => {
-		const loginRequest = { email: "test.email.com", password: "password" };
+		const loginRequest = { email: "test@email.com", password: "password" };
 		const response = await login(loginRequest);
 
 		expect(response.code).toBe("success");
-		expect(response.data.email).toBe("test.email.com");
+		expect(response.data.email).toBe("test@email.com");
 
 		const state = useAuthStore.getState();
 		expect(state.isLogin).toBe(true);
@@ -73,7 +73,7 @@ describe("userAuthService", () => {
 
 	it("should fail to join with already registered email", async () => {
 		const joinRequest = {
-			email: "test.email.com",
+			email: "test@email.com",
 			password: "password",
 			nickname: "testuser",
 		};
@@ -85,12 +85,12 @@ describe("userAuthService", () => {
 
 	it("should get user info successfully", async () => {
 		// 로그인 후 사용자 정보 가져오기 테스트
-		const loginRequest = { email: "test.email.com", password: "password" };
+		const loginRequest = { email: "test@email.com", password: "password" };
 		await login(loginRequest);
 
 		const response = await getUserInfo();
 		expect(response.code).toBe("success");
-		expect(response.data.email).toBe("test.email.com");
+		expect(response.data.email).toBe("test@email.com");
 
 		const state = useAuthStore.getState();
 		expect(state.user).toEqual(response.data);
@@ -110,7 +110,7 @@ describe("userAuthService", () => {
 
 	it("should logout successfully", async () => {
 		// 로그인 후 로그아웃 테스트
-		const loginRequest = { email: "test.email.com", password: "password" };
+		const loginRequest = { email: "test@email.com", password: "password" };
 		await login(loginRequest);
 
 		await logout();

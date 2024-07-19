@@ -7,11 +7,11 @@ export const handlers = [
 		"/auth/login",
 		async ({ request }) => {
 			const { email } = await request.json();
-			if (email === "test.email.com") {
+			if (email === "test@email.com") {
 				const body: ApiResponse<User> = {
 					code: "success",
 					data: {
-						email: "test.email.com",
+						email: "test@email.com",
 						nickname: "testUser",
 						rating: 99999,
 						imgUrl: "test/url",
@@ -35,7 +35,7 @@ export const handlers = [
 	),
 	http.post<PathParams, JoinRequest>("/user/join", async ({ request }) => {
 		const { email } = await request.json();
-		if (email === "test.email.com") {
+		if (email === "test@email.com") {
 			return HttpResponse.json<ApiResponse<string>>(
 				{
 					code: "fail",
@@ -60,7 +60,7 @@ export const handlers = [
 		const body: ApiResponse<User> = {
 			code: "success",
 			data: {
-				email: "test.email.com",
+				email: "test@email.com",
 				nickname: "testUser",
 				rating: 99999,
 				imgUrl: "test/url",
