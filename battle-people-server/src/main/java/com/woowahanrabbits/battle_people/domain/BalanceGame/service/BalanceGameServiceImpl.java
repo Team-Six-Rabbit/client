@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.balancegame.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
@@ -36,5 +38,10 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 		}
 		battleReturnDto.getBattleBoard().setCurrentState(4);
 		battleRepository.save(battleReturnDto.getBattleBoard());
+	}
+
+	@Override
+	public Page<?> getBalanceGameByConditions(int category, int status, Pageable pageable) {
+		return null;
 	}
 }
