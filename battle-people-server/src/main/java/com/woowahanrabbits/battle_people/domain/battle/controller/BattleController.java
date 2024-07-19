@@ -6,6 +6,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,7 +70,7 @@ public class BattleController {
 	}
 
 	//
-	@PostMapping("/accept")
+	@PatchMapping("/accept")
 	@Operation(summary = "[불씨] 배틀을 수락한다.")
 	public ResponseEntity<?> acceptBattle(@RequestBody VoteAcceptDto voteAcceptDto) {
 		//BattleBoard 내 current_state update해주기
@@ -90,7 +91,7 @@ public class BattleController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@PostMapping("/decline")
+	@PatchMapping("/decline")
 	@Operation(summary = "[불발/연기] 요청받은 배틀을 거절한다.")
 	public ResponseEntity<?> declineBattle(@RequestBody VoteDeclineDto voteDeclineDto) {
 		battleService.updateBattleStatus(voteDeclineDto.getBattleId(), voteDeclineDto.getRejectionReason());
