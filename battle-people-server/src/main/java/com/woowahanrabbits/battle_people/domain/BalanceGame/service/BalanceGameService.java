@@ -1,10 +1,7 @@
-package com.woowahanrabbits.battle_people.domain.BalanceGame.service;
-
-import org.springframework.stereotype.Service;
+package com.woowahanrabbits.battle_people.domain.balancegame.service;
 
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 
-@Service
 public interface BalanceGameService {
 	void addBalanceGame(BattleReturnDto battleReturnDto);
 }
