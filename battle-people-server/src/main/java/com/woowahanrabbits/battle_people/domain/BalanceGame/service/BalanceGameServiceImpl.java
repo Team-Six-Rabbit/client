@@ -1,18 +1,20 @@
 package com.woowahanrabbits.battle_people.domain.balancegame.service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.balancegame.infrastructure.BalanceGameRepository;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
-import com.woowahanrabbits.battle_people.domain.vote.dto.BalanceGameVoteReturnDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
@@ -53,22 +55,36 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	}
 
 	@Override
-	public Object getBalanceGameByConditions(int category, int status, int page, User user) {
+	public List<BalanceGameReturnDto> getBalanceGameByConditions(int category, int status, int page, User user) {
 		Pageable pageable = PageRequest.of(page, 12);
 		List<Object[]> list = userVoteOpinionRepository.findAllVotesWithCountsAndUserVoteStatus(user.getId());
-		List<BalanceGameVoteReturnDto> returnList = list.stream()
-			.map(result -> new BalanceGameVoteReturnDto(
-				((Number)result[0]).longValue(),  // battleId
-				(String)result[1],                // title
-				(String)result[2],                // opinion1
-				(String)result[3],                // opinion2
-				((Number)result[4]).intValue(),   // opinion1Count
-				((Number)result[5]).intValue(),   // opinion2Count
-				result[6] != null ? ((Number)result[6]).intValue() : null    // userVote
-			))
-			.collect(Collectors.toList());
-		System.out.println(returnList.toString());
-		return list;
+
+		System.out.println(list.toString());
+
+		List<BalanceGameReturnDto> dtoResults = new ArrayList<>();
+		Long currentBattleId = null;
+		BalanceGameReturnDto currentDto = null;
+		List<VoteOpinionDto> currentOpinions = null;
+
+		for (Object[] result : list) {
+			Long battleId = ((Number)result[0]).longValue();
+			String title = (String)result[1];
+			String opinion = (String)result[2];
+			int voteCount = ((Number)result[3]).intValue();
+			Date startDate = (Date)result[4];
+			Date endDate = (Date)result[5];
+
+			if (!battleId.equals(currentBattleId)) {
+				currentBattleId = battleId;
+				currentOpinions = new ArrayList<>();
+				currentDto = new BalanceGameReturnDto(battleId, title, currentOpinions, startDate, endDate);
+				dtoResults.add(currentDto);
+			}
+
+			currentOpinions.add(new VoteOpinionDto(opinion, voteCount));
+		}
+
+		return dtoResults;
 	}
 
 	@Override

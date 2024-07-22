@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.balancegame.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
@@ -45,8 +48,9 @@ public class BalanceGameController {
 		@RequestParam int userId) {
 		User user = new User();
 		user.setId(userId);
+		List<BalanceGameReturnDto> list = balanceGameService.getBalanceGameByConditions(category, 5, 1, user);
 
-		return new ResponseEntity<>(balanceGameService.getBalanceGameByConditions(category, 5, 1, user), HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.OK);
 		// return new ResponseEntity<>(balanceGameService.getBalanceGameByConditions(category, status), HttpStatus.OK);
 	}
 
