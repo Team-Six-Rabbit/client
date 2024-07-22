@@ -10,7 +10,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.woowahanrabbits.battle_people.domain.balancegame.domain.BalanceGameBoardComment;
 import com.woowahanrabbits.battle_people.domain.balancegame.infrastructure.BalanceGameRepository;
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
@@ -98,5 +100,24 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	@Override
 	public void deleteBalanceGame(Long id) {
 		battleRepository.deleteById(id);
+	}
+
+	@Override
+	public Page<BalanceGameCommentDto> getCommentsByBattleId(Long id, int page, int totalPage) {
+		List<BalanceGameCommentDto> list = balanceGameRepository.findCommentsByBattleBoardId(id);
+		Pageable pageable = PageRequest.of(page, totalPage);
+		return new PageImpl<>(list, pageable, list.size());
+	}
+
+	@Override
+	public void addComment(BalanceGameCommentDto balanceGameCommentDto) {
+
+		BalanceGameBoardComment bgbcomment = BalanceGameBoardComment.builder()
+			.user(balanceGameCommentDto.getUser())
+			.content(balanceGameCommentDto.getContent())
+			.battleBoard(BattleBoard.builder().id(balanceGameCommentDto.getBattleBoardId()).build())
+			.build();
+
+		balanceGameRepository.save(bgbcomment);
 	}
 }

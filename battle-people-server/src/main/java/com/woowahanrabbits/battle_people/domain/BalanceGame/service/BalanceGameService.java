@@ -12,4 +12,8 @@ public interface BalanceGameService {
 	Page<BalanceGameReturnDto> getBalanceGameByConditions(Integer category, int status, int page, User user);
 
 	void deleteBalanceGame(Long id);
+
+	Page<?> getCommentsByBattleId(Long id, int page, int totalPage);
+
+	void addComment(BalanceGameCommentDto balanceGameCommentDto);
 }
