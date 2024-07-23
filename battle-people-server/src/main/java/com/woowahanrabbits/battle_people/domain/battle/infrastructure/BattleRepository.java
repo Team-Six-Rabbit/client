@@ -16,6 +16,6 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface BattleRepository extends JpaRepository<BattleBoard, Long>, BattleRepositoryCustom {
-		BattleBoard findByVoteInfoId(Long voteInfoId);
-	Page<BattleBoard> findByVoteInfo_CategoryAndCurrentState(int category, int currentState, Pageable pageable);
+	BattleBoard findByVoteInfoId(Long voteInfoId);
+	List<BattleBoard> findByVoteInfo_CategoryAndCurrentState(int category, int currentState);
 }

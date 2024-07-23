@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -39,17 +40,19 @@ public class BattleServiceImpl implements BattleService {
 
 	//내가 요청한, 요청받은 배틀 리스트 조회
 	@Override
-	public Page<BattleReturnDto> getBattleList(String type, long userId, Pageable pageable) {
-		List<BattleBoard> page = battleRepository.findByUserIdAndType(userId, type, pageable).getContent();
+	public Page<BattleReturnDto> getBattleList(String type, long userId, int page) {
+		List<BattleBoard> list = battleRepository.findByUserIdAndType(userId, type);
 		List<BattleReturnDto> newList = new ArrayList<>();
-		for(BattleBoard battleBoard : page) {
+
+		for(BattleBoard battleBoard : list) {
 			BattleReturnDto battleReturnDto = new BattleReturnDto();
 			battleReturnDto.setBattleBoard(battleBoard);
 			battleReturnDto.setOpinionList(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
 			newList.add(battleReturnDto);
 		}
-		// System.out.println(page.toList().toString());
-		return new PageImpl<>(newList);
+
+		Pageable pageable = PageRequest.of(page, 12);
+		return new PageImpl<>(newList, pageable, list.size());
 	}
 
 
@@ -60,8 +63,9 @@ public class BattleServiceImpl implements BattleService {
 	}
 
 	@Override
-	public Page<?> getAwaitingBattleList(int category, Pageable pageable) {
-		List<BattleBoard> list = battleRepository.findByVoteInfo_CategoryAndCurrentState(category, 2, pageable).getContent();
+	public Page<?> getAwaitingBattleList(int category, int page) {
+		List<BattleBoard> list = battleRepository.findByVoteInfo_CategoryAndCurrentState(category, 2);
+
 		List<BattleReturnDto> newList = new ArrayList<>();
 		for(BattleBoard battleBoard : list) {
 
@@ -70,15 +74,17 @@ public class BattleServiceImpl implements BattleService {
 			battleReturnDto.setOpinionList(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
 			newList.add(battleReturnDto);
 		}
+
+		Pageable pageable = PageRequest.of(page, 12);
 		return new PageImpl<>(newList, pageable, list.size());
 	}
 
 	//라이브에 참여 신청한 유저 리스트 리턴
 	@Override
-	public Page<?> getApplyUserList(Long battleBoardId, Pageable pageable) {
-		Page<BattleApplyUser> list = battleApplyUserRepository.findByBattleBoard_Id(battleBoardId, pageable);
-
-		return list;
+	public Page<BattleApplyUser> getApplyUserList(Long battleBoardId, int page) {
+		List<BattleApplyUser> list = battleApplyUserRepository.findByBattleBoard_Id(battleBoardId);
+		Pageable pageable = PageRequest.of(page, 12);
+		return new PageImpl<BattleApplyUser>(list, pageable, list.size());
 	}
 
 	//라이브 참여 신청한 유저 넣기

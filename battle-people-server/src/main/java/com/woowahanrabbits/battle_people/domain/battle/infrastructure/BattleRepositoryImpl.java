@@ -1,7 +1,10 @@
 package com.woowahanrabbits.battle_people.domain.battle.infrastructure;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
@@ -39,44 +42,19 @@ public class BattleRepositoryImpl implements BattleRepositoryCustom {
 		query.executeUpdate();
 	}
 
-	// @Override
-	// public Page<BattleBoard> findByUserIdAndType(Long userId, String type, Pageable pageable) {
-	// 	String queryString = "SELECT b FROM BattleBoard b ";
-	//
-	// 	if(type.equals("received")) {
-	// 		queryString += "WHERE b.oppositeUserId = :userId";
-	// 	} else if(type.equals("sent")) {
-	// 		queryString += "WHERE b.registUserId = :userId";
-	// 	}
-	//
-	// 	TypedQuery<BattleBoard> query = entityManager.createQuery(queryString, BattleBoard.class);
-	// 	query.setParameter("userId", userId);
-	//
-	// 	// 페이징 처리를 위한 쿼리
-	// 	int totalRows = query.getResultList().size();
-	// 	query.setFirstResult((int) pageable.getOffset());
-	// 	query.setMaxResults(pageable.getPageSize());
-	//
-	// 	return new PageImpl<>(query.getResultList(), pageable, totalRows);
-
 	@Override
-	public Page<BattleBoard> findByUserIdAndType(Long userId, String type, Pageable pageable) {
+	public List<BattleBoard> findByUserIdAndType(Long userId, String type) {
 		String queryString = "SELECT b FROM BattleBoard b ";
 
 		if (type.equals("received")) {
-			queryString += "WHERE b.oppositeUser.id = :userId";
+			queryString += "WHERE b.oppositeUser.id = :userId and b.currentState = 1 ";
 		} else if (type.equals("sent")) {
-			queryString += "WHERE b.registUser.id = :userId";
+			queryString += "WHERE b.registUser.id = :userId ";
 		}
 
 		TypedQuery<BattleBoard> query = entityManager.createQuery(queryString, BattleBoard.class);
 		query.setParameter("userId", userId);
 
-		// 페이징 처리를 위한 쿼리
-		int totalRows = query.getResultList().size();
-		query.setFirstResult((int) pageable.getOffset());
-		query.setMaxResults(pageable.getPageSize());
-
-		return new PageImpl<>(query.getResultList(), pageable, totalRows);
+		return query.getResultList();
 	}
 }
