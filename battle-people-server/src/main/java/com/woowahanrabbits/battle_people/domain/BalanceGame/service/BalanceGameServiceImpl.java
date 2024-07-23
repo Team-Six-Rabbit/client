@@ -17,8 +17,10 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
@@ -29,13 +31,16 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	private final VoteOpinionRepository voteOpinionRepository;
 	private final BattleRepository battleRepository;
 	private final BalanceGameRepository balanceGameRepository;
+	private final UserVoteOpinionRepository userVoteOpinionRepository;
 
 	public BalanceGameServiceImpl(VoteInfoRepository voteInfoRepository, VoteOpinionRepository voteOpinionRepository,
-		BattleRepository battleRepository, BalanceGameRepository balanceGameRepository) {
+		BattleRepository battleRepository, BalanceGameRepository balanceGameRepository,
+		UserVoteOpinionRepository userVoteOpinionRepository) {
 		this.voteInfoRepository = voteInfoRepository;
 		this.voteOpinionRepository = voteOpinionRepository;
 		this.battleRepository = battleRepository;
 		this.balanceGameRepository = balanceGameRepository;
+		this.userVoteOpinionRepository = userVoteOpinionRepository;
 	}
 
 	@Override
@@ -119,5 +124,11 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 			.build();
 
 		balanceGameRepository.save(bgbcomment);
+	}
+
+	@Override
+	public List<UserVoteOpinion> getUserVotelist(User user) {
+		List<UserVoteOpinion> list = userVoteOpinionRepository.findByUserId(user.getId());
+		return list;
 	}
 }

@@ -34,5 +34,6 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 		+ "ORDER BY vi.end_date DESC, vi.id, vo.vote_opinion_index"
 		, nativeQuery = true)
 	List<Object[]> findAllByCategoryAndStatus(@Param("category") Integer category, @Param("status") int status);
+
 }
 

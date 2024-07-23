@@ -86,7 +86,7 @@ public class BattleServiceImpl implements BattleService {
 	public void addBattleApplyUser(BattleApplyDto battleApplyDto) {
 		BattleApplyUser battleApplyUser = new BattleApplyUser();
 		BattleBoard battleBoard	= new BattleBoard();
-		battleBoard.setId(battleApplyDto.getBattleId());
+		battleBoard.setId(battleApplyDto.getId());
 		battleApplyUser.setBattleBoard(battleBoard);
 		User user = new User();
 		user.setId(battleApplyDto.getUserId());

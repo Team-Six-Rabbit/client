@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class BattleApplyDto {
-	private Long battleId;
+	private Long id;
 	private Long userId;
 	private int selectedOpinion;
 }
