@@ -33,20 +33,29 @@ public class BalanceGameController {
 	@PostMapping("")
 	@Operation(summary = "[점화] 밸런스 게임을 생성한다.")
 	public ResponseEntity<?> registBalanceGame(@RequestBody BattleReturnDto battleReturnDto) {
-		balanceGameService.addBalanceGame(battleReturnDto);
-		return new ResponseEntity<>(HttpStatus.OK);
+		try {
+			balanceGameService.addBalanceGame(battleReturnDto);
+			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "",  null));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+		}
 	}
 
 	@GetMapping("")
 	@Operation(summary = "[점화] 카테고리 별, 진행 상태 별 밸런스 게임 조회 ")
-	public ResponseEntity<?> getBalanceGameByConditions(@RequestParam(defaultValue = "") Integer category,
+	public ResponseEntity<APIResponseDto<Page>> getBalanceGameByConditions(@RequestParam(defaultValue = "") Integer category,
 		@RequestParam(defaultValue = "5") int status, @RequestParam int page,
 		@RequestParam int userId) {
 		User user = new User();
 		user.setId(userId);
-		Page<BalanceGameReturnDto> list = balanceGameService.getBalanceGameByConditions(category, status, page, user);
+		try{
+			Page<BalanceGameReturnDto> list = balanceGameService.getBalanceGameByConditions(category, status, page, user);
+			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "",  list));
 
-		return new ResponseEntity<>(list, HttpStatus.OK);
+		} catch (Exception e){
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+		}
 	}
 
 	@PatchMapping("")
@@ -57,8 +66,13 @@ public class BalanceGameController {
 		User user = new User();
 		user.setId(userId);
 
-		balanceGameService.deleteBalanceGame(id);
-		return new ResponseEntity<>(HttpStatus.OK);
+		try{
+			balanceGameService.deleteBalanceGame(id);
+			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "",  null));
+		} catch (Exception e){
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+		}
+
 	}
 
 	@GetMapping("/comment")
@@ -70,18 +84,18 @@ public class BalanceGameController {
 
 	@PostMapping("/comment")
 	@Operation(summary = "특정 밸런스 게임에 댓글을 작성합니다.")
-	public ResponseEntity<?> addComment(@RequestBody BalanceGameCommentDto balanceGameCommentDto) {
-		balanceGameService.addComment(balanceGameCommentDto);
-		return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<?> addComment(@RequestBody BalanceGameCommentDto balanceGameCommentDto, @RequestParam("userId") int userId) {
+		try {
+			User user = new User();
+			user.setId(userId);
+			balanceGameCommentDto.setUser(user);
+			balanceGameService.addComment(balanceGameCommentDto);
+			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "",  null));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+		}
+
 	}
 
-	// @PatchMapping("/comment")
-	// @Operation(summary = "특정 밸런스 게임 내 댓글을 삭제합니다.")
-	// public ResponseEntity<?> deleteComment(@Request ) {
-	//
-	// }
-
-	// public APIResponseDto<T> toAPIResponseDTO(String code, String msg, T data) {
-	// 	return new APIResponseDto<T>(code, msg, data);
-	// }
 }
