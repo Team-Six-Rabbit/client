@@ -6,10 +6,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserToken {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +27,5 @@ public class UserToken {
 
 	private String accessToken;
 	private String refreshToken;
+	private String expiration;
 }

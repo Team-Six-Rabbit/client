@@ -1,13 +1,12 @@
 package com.woowahanrabbits.battle_people.domain.user.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.woowahanrabbits.battle_people.domain.API.dto.APIResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 
@@ -22,15 +21,18 @@ public class AuthController {
 
 	private final UserService userService;
 
+	@GetMapping("/login")
+	public String login() {
+		return "login";
+	}
+
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-		userService.login(loginRequest);
-
 		response.addCookie(createCookie("access", userService.getAccessToken(), "/"));
-		response.addCookie(createCookie("refresh_token", userService.getRefreshToken(), "/auth/refresh"));
-
-		return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "Login Success", null));
+		response.addCookie(createCookie("refresh", userService.getRefreshToken(), "/auth/refresh"));
+		return userService.login(loginRequest);
 	}
+
 	/*
 	return ResponseEntity
 			.status(HttpStatus.CREATED)
