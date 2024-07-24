@@ -9,11 +9,11 @@ import lombok.Data;
 @Data
 @IdClass(UserVoteOpinionId.class)
 public class UserVoteOpinion {
-    @Id
-    private Long userId;
+	@Id
+	private Long userId;
 
-    @Id
-    private Long voteInfoId;
+	@Id
+	private Long voteInfoId;
 
-    private int voteInfoIndex;
+	private int voteInfoIndex;
 }
