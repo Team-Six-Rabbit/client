@@ -1,10 +1,13 @@
 package com.woowahanrabbits.battle_people.domain.balancegame.infrastructure;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.woowahanrabbits.battle_people.domain.balancegame.domain.BalanceGameBoardComment;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
 
 public interface BalanceGameRepository extends JpaRepository<BalanceGameBoardComment, Long> {
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.API.dto.APIResponseDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
