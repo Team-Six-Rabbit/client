@@ -41,7 +41,7 @@ function Timer({ duration }: TimerProps) {
 	};
 
 	return (
-		<div className="flex">
+		<div className="absolute top-20 left-3">
 			<div className="ms-3">{formatTime(timeLeft)}</div>
 		</div>
 	);
