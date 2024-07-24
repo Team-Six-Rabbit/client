@@ -66,3 +66,11 @@ checkstyle {
 
 checkstyleMain.source = fileTree('src/main/java')
 checkstyleTest.source = fileTree('src/test/java')
+
+tasks.register('installGitHooks', Copy) {
+	group = 'git hooks'
+	description = 'Installs Git hooks'
+	from file("${rootDir}/git-hooks/")
+	into file("${rootDir}/../.git/hooks/")
+	fileMode(0755)
+}
