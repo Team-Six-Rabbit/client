@@ -1,4 +1,4 @@
-package com.woowahanrabbits.battle_people.domain.live.domain;
+package com.woowahanrabbits.battle_people.domain.balancegame.domain;
 
 import java.util.Date;
 
@@ -11,11 +11,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import lombok.Data;
 
 @Entity
 @Data
-public class LiveItem {
+public class BalanceGameBoardComment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -28,6 +29,12 @@ public class LiveItem {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	private int itemCode;
-	private Date usedDate;
+	private String content;
+	private Date registDate;
+	private boolean isDeleted;
+
+	@PrePersist
+	protected void onCreate() {
+		this.registDate = new Date();
+	}
 }
