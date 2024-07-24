@@ -34,6 +34,12 @@ public class UserService {
 				.body(new APIResponseDto<>("fail", "Email is exist", null));
 		}
 
+		if (userRepository.existsByNickname(nickname)) {
+			return ResponseEntity
+				.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new APIResponseDto<>("fail", "Nickname is exist", null));
+		}
+
 		User user = User.builder()
 			.email(email)
 			.password(password)
