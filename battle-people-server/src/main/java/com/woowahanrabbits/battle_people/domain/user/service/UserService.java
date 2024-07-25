@@ -18,6 +18,8 @@ import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserReposito
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -36,16 +38,22 @@ public class UserService {
 	.body(new APIResponseDto<>("success", "JOIN SUCCESS", user));
 	 */
 
-	public ResponseEntity<?> login(LoginRequest loginRequest) {
+	public Map<String, Object> login(LoginRequest loginRequest, HttpServletResponse response) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("response", response);
 		Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 		if (userOptional.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new APIResponseDto<>("fail", "Email is Wrong", null));
+			result.put("responseEntity", ResponseEntity.status(HttpStatus.NO_CONTENT)
+				.body(new APIResponseDto<>("fail", "Email is Wrong", null)));
+			return result;
 		}
 
 		User user = userOptional.get();
 
 		if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new APIResponseDto<>("fail", "Password is Wrong", null));
+			result.put("responseEntity", ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(new APIResponseDto<>("fail", "Password is Wrong", null)));
+			return result;
 		}
 
 		UserToken userToken = UserToken.builder()
@@ -55,11 +63,13 @@ public class UserService {
 			.build();
 
 		userTokenRepository.save(userToken);
-		Map<String, Object> map = new HashMap<>();
-		map.put("token", userToken);
+		response.addCookie(createCookie("access", userToken.getAccessToken(), "/"));
+		response.addCookie(createCookie("refresh", userToken.getRefreshToken(), "/auth/refresh"));
 
+		result.put("responseEntity", ResponseEntity.ok(new APIResponseDto<>("success", "Login Successful", null)));
+		result.put("response", response);
 		// 쿠키 설정 추가 구현 필요
-		return ResponseEntity.ok(new APIResponseDto<>("success", "Login Successful", map));
+		return result;
 	}
 
 	public ResponseEntity<?> join(JoinRequest joinRequest) {
@@ -91,5 +101,14 @@ public class UserService {
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(new APIResponseDto<>("success", "User joined", userRepository.getUserIdByEmail(email)));
+	}
+
+	private Cookie createCookie(String name, String value, String path) {
+		Cookie cookie = new Cookie(name, value);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setPath(path);
+		cookie.setMaxAge(60 * 60);  // 1시간
+		return cookie;
 	}
 }
