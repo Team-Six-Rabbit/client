@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
 import LoginPage from "@/pages/LoginPage";
 import SignUpPage from "@/pages/SignUpPage";
+import LiveBoardPage from "@/pages/LiveBoardPage";
 
 const router = createBrowserRouter([
 	{
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
 	{
 		path: "/join",
 		element: <SignUpPage />,
+	},
+	{
+		path: "/firework",
+		element: <LiveBoardPage />,
 	},
 ]);
 
