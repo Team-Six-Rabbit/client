@@ -10,7 +10,7 @@
     "lint:fix": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives --fix",
     "preview": "vite preview",
     "test": "vitest run --globals --reporter verbose",
-    "prepare": "husky"
+    "prepare": "cd $(git rev-parse --show-toplevel) && npx --prefix client husky"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
