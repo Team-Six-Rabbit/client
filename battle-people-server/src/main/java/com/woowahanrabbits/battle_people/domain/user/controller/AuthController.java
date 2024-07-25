@@ -50,9 +50,12 @@ public class AuthController {
 					String token = cookie.getValue();
 					String userEmail = jwtUtil.extractUsername(token);
 
-					Optional<User> user = userRepository.findByEmail(userEmail);
-					if (user.isPresent()) {
-						userTokenRepository.deleteByUserId(user.get().getId());
+					Optional<User> userOptional = userRepository.findByEmail(userEmail);
+					if (userOptional.isPresent()) {
+						User user = userOptional.get();
+						user.setAccess_token(null);
+						userRepository.save(user);
+						userTokenRepository.deleteByUserId(user.getId());
 					}
 					// 쿠키 삭제
 					cookie.setValue(null);

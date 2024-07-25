@@ -50,12 +50,15 @@ public class UserService {
 			return result;
 		}
 
+		String access = jwtUtil.generateAccessToken(user.getEmail());
 		UserToken userToken = UserToken.builder()
 			.accessToken(jwtUtil.generateAccessToken(user.getEmail()))
 			.refreshToken(jwtUtil.generateRefreshToken(user.getEmail()))
 			.user(user)
 			.build();
 
+		user.setAccess_token(access);
+		userRepository.save(user);
 		userTokenRepository.save(userToken);
 		response.addCookie(createCookie("access", userToken.getAccessToken(), "/"));
 		response.addCookie(createCookie("refresh", userToken.getRefreshToken(), "/auth/refresh"));
