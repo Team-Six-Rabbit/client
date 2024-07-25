@@ -64,8 +64,9 @@ public class BattleController {
 	//요청한, 요청받은 배틀 조회
 	@GetMapping("")
 	@Operation(summary = "요청한, 요청받는 배틀을 조회한다.")
-	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long user_id, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-		return new ResponseEntity<>(battleService.getBattleList(type, user_id, pageable), HttpStatus.OK);
+	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long userId,
+		@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+		return new ResponseEntity<>(battleService.getBattleList(type, userId, pageable), HttpStatus.OK);
 	}
 
 	//
@@ -73,8 +74,8 @@ public class BattleController {
 	@Operation(summary = "[불씨] 배틀을 수락한다.")
 	public ResponseEntity<?> acceptBattle(@RequestBody VoteAcceptDto voteAcceptDto) {
 		//BattleBoard 내 current_state update해주기
-		Long battle_id = battleService.getBattleBoardByVoteInfoId(voteAcceptDto.getVoteInfoId()).getId();
-		battleService.updateBattleStatus(battle_id, null);
+		Long battleId = battleService.getBattleBoardByVoteInfoId(voteAcceptDto.getVoteInfoId()).getId();
+		battleService.updateBattleStatus(battleId, null);
 
 		//userId로 User 가져오기
 		User user = new User();
@@ -99,13 +100,15 @@ public class BattleController {
 
 	@GetMapping("/apply-list")
 	@Operation(summary = "[불씨] 모집중인 배틀을 조회한다.")
-	public ResponseEntity<?> getAwaitingBattleList(@RequestParam int category, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+	public ResponseEntity<?> getAwaitingBattleList(@RequestParam int category,
+		@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		return new ResponseEntity<>(battleService.getAwaitingBattleList(category, pageable), HttpStatus.OK);
 	}
 
 	@GetMapping("/apply-user-list/{battleBoardId}")
 	@Operation(summary = "[불씨] 모집중인 특정 배틀에 참여 신청한 유저를 조회한다.")
-	public ResponseEntity<?> getApplyUserList(@PathVariable Long battleBoardId, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+	public ResponseEntity<?> getApplyUserList(@PathVariable Long battleBoardId,
+		@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		return new ResponseEntity<>(battleService.getApplyUserList(battleBoardId, pageable), HttpStatus.OK);
 	}
 

@@ -1,10 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,7 +15,6 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
-import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -42,7 +38,7 @@ public class BattleServiceImpl implements BattleService {
 	public Page<BattleReturnDto> getBattleList(String type, long userId, Pageable pageable) {
 		List<BattleBoard> page = battleRepository.findByUserIdAndType(userId, type, pageable).getContent();
 		List<BattleReturnDto> newList = new ArrayList<>();
-		for(BattleBoard battleBoard : page) {
+		for (BattleBoard battleBoard : page) {
 			BattleReturnDto battleReturnDto = new BattleReturnDto();
 			battleReturnDto.setBattleBoard(battleBoard);
 			battleReturnDto.setOpinionList(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
@@ -52,7 +48,6 @@ public class BattleServiceImpl implements BattleService {
 		return new PageImpl<>(newList);
 	}
 
-
 	//voteInfoId로 Battle가져오기
 	@Override
 	public BattleBoard getBattleBoardByVoteInfoId(Long voteInfoId) {
@@ -61,9 +56,10 @@ public class BattleServiceImpl implements BattleService {
 
 	@Override
 	public Page<?> getAwaitingBattleList(int category, Pageable pageable) {
-		List<BattleBoard> list = battleRepository.findByVoteInfo_CategoryAndCurrentState(category, 2, pageable).getContent();
+		List<BattleBoard> list = battleRepository.findByVoteInfo_CategoryAndCurrentState(category, 2, pageable)
+			.getContent();
 		List<BattleReturnDto> newList = new ArrayList<>();
-		for(BattleBoard battleBoard : list) {
+		for (BattleBoard battleBoard : list) {
 
 			BattleReturnDto battleReturnDto = new BattleReturnDto();
 			battleReturnDto.setBattleBoard(battleBoard);
@@ -85,7 +81,7 @@ public class BattleServiceImpl implements BattleService {
 	@Override
 	public void addBattleApplyUser(BattleApplyDto battleApplyDto) {
 		BattleApplyUser battleApplyUser = new BattleApplyUser();
-		BattleBoard battleBoard	= new BattleBoard();
+		BattleBoard battleBoard = new BattleBoard();
 		battleBoard.setId(battleApplyDto.getId());
 		battleApplyUser.setBattleBoard(battleBoard);
 		User user = new User();

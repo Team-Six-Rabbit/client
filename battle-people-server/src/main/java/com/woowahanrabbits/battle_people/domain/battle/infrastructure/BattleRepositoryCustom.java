@@ -11,7 +11,9 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
 public interface BattleRepositoryCustom {
 	void updateBattleBoardStatus(Long battleId, String rejectionReason);
+
 	Page<BattleBoard> findByUserIdAndType(Long userId, String type, Pageable pageable);
 
-	List<Map<String, Object>> findAllByCategoryAndStatusAndConditions(int category, int status, Pageable pageable, User user);
+	List<Map<String, Object>> findAllByCategoryAndStatusAndConditions(int category, int status, Pageable pageable,
+		User user);
 }

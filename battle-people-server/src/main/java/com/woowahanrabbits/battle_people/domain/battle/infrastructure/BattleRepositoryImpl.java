@@ -78,7 +78,7 @@ public class BattleRepositoryImpl implements BattleRepositoryCustom {
 
 		// 페이징 처리를 위한 쿼리
 		int totalRows = query.getResultList().size();
-		query.setFirstResult((int) pageable.getOffset());
+		query.setFirstResult((int)pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
 
 		return new PageImpl<>(query.getResultList(), pageable, totalRows);
@@ -90,7 +90,7 @@ public class BattleRepositoryImpl implements BattleRepositoryCustom {
 
 		String queryString = "SELECT b FROM BattleBoard b JOIN b.voteInfo v WHERE b.currentState = :status";
 
-		if(category!=7) {
+		if (category != 7) {
 			queryString += "AND v.category = :category";
 		}
 
@@ -98,7 +98,7 @@ public class BattleRepositoryImpl implements BattleRepositoryCustom {
 
 		// 페이징 처리를 위한 쿼리
 		int totalRows = query.getResultList().size();
-		query.setFirstResult((int) pageable.getOffset());
+		query.setFirstResult((int)pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
 
 		// return new PageImpl<>(query.getResultList(), pageable, totalRows);

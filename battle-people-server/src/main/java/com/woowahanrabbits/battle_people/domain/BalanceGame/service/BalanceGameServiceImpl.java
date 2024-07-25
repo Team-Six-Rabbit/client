@@ -78,29 +78,56 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 		List<VoteOpinionDto> currentOpinions = null;
 
 		for (Object[] result : list) {
-			Long battleId = ((Number)result[0]).longValue();
-			String title = (String)result[1];
-			String opinion = (String)result[2];
-			int voteCount = ((Number)result[3]).intValue();
-			Date startDate = (Date)result[4];
-			Date endDate = (Date)result[5];
-			int categoryId = ((Number)result[6]).intValue();
-			int currentStatus = ((Number)result[7]).intValue();
+			BalanceGameReturnDto dto = new BalanceGameReturnDto();
 
-			if (!battleId.equals(currentBattleId)) {
-				currentBattleId = battleId;
-				currentOpinions = new ArrayList<>();
-				currentDto = new BalanceGameReturnDto(battleId, title, currentOpinions, startDate, endDate, categoryId,
-					currentStatus);
-				dtoResults.add(currentDto);
+			Long battleId = ((Number)result[0]).longValue();
+			Long voteInfoId = ((Number)result[1]).longValue();
+			String title = (String)result[2];
+			Date startDate = (Date)result[3];
+			Date endDate = (Date)result[4];
+			Integer categoryId = ((Number)result[5]).intValue();
+			int currentStatus = ((Number)result[6]).intValue();
+
+			dto = addToDto(battleId, title, startDate, endDate, categoryId, currentStatus);
+			List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
+			List<VoteOpinionDto> voteOpinionDtos = new ArrayList<>();
+
+			for (VoteOpinion vote : voteOpinions) {
+				VoteOpinionDto voteOpinionDto = new VoteOpinionDto(vote);
+				voteOpinionDto.setVoteCount(
+					userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(voteInfoId, vote.getVoteOpinionIndex())
+						.size());
+				voteOpinionDtos.add(voteOpinionDto);
+			}
+			dto.setOpinions(voteOpinionDtos);
+			dto.setBattleId(battleId);
+
+			//유저 투표정보 확인
+			UserVoteOpinion uvo = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(), voteInfoId);
+			if (uvo != null) {
+				dto.setUserVote(uvo.getVoteInfoIndex());
 			}
 
-			currentOpinions.add(new VoteOpinionDto(opinion, voteCount));
+			dtoResults.add(dto);
 		}
+		System.out.println(dtoResults.toString());
 
 		Page<BalanceGameReturnDto> pages = new PageImpl<>(dtoResults, pageable, dtoResults.size());
 
 		return pages;
+	}
+
+	private BalanceGameReturnDto addToDto(Long battleId, String title, Date startDate, Date endDate, Integer categoryId,
+		int currentStatus) {
+		BalanceGameReturnDto dto = new BalanceGameReturnDto();
+		dto.setBattleId(battleId);
+		dto.setTitle(title);
+		dto.setStartDate(startDate);
+		dto.setEndDate(endDate);
+		dto.setCategory(categoryId);
+		dto.setCurrentState(currentStatus);
+
+		return dto;
 	}
 
 	@Override

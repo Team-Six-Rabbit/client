@@ -24,4 +24,5 @@ public class BalanceGameReturnDto {
 	private Date endDate; //종료일
 	private Integer category; //카테고리
 	private int currentState; //현재상태
+	private Integer userVote; //유저의 선택
 }

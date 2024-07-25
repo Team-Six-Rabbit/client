@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.woowahanrabbits.battle_people.domain.API.dto.APIResponseDto;
+import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BalanceGameReturnDto;
@@ -42,17 +42,17 @@ public class BalanceGameController {
 	public ResponseEntity<?> registBalanceGame(@RequestBody BattleReturnDto battleReturnDto) {
 		try {
 			balanceGameService.addBalanceGame(battleReturnDto);
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", null));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new APIResponseDto<>("fail", "internal server error", null));
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 	}
 
 	@GetMapping("")
 	@Operation(summary = "[점화] 카테고리 별, 진행 상태 별 밸런스 게임 조회 ")
-	public ResponseEntity<APIResponseDto<Map<String, Object>>> getBalanceGameByConditions(
+	public ResponseEntity<ApiResponseDto<Map<String, Object>>> getBalanceGameByConditions(
 		@RequestParam(defaultValue = "") Integer category,
 		@RequestParam(defaultValue = "5") int status, @RequestParam int page,
 		@RequestParam int userId) {
@@ -69,11 +69,11 @@ public class BalanceGameController {
 			List<UserVoteOpinion> userVote = balanceGameService.getUserVotelist(user);
 			map.put("userVoteList", userVote);
 
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", map));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", map));
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new APIResponseDto<>("fail", "internal server error", null));
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 	}
 
@@ -87,10 +87,10 @@ public class BalanceGameController {
 
 		try {
 			balanceGameService.deleteBalanceGame(id);
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", null));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new APIResponseDto<>("fail", "internal server error", null));
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 
 	}
@@ -111,11 +111,11 @@ public class BalanceGameController {
 			user.setId(userId);
 			balanceGameCommentDto.setUser(user);
 			balanceGameService.addComment(balanceGameCommentDto);
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", null));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new APIResponseDto<>("fail", "internal server error", null));
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 
 	}
