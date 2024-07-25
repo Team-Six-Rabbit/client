@@ -2,13 +2,21 @@
 import ChatBox from "@/components/Live/ChatBox";
 import VideoScreen from "@/components/Live/VideoScreen";
 import Timer from "@/components/Live/Timer";
+import LiveVote from "@/components/Live/LiveVote";
 
 function LivePage() {
 	return (
 		<div className="flex flex-col h-screen">
-			<div className="flex-1 flex justify-between items-center mt-16 p-8">
+			<div className="flex-1 flex mt-16 p-8">
 				<Timer duration={320} />
-				<VideoScreen />
+				<div className="flex-col justify-center items-center h-144">
+					<LiveVote
+						title="오늘 저녁 메뉴 추천"
+						optionA="치킨을 먹자"
+						optionB="마라탕을 먹자"
+					/>
+					<VideoScreen />
+				</div>
 				<ChatBox />
 			</div>
 		</div>
