@@ -20,17 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final UserRepository userRepository;
-	// private final JWTUtil jwtUtil;
 
 	@Bean
 	public AuthenticationManager authenticationManager() throws Exception {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
-
-	// @Bean
-	// public JWTProvider jwtTokenProvider() {
-	// 	return new JWTProvider(userRepository);
-	// }
 
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -44,8 +38,10 @@ public class SecurityConfig {
 		http.httpBasic(basic -> basic.disable());
 
 		http.authorizeHttpRequests(auth -> auth
-			.requestMatchers("/auth/login", "/", "/user/join", "/auth/refresh", "/auth/logout", "/test").permitAll()
-			.anyRequest().authenticated());
+			.requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/", "/test")
+			.permitAll()
+			.anyRequest()
+			.authenticated());
 
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		return http.build();

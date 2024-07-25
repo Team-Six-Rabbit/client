@@ -32,12 +32,6 @@ public class UserService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final JwtUtil jwtUtil;
 
-	/*
-	ResponseEntity
-	.status(HttpStatus.OK)
-	.body(new APIResponseDto<>("success", "JOIN SUCCESS", user));
-	 */
-
 	public Map<String, Object> login(LoginRequest loginRequest, HttpServletResponse response) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("response", response);
@@ -68,7 +62,6 @@ public class UserService {
 
 		result.put("responseEntity", ResponseEntity.ok(new APIResponseDto<>("success", "Login Successful", null)));
 		result.put("response", response);
-		// 쿠키 설정 추가 구현 필요
 		return result;
 	}
 
