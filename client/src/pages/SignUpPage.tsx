@@ -1,25 +1,51 @@
+import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
+import { join } from "@/services/userAuthService";
+import { JoinRequest } from "@/types/api";
+import { ChangeEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 function SignUpPage() {
+	const navigator = useNavigate();
+	const [formValues, setFormValues] = useState<JoinRequest>({
+		email: "",
+		password: "",
+		nickname: "",
+	});
+	const [passwordConfirm, setPasswordConfirm] = useState<string>("");
+
+	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = event.target;
+		setFormValues({
+			...formValues,
+			[name]: value,
+		});
+	};
+
+	const handlePasswordConfirmChange = (
+		event: ChangeEvent<HTMLInputElement>,
+	) => {
+		const { value } = event.target;
+		setPasswordConfirm(value);
+
+		// TODO: 비밀번호와 일치 여부 표시하기
+	};
+
+	const doJoin = async () => {
+		try {
+			// TODO: 비밀번호 규칙 검사
+			await join(formValues);
+			navigator("/");
+		} catch (err) {
+			console.error("회원가입 실패"); // TODO: 회원가입 실패 시 처리
+		}
+	};
+
 	return (
 		<div className="flex justify-center items-center h-screen bg-white">
 			<div
 				className="bg-white p-8 rounded-3xl shadow-lg scale-100"
 				style={{ border: "4px solid black" }}
 			>
-				<style>
-					{`
-          input:focus {
-            outline: none;
-            border-color: #F66C23;
-            box-shadow: 0 0 0 3px rgba(246, 108, 35, 0.3);
-          }
-					a:hover {
-						color: #F66C23;
-					}
-					button:hover{
-						background-color: #F66C23;
-					}	
-        `}
-				</style>
 				<h1
 					className="text-center text-white text-5xl mb-4"
 					style={{
@@ -30,64 +56,50 @@ function SignUpPage() {
 					회원가입
 				</h1>
 				<form>
-					<div className="mb-4">
-						<label htmlFor="email" className="block text-black mb-2">
-							이메일
-							<input
-								id="email"
-								type="email"
-								placeholder="이메일을 입력해주세요."
-								className="w-full p-2 border-4 border-black rounded-xl"
-							/>
-						</label>
-					</div>
-					<div className="mb-4">
-						<label htmlFor="nickname" className="block text-black mb-2">
-							닉네임
-							<input
-								id="nickname"
-								type="text"
-								placeholder="닉네임을 입력해주세요."
-								className="w-full p-2 border-4 border-black rounded-xl"
-							/>
-						</label>
-					</div>
-					<div className="mb-4">
-						<label htmlFor="password" className="block text-black mb-2">
-							비밀번호
-							<input
-								id="password"
-								type="password"
-								placeholder="6~20자/ 영문 소문자, 숫자, 특수문자 중 2개"
-								className="w-full p-2 border-4 border-black rounded-xl"
-							/>
-						</label>
-					</div>
-					<div className="mb-4">
-						<label htmlFor="confirm-password" className="block text-black mb-2">
-							비밀번호 확인
-							<input
-								id="confirm-password"
-								type="password"
-								placeholder="비밀번호 확인"
-								className="w-full p-2 border-4 border-black rounded-xl"
-							/>
-						</label>
-					</div>
-					<button
-						type="submit"
-						className="w-full h-16 p-2 bg-black text-white text-2xl rounded-2xl mt-4"
-					>
-						확인
-					</button>
+					<AuthInput
+						label="이메일"
+						type="email"
+						name="email"
+						value={formValues.email}
+						onChange={handleInputChange}
+						placeholder="이메일을 입력해주세요."
+					/>
+					<AuthInput
+						label="닉네임"
+						type="text"
+						name="nickname"
+						value={formValues.nickname}
+						onChange={handleInputChange}
+						placeholder="닉네임을 입력해주세요."
+					/>
+					<AuthInput
+						label="비밀번호"
+						type="password"
+						name="password"
+						value={formValues.password}
+						onChange={handleInputChange}
+						placeholder="6~20자/ 영문 소문자, 숫자, 특수문자 중 2개"
+					/>
+					<AuthInput
+						label="비밀번호 확인"
+						type="password"
+						name="confirm-password"
+						value={passwordConfirm}
+						onChange={handlePasswordConfirmChange}
+						placeholder="비밀번호 확인"
+					/>
+					<AuthSubmitBtn text="확인" onClick={doJoin} className="h-16" />
 				</form>
 				<div className="flex justify-between mt-4">
-					<a href="/#" className="text-black">
-						#회원가입
-					</a>
-					<a href="/#" className="text-black">
+					<Link
+						to="/login"
+						className="text-black hover:color hover:text-[#F66C23]"
+					>
+						#로그인
+					</Link>
+					<Link to="/" className="text-black hover:color hover:text-[#F66C23]">
 						#홈으로 이동
-					</a>
+					</Link>
 				</div>
 			</div>
 		</div>
