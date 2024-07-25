@@ -1,7 +1,6 @@
-/* eslint-disable prettier/prettier */
-// src/components/ChatBox.tsx
 import React, { useState } from "react";
 import "@/assets/styles/scrollbar.css";
+import { RiCornerDownLeftLine } from "react-icons/ri";
 
 interface ChatMessageProps {
 	message: string;
@@ -39,6 +38,7 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
 				placeholder="Type your message..."
 				className="flex-1 px-2 py-1 outline-none"
 			/>
+			<RiCornerDownLeftLine className="h-full w-6" />
 		</div>
 	);
 }
