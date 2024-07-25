@@ -3,11 +3,7 @@ import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
 import LiveCard from "@/components/Board/firework/LiveCard";
 import { CardType } from "@/types/Board/liveBoardCard";
-import {
-	categories as originalCategories,
-	sampleCards,
-} from "@/constant/boardCategory";
-import { reorderCategories } from "@/utils/reorderCategories";
+import { categories, sampleCards } from "@/constant/boardCategory";
 
 function LiveBoardPage() {
 	const [selectedCategory, setSelectedCategory] = useState<string>("전체");
@@ -29,8 +25,6 @@ function LiveBoardPage() {
 			sampleCards.filter((card) => card.status === selectedStatus),
 		);
 	}, [selectedStatus]);
-
-	const categories = reorderCategories(originalCategories);
 
 	return (
 		<div>
