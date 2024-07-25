@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.user.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -28,8 +30,6 @@ public class UserService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final JwtUtil jwtUtil;
 
-	private String accessToken;
-	private String refreshToken;
 	/*
 	ResponseEntity
 	.status(HttpStatus.OK)
@@ -55,13 +55,11 @@ public class UserService {
 			.build();
 
 		userTokenRepository.save(userToken);
-		// user.setAccess_token(userToken.getAccessToken()); // db refresh 토큰 수정하는 로직으로 바꾸기
+		Map<String, Object> map = new HashMap<>();
+		map.put("token", userToken);
 
 		// 쿠키 설정 추가 구현 필요
-		accessToken = userToken.getAccessToken();
-		refreshToken = userToken.getRefreshToken();
-
-		return ResponseEntity.ok(new APIResponseDto<>("success", "Login Successful", null));
+		return ResponseEntity.ok(new APIResponseDto<>("success", "Login Successful", map));
 	}
 
 	public ResponseEntity<?> join(JoinRequest joinRequest) {

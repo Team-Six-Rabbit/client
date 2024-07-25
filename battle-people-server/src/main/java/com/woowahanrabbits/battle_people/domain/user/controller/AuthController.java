@@ -28,8 +28,9 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-		response.addCookie(createCookie("access", userService.getAccessToken(), "/"));
-		response.addCookie(createCookie("refresh", userService.getRefreshToken(), "/auth/refresh"));
+		// response.addCookie(createCookie("access", userService.getAccessToken(), "/"));
+		// response.addCookie(createCookie("refresh", userService.getRefreshToken(), "/auth/refresh"));
+		// System.out.println(userService.getAccessToken() + "--------------------------------");
 		return userService.login(loginRequest);
 	}
 
