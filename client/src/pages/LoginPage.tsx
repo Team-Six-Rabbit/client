@@ -66,7 +66,10 @@ function LoginPage() {
 				<AuthSubmitBtn text="로그인" onClick={doLogin} />
 				<GoogleLoginButton />
 				<div className="flex justify-between mt-4">
-					<Link to="/" className="text-black hover:color hover:text-[#F66C23]">
+					<Link
+						to="/join"
+						className="text-black hover:color hover:text-[#F66C23]"
+					>
 						#회원가입
 					</Link>
 					<Link to="/" className="text-black hover:text-[#F66C23]">
