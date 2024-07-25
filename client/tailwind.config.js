@@ -22,10 +22,20 @@ export default {
 				"8/9": "88.888889%",
 				"15/16": "93.75%",
 			},
-			clipPath: {
-				trapezoid: "polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)",
-			},
 		},
 	},
-	plugins: [require("tailwind-scrollbar-hide")],
+	plugins: [
+		require("tailwind-scrollbar-hide"),
+		function ({ addUtilities }) {
+			const newUtilities = {
+				".clip-path-left": {
+					clipPath: "polygon(0 0, 100% 0, 82% 100%, 0 100%)",
+				},
+				".clip-path-right": {
+					clipPath: "polygon(18% 0, 100% 0, 100% 100%, 0 100%)",
+				},
+			};
+			addUtilities(newUtilities);
+		},
+	],
 };
