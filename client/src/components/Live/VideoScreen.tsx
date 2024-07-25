@@ -53,7 +53,7 @@ function VideoPlayerRight({ userRank, userName, videoSrc }: VideoPlayerProps) {
 
 function VideoScreen() {
 	return (
-		<div className="relative h-116 w-3/4 me-1">
+		<div className="relative h-116 w-full me-1">
 			<div className="h-full w-full bg-[url('@/assets/images/LivePlayers.png')] bg-contain bg-center bg-no-repeat flex justify-center">
 				<VideoPlayerLeft
 					userRank="육두품"
