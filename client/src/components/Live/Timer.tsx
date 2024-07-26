@@ -1,5 +1,5 @@
 // src/Timer.tsx
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface TimerProps {
 	duration: number; // 타이머의 전체 시간(초)
