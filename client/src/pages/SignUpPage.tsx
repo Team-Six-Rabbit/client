@@ -88,7 +88,7 @@ function SignUpPage() {
 						onChange={handlePasswordConfirmChange}
 						placeholder="비밀번호 확인"
 					/>
-					<AuthSubmitBtn text="확인" onClick={doJoin} className="h-16" />
+					<AuthSubmitBtn text="확인" onClick={doJoin} />
 				</form>
 				<div className="flex justify-between mt-4">
 					<Link
