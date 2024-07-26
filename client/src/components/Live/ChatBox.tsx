@@ -62,7 +62,9 @@ export function SpeechRequestList() {
 			{isOpen && (
 				<div className="absolute top-full left-0 w-full bg-white border-solid border-2 border-black rounded-lg shadow-lg z-10 h-40 overflow-y-auto custom-scrollbar">
 					<div className="p-2 border-b-2 border-gray-300">싸움꾼[천민]</div>
-					<div className="p-2 border-b-2 border-gray-300">시비전문가[육두품]</div>
+					<div className="p-2 border-b-2 border-gray-300">
+						시비전문가[육두품]
+					</div>
 					<div className="p-2">방구석판사[진골]</div>
 					<div className="p-2">방구석판사[진골]</div>
 					<div className="p-2">방구석판사[진골]</div>
