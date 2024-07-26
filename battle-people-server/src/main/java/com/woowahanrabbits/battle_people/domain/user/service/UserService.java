@@ -17,8 +17,8 @@ import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
+import com.woowahanrabbits.battle_people.util.HttpUtils;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -57,11 +57,11 @@ public class UserService {
 			.user(user)
 			.build();
 
-		user.setAccess_token(access);
+		user.setAccessToken(access);
 		userRepository.save(user);
 		userTokenRepository.save(userToken);
-		response.addCookie(createCookie("access", userToken.getAccessToken(), "/"));
-		response.addCookie(createCookie("refresh", userToken.getRefreshToken(), "/auth/refresh"));
+		response.addCookie(HttpUtils.createCookie("access", userToken.getAccessToken(), "/"));
+		response.addCookie(HttpUtils.createCookie("refresh", userToken.getRefreshToken(), "/auth/refresh"));
 
 		result.put("responseEntity", ResponseEntity.ok(new APIResponseDto<>("success", "Login Successful", null)));
 		result.put("response", response);
@@ -90,6 +90,7 @@ public class UserService {
 			.password(password)
 			.nickname(nickname)
 			.rating(0)
+			.role("ROLE_USER")
 			.build();
 
 		userRepository.save(user);
@@ -99,12 +100,4 @@ public class UserService {
 			.body(new APIResponseDto<>("success", "User joined", userRepository.getUserIdByEmail(email)));
 	}
 
-	private Cookie createCookie(String name, String value, String path) {
-		Cookie cookie = new Cookie(name, value);
-		cookie.setHttpOnly(true);
-		cookie.setSecure(true);
-		cookie.setPath(path);
-		cookie.setMaxAge(60 * 60);  // 1시간
-		return cookie;
-	}
 }

@@ -9,8 +9,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
+import com.woowahanrabbits.battle_people.domain.user.jwt.JwtFilter;
+import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
+import com.woowahanrabbits.battle_people.domain.user.service.PrincipalDetailsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final UserRepository userRepository;
+	private final JwtUtil jwtUtil;
+	private final PrincipalDetailsService principalDetailsService;
 
 	@Bean
 	public AuthenticationManager authenticationManager() throws Exception {
@@ -27,7 +33,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder() {
+	public BCryptPasswordEncoder beCryptPasswordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
@@ -43,6 +49,8 @@ public class SecurityConfig {
 			.anyRequest()
 			.authenticated());
 
+		http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService),
+			UsernamePasswordAuthenticationFilter.class);
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		return http.build();
 	}

@@ -42,4 +42,6 @@ public class User {
 	private String accessToken;
 	private LocalDate penaltyStartDate;
 	private LocalDate penaltyEndDate;
+
+	private String role; // ROLE_USER, ROLE_ADMIN
 }
