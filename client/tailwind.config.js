@@ -20,14 +20,14 @@ export default {
 				"192": "48rem", // 768px
 				"224": "56rem", // 896px
 				"8/9": "88.888889%",
-				"15/16": "93.75%",
+				chatBox: "97%",
 			},
 		},
 	},
 	plugins: [
 		require("tailwind-scrollbar-hide"),
 		function ({ addUtilities }) {
-			const newUtilities = {
+			const videoCrop = {
 				".clip-path-left": {
 					clipPath: "polygon(0 0, 100% 0, 82% 100%, 0 100%)",
 				},
@@ -35,7 +35,7 @@ export default {
 					clipPath: "polygon(18% 0, 100% 0, 100% 100%, 0 100%)",
 				},
 			};
-			addUtilities(newUtilities);
+			addUtilities(videoCrop);
 		},
 	],
 };
