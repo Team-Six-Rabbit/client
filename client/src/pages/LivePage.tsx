@@ -3,6 +3,7 @@ import ChatBox from "@/components/Live/ChatBox";
 import VideoScreen from "@/components/Live/VideoScreen";
 import Timer from "@/components/Live/Timer";
 import LiveVote from "@/components/Live/LiveVote";
+import ItemBox from "@/components/Live/ItemBox";
 
 function LivePage() {
 	return (
@@ -16,6 +17,7 @@ function LivePage() {
 						optionB="마라탕을 먹자"
 					/>
 					<VideoScreen />
+					<ItemBox />
 				</div>
 				<ChatBox />
 			</div>
