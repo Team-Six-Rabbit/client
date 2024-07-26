@@ -1,1 +1,0 @@
-npx --prefix client lint-staged && npm --prefix client run test

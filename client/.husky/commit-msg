@@ -1,0 +1,1 @@
+cd client && npx --no-install commitlint -g client/commitlint.config.cjs --edit "$1"
