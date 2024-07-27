@@ -3,7 +3,7 @@ import { DetailUserInfo } from "@/types/user";
 import { http, HttpResponse, PathParams } from "msw";
 
 export const handlers = [
-	http.post<PathParams, LoginRequest, undefined>(
+	http.post<PathParams, LoginRequest, ApiResponse<DetailUserInfo | string>>(
 		"/auth/login",
 		async ({ request }) => {
 			const { email } = await request.json();
@@ -25,7 +25,7 @@ export const handlers = [
 					],
 				});
 			}
-			return HttpResponse.json<ApiResponse<string>>(
+			return HttpResponse.json(
 				{
 					code: "fail",
 					data: "올바르지 않은 아이디/비밀번호",
