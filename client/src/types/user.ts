@@ -1,11 +1,11 @@
 export interface BasicUserInfo {
+	id: number;
 	nickname: string;
 	imgUrl: string;
 	rating: number;
 }
 
 export interface DetailUserInfo extends BasicUserInfo {
-	id: number;
 	email: string;
 	regDate?: Date;
 }

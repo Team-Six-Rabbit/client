@@ -1,13 +1,19 @@
-import { BattleResponse, PageableResponse } from "@/types/api";
+import {
+	BalanceGameResponse,
+	BattleResponse,
+	PageableResponse,
+} from "@/types/api";
 import { LoremIpsum } from "lorem-ipsum";
 import { Battle } from "@/types/battle";
 import { Opinion } from "@/types/vote";
 import { BasicUserInfo } from "@/types/user";
+import { Comment } from "@/types/balancegame";
 
 const lorem = new LoremIpsum();
 
 export const generateBasicUser = (): BasicUserInfo => {
 	return {
+		id: Math.floor(Math.random() * 3000),
 		imgUrl: "img/default",
 		nickname: lorem.generateWords(2),
 		rating: Math.floor(Math.random() * 1000),
@@ -43,11 +49,13 @@ export const generatePageableResponse = <T>(
 const generateBattle = (id: number, category?: number): Battle => ({
 	id,
 	registUser: {
+		id: Math.floor(Math.random() * 3000),
 		nickname: lorem.generateWords(2),
 		imgUrl: lorem.generateWords(1),
 		rating: 100,
 	},
 	oppositeUser: {
+		id: Math.floor(Math.random() * 3000),
 		nickname: lorem.generateWords(2),
 		imgUrl: lorem.generateWords(1),
 		rating: 100,
@@ -72,8 +80,8 @@ const generateBattle = (id: number, category?: number): Battle => ({
 const generateOpinion = (index: number): Opinion => ({
 	index,
 	opinion: lorem.generateSentences(1),
-	userId: Math.random() > 0.5 ? index : undefined,
-	userNickname: Math.random() > 0.5 ? lorem.generateWords(2) : undefined,
+	userId: Math.floor(Math.random() * 1000),
+	userNickname: lorem.generateWords(2),
 	preCount: Math.floor(Math.random() * 100),
 	finalCount: Math.floor(Math.random() * 100),
 	isWinner: Math.random() > 0.5,
@@ -86,3 +94,28 @@ export const generateBattleResponse = (
 	battleBoard: generateBattle(id, category),
 	opinionList: Array.from({ length: 2 }, (_, index) => generateOpinion(index)),
 });
+
+export const generateBalanceGameResponse = (
+	category: number,
+	status: number,
+): BalanceGameResponse => ({
+	opinions: Array.from({ length: 2 }, (_, index) => generateOpinion(index)),
+	currentState: status,
+	userVote: Math.random() > 0.5 ? 0 : undefined,
+	title: "",
+	startDate: "",
+	endDate: "",
+	category,
+});
+
+export const generateComment = (battleBoardId: number): Comment => {
+	return {
+		battleBoardId,
+		id: Math.floor(Math.random() * 1000),
+		content: lorem.generateSentences(3),
+		user: generateBasicUser(),
+		registDate: new Date(
+			Date.now() - Math.floor(Math.random() * 10000),
+		).toISOString(),
+	};
+};
