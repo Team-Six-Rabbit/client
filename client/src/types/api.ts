@@ -73,3 +73,28 @@ export interface ApplyBattleRequest {
 	id: number;
 	selectedOpinion: number;
 }
+
+export interface CreateBalanceGameRequest extends Vote {
+	detail: string;
+	opinions: string[];
+}
+
+export interface SearchBalanceGameRequestParam extends PageableParm {
+	category: number;
+	status: number;
+}
+
+export interface BalanceGameResponse extends Vote {
+	opinions: Opinion[];
+	currentState: number;
+	userVote?: number;
+}
+
+export interface CreateCommentRequest {
+	battleBoardId: string;
+	content: string;
+}
+
+export interface GetBalanceGameCommentRequestParam extends PageableParm {
+	id: number;
+}
