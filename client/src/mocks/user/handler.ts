@@ -1,5 +1,5 @@
 import { JoinRequest, ApiResponse } from "@/types/api";
-import { User } from "@/types/user";
+import { DetailUserInfo } from "@/types/user";
 import { http, HttpResponse, PathParams } from "msw";
 
 export const handlers = [
@@ -21,9 +21,10 @@ export const handlers = [
 		});
 	}),
 	http.get("/user/profile", () => {
-		const body: ApiResponse<User> = {
+		const body: ApiResponse<DetailUserInfo> = {
 			code: "success",
 			data: {
+				id: 1,
 				email: "test@email.com",
 				nickname: "testUser",
 				rating: 99999,
@@ -35,9 +36,10 @@ export const handlers = [
 	http.get<PathParams>("/user/profile/:userId", async ({ params }) => {
 		const { userId } = params;
 		if (userId === "1") {
-			const body: ApiResponse<User> = {
+			const body: ApiResponse<DetailUserInfo> = {
 				code: "success",
 				data: {
+					id: 1,
 					email: "test1.email.com",
 					nickname: "testUser1",
 					rating: 100,
@@ -47,9 +49,10 @@ export const handlers = [
 			return HttpResponse.json(body);
 		}
 		if (userId === "2") {
-			const body: ApiResponse<User> = {
+			const body: ApiResponse<DetailUserInfo> = {
 				code: "success",
 				data: {
+					id: 2,
 					email: "test2.email.com",
 					nickname: "testUser2",
 					rating: 200,

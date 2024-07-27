@@ -1,5 +1,5 @@
 import { LoginRequest, ApiResponse } from "@/types/api";
-import { User } from "@/types/user";
+import { DetailUserInfo } from "@/types/user";
 import { http, HttpResponse, PathParams } from "msw";
 
 export const handlers = [
@@ -8,9 +8,10 @@ export const handlers = [
 		async ({ request }) => {
 			const { email } = await request.json();
 			if (email === "test@email.com") {
-				const body: ApiResponse<User> = {
+				const body: ApiResponse<DetailUserInfo> = {
 					code: "success",
 					data: {
+						id: 1,
 						email: "test@email.com",
 						nickname: "testUser",
 						rating: 99999,
