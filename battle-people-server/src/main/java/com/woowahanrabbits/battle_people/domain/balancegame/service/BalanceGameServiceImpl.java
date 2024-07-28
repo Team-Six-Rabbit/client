@@ -94,7 +94,7 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 			for (VoteOpinion vote : voteOpinions) {
 				VoteOpinionDto voteOpinionDto = new VoteOpinionDto(vote);
-				voteOpinionDto.setVoteCount(
+				voteOpinionDto.setFinalCount(
 					userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(voteInfoId, vote.getVoteOpinionIndex())
 						.size());
 				voteOpinionDtos.add(voteOpinionDto);
