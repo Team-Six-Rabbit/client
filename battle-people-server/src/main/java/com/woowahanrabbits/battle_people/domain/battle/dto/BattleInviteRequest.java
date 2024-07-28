@@ -25,6 +25,7 @@ public class BattleInviteRequest {
 	private Integer category;
 
 	@NotNull
+	@Min(1)
 	private Long oppositeUserId;
 	@Size(min = 2, max = 2)
 	private List<String> opinions;
