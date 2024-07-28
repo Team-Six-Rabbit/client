@@ -45,6 +45,5 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 		@Param("category") String category,
 		Pageable pageable
 	);
-
 }
 

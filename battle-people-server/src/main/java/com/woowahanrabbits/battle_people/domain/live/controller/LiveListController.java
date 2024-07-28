@@ -104,5 +104,4 @@ public class LiveListController {
 				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 	}
-
 }
