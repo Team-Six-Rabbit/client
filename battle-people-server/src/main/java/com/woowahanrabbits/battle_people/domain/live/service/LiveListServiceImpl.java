@@ -1,9 +1,13 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
+import com.woowahanrabbits.battle_people.domain.live.dto.LiveEndDetailDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.LiveListResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.infrastructure.LiveApplyUserRepository;
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -56,6 +60,46 @@ public class LiveListServiceImpl implements LiveListService{
         }
     }
 
+    @Override
+    public LiveEndDetailDto getEndLiveSummary(Long battleId) {
+        Optional<BattleBoard> optionalBattleBoard = battleBoardRepository.findById(battleId);
+        if (optionalBattleBoard.isPresent()) {
+            BattleBoard battleBoard = optionalBattleBoard.get();
+
+            return convertToEndDetailDto(battleBoard);
+        } else {
+            throw new EntityNotFoundException("BattleBoard not found with id " + battleId);
+        }
+    }
+
+
+    private LiveEndDetailDto convertToEndDetailDto(BattleBoard battleBoard){
+        List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId());
+        VoteInfo voteInfo = battleBoard.getVoteInfo();
+
+        if(voteOpinions.size() < 2)
+            return null;
+
+        User registUser = battleBoard.getRegistUser();
+        User oppositeUser = battleBoard.getOppositeUser();
+
+        int registPreCount = voteOpinions.get(0).getPreCount();
+        int registFinalCount = voteOpinions.get(0).getFinalCount();
+        int totalPre = registPreCount +  voteOpinions.get(1).getPreCount();
+        int totalFinal = registFinalCount +  voteOpinions.get(1).getFinalCount();
+
+        return new LiveEndDetailDto(
+                battleBoard.getId(),
+                voteInfo.getTitle(),
+                new LiveEndDetailDto.BroadcastUser(registUser.getId(), registUser.getNickname(), voteOpinions.get(0).getOpinion()),
+                new LiveEndDetailDto.BroadcastUser(oppositeUser.getId(), oppositeUser.getNickname(), voteOpinions.get(1).getOpinion()),
+                new LiveEndDetailDto.VoteResult(100 * registPreCount / totalPre, 100 - 100 * registPreCount / totalPre),
+                new LiveEndDetailDto.VoteResult(100 * registFinalCount / totalFinal, 100 - 100 * registFinalCount / totalFinal),
+                voteInfo.getCategory(),
+                battleBoard.getImageUrl(),
+                battleBoard.getDetail()
+        );
+    }
 
     private LiveListResponseDto convertToDto(BattleBoard battleBoard) {
         List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId());

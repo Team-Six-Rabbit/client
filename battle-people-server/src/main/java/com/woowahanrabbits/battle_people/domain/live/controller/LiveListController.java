@@ -2,11 +2,11 @@ package com.woowahanrabbits.battle_people.domain.live.controller;
 
 
 import com.woowahanrabbits.battle_people.domain.API.dto.APIResponseDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.LiveEndDetailDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.LiveListResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.service.LiveListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -66,11 +66,22 @@ public class LiveListController {
     }
 
 
-    @GetMapping("/detail/{battle_id}")
+    @GetMapping("/wait/detail/{battle_id}")
     public ResponseEntity<APIResponseDto<LiveListResponseDto>> getWaitLiveInfo(@PathVariable("battle_id") Long battleId){
 
         try{
             return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "",  liveListService.getLiveInfo(battleId)));
+
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+        }
+    }
+
+    @GetMapping("/end/detail/{battle_id}")
+    public ResponseEntity<APIResponseDto<LiveEndDetailDto>> getEndLiveInfo(@PathVariable("battle_id") Long battleId){
+
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "",  liveListService.getEndLiveSummary(battleId)));
 
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));

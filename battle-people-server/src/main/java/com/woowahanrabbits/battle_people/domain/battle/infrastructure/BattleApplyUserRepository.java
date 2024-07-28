@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.battle.infrastructure;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,5 +17,6 @@ public interface BattleApplyUserRepository
 	@Query("SELECT COUNT(ba) FROM BattleApplyUser ba WHERE ba.battleBoard.id = :battleBoardId")
 	int countByBattleBoardId(@Param("battleBoardId") Long battleBoardId);
 
-}
+	List<BattleApplyUser> findByBattleBoard_IdAndSelectedOpinion(Long battleBoardId, int selectedOpinion);
 
+}
