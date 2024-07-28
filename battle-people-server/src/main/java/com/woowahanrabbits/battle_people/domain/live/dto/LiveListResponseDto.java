@@ -22,7 +22,7 @@ public class LiveListResponseDto {
 	private Date endDate;
 	private int currentPeopleCount;
 
-	private String category;
+	private int category;
 	private String imageUri;
 	private String battleRule;
 	private String summary;

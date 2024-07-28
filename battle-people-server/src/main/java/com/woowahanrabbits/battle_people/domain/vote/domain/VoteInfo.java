@@ -31,4 +31,5 @@ public class VoteInfo {
 	@Setter
 	private int currentState;
 	private String detail;
+
 }

@@ -54,6 +54,7 @@ public class BattleBoard {
 	private String imageUrl;
 	private String liveUri;
 	private boolean isDeleted;
+	private String detail;
 
 	@OneToOne
 	@JoinColumn(name = "room_id")
