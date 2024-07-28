@@ -40,8 +40,8 @@ public class BattleServiceImpl implements BattleService {
 		List<BattleReturnDto> newList = new ArrayList<>();
 		for (BattleBoard battleBoard : page) {
 			BattleReturnDto battleReturnDto = new BattleReturnDto();
-			battleReturnDto.setBattleBoard(battleBoard);
-			battleReturnDto.setOpinionList(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
+			battleReturnDto.setBattle(battleBoard);
+			battleReturnDto.setOpinions(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
 			newList.add(battleReturnDto);
 		}
 		// System.out.println(page.toList().toString());
@@ -62,8 +62,8 @@ public class BattleServiceImpl implements BattleService {
 		for (BattleBoard battleBoard : list) {
 
 			BattleReturnDto battleReturnDto = new BattleReturnDto();
-			battleReturnDto.setBattleBoard(battleBoard);
-			battleReturnDto.setOpinionList(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
+			battleReturnDto.setBattle(battleBoard);
+			battleReturnDto.setOpinions(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
 			newList.add(battleReturnDto);
 		}
 		return new PageImpl<>(newList, pageable, list.size());
@@ -82,7 +82,7 @@ public class BattleServiceImpl implements BattleService {
 	public void addBattleApplyUser(BattleApplyDto battleApplyDto) {
 		BattleApplyUser battleApplyUser = new BattleApplyUser();
 		BattleBoard battleBoard = new BattleBoard();
-		battleBoard.setId(battleApplyDto.getId());
+		battleBoard.setId(battleApplyDto.getBattleId());
 		battleApplyUser.setBattleBoard(battleBoard);
 		User user = new User();
 		user.setId(battleApplyDto.getUserId());

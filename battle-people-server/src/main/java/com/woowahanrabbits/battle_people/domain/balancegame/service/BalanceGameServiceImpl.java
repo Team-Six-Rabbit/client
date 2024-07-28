@@ -46,18 +46,18 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 	@Override
 	public void addBalanceGame(BattleReturnDto battleReturnDto) {
-		voteInfoRepository.save(battleReturnDto.getBattleBoard().getVoteInfo());
-		for (int i = 0; i < battleReturnDto.getOpinionList().size(); i++) {
-			VoteOpinion voteOpinion = battleReturnDto.getOpinionList().get(i);
-			voteOpinion.setVoteInfoId(battleReturnDto.getBattleBoard().getVoteInfo().getId());
+		voteInfoRepository.save(battleReturnDto.getBattle().getVoteInfo());
+		for (int i = 0; i < battleReturnDto.getOpinions().size(); i++) {
+			VoteOpinion voteOpinion = battleReturnDto.getOpinions().get(i);
+			voteOpinion.setVoteInfoId(battleReturnDto.getBattle().getVoteInfo().getId());
 			voteOpinion.setVoteOpinionIndex(i);
 			if (i == 0) {
-				voteOpinion.setUser(battleReturnDto.getBattleBoard().getRegistUser());
+				voteOpinion.setUser(battleReturnDto.getBattle().getRegistUser());
 			}
 			voteOpinionRepository.save(voteOpinion);
 		}
-		battleReturnDto.getBattleBoard().setCurrentState(4);
-		battleRepository.save(battleReturnDto.getBattleBoard());
+		battleReturnDto.getBattle().setCurrentState(4);
+		battleRepository.save(battleReturnDto.getBattle());
 	}
 
 	@Override
