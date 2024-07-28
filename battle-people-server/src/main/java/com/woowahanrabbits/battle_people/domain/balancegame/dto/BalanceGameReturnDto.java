@@ -1,4 +1,4 @@
-package com.woowahanrabbits.battle_people.domain.battle.dto;
+package com.woowahanrabbits.battle_people.domain.balancegame.dto;
 
 import java.util.Date;
 import java.util.List;

@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
-import com.woowahanrabbits.battle_people.domain.battle.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;

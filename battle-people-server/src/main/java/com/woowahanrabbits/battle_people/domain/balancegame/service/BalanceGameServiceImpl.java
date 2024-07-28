@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.balancegame.domain.BalanceGameBoardComment;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.infrastructure.BalanceGameRepository;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
-import com.woowahanrabbits.battle_people.domain.battle.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
