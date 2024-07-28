@@ -20,6 +20,7 @@ import lombok.ToString;
 @ToString
 @Builder
 public class VoteInfo {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
