@@ -66,10 +66,10 @@ const generateBattle = (id: number, category?: number): Battle => ({
 		startDate: new Date().toISOString(),
 		endDate: new Date(Date.now() + 86400000).toISOString(),
 		category: category || (Math.floor(Math.random() * 10) % 7) + 1,
+		detail: lorem.generateSentences(2),
 	},
 	minPeopleCount: 2,
 	maxPeopleCount: 10,
-	detail: lorem.generateSentences(2),
 	battleRule: lorem.generateSentences(1),
 	registDate: new Date().toISOString(),
 	currentState: Math.floor(Math.random() * 3),
@@ -91,8 +91,8 @@ export const generateBattleResponse = (
 	id: number,
 	category?: number,
 ): BattleResponse => ({
-	battleBoard: generateBattle(id, category),
-	opinionList: Array.from({ length: 2 }, (_, index) => generateOpinion(index)),
+	battle: generateBattle(id, category),
+	opinions: Array.from({ length: 2 }, (_, index) => generateOpinion(index)),
 });
 
 export const generateBalanceGameResponse = (
@@ -100,6 +100,7 @@ export const generateBalanceGameResponse = (
 	status: number,
 ): BalanceGameResponse => ({
 	opinions: Array.from({ length: 2 }, (_, index) => generateOpinion(index)),
+	detail: lorem.generateSentences(2),
 	currentState: status,
 	userVote: Math.random() > 0.5 ? 0 : undefined,
 	title: "",
@@ -110,7 +111,7 @@ export const generateBalanceGameResponse = (
 
 export const generateComment = (battleBoardId: number): Comment => {
 	return {
-		battleBoardId,
+		battleId: battleBoardId,
 		id: Math.floor(Math.random() * 1000),
 		content: lorem.generateSentences(3),
 		user: generateBasicUser(),

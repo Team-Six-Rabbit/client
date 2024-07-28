@@ -41,12 +41,11 @@ export interface PageableParm {
 	sort?: string;
 }
 
-export interface BattleInviteRequest {
-	voteInfo: Vote;
-	opinions: Opinion[];
+export interface BattleInviteRequest extends Vote {
+	oppositeUserId: number;
+	opinions: string[];
 	minPeopleCount: number;
 	maxPeopleCount: number;
-	detail: string;
 	battleRule: string;
 }
 
@@ -55,8 +54,8 @@ export interface BattleHistoryRequestParam extends PageableParm {
 }
 
 export interface BattleResponse {
-	battleBoard: Battle;
-	opinionList: Opinion[];
+	battle: Battle;
+	opinions: Opinion[];
 }
 
 export interface BattleInviteRespondRequest {
@@ -70,12 +69,11 @@ export interface SearchRecruitingBattleRequestParam extends PageableParm {
 }
 
 export interface ApplyBattleRequest {
-	id: number;
+	battleId: number;
 	selectedOpinion: number;
 }
 
 export interface CreateBalanceGameRequest extends Vote {
-	detail: string;
 	opinions: string[];
 }
 
@@ -91,10 +89,10 @@ export interface BalanceGameResponse extends Vote {
 }
 
 export interface CreateCommentRequest {
-	battleBoardId: string;
+	battleId: string;
 	content: string;
 }
 
 export interface GetBalanceGameCommentRequestParam extends PageableParm {
-	id: number;
+	voteId: number;
 }

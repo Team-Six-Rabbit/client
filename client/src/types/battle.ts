@@ -9,7 +9,6 @@ export interface Battle {
 
 	minPeopleCount: number;
 	maxPeopleCount: number;
-	detail: string;
 	battleRule: string;
 	registDate: string;
 	currentState: number;

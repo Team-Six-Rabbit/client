@@ -1,6 +1,7 @@
 export interface Vote {
 	id?: number;
 	title: string;
+	detail: string;
 	startDate: string;
 	endDate: string;
 	category: number;
