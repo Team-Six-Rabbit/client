@@ -1,17 +1,18 @@
+import { BasicUserInfo } from "./user";
+
 export interface Vote {
 	id?: number;
 	title: string;
-	detail: string;
-	startDate: string;
-	endDate: string;
+	detail?: string;
+	startDate: number;
+	endDate: number;
 	category: number;
 }
 
 export interface Opinion {
 	index: number;
 	opinion: string;
-	userId?: number;
-	userNickname?: string;
+	user?: BasicUserInfo;
 	preCount?: number;
 	finalCount?: number;
 	isWinner?: boolean;

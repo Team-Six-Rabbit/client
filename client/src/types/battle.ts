@@ -10,7 +10,7 @@ export interface Battle {
 	minPeopleCount: number;
 	maxPeopleCount: number;
 	battleRule: string;
-	registDate: string;
+	registDate: number;
 	currentState: number;
 	rejectionReason?: string;
 	imageUrl?: string;
