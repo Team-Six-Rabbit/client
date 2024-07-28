@@ -24,11 +24,14 @@ public class LiveListResponseDto {
 
     private String category;
     private String imageUri;
+    private String battleRule;
+    private String summary;
 
     @Data
     @AllArgsConstructor
     public static class BroadcastUser{
         long id;
+        String nickname;
         String opinion;
     }
 
