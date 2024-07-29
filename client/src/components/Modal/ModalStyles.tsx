@@ -113,6 +113,57 @@ export const SpeechBubble = styled.div`
 	}
 `;
 
+export const VoteResult = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+`;
+
+export const VoteColumn = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+`;
+
+export const ProgressBarContainer = styled.div`
+	width: 100%;
+	margin-bottom: 0px;
+	position: relative;
+	height: 24px;
+	border-radius: 12px;
+	overflow: hidden;
+	background-color: #f0f0f0;
+`;
+
+export const ProgressBar = styled.div<{ percentage: number; color: string }>`
+	width: ${({ percentage }) => percentage}%;
+	height: 24px;
+	background-color: ${({ color }) => color};
+	position: absolute;
+	top: 0;
+	left: 0;
+`;
+
+export const VoteRow = styled.div`
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	padding: 8px;
+`;
+
+export const VoteText = styled.p`
+	font-size: 1rem;
+`;
+
+export const VoteResultsContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex-grow: 1;
+`;
+
 export const VS = styled.div`
 	font-size: 2rem;
 	font-weight: bold;

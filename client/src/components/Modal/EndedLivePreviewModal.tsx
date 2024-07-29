@@ -1,6 +1,4 @@
 import React from "react";
-import styled from "styled-components";
-
 import {
 	ModalBackdrop,
 	ModalContent,
@@ -14,8 +12,15 @@ import {
 	Opponent,
 	OpponentImage,
 	SpeechBubble,
-	VS,
+	VoteResult,
+	VoteColumn,
+	ProgressBarContainer,
+	ProgressBar,
+	VoteRow,
+	VoteText,
+	VoteResultsContainer,
 } from "@/components/Modal/ModalStyles";
+import styled from "styled-components";
 
 interface EndedLivePreviewModalProps {
 	title: string;
@@ -73,7 +78,40 @@ function EndedLivePreviewModal({
 							<OpponentImage src="https://picsum.photos/400/400" alt="User A" />
 							<InfoTextSpan>{regist_user_id}</InfoTextSpan>
 						</Opponent>
-						<VS>VS</VS>
+						<VoteResultsContainer>
+							<VoteResult>
+								<VoteColumn>
+									<VoteText>사전 투표</VoteText>
+									<ProgressBarContainer>
+										<ProgressBar percentage={76} color="#FFC7C2" />
+										<ProgressBar
+											percentage={24}
+											color="#BDE3FF"
+											style={{ left: "76%" }}
+										/>
+									</ProgressBarContainer>
+									<VoteRow>
+										<VoteText>76%</VoteText>
+										<VoteText>24%</VoteText>
+									</VoteRow>
+								</VoteColumn>
+								<VoteColumn>
+									<VoteText>최종 투표</VoteText>
+									<ProgressBarContainer>
+										<ProgressBar percentage={24} color="#FFC7C2" />
+										<ProgressBar
+											percentage={76}
+											color="#BDE3FF"
+											style={{ left: "24%" }}
+										/>
+									</ProgressBarContainer>
+									<VoteRow>
+										<VoteText>24%</VoteText>
+										<VoteText>76%</VoteText>
+									</VoteRow>
+								</VoteColumn>
+							</VoteResult>
+						</VoteResultsContainer>
 						<Opponent>
 							<CustomSpeechBubble>
 								마라탕탕후루후루 마라탕탕후루후루
