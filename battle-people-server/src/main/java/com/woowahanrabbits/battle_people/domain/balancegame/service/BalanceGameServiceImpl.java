@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import com.woowahanrabbits.battle_people.domain.balancegame.domain.BalanceGameBoardComment;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameResponse;
-import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.infrastructure.BalanceGameRepository;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
@@ -140,22 +139,16 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 		return new PageImpl<>(dtoResults, pageable, dtoResults.size());
 	}
 
-	private BalanceGameReturnDto addToDto(Long battleId, String title, Date startDate, Date endDate, Integer categoryId,
-		int currentStatus) {
-		BalanceGameReturnDto dto = new BalanceGameReturnDto();
-		dto.setBattleId(battleId);
-		dto.setTitle(title);
-		dto.setStartDate(startDate);
-		dto.setEndDate(endDate);
-		dto.setCategory(categoryId);
-		dto.setCurrentState(currentStatus);
-
-		return dto;
-	}
-
 	@Override
-	public void deleteBalanceGame(Long id) {
-		battleRepository.deleteById(id);
+	public void deleteBalanceGame(Long id, User user) {
+		BattleBoard battleBoard = battleRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("Battle not found"));
+
+		if (battleBoard.getRegistUser().getId() != user.getId()) {
+			throw new RuntimeException("User not owned by this battle");
+		}
+
+		battleRepository.changeStatusById(id, 9);
 	}
 
 	@Override

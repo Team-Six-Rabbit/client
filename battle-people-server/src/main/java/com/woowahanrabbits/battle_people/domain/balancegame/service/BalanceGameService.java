@@ -15,7 +15,7 @@ public interface BalanceGameService {
 
 	Page<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user);
 
-	void deleteBalanceGame(Long id);
+	void deleteBalanceGame(Long id, User user);
 
 	Page<?> getCommentsByBattleId(Long id, int page, int totalPage);
 

@@ -77,7 +77,7 @@ public class BalanceGameController {
 		user.setId(userId);
 
 		try {
-			balanceGameService.deleteBalanceGame(id);
+			balanceGameService.deleteBalanceGame(id, user);
 			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
