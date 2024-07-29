@@ -1,6 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
-import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.live.dto.LiveEndDetailDto;
@@ -83,18 +82,16 @@ public class LiveListServiceImpl implements LiveListService{
         User registUser = battleBoard.getRegistUser();
         User oppositeUser = battleBoard.getOppositeUser();
 
-        int registPreCount = voteOpinions.get(0).getPreCount();
-        int registFinalCount = voteOpinions.get(0).getFinalCount();
-        int totalPre = registPreCount +  voteOpinions.get(1).getPreCount();
-        int totalFinal = registFinalCount +  voteOpinions.get(1).getFinalCount();
+        int registPrePercent = 100 * voteOpinions.get(0).getPreCount() / (voteOpinions.get(0).getPreCount() + voteOpinions.get(1).getPreCount());
+        int registFinalPercent = 100 * voteOpinions.get(0).getFinalCount() / (voteOpinions.get(0).getFinalCount() + voteOpinions.get(1).getFinalCount());
 
         return new LiveEndDetailDto(
                 battleBoard.getId(),
                 voteInfo.getTitle(),
-                new LiveEndDetailDto.BroadcastUser(registUser.getId(), registUser.getNickname(), voteOpinions.get(0).getOpinion()),
-                new LiveEndDetailDto.BroadcastUser(oppositeUser.getId(), oppositeUser.getNickname(), voteOpinions.get(1).getOpinion()),
-                new LiveEndDetailDto.VoteResult(100 * registPreCount / totalPre, 100 - 100 * registPreCount / totalPre),
-                new LiveEndDetailDto.VoteResult(100 * registFinalCount / totalFinal, 100 - 100 * registFinalCount / totalFinal),
+                new LiveEndDetailDto.BroadcastUser(registUser.getId(), registUser.getNickname(), registUser.getImg_url(), registUser.getRating(), voteOpinions.get(0).getOpinion()),
+                new LiveEndDetailDto.BroadcastUser(oppositeUser.getId(), oppositeUser.getNickname(), oppositeUser.getImg_url(), oppositeUser.getRating(), voteOpinions.get(1).getOpinion()),
+                new LiveEndDetailDto.VoteResult(registPrePercent, 100 - registPrePercent),
+                new LiveEndDetailDto.VoteResult(registFinalPercent, 100 - registFinalPercent),
                 voteInfo.getCategory(),
                 battleBoard.getImageUrl(),
                 battleBoard.getDetail()
@@ -107,12 +104,15 @@ public class LiveListServiceImpl implements LiveListService{
         if(voteOpinions.size() < 2)
             return null;
 
+        User registUser = battleBoard.getRegistUser();
+        User oppositeUser = battleBoard.getOppositeUser();
+
         return new LiveListResponseDto(
                 battleBoard.getId(),
                 battleBoard.getRoom().getRoomId(),
                 battleBoard.getVoteInfo().getTitle(),
-                new LiveListResponseDto.BroadcastUser(battleBoard.getRegistUser().getId(), battleBoard.getRegistUser().getNickname(), voteOpinions.get(0).getOpinion()),
-                new LiveListResponseDto.BroadcastUser(battleBoard.getOppositeUser().getId(), battleBoard.getOppositeUser().getNickname(),voteOpinions.get(1).getOpinion()),
+                new LiveListResponseDto.BroadcastUser(registUser.getId(), registUser.getNickname(), registUser.getImg_url(), registUser.getRating(), voteOpinions.get(0).getOpinion()),
+                new LiveListResponseDto.BroadcastUser(oppositeUser.getId(), oppositeUser.getNickname(), oppositeUser.getImg_url(), oppositeUser.getRating(),voteOpinions.get(1).getOpinion()),
                 battleBoard.getVoteInfo().getStartDate(),
                 battleBoard.getVoteInfo().getEndDate(),
                 liveApplyUserRepository.findAllByRoom_Id(battleBoard.getRoom().getId()).size(),

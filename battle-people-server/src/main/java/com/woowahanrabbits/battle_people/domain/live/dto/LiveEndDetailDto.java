@@ -18,7 +18,6 @@ public class LiveEndDetailDto {
     private VoteResult preResult;
     private VoteResult finalResult;
 
-
     private String category;
     private String imageUri;
     private String summary;
@@ -28,6 +27,8 @@ public class LiveEndDetailDto {
     public static class BroadcastUser{
         long id;
         String nickname;
+        String imgUrl;
+        int rating;
         String opinion;
     }
 

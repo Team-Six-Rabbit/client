@@ -32,6 +32,8 @@ public class LiveListResponseDto {
     public static class BroadcastUser{
         long id;
         String nickname;
+        String imgUrl;
+        int rating;
         String opinion;
     }
 
