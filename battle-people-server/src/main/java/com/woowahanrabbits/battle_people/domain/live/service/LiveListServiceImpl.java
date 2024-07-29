@@ -73,8 +73,11 @@ public class LiveListServiceImpl implements LiveListService{
 
 
     private LiveEndDetailDto convertToEndDetailDto(BattleBoard battleBoard){
-        List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId());
+        System.out.println(battleBoard.getVoteInfo().getId());
+        List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(battleBoard.getVoteInfo().getId());
         VoteInfo voteInfo = battleBoard.getVoteInfo();
+
+        System.out.println(voteOpinions);
 
         if(voteOpinions.size() < 2)
             return null;
@@ -99,7 +102,7 @@ public class LiveListServiceImpl implements LiveListService{
     }
 
     private LiveListResponseDto convertToDto(BattleBoard battleBoard) {
-        List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId());
+        List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(battleBoard.getVoteInfo().getId());
 
         if(voteOpinions.size() < 2)
             return null;

@@ -2,11 +2,9 @@ package com.woowahanrabbits.battle_people.domain.vote.domain;
 
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.Embeddable;
 
-@Data
-@AllArgsConstructor
+@Embeddable
 public class VoteOpinionId implements Serializable {
 	private int voteOpinionIndex;
 	private Long voteInfoId;

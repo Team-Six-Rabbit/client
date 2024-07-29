@@ -56,13 +56,13 @@ public class LiveListController {
             @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
             @RequestParam(value = "category", required = false, defaultValue = "") String category,
             @PageableDefault(page = 0, size = 10, sort = "maxPeopleCount") Pageable pageable){
-
-        try{
+//
+//        try{
             return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "",  liveListService.getEndLiveList(keyword, category, pageable).getContent()));
 
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
-        }
+//        } catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+//        }
     }
 
 
@@ -80,11 +80,11 @@ public class LiveListController {
     @GetMapping("/end/detail/{battle_id}")
     public ResponseEntity<APIResponseDto<LiveEndDetailDto>> getEndLiveInfo(@PathVariable("battle_id") Long battleId){
 
-        try{
+//        try{
             return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "",  liveListService.getEndLiveSummary(battleId)));
 
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
-        }
+//        } catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+//        }
     }
 }

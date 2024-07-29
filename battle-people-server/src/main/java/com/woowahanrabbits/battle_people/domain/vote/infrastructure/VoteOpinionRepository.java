@@ -10,5 +10,7 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinionId;
 
 @Repository
 public interface VoteOpinionRepository extends JpaRepository<VoteOpinion, VoteOpinionId> {
+	List<VoteOpinion> findAllByVoteInfoId(Long voteInfoId);
+
 	List<VoteOpinion> findByVoteInfoId(Long voteInfoId);
 }
