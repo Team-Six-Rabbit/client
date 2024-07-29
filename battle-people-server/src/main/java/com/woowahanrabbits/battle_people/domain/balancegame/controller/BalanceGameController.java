@@ -1,10 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.balancegame.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
-import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
-import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
+import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,9 +27,11 @@ import jakarta.validation.Valid;
 public class BalanceGameController {
 
 	private final BalanceGameService balanceGameService;
+	private final UserRepository userRepository;
 
-	public BalanceGameController(BalanceGameService balanceGameService) {
+	public BalanceGameController(BalanceGameService balanceGameService, UserRepository userRepository) {
 		this.balanceGameService = balanceGameService;
+		this.userRepository = userRepository;
 	}
 
 	@PostMapping("")
@@ -54,25 +50,18 @@ public class BalanceGameController {
 
 	@GetMapping("")
 	@Operation(summary = "[점화] 카테고리 별, 진행 상태 별 밸런스 게임 조회 ")
-	public ResponseEntity<ApiResponseDto<Map<String, Object>>> getBalanceGameByConditions(
+	public ResponseEntity<ApiResponseDto<?>> getBalanceGameByConditions(
 		@RequestParam(defaultValue = "") Integer category,
 		@RequestParam(defaultValue = "5") int status, @RequestParam int page,
 		@RequestParam int userId) {
-		User user = new User();
-		user.setId(userId);
+
+		User user = userRepository.findById((long)userId)
+			.orElseThrow();
+
 		try {
-			//페이지 내 밸런스게임 리스트
-			Page<BalanceGameReturnDto> list = balanceGameService.getBalanceGameByConditions(category, status, page,
-				user);
-			Map<String, Object> map = new HashMap<>();
-			map.put("page", list);
-
-			//유저가 투표한 내역
-			List<UserVoteOpinion> userVote = balanceGameService.getUserVotelist(user);
-			map.put("userVoteList", userVote);
-
-			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", map));
-
+			return ResponseEntity.status(HttpStatus.OK)
+				.body(new ApiResponseDto<>("success", "",
+					balanceGameService.getBalanceGameByConditions(category, status, page, user)));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(new ApiResponseDto<>("fail", "internal server error", null));

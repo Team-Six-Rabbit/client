@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.balancegame.domain.BalanceGameBoardComment;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameReturnDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.infrastructure.BalanceGameRepository;
@@ -82,24 +83,20 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	}
 
 	@Override
-	public Page<BalanceGameReturnDto> getBalanceGameByConditions(Integer category, int status, int page, User user) {
+	public Page<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user) {
 		Pageable pageable = PageRequest.of(page, 12);
 		List<Object[]> list = null;
+
 		//category가 있는지 체크
 		if (category == null) {
 			list = voteInfoRepository.findAllByStatus(status);
 		} else {
 			list = voteInfoRepository.findAllByCategoryAndStatus(category, status);
 		}
-		System.out.println(list.toString());
 
-		List<BalanceGameReturnDto> dtoResults = new ArrayList<>();
-		Long currentBattleId = null;
-		BalanceGameReturnDto currentDto = null;
-		List<VoteOpinionDto> currentOpinions = null;
+		List<BalanceGameResponse> dtoResults = new ArrayList<>();
 
 		for (Object[] result : list) {
-			BalanceGameReturnDto dto = new BalanceGameReturnDto();
 
 			Long battleId = ((Number)result[0]).longValue();
 			Long voteInfoId = ((Number)result[1]).longValue();
@@ -108,8 +105,18 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 			Date endDate = (Date)result[4];
 			Integer categoryId = ((Number)result[5]).intValue();
 			int currentStatus = ((Number)result[6]).intValue();
+			String detail = (String)result[7];
 
-			dto = addToDto(battleId, title, startDate, endDate, categoryId, currentStatus);
+			BalanceGameResponse dto = BalanceGameResponse.builder()
+				.id(battleId)
+				.title(title)
+				.detail(detail)
+				.startDate(startDate)
+				.endDate(endDate)
+				.category(categoryId)
+				.currentState(currentStatus)
+				.build();
+
 			List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
 			List<VoteOpinionDto> voteOpinionDtos = new ArrayList<>();
 
@@ -121,7 +128,6 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 				voteOpinionDtos.add(voteOpinionDto);
 			}
 			dto.setOpinions(voteOpinionDtos);
-			dto.setBattleId(battleId);
 
 			//유저 투표정보 확인
 			UserVoteOpinion uvo = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(), voteInfoId);
@@ -131,11 +137,7 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 			dtoResults.add(dto);
 		}
-		System.out.println(dtoResults.toString());
-
-		Page<BalanceGameReturnDto> pages = new PageImpl<>(dtoResults, pageable, dtoResults.size());
-
-		return pages;
+		return new PageImpl<>(dtoResults, pageable, dtoResults.size());
 	}
 
 	private BalanceGameReturnDto addToDto(Long battleId, String title, Date startDate, Date endDate, Integer categoryId,

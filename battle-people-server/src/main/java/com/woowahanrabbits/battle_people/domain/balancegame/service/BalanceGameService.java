@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
-import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameReturnDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
@@ -13,7 +13,7 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 public interface BalanceGameService {
 	void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, int userId);
 
-	Page<BalanceGameReturnDto> getBalanceGameByConditions(Integer category, int status, int page, User user);
+	Page<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user);
 
 	void deleteBalanceGame(Long id);
 

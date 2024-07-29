@@ -13,7 +13,7 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 
 	@Query(value = "select bb.id as battleId, vi.id as voteInfoId, vi.title as title, vi.start_date as startDate, "
-		+ "vi.end_date as endDate, vi.category as category, bb.current_state as currentState "
+		+ "vi.end_date as endDate, vi.category as category, bb.current_state as currentState, bb.detail as detail "
 		+ "from vote_info vi left join battle_board bb on bb.vote_info_id = vi.id "
 		+ "where bb.current_state = :status "
 		+ "order by vi.end_date desc, vi.id desc",
@@ -21,7 +21,7 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 	List<Object[]> findAllByStatus(@Param("status") int status);
 
 	@Query(value = "select bb.id as battleId, vi.id as voteInfoId, vi.title as title, vi.start_date as startDate, "
-		+ "vi.end_date as endDate, vi.category as category, bb.current_state as currentState "
+		+ "vi.end_date as endDate, vi.category as category, bb.current_state as currentState, bb.detail as detail "
 		+ "from vote_info vi left join battle_board bb on bb.vote_info_id = vi.id "
 		+ "WHERE bb.current_state = :status "
 		+ "AND vi.category = :category "
