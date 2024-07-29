@@ -93,7 +93,6 @@ public class LiveListServiceImpl implements LiveListService {
 			100 * voteOpinions.get(0).getFinalCount() / (voteOpinions.get(0).getFinalCount() + voteOpinions.get(1)
 				.getFinalCount());
 
-<<<<<<< HEAD
 		return new LiveEndDetailDto(
 			battleBoard.getId(),
 			voteInfo.getTitle(),
@@ -111,23 +110,6 @@ public class LiveListServiceImpl implements LiveListService {
 
 	private LiveListResponseDto convertToDto(BattleBoard battleBoard) {
 		List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(battleBoard.getVoteInfo().getId());
-=======
-        int registPrePercent = 100 * voteOpinions.get(0).getPreCount() / (voteOpinions.get(0).getPreCount() + voteOpinions.get(1).getPreCount());
-        int registFinalPercent = 100 * voteOpinions.get(0).getFinalCount() / (voteOpinions.get(0).getFinalCount() + voteOpinions.get(1).getFinalCount());
-
-        return new LiveEndDetailDto(
-                battleBoard.getId(),
-                voteInfo.getTitle(),
-                new LiveEndDetailDto.BroadcastUser(registUser.getId(), registUser.getNickname(), registUser.getImg_url(), registUser.getRating(), voteOpinions.get(0).getOpinion()),
-                new LiveEndDetailDto.BroadcastUser(oppositeUser.getId(), oppositeUser.getNickname(), oppositeUser.getImg_url(), oppositeUser.getRating(), voteOpinions.get(1).getOpinion()),
-                new LiveEndDetailDto.VoteResult(registPrePercent, 100 - registPrePercent),
-                new LiveEndDetailDto.VoteResult(registFinalPercent, 100 - registFinalPercent),
-                voteInfo.getCategory(),
-                battleBoard.getImageUrl(),
-                battleBoard.getDetail()
-        );
-    }
->>>>>>> 8cb6d8e ([Fix] Response Dto)
 
 		if (voteOpinions.size() < 2) {
 			return null;
@@ -136,7 +118,6 @@ public class LiveListServiceImpl implements LiveListService {
 		User registUser = battleBoard.getRegistUser();
 		User oppositeUser = battleBoard.getOppositeUser();
 
-<<<<<<< HEAD
 		return new LiveListResponseDto(
 			battleBoard.getId(),
 			battleBoard.getRoom().getRoomId(),
@@ -152,24 +133,6 @@ public class LiveListServiceImpl implements LiveListService {
 			battleBoard.getImageUrl(),
 			battleBoard.getBattleRule(),
 			battleBoard.getDetail()
-=======
-        User registUser = battleBoard.getRegistUser();
-        User oppositeUser = battleBoard.getOppositeUser();
-
-        return new LiveListResponseDto(
-                battleBoard.getId(),
-                battleBoard.getRoom().getRoomId(),
-                battleBoard.getVoteInfo().getTitle(),
-                new LiveListResponseDto.BroadcastUser(registUser.getId(), registUser.getNickname(), registUser.getImg_url(), registUser.getRating(), voteOpinions.get(0).getOpinion()),
-                new LiveListResponseDto.BroadcastUser(oppositeUser.getId(), oppositeUser.getNickname(), oppositeUser.getImg_url(), oppositeUser.getRating(),voteOpinions.get(1).getOpinion()),
-                battleBoard.getVoteInfo().getStartDate(),
-                battleBoard.getVoteInfo().getEndDate(),
-                liveApplyUserRepository.findAllByRoom_Id(battleBoard.getRoom().getId()).size(),
-                battleBoard.getVoteInfo().getCategory(),
-                battleBoard.getImageUrl(),
-                battleBoard.getBattleRule(),
-                battleBoard.getDetail()
->>>>>>> 8cb6d8e ([Fix] Response Dto)
 
 		);
 
