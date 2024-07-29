@@ -1,40 +1,40 @@
 package com.woowahanrabbits.battle_people.domain.live.dto;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class LiveListResponseDto {
-    private Long id;
-    private String roomId;
+	private Long id;
+	private String roomId;
 
-    private String title;
+	private String title;
 
-    private BroadcastUser registerUser;
-    private BroadcastUser oppositeUser;
+	private BroadcastUser registerUser;
+	private BroadcastUser oppositeUser;
 
-    private Date startDate;
-    private Date endDate;
-    private int currentPeopleCount;
+	private Date startDate;
+	private Date endDate;
+	private int currentPeopleCount;
 
-    private String category;
-    private String imageUri;
-    private String battleRule;
-    private String summary;
+	private String category;
+	private String imageUri;
+	private String battleRule;
+	private String summary;
 
-    @Data
-    @AllArgsConstructor
-    public static class BroadcastUser{
-        long id;
-        String nickname;
-        String imgUrl;
-        int rating;
-        String opinion;
-    }
+	@Data
+	@AllArgsConstructor
+	public static class BroadcastUser {
+		long id;
+		String nickname;
+		String imgUrl;
+		int rating;
+		String opinion;
+	}
 
 }

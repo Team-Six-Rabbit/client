@@ -8,9 +8,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ApiResponseDto<T> {
-
 	private String code;
+
 	private String msg;
+
 	private T data;
 
 }

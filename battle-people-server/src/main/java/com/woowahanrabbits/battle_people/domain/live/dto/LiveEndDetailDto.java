@@ -8,34 +8,34 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LiveEndDetailDto {
-    private Long id;
+	private Long id;
 
-    private String title;
+	private String title;
 
-    private BroadcastUser registerUser;
-    private BroadcastUser oppositeUser;
+	private BroadcastUser registerUser;
+	private BroadcastUser oppositeUser;
 
-    private VoteResult preResult;
-    private VoteResult finalResult;
+	private VoteResult preResult;
+	private VoteResult finalResult;
 
-    private String category;
-    private String imageUri;
-    private String summary;
+	private String category;
+	private String imageUri;
+	private String summary;
 
-    @Data
-    @AllArgsConstructor
-    public static class BroadcastUser{
-        long id;
-        String nickname;
-        String imgUrl;
-        int rating;
-        String opinion;
-    }
+	@Data
+	@AllArgsConstructor
+	public static class BroadcastUser {
+		long id;
+		String nickname;
+		String imgUrl;
+		int rating;
+		String opinion;
+	}
 
-    @Data
-    @AllArgsConstructor
-    public static class VoteResult{
-        int percentageRegisterOpinion;
-        int percentageOppositeOpinion;
-    }
+	@Data
+	@AllArgsConstructor
+	public static class VoteResult {
+		int percentageRegisterOpinion;
+		int percentageOppositeOpinion;
+	}
 }
