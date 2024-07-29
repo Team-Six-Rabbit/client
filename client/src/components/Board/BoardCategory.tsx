@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-
-type Category = {
-	id: number;
-	name: string;
-};
+import { Category } from "@/types/Board/category";
 
 type BoardCategoryProps = {
 	categories: Category[];

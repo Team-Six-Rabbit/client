@@ -1,21 +1,19 @@
 import React, { useState } from "react";
 import { CardType } from "@/types/Board/liveBoardCard";
+import { LiveStatus } from "@/types/Board/liveStatus";
 import UpcomingLivePreviewModal from "@/components/Modal/UpcomingLivePreviewModal";
 import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import { createLiveStateBorder } from "@/utils/textBorder";
 import { formatDate } from "@/utils/dateTransform";
 
-const getLiveStatusBackgroundColor = (
-	status: "live" | "upcoming" | "ended",
-	index: number,
-) => {
+const getLiveStatusBackgroundColor = (status: LiveStatus, index: number) => {
 	if (status === "live") return "bg-transparent";
 	if (status === "ended") return "bg-gray-500";
 	const colors = ["bg-orange", "bg-blue", "bg-yellow", "bg-olive"];
 	return colors[index % colors.length];
 };
 
-const getLiveStatusBackgroundText = (status: "live" | "upcoming" | "ended") => {
+const getLiveStatusBackgroundText = (status: LiveStatus) => {
 	switch (status) {
 		case "live":
 			return "라이브";

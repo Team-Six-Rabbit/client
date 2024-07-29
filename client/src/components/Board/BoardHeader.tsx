@@ -3,14 +3,16 @@ import fireIcon from "@/assets/images/Fire.png";
 import NintendoCarousel from "@/components/Board/firework/NintendoCarousel";
 import RadioButtonGroup from "@/components/Board/firework/RadioButtonGroup";
 import BoardCategory from "@/components/Board/BoardCategory";
+import { LiveStatus } from "@/types/Board/liveStatus";
+import { Category } from "@/types/Board/category";
 
 interface BoardHeaderProps {
 	boardName: string;
-	categories: { id: number; name: string }[];
+	categories: Category[];
 	selectedCategory: string;
 	onCategorySelect: (category: string) => void;
-	selectedStatus: "live" | "upcoming" | "ended";
-	onStatusSelect: (status: "live" | "upcoming" | "ended") => void;
+	selectedStatus: LiveStatus;
+	onStatusSelect: (status: LiveStatus) => void;
 	boardIcon?: string;
 }
 
@@ -61,7 +63,8 @@ function BoardHeader({
 	onStatusSelect,
 	boardIcon,
 }: BoardHeaderProps) {
-	const getStatuses = (boardName: string) => {
+	const getStatuses = (boardName: string): LiveStatus[] => {
+		// 수정된 부분
 		if (boardName === "불구경") {
 			return ["live", "upcoming", "ended"];
 		}
@@ -95,9 +98,7 @@ function BoardHeader({
 				<CategoryTitle>#{selectedCategory}</CategoryTitle>
 				{boardName !== "부채질" && (
 					<RadioButtonGroup
-						statuses={
-							getStatuses(boardName) as ("live" | "upcoming" | "ended")[]
-						}
+						statuses={getStatuses(boardName)}
 						selectedStatus={selectedStatus}
 						onStatusSelect={onStatusSelect}
 					/>

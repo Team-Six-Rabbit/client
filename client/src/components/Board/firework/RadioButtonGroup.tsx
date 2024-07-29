@@ -1,9 +1,10 @@
 import styled from "styled-components";
+import { LiveStatus } from "@/types/Board/liveStatus";
 
 interface RadioButtonGroupProps {
-	statuses: ("live" | "upcoming" | "ended")[];
-	selectedStatus: "live" | "upcoming" | "ended";
-	onStatusSelect: (status: "live" | "upcoming" | "ended") => void;
+	statuses: LiveStatus[];
+	selectedStatus: LiveStatus;
+	onStatusSelect: (status: LiveStatus) => void;
 }
 
 const RadioButtonsContainer = styled.div`
@@ -74,7 +75,8 @@ function RadioButtonGroup({
 	selectedStatus,
 	onStatusSelect,
 }: RadioButtonGroupProps) {
-	const getStatusLabel = (status: "live" | "upcoming" | "ended") => {
+	const getStatusLabel = (status: LiveStatus) => {
+		// 수정된 부분
 		if (status === "live") {
 			return "실시간";
 		}
