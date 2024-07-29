@@ -3,8 +3,9 @@ import { CardType } from "@/types/Board/liveBoardCard";
 import UpcomingLivePreviewModal from "@/components/Modal/UpcomingLivePreviewModal";
 import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import { createLiveStateBorder } from "@/utils/textBorder";
+import { formatDate } from "@/utils/dateTransform";
 
-const getStatusColor = (
+const getLiveStatusBackgroundColor = (
 	status: "live" | "upcoming" | "ended",
 	index: number,
 ) => {
@@ -14,7 +15,7 @@ const getStatusColor = (
 	return colors[index % colors.length];
 };
 
-const getStatusText = (status: "live" | "upcoming" | "ended") => {
+const getLiveStatusBackgroundText = (status: "live" | "upcoming" | "ended") => {
 	switch (status) {
 		case "live":
 			return "라이브";
@@ -25,22 +26,6 @@ const getStatusText = (status: "live" | "upcoming" | "ended") => {
 		default:
 			return "";
 	}
-};
-
-const formatDate = (dateString: string) => {
-	const options: Intl.DateTimeFormatOptions = {
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-		hour: "2-digit",
-		minute: "2-digit",
-		hour12: false,
-	};
-	const date = new Date(dateString);
-	return date
-		.toLocaleString("ko-KR", options)
-		.replace(/\. /g, "/")
-		.replace(". ", " ");
 };
 
 function LiveCard({
@@ -75,7 +60,7 @@ function LiveCard({
 		if (status === "live") {
 			return (
 				<div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded z-10">
-					{getStatusText(status)}
+					{getLiveStatusBackgroundText(status)}
 				</div>
 			);
 		}
@@ -85,13 +70,13 @@ function LiveCard({
 		return (
 			<>
 				<div
-					className={`absolute inset-0 ${getStatusColor(status, index)} opacity-75 flex items-center justify-center`}
+					className={`absolute inset-0 ${getLiveStatusBackgroundColor(status, index)} opacity-75 flex items-center justify-center`}
 				/>
 				<div
 					className="absolute inset-0 flex items-center justify-center text-white text-3xl"
 					style={borderStyles}
 				>
-					{getStatusText(status)}
+					{getLiveStatusBackgroundText(status)}
 				</div>
 			</>
 		);
@@ -100,14 +85,14 @@ function LiveCard({
 	return (
 		<>
 			<div
-				className="relative flex flex-col border-solid border-black border-4 shadow-md rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 max-w-sm"
+				className="relative flex flex-col border-solid border-black border-4 shadow-md rounded-xl overflow-hidden focus:shadow-lg focus:-translate-y-1 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 max-w-sm"
 				onClick={handleCardClick}
 				onKeyDown={handleKeyDown}
 				tabIndex={0}
 				role="button"
 				aria-pressed="false"
 			>
-				<div className="h-44 relative overflow-hidden">
+				<div className="live-card-image h-44 relative overflow-hidden">
 					<img
 						src={image_uri}
 						alt={title}
@@ -115,7 +100,7 @@ function LiveCard({
 					/>
 					{renderStatusOverlay()}
 				</div>
-				<div className="bg-white py-4 px-3 border-solid border-t-4">
+				<div className="live-card-info bg-white py-4 px-3 border-t-4 border-solid">
 					<h3 className="text-xl mb-2 font-medium">{title}</h3>
 					<div className="flex justify-between items-center">
 						<p className="text-base text-black">{regist_user_id}</p>

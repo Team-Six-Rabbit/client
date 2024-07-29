@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 const CarouselContainer = styled.div`
@@ -112,87 +112,70 @@ const CarouselBorder = styled.div`
 	background-color: black;
 `;
 
-interface CarouselState {
-	currentIndex: number;
-}
+const images = [
+	"https://via.placeholder.com/600x300?text=Slide+1",
+	"https://via.placeholder.com/600x300?text=Slide+2",
+	"https://via.placeholder.com/600x300?text=Slide+3",
+];
 
-class Carousel extends Component<Record<string, never>, CarouselState> {
-	private images: string[];
+function Carousel() {
+	const [currentIndex, setCurrentIndex] = useState(0);
 
-	constructor(props: Record<string, never>) {
-		super(props);
-		this.state = {
-			currentIndex: 0,
-		};
-		this.images = [
-			"https://via.placeholder.com/600x300?text=Slide+1",
-			"https://via.placeholder.com/600x300?text=Slide+2",
-			"https://via.placeholder.com/600x300?text=Slide+3",
-		];
-	}
-
-	nextSlide = () => {
-		this.setState((prevState) => ({
-			currentIndex: (prevState.currentIndex + 1) % this.images.length,
-		}));
+	const nextSlide = () => {
+		setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
 	};
 
-	prevSlide = () => {
-		this.setState((prevState) => ({
-			currentIndex:
-				(prevState.currentIndex - 1 + this.images.length) % this.images.length,
-		}));
+	const prevSlide = () => {
+		setCurrentIndex(
+			(prevIndex) => (prevIndex - 1 + images.length) % images.length,
+		);
 	};
 
-	handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
 		if (event.key === "ArrowLeft") {
-			this.prevSlide();
+			prevSlide();
 		} else if (event.key === "ArrowRight") {
-			this.nextSlide();
+			nextSlide();
 		}
 	};
 
-	render() {
-		const { currentIndex } = this.state;
-
-		return (
-			<CarouselContainer tabIndex={0} role="region" aria-label="Image Carousel">
-				<CarouselArrowLeft
-					onClick={this.prevSlide}
-					onKeyDown={this.handleKeyDown}
-					aria-label="Previous Slide"
-					type="button"
-				/>
-				<CarouselNintendo>
-					<CarouselButtonLeft>
-						<ControllerButton>
-							<span>M</span>
-						</ControllerButton>
-					</CarouselButtonLeft>
-					<CarouselBorder />
-					<CarouselContent>
-						<img
-							src={this.images[currentIndex]}
-							alt={`Slide ${currentIndex + 1}`}
-							style={{ width: "600px", height: "300px", objectFit: "cover" }}
-						/>
-					</CarouselContent>
-					<CarouselBorder />
-					<CarouselButtonRight>
-						<ControllerButton>
-							<span>A</span>
-						</ControllerButton>
-					</CarouselButtonRight>
-				</CarouselNintendo>
-				<CarouselArrowRight
-					onClick={this.nextSlide}
-					onKeyDown={this.handleKeyDown}
-					aria-label="Next Slide"
-					type="button"
-				/>
-			</CarouselContainer>
-		);
-	}
+	return (
+		<CarouselContainer tabIndex={0} role="region" aria-label="Image Carousel">
+			<CarouselArrowLeft
+				onClick={prevSlide}
+				onKeyDown={handleKeyDown}
+				aria-label="Previous Slide"
+				type="button"
+			/>
+			<CarouselNintendo>
+				<CarouselButtonLeft>
+					<ControllerButton>
+						<span>M</span>
+					</ControllerButton>
+				</CarouselButtonLeft>
+				<CarouselBorder />
+				<CarouselContent>
+					<img
+						src={images[currentIndex]}
+						alt={`Slide ${currentIndex + 1}`}
+						style={{ width: "600px", height: "300px", objectFit: "cover" }}
+					/>
+				</CarouselContent>
+				<CarouselBorder />
+				<CarouselButtonRight>
+					<ControllerButton>
+						<span>A</span>
+					</ControllerButton>
+				</CarouselButtonRight>
+			</CarouselNintendo>
+			<CarouselArrowRight
+				onClick={nextSlide}
+				onKeyDown={handleKeyDown}
+				aria-label="Next Slide"
+				type="button"
+			/>
+		</CarouselContainer>
+	);
 }
 
 export default Carousel;
