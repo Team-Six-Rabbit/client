@@ -1,5 +1,6 @@
 package com.woowahanrabbits.battle_people.domain.balancegame.dto;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.validator.constraints.Range;
@@ -16,9 +17,9 @@ public class CreateBalanceGameRequest {
 	@NotNull
 	private String detail;
 	@NotNull
-	private Long startDate;
+	private Date startDate;
 	@NotNull
-	private Long endDate;
+	private Date endDate;
 	@Range(min = 0, max = 7)
 	private Integer category;
 

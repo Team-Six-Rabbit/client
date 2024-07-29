@@ -6,12 +6,12 @@ import org.springframework.data.domain.Page;
 
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameReturnDto;
-import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 
 public interface BalanceGameService {
-	void addBalanceGame(BattleReturnDto battleReturnDto);
+	void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, int userId);
 
 	Page<BalanceGameReturnDto> getBalanceGameByConditions(Integer category, int status, int page, User user);
 

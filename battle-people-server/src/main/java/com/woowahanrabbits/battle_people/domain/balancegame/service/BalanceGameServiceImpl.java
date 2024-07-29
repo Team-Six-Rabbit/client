@@ -13,12 +13,14 @@ import org.springframework.stereotype.Service;
 import com.woowahanrabbits.battle_people.domain.balancegame.domain.BalanceGameBoardComment;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameReturnDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.infrastructure.BalanceGameRepository;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
-import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
@@ -33,31 +35,50 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	private final BattleRepository battleRepository;
 	private final BalanceGameRepository balanceGameRepository;
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
+	private final UserRepository userRepository;
 
 	public BalanceGameServiceImpl(VoteInfoRepository voteInfoRepository, VoteOpinionRepository voteOpinionRepository,
 		BattleRepository battleRepository, BalanceGameRepository balanceGameRepository,
-		UserVoteOpinionRepository userVoteOpinionRepository) {
+		UserVoteOpinionRepository userVoteOpinionRepository, UserRepository userRepository) {
 		this.voteInfoRepository = voteInfoRepository;
 		this.voteOpinionRepository = voteOpinionRepository;
 		this.battleRepository = battleRepository;
 		this.balanceGameRepository = balanceGameRepository;
 		this.userVoteOpinionRepository = userVoteOpinionRepository;
+		this.userRepository = userRepository;
 	}
 
 	@Override
-	public void addBalanceGame(BattleReturnDto battleReturnDto) {
-		voteInfoRepository.save(battleReturnDto.getBattle().getVoteInfo());
-		for (int i = 0; i < battleReturnDto.getOpinions().size(); i++) {
-			VoteOpinion voteOpinion = battleReturnDto.getOpinions().get(i);
-			voteOpinion.setVoteInfoId(battleReturnDto.getBattle().getVoteInfo().getId());
-			voteOpinion.setVoteOpinionIndex(i);
-			if (i == 0) {
-				voteOpinion.setUser(battleReturnDto.getBattle().getRegistUser());
-			}
+	public void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, int userId) {
+		User registUser = userRepository.findById((long)userId)
+			.orElseThrow(() -> new RuntimeException("User not found"));
+
+		VoteInfo voteInfo = VoteInfo.builder()
+			.title(createBalanceGameRequest.getTitle())
+			.startDate(createBalanceGameRequest.getStartDate())
+			.endDate(createBalanceGameRequest.getEndDate())
+			.category(createBalanceGameRequest.getCategory())
+			.build();
+		voteInfoRepository.save(voteInfo);
+
+		for (int i = 0; i < 2; i++) {
+			VoteOpinion voteOpinion = VoteOpinion.builder()
+				.voteOpinionIndex(i)
+				.voteInfoId(voteInfo.getId())
+				.user(registUser)
+				.opinion(createBalanceGameRequest.getOpinions().get(i))
+				.build();
+
 			voteOpinionRepository.save(voteOpinion);
+
 		}
-		battleReturnDto.getBattle().setCurrentState(4);
-		battleRepository.save(battleReturnDto.getBattle());
+		BattleBoard board = BattleBoard.builder()
+			.registUser(registUser)
+			.voteInfo(voteInfo)
+			.detail(createBalanceGameRequest.getDetail())
+			.build();
+
+		battleRepository.save(board);
 	}
 
 	@Override

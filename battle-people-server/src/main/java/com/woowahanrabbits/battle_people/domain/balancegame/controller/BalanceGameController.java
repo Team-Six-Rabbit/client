@@ -18,13 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameReturnDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
-import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/balance-game")
@@ -39,9 +40,10 @@ public class BalanceGameController {
 
 	@PostMapping("")
 	@Operation(summary = "[점화] 밸런스 게임을 생성한다.")
-	public ResponseEntity<?> registBalanceGame(@RequestBody BattleReturnDto battleReturnDto) {
+	public ResponseEntity<?> registBalanceGame(@RequestBody @Valid CreateBalanceGameRequest createBalanceGameRequest,
+		@RequestParam int userId) {
 		try {
-			balanceGameService.addBalanceGame(battleReturnDto);
+			balanceGameService.addBalanceGame(createBalanceGameRequest, userId);
 			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 		} catch (Exception e) {
 			e.printStackTrace();
