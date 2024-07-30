@@ -3,6 +3,7 @@ package com.woowahanrabbits.battle_people.domain.battle.service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.dto.AwaitingBattleResponseDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
@@ -19,6 +21,7 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
+import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
@@ -123,6 +126,34 @@ public class BattleServiceImpl implements BattleService {
 			battleRepository.updateBattleBoardStatus(battleRespondRequest.getBattleId(), 1,
 				battleRespondRequest.getContent());
 		}
+	}
+
+	@Override
+	public List<?> getAwaitingBattleList(Integer category, int page) {
+		Pageable pageable = PageRequest.of(page, 12);
+		List<BattleBoard> tempList = battleRepository.findByCategoryAndCurrentState(category, 2);
+		List<BattleBoard> list = new PageImpl<>(tempList, pageable, tempList.size()).toList();
+		return list.stream()
+			.map(battleBoard -> {
+				List<VoteOpinionDto> voteOpinionDtos = voteOpinionRepository.findByVoteInfoId(
+						battleBoard.getVoteInfo().getId())
+					.stream()
+					.map(VoteOpinionDto::new)
+					.collect(Collectors.toList());
+
+				int currentPeopleCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
+
+				return AwaitingBattleResponseDto.builder()
+					.id(battleBoard.getId())
+					.title(battleBoard.getVoteInfo().getTitle())
+					.opinionDtos(voteOpinionDtos)
+					.startDate(battleBoard.getVoteInfo().getStartDate())
+					.endDate(battleBoard.getVoteInfo().getEndDate())
+					.maxPeopleCount(battleBoard.getMaxPeopleCount())
+					.currentPeopleCount(currentPeopleCount)
+					.build();
+			})
+			.collect(Collectors.toList());
 	}
 
 	// 	//배틀 등록

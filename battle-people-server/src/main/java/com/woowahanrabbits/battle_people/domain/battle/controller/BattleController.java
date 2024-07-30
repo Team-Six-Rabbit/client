@@ -1,8 +1,11 @@
 package com.woowahanrabbits.battle_people.domain.battle.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +63,8 @@ public class BattleController {
 	//요청한, 요청받은 배틀 조회
 	@GetMapping("")
 	@Operation(summary = "요청한, 요청받는 배틀을 조회한다.")
-	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long userId,
+	public ResponseEntity<?> getRequestBattleList(@RequestParam(defaultValue = "received") String type,
+		@RequestParam Long userId,
 		@RequestParam int page) {
 		try {
 			User user = userRepository.findById(userId).orElseThrow();
@@ -73,7 +77,7 @@ public class BattleController {
 		}
 	}
 
-	@PostMapping("/accept-or-decline")
+	@PatchMapping("/accept-or-decline")
 	@Operation(summary = "[불씨] 배틀을 수락 또는 거절한다.")
 	public ResponseEntity<?> acceptOrDeclineBattle(@RequestBody BattleRespondRequest battleRespondRequest,
 		@RequestParam Long userId) {
@@ -89,28 +93,21 @@ public class BattleController {
 
 		}
 	}
-	//
-	// 	@PostMapping("/decline")
-	// 	@Operation(summary = "[불발/연기] 요청받은 배틀을 거절한다.")
-	// 	public ResponseEntity<?> declineBattle(@RequestBody VoteDeclineDto voteDeclineDto) {
-	// 		battleService.updateBattleStatus(voteDeclineDto.getBattleId(), voteDeclineDto.getRejectionReason());
-	// 		return new ResponseEntity<>(HttpStatus.OK);
-	// 	}
-	//
-	// 	@GetMapping("/apply-list")
-	// 	@Operation(summary = "[불씨] 모집중인 배틀을 조회한다.")
-	// 	public ResponseEntity<?> getAwaitingBattleList(@RequestParam int category,
-	// 		@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-	// 		return new ResponseEntity<>(battleService.getAwaitingBattleList(category, pageable), HttpStatus.OK);
-	// 	}
-	//
-	// 	@GetMapping("/apply-user-list/{battleBoardId}")
-	// 	@Operation(summary = "[불씨] 모집중인 특정 배틀에 참여 신청한 유저를 조회한다.")
-	// 	public ResponseEntity<?> getApplyUserList(@PathVariable Long battleBoardId,
-	// 		@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-	// 		return new ResponseEntity<>(battleService.getApplyUserList(battleBoardId, pageable), HttpStatus.OK);
-	// 	}
-	//
+
+	@GetMapping("/apply-list")
+	@Operation(summary = "[불씨] 모집중인 배틀을 조회한다.")
+	public ResponseEntity<?> getAwaitingBattleList(@RequestParam(defaultValue = "") Integer category, int page) {
+		try {
+			List<?> list = battleService.getAwaitingBattleList(category, page);
+			return ResponseEntity.status(HttpStatus.OK)
+				.body(new ApiResponseDto<>("success", "", list));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("error", "", null));
+		}
+	}
+
 	// 	@PostMapping("/apply")
 	// 	@Operation(summary = "모집중인 특정 배틀에 참여 신청한다.")
 	// 	public ResponseEntity<?> applyBattle(@RequestBody BattleApplyDto battleApplyDto) {

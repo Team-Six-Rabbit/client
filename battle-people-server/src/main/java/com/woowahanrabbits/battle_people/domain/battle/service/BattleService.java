@@ -12,6 +12,8 @@ public interface BattleService {
 	List<?> getRequestBattleList(String type, User user, int page);
 
 	void acceptOrDeclineBattle(BattleRespondRequest battleRespondRequest, User user);
+
+	List<?> getAwaitingBattleList(Integer category, int page);
 	// void addBattle(BattleBoard battleBoard);
 	//
 	// Page<?> getBattleList(String type, long userId, Pageable pageable);
