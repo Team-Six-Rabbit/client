@@ -65,11 +65,6 @@ export function SpeechRequestList() {
 					<div className="p-2 border-b-2 border-gray-300">
 						시비전문가[육두품]
 					</div>
-					<div className="p-2">방구석판사[진골]</div>
-					<div className="p-2">방구석판사[진골]</div>
-					<div className="p-2">방구석판사[진골]</div>
-					<div className="p-2">방구석판사[진골]</div>
-					<div className="p-2">방구석판사[진골]</div>
 				</div>
 			)}
 		</div>
@@ -87,7 +82,7 @@ function ChatBox() {
 	};
 
 	return (
-		<div className="flex flex-col h-chatBox w-1/4 ms-6 mt-4">
+		<div className="flex flex-col h-160 w-1/4 ms-6 mt-4">
 			<SpeechRequestList />
 			<div className="flex-1 overflow-y-auto p-2 my-2 border-solid border-4 border-black rounded-lg flex flex-col-reverse scrollbar-hide">
 				<div>
