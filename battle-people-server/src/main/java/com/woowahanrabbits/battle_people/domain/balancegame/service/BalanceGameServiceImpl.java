@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.balancegame.domain.BalanceGameBoardComment;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.infrastructure.BalanceGameRepository;
@@ -152,10 +153,14 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	}
 
 	@Override
-	public Page<BalanceGameCommentDto> getCommentsByBattleId(Long id, int page, int totalPage) {
-		List<BalanceGameCommentDto> list = balanceGameRepository.findCommentsByBattleBoardId(id);
-		Pageable pageable = PageRequest.of(page, totalPage);
-		return new PageImpl<>(list, pageable, list.size());
+	public List<BalanceGameCommentResponse> getCommentsByBattleId(Long id) {
+		List<BalanceGameBoardComment> list = balanceGameRepository.findByBattleBoardId(id);
+		List<BalanceGameCommentResponse> returnList = new ArrayList<>();
+
+		for (BalanceGameBoardComment bgbc : list) {
+			returnList.add(new BalanceGameCommentResponse(bgbc));
+		}
+		return returnList;
 	}
 
 	@Override
