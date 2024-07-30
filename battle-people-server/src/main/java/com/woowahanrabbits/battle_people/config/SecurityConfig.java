@@ -11,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.woowahanrabbits.battle_people.domain.user.handler.ForbiddenException;
+import com.woowahanrabbits.battle_people.domain.user.handler.JwtAuthenticationEntryPoint;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtFilter;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
@@ -26,6 +28,9 @@ public class SecurityConfig {
 	private final UserRepository userRepository;
 	private final JwtUtil jwtUtil;
 	private final PrincipalDetailsService principalDetailsService;
+	// private final ExpiredJwtException expiredJwtException; // 수정된 부분
+	private final ForbiddenException forbiddenException; // 수정된 부분
+	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint; // 수정된 부분
 
 	@Bean
 	public AuthenticationManager authenticationManager() throws Exception {
@@ -46,13 +51,17 @@ public class SecurityConfig {
 		http.authorizeHttpRequests(auth -> auth
 			.requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/")
 			.permitAll()
-			.requestMatchers("/auth/test").hasRole("USER")
+			// .requestMatchers("/auth/test").hasRole("ADMIN")
 			.anyRequest()
 			.authenticated());
 
 		http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService),
 			UsernamePasswordAuthenticationFilter.class);
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+		http.exceptionHandling(exception -> exception // 수정된 부분
+			.accessDeniedHandler(forbiddenException) // 수정된 부분
+			.authenticationEntryPoint(jwtAuthenticationEntryPoint)); // 수정된 부분
 		return http.build();
 	}
 }

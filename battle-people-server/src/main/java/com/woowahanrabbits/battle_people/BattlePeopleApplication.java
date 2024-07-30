@@ -3,6 +3,7 @@ package com.woowahanrabbits.battle_people;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+// @EnableMethodSecurity(securedEnabled = true)
 @SpringBootApplication
 public class BattlePeopleApplication {
 

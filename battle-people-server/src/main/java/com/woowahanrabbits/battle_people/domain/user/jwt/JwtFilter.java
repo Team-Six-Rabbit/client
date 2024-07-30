@@ -48,7 +48,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			if (access != null) {
 				if (jwtUtil.validateToken(access, "access")) {
 					System.out.println("Valid access token found: " + access);
-					setAuthentication(jwtUtil.extractUsername(access));
+					setAuthentication(access);
 				} else {
 					throw new JwtAuthenticationException("Invalid access token");
 				}
@@ -66,13 +66,13 @@ public class JwtFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private void setAuthentication(String email) {
-		Authentication authentication = createAuthentication(email);
+	private void setAuthentication(String token) {
+		Authentication authentication = createAuthentication(token);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 
-	private Authentication createAuthentication(String email) {
-		UserDetails userDetails = principalDetailsService.loadUserByUsername(email);
+	private Authentication createAuthentication(String token) {
+		UserDetails userDetails = principalDetailsService.loadUserByUsername(token);
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 

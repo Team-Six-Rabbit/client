@@ -1,40 +1,28 @@
 package com.woowahanrabbits.battle_people.domain.user.handler;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
+import java.io.IOException;
 
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.api.dto.APIResponseDto;
 
-@ControllerAdvice
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(JwtAuthenticationException.class)
-	public ResponseEntity<APIResponseDto<String>> handleJwtAuthenticationException(JwtAuthenticationException ex,
-		WebRequest request) {
-		APIResponseDto<String> response = new APIResponseDto<>("fail", "Unauthorized", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-	}
-
-	@ExceptionHandler(ExpiredJwtException.class)
-	public ResponseEntity<APIResponseDto<String>> handleExpiredJwtException(ExpiredJwtException ex,
-		WebRequest request) {
-		APIResponseDto<String> response = new APIResponseDto<>("fail", "Unauthorized",
-			"JWT expired: " + ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-	}
-
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<APIResponseDto<String>> handleGlobalException(Exception ex, WebRequest request) {
-		APIResponseDto<String> response = new APIResponseDto<>("fail", "Internal Server Error", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	@ExceptionHandler(ForbiddenException.class)
-	public ResponseEntity<APIResponseDto<String>> handleForbiddenException(ForbiddenException ex, WebRequest request) {
-		APIResponseDto<String> response = new APIResponseDto<>("fail", "Forbidden", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+	public void handleException(HttpServletRequest request, HttpServletResponse response, Exception ex) throws
+		IOException {
+		APIResponseDto<String> apiResponse = new APIResponseDto<>("fail", "An error occurred: " + ex.getMessage(),
+			null);
+		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		response.setContentType("application/json");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonResponse = objectMapper.writeValueAsString(apiResponse);
+		response.getWriter().write(jsonResponse);
 	}
 }

@@ -73,6 +73,7 @@ public class JwtUtil {
 	}
 
 	// DB에 토큰과 일치하고, 토큰 기간이 유효한지 체크
+	// DB에 토큰과 일치하고, 토큰 기간이 유효한지 체크
 	public boolean validateToken(String token, String type) {
 		try {
 			UserToken userToken = userTokenRepository.findByAccessToken(token); // 수정된 부분
