@@ -6,7 +6,7 @@ import Timer from "@/components/Live/Timer";
 import LiveVote from "@/components/Live/LiveVote";
 import ItemBox from "@/components/Live/ItemBox";
 import EndedLive from "@/components/Live/EndLive";
-import Header from "@/components/header";
+import Header from "@/components/header/header";
 
 function LivePage() {
 	const [winner, setWinner] = useState("");
@@ -21,7 +21,7 @@ function LivePage() {
 			<Header />
 			<div className="flex flex-col h-screen">
 				<div className="flex-1 flex mt-16 p-8">
-					<Timer duration={1} onTimeOver={() => setIsTimeOver(true)} />
+					<Timer duration={101} onTimeOver={() => setIsTimeOver(true)} />
 					<div className="flex-col justify-center items-center h-144">
 						<LiveVote
 							title="오늘 저녁 메뉴 추천"
