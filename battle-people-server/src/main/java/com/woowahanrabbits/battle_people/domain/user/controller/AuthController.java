@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,6 +37,7 @@ public class AuthController {
 	private final UserTokenRepository userTokenRepository;
 	private final JwtUtil jwtUtil;
 
+	@Secured("ROLE_USER")
 	@GetMapping("/test")
 	public ResponseEntity<?> test(@CookieValue(name = "access") String access, HttpServletRequest request) {
 		System.out.println(SecurityContextHolder.getContext().getAuthentication().toString());

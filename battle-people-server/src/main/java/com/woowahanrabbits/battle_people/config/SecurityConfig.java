@@ -28,9 +28,8 @@ public class SecurityConfig {
 	private final UserRepository userRepository;
 	private final JwtUtil jwtUtil;
 	private final PrincipalDetailsService principalDetailsService;
-	// private final ExpiredJwtException expiredJwtException; // 수정된 부분
-	private final ForbiddenException forbiddenException; // 수정된 부분
-	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint; // 수정된 부분
+	private final ForbiddenException forbiddenException;
+	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 	@Bean
 	public AuthenticationManager authenticationManager() throws Exception {
@@ -51,7 +50,6 @@ public class SecurityConfig {
 		http.authorizeHttpRequests(auth -> auth
 			.requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/")
 			.permitAll()
-			// .requestMatchers("/auth/test").hasRole("ADMIN")
 			.anyRequest()
 			.authenticated());
 
