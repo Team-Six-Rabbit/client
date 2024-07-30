@@ -2,6 +2,7 @@ package com.woowahanrabbits.battle_people.domain.battle.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/battle")
@@ -40,11 +42,11 @@ public class BattleController {
 	//배틀 등록
 	@PostMapping("/invite")
 	@Operation(summary = "[점화] 배틀을 요청한다.")
-	public ResponseEntity<?> registBattle(@RequestBody BattleInviteRequest battleInviteRequest,
-		@RequestParam int userId) {
+	public ResponseEntity<?> registBattle(@RequestBody @Valid BattleInviteRequest battleInviteRequest,
+		@RequestParam Long userId) {
 
 		try {
-			User user = userRepository.findById((long)userId).orElseThrow();
+			User user = userRepository.findById(userId).orElseThrow();
 
 			battleService.registBattle(battleInviteRequest, user);
 			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
@@ -53,14 +55,22 @@ public class BattleController {
 				.body(new ApiResponseDto<>("error", "", null));
 		}
 	}
-	//
-	// 	//요청한, 요청받은 배틀 조회
-	// 	@GetMapping("")
-	// 	@Operation(summary = "요청한, 요청받는 배틀을 조회한다.")
-	// 	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long userId,
-	// 		@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-	// 		return new ResponseEntity<>(battleService.getBattleList(type, userId, pageable), HttpStatus.OK);
-	// 	}
+
+	//요청한, 요청받은 배틀 조회
+	@GetMapping("")
+	@Operation(summary = "요청한, 요청받는 배틀을 조회한다.")
+	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long userId,
+		@RequestParam int page) {
+		try {
+			User user = userRepository.findById(userId).orElseThrow();
+			return ResponseEntity.status(HttpStatus.OK)
+				.body(new ApiResponseDto<>("success", "", battleService.getRequestBattleList(type, user, page)));
+
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("error", "", null));
+		}
+	}
 	//
 	// 	//
 	// 	@PostMapping("/accept")

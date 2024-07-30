@@ -2,11 +2,16 @@ package com.woowahanrabbits.battle_people.domain.battle.service;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
@@ -30,6 +35,10 @@ public class BattleServiceImpl implements BattleService {
 
 	@Override
 	public void registBattle(BattleInviteRequest battleInviteRequest, User user) {
+
+		// if (user.getId() != (battleInviteRequest.getRegistUser().getId())) {
+		// 	throw new RuntimeException();
+		// }
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(battleInviteRequest.getStartDate());
@@ -67,6 +76,28 @@ public class BattleServiceImpl implements BattleService {
 			.currentState(0)
 			.build();
 		battleRepository.save(battleBoard);
+	}
+
+	@Override
+	public List<?> getRequestBattleList(String type, User user, int page) {
+		Pageable pageable = PageRequest.of(page, 12);
+		List<BattleBoard> list = null;
+		if (type.equals("sent")) {
+			list = battleRepository.findByRegistUserId(user.getId());
+		} else if (type.equals("received")) {
+			list = battleRepository.findByOppositeUserIdAndCurrentState(user.getId(), 0);
+		}
+
+		List<BattleBoard> newList = new PageImpl<>(list).getContent();
+		// List<BattleResponse> returnList = new ArrayList<>();
+		// for (BattleBoard battleBoard : newList) {
+		// 	returnList.add(new BattleResponse(battleBoard, voteOpinionRepository.findByVoteInfoId(
+		// 		battleBoard.getVoteInfo().getId())));
+		// }
+
+		return newList.stream().map(battleBoard -> new BattleResponse(
+			battleBoard, voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId())
+		)).toList();
 	}
 
 	// 	//배틀 등록
