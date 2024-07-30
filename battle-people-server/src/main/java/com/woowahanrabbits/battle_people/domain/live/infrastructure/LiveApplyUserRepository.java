@@ -7,5 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.woowahanrabbits.battle_people.domain.live.domain.LiveApplyUser;
 
 public interface LiveApplyUserRepository extends JpaRepository<LiveApplyUser, Long> {
-	List<LiveApplyUser> findAllByRoom_Id(Long roomId);
+
+	List<LiveApplyUser> findAllByRoom_Id(Long id);
+
+	LiveApplyUser findByRoomIdAndParticipantId(Long roomId, Long participantId);
 }

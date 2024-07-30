@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.live.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RequestMapping("/openvidu")
 public class OpenViduController {
-	private OpenViduService openViduService;
+	private final OpenViduService openViduService;
 
 	@PostMapping("/create-session")
 	public String createSession() {
@@ -29,10 +31,30 @@ public class OpenViduController {
 	}
 
 	@PostMapping("/get-token")
-	public String getToken(@RequestParam String roomId, @RequestParam String role) {
+	public String getToken(@RequestParam String roomId, @RequestParam String role, @RequestParam Long userId) {
 		try {
 			OpenViduRole openViduRole = "broadcaster".equals(role) ? OpenViduRole.PUBLISHER : OpenViduRole.SUBSCRIBER;
-			return openViduService.getToken(roomId, openViduRole);
+			return openViduService.getToken(roomId, openViduRole, userId);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	@PostMapping("/user-left")
+	public ResponseEntity<Void> userLeft(@RequestParam String roomId, @RequestParam Long userId) {
+		try {
+			openViduService.userLeft(roomId, userId);
+			return ResponseEntity.ok().build();
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(500).build();
+		}
+	}
+
+	@GetMapping("/change-user-role")
+	public String changeUserRole(@RequestParam Long battleId, @RequestParam String roomId, @RequestParam Long userId,
+		@RequestParam int selectedOpinion) {
+		try {
+			return openViduService.changeRole(battleId, roomId, userId, selectedOpinion);
 		} catch (Exception e) {
 			return null;
 		}

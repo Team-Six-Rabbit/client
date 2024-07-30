@@ -12,10 +12,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Data
+@Builder
 public class LiveApplyUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +34,8 @@ public class LiveApplyUser {
 	@Column(nullable = false)
 	private Date inTime;
 	private Date outTime;
+
+	private String role;
 
 	@PrePersist
 	protected void onCreate() {
