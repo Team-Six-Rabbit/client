@@ -50,10 +50,10 @@ public class UserService {
 			return result;
 		}
 
-		String access = jwtUtil.generateAccessToken(user.getEmail());
+		String access = jwtUtil.generateAccessToken(user.getId(), user.getEmail(), user.getRole());
 		UserToken userToken = UserToken.builder()
-			.accessToken(jwtUtil.generateAccessToken(user.getEmail()))
-			.refreshToken(jwtUtil.generateRefreshToken(user.getEmail()))
+			.accessToken(access)
+			.refreshToken(jwtUtil.generateRefreshToken(user.getId(), user.getEmail(), user.getRole()))
 			.user(user)
 			.build();
 
@@ -61,9 +61,12 @@ public class UserService {
 		userRepository.save(user);
 		userTokenRepository.save(userToken);
 		response.addCookie(HttpUtils.createCookie("access", userToken.getAccessToken(), "/"));
-		response.addCookie(HttpUtils.createCookie("refresh", userToken.getRefreshToken(), "/auth/refresh"));
+		response.addCookie(
+			HttpUtils.createCookie("refresh", userToken.getRefreshToken(), "/battle-people/auth/refresh"));
 
-		result.put("responseEntity", ResponseEntity.ok(new APIResponseDto<>("success", "Login Successful", null)));
+		String userId = String.valueOf(jwtUtil.extractUserId(userToken.getAccessToken()));
+		result.put("responseEntity", ResponseEntity.ok(
+			new APIResponseDto<>("success", "Login Successful", "userId : " + userId)));
 		result.put("response", response);
 		return result;
 	}

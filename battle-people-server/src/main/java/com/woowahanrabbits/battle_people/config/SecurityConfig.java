@@ -44,8 +44,9 @@ public class SecurityConfig {
 		http.httpBasic(basic -> basic.disable());
 
 		http.authorizeHttpRequests(auth -> auth
-			.requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/", "/test")
+			.requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/")
 			.permitAll()
+			.requestMatchers("/auth/test").hasRole("USER")
 			.anyRequest()
 			.authenticated());
 

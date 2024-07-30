@@ -11,8 +11,10 @@ public class HttpUtils {
 			setMaxAge(maxAge);
 		}
 	}
+
 	public static final Cookie accessTokenRemovalCookie = new CustomCookie("access", null, "/", 0);
-	public static final Cookie refreshTokenRemovalCookie = new CustomCookie("refresh", null, "/auth/refresh", 0);
+	public static final Cookie refreshTokenRemovalCookie = new CustomCookie("refresh", null,
+		"/battle-people/auth/refresh", 0);
 
 	public static Cookie createCookie(String name, String value, String path) {
 		Cookie cookie = new CustomCookie(name, value, path, 60 * 60);
@@ -21,7 +23,7 @@ public class HttpUtils {
 		return cookie;
 	}
 
-	public static void deleteCookies(HttpServletResponse response, Cookie ...cookies) {
+	public static void deleteCookies(HttpServletResponse response, Cookie... cookies) {
 		for (Cookie cookie : cookies) {
 			cookie.setMaxAge(0);
 			response.addCookie(cookie);

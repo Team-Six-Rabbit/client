@@ -2,13 +2,15 @@ package com.woowahanrabbits.battle_people.domain.user.jwt;
 
 import java.io.IOException;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.woowahanrabbits.battle_people.domain.api.dto.APIResponseDto;
+import com.woowahanrabbits.battle_people.domain.user.handler.JwtAuthenticationException;
 import com.woowahanrabbits.battle_people.domain.user.service.PrincipalDetailsService;
 
 import jakarta.servlet.FilterChain;
@@ -26,63 +28,60 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
+		System.out.println("do filter");
+
 		if (request.getCookies() == null) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		String access = null;
-		String refresh = null;
 		Cookie[] cookies = request.getCookies();
 		for (Cookie cookie : cookies) {
 			if (cookie.getName().equals("access")) {
 				access = cookie.getValue();
-			}
-			if (cookie.getName().equals("refresh")) {
-				refresh = cookie.getValue();
+				break;
 			}
 		}
 
-		if (access != null) {
-			if (jwtUtil.validateToken(access, "access")) {
-				setAuthentication(jwtUtil.extractUsername(access));
-			}
-			else if(refresh != null) {
-				if (jwtUtil.validateToken(refresh, "refresh")) {
-					String username = jwtUtil.extractUsername(refresh);
-					String newAccess = jwtUtil.generateAccessToken(username);
-					response.addCookie(createCookie("access", newAccess, "/"));
-					setAuthentication(username);
-					return;
+		try {
+			if (access != null) {
+				if (jwtUtil.validateToken(access, "access")) {
+					System.out.println("Valid access token found: " + access);
+					setAuthentication(jwtUtil.extractUsername(access));
+				} else {
+					throw new JwtAuthenticationException("Invalid access token");
 				}
-				response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			}
+		} catch (JwtAuthenticationException e) {
+			handleException(response, "JWT authentication error: " + e.getMessage(),
+				HttpServletResponse.SC_UNAUTHORIZED);
+			return;
+		} catch (Exception e) { // 수정된 부분
+			handleException(response, "Unexpected error: " + e.getMessage(),
+				HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return;
 		}
 
 		filterChain.doFilter(request, response);
 	}
 
-	private Cookie createCookie(String name, String value, String path) {
-		Cookie cookie = new Cookie(name, value);
-		cookie.setHttpOnly(true);
-		cookie.setSecure(true);
-		cookie.setPath(path);
-		cookie.setMaxAge(60 * 60);  // 1시간
-		return cookie;
-	}
-
-	public void setAuthentication(String email) {
+	private void setAuthentication(String email) {
 		Authentication authentication = createAuthentication(email);
-		// security가 만들어주는 securityContextHolder 그 안에 authentication을 넣어줍니다.
-		// security가 securitycontextholder에서 인증 객체를 확인하는데
-		// jwtAuthfilter에서 authentication을 넣어주면 UsernamePasswordAuthenticationFilter 내부에서 인증이 된 것을 확인하고 추가적인 작업을 진행하지 않습니다.
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 
-	public Authentication createAuthentication(String email) {
+	private Authentication createAuthentication(String email) {
 		UserDetails userDetails = principalDetailsService.loadUserByUsername(email);
-		// spring security 내에서 가지고 있는 객체입니다. (UsernamePasswordAuthenticationToken)
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
-}
 
+	private void handleException(HttpServletResponse response, String message, int status) throws IOException {
+		APIResponseDto<String> apiResponse = new APIResponseDto<String>("fail", message, "");
+		response.setStatus(status);
+		response.setContentType("application/json");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonResponse = objectMapper.writeValueAsString(apiResponse);
+		response.getWriter().write(jsonResponse);
+	}
+}
