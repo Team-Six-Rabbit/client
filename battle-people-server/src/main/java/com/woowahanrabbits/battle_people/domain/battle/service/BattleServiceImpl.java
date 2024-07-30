@@ -1,10 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,7 +16,6 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleReturnDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
-import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +40,7 @@ public class BattleServiceImpl implements BattleService {
 		List<BattleBoard> list = battleRepository.findByUserIdAndType(userId, type);
 		List<BattleReturnDto> newList = new ArrayList<>();
 
-		for(BattleBoard battleBoard : list) {
+		for (BattleBoard battleBoard : list) {
 			BattleReturnDto battleReturnDto = new BattleReturnDto();
 			battleReturnDto.setBattleBoard(battleBoard);
 			battleReturnDto.setOpinionList(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
@@ -54,7 +50,6 @@ public class BattleServiceImpl implements BattleService {
 		Pageable pageable = PageRequest.of(page, 12);
 		return new PageImpl<>(newList, pageable, list.size());
 	}
-
 
 	//voteInfoId로 Battle가져오기
 	@Override
@@ -67,7 +62,7 @@ public class BattleServiceImpl implements BattleService {
 		List<BattleBoard> list = battleRepository.findByVoteInfo_CategoryAndCurrentState(category, 2);
 
 		List<BattleReturnDto> newList = new ArrayList<>();
-		for(BattleBoard battleBoard : list) {
+		for (BattleBoard battleBoard : list) {
 
 			BattleReturnDto battleReturnDto = new BattleReturnDto();
 			battleReturnDto.setBattleBoard(battleBoard);
@@ -91,7 +86,7 @@ public class BattleServiceImpl implements BattleService {
 	@Override
 	public void addBattleApplyUser(BattleApplyDto battleApplyDto) {
 		BattleApplyUser battleApplyUser = new BattleApplyUser();
-		BattleBoard battleBoard	= new BattleBoard();
+		BattleBoard battleBoard = new BattleBoard();
 		battleBoard.setId(battleApplyDto.getBattleId());
 		battleApplyUser.setBattleBoard(battleBoard);
 		User user = new User();

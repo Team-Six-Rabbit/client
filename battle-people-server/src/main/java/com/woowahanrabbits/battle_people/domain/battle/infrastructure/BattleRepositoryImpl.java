@@ -2,11 +2,6 @@ package com.woowahanrabbits.battle_people.domain.battle.infrastructure;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 
 import jakarta.persistence.EntityManager;

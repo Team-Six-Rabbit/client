@@ -1,13 +1,9 @@
 package com.woowahanrabbits.battle_people.domain.battle.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.woowahanrabbits.battle_people.domain.API.dto.APIResponseDto;
+import com.woowahanrabbits.battle_people.domain.api_response.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.VoteAcceptDto;
@@ -65,23 +61,25 @@ public class BattleController {
 			//Battle 저장
 			battleService.addBattle(battleBoard);
 
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", null));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 	}
 
 	//요청한, 요청받은 배틀 조회
 	@GetMapping("")
 	@Operation(summary = "요청한, 요청받는 배틀을 조회한다.")
-	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long user_id, int page) {
+	public ResponseEntity<?> getRequestBattleList(@RequestParam String type, @RequestParam Long userId, int page) {
 		try {
-			Page<?> list = battleService.getBattleList(type, user_id, page);
+			Page<?> list = battleService.getBattleList(type, userId, page);
 			Map<String, Object> map = new HashMap<>();
 			map.put("list", list);
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", map));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", map));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 
 	}
@@ -91,10 +89,10 @@ public class BattleController {
 	@Operation(summary = "[불씨] 배틀을 수락한다.")
 	public ResponseEntity<?> acceptBattle(@RequestBody VoteAcceptDto voteAcceptDto) {
 
-		try{
+		try {
 			//BattleBoard 내 current_state update해주기
-			Long battle_id = battleService.getBattleBoardByVoteInfoId(voteAcceptDto.getVoteInfoId()).getId();
-			battleService.updateBattleStatus(battle_id, null);
+			Long battleId = battleService.getBattleBoardByVoteInfoId(voteAcceptDto.getVoteInfoId()).getId();
+			battleService.updateBattleStatus(battleId, null);
 
 			//userId로 User 가져오기
 			User user = new User();
@@ -108,10 +106,11 @@ public class BattleController {
 			voteOpinion.setVoteInfoId(voteAcceptDto.getVoteInfoId());
 			voteService.addVoteOpinion(voteOpinion);
 
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "",null));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 
-		} catch (Exception e){
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 
 	}
@@ -120,12 +119,13 @@ public class BattleController {
 	@Operation(summary = "[불발/연기] 요청받은 배틀을 거절한다.")
 	public ResponseEntity<?> declineBattle(@RequestBody VoteDeclineDto voteDeclineDto) {
 
-		try{
+		try {
 			battleService.updateBattleStatus(voteDeclineDto.getBattleId(), voteDeclineDto.getRejectionReason());
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", null));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 
-		} catch (Exception e){
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 
 	}
@@ -138,23 +138,25 @@ public class BattleController {
 			Map<String, Object> map = new HashMap<>();
 			map.put("list", list);
 
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", map));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", map));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 	}
 
 	@GetMapping("/apply-user-list/{battleBoardId}")
 	@Operation(summary = "[불씨] 모집중인 특정 배틀에 참여 신청한 유저를 조회한다.")
 	public ResponseEntity<?> getApplyUserList(@PathVariable Long battleBoardId, int page) {
-		try{
+		try {
 			Page<?> list = battleService.getApplyUserList(battleBoardId, page);
 			Map<String, Object> map = new HashMap<>();
 			map.put("list", list);
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", map));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", map));
 
-		} catch (Exception e){
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 
 	}
@@ -162,12 +164,13 @@ public class BattleController {
 	@PostMapping("/apply")
 	@Operation(summary = "모집중인 특정 배틀에 참여 신청한다.")
 	public ResponseEntity<?> applyBattle(@RequestBody BattleApplyDto battleApplyDto) {
-		try{
+		try {
 			battleService.addBattleApplyUser(battleApplyDto);
-			return ResponseEntity.status(HttpStatus.OK).body(new APIResponseDto<>("success", "", null));
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 
-		} catch (Exception e){
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new APIResponseDto<>("fail", "internal server error", null));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
 	}
 }

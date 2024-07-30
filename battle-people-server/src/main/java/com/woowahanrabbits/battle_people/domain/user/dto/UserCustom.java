@@ -11,9 +11,9 @@ public class UserCustom {
 	private String email;
 	private String password;
 	private String nickname;
-	private String img_url;
+	private String imgUrl;
 	private int rating;
-	private String access_token;
-	private LocalDate penalty_start_date;
-	private LocalDate penalty_end_date;
+	private String accessToken;
+	private LocalDate penaltyStartDate;
+	private LocalDate penaltyEndDate;
 }

@@ -1,33 +1,40 @@
 package com.woowahanrabbits.battle_people.domain.battle.domain;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 @Data
 public class BattleApplyUserId implements Serializable {
-    private Long battleBoard;
-    private Long user;
 
-    // 기본 생성자
-    public BattleApplyUserId() {
-    }
+	private Long user;
+	private Long battleBoard;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	// 기본 생성자
+	public BattleApplyUserId() {
+	}
 
-        BattleApplyUserId that = (BattleApplyUserId) o;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
 
-        if (!user.equals(that.user)) return false;
-        return battleBoard.equals(that.battleBoard);
-    }
+		BattleApplyUserId that = (BattleApplyUserId)obj;
 
-    @Override
-    public int hashCode() {
-        int result = user.hashCode();
-        result = 31 * result + battleBoard.hashCode();
-        return result;
-    }
+		if (!user.equals(that.user)) {
+			return false;
+		}
+		return battleBoard.equals(that.battleBoard);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = user.hashCode();
+		result = 31 * result + battleBoard.hashCode();
+		return result;
+	}
 }

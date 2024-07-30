@@ -22,5 +22,5 @@ public class SwaggerConfig {
 			.description("<h3>SSAFIT에서 사용되는 RESTAPI에 대한 문서를 제공한다.</h3>")
 			.version("1.0.0");
 	}
-
 }
+

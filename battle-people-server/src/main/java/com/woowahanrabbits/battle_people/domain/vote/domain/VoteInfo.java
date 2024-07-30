@@ -19,11 +19,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class VoteInfo {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String title;
-    private Date startDate;
-    private Date endDate;
-    private int category;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String title;
+	private Date startDate;
+	private Date endDate;
+	private int category;
 }
