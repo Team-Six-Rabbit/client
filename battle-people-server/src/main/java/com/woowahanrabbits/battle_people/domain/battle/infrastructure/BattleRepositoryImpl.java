@@ -23,7 +23,7 @@ public class BattleRepositoryImpl implements BattleRepositoryCustom {
 
 	@Override
 	@Transactional
-	public void updateBattleBoardStatus(Long battleId, String rejectionReason) {
+	public void updateBattleBoardStatus(Long battleId, int currentState, String rejectionReason) {
 		String queryString = "UPDATE BattleBoard b SET b.currentState = :currentState";
 
 		if (rejectionReason != null) {
@@ -33,7 +33,7 @@ public class BattleRepositoryImpl implements BattleRepositoryCustom {
 		queryString += " WHERE b.id = :battleId";
 
 		Query query = entityManager.createQuery(queryString);
-		query.setParameter("currentState", rejectionReason == null ? 2 : 1);
+		query.setParameter("currentState", currentState);
 		query.setParameter("battleId", battleId);
 
 		if (rejectionReason != null) {

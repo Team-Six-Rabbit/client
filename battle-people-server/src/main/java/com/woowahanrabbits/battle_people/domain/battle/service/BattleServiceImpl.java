@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
@@ -98,6 +99,30 @@ public class BattleServiceImpl implements BattleService {
 		return newList.stream().map(battleBoard -> new BattleResponse(
 			battleBoard, voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId())
 		)).toList();
+	}
+
+	@Override
+	public void acceptOrDeclineBattle(BattleRespondRequest battleRespondRequest, User user) {
+		BattleBoard battleBoard = battleRepository.findById(battleRespondRequest.getBattleId()).orElseThrow();
+
+		if (battleBoard.getOppositeUser().getId() != user.getId() || battleBoard.getCurrentState() != 0) {
+			throw new RuntimeException();
+		}
+
+		//수락할 때
+		if (battleRespondRequest.getRespond().equals("accept")) {
+			battleRepository.updateBattleBoardStatus(battleRespondRequest.getBattleId(), 2, null);
+			VoteOpinion voteOpinion = VoteOpinion.builder()
+				.voteOpinionIndex(1)
+				.voteInfoId(battleBoard.getVoteInfo().getId())
+				.user(user)
+				.opinion(battleRespondRequest.getContent())
+				.build();
+			voteOpinionRepository.save(voteOpinion);
+		} else if (battleRespondRequest.getRespond().equals("decline")) {
+			battleRepository.updateBattleBoardStatus(battleRespondRequest.getBattleId(), 1,
+				battleRespondRequest.getContent());
+		}
 	}
 
 	// 	//배틀 등록

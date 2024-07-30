@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
@@ -71,28 +72,23 @@ public class BattleController {
 				.body(new ApiResponseDto<>("error", "", null));
 		}
 	}
-	//
-	// 	//
-	// 	@PostMapping("/accept")
-	// 	@Operation(summary = "[불씨] 배틀을 수락한다.")
-	// 	public ResponseEntity<?> acceptBattle(@RequestBody VoteAcceptDto voteAcceptDto) {
-	// 		//BattleBoard 내 current_state update해주기
-	// 		Long battleId = battleService.getBattleBoardByVoteInfoId(voteAcceptDto.getVoteInfoId()).getId();
-	// 		battleService.updateBattleStatus(battleId, null);
-	//
-	// 		//userId로 User 가져오기
-	// 		User user = new User();
-	// 		user.setId(voteAcceptDto.getUserId());
-	//
-	// 		//voteOpinion에 상대 의견 추가하기
-	// 		VoteOpinion voteOpinion = new VoteOpinion();
-	// 		voteOpinion.setVoteOpinionIndex(1);
-	// 		voteOpinion.setOpinion(voteAcceptDto.getOpinion());
-	// 		voteOpinion.setUser(user);
-	// 		voteOpinion.setVoteInfoId(voteAcceptDto.getVoteInfoId());
-	// 		voteService.addVoteOpinion(voteOpinion);
-	// 		return new ResponseEntity<>(HttpStatus.OK);
-	// 	}
+
+	@PostMapping("/accept-or-decline")
+	@Operation(summary = "[불씨] 배틀을 수락 또는 거절한다.")
+	public ResponseEntity<?> acceptOrDeclineBattle(@RequestBody BattleRespondRequest battleRespondRequest,
+		@RequestParam Long userId) {
+
+		try {
+			User user = userRepository.findById(userId).orElseThrow();
+			battleService.acceptOrDeclineBattle(battleRespondRequest, user);
+			return ResponseEntity.status(HttpStatus.OK)
+				.body(new ApiResponseDto<>("success", "", null));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("error", "", null));
+
+		}
+	}
 	//
 	// 	@PostMapping("/decline")
 	// 	@Operation(summary = "[불발/연기] 요청받은 배틀을 거절한다.")

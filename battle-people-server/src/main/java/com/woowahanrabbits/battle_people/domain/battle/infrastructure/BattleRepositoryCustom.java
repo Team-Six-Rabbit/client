@@ -10,7 +10,7 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
 public interface BattleRepositoryCustom {
-	void updateBattleBoardStatus(Long battleId, String rejectionReason);
+	void updateBattleBoardStatus(Long battleId, int currentState, String rejectionReason);
 
 	Page<BattleBoard> findByUserIdAndType(Long userId, String type, Pageable pageable);
 
