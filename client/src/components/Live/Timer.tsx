@@ -1,11 +1,11 @@
-// src/Timer.tsx
 import { useState, useEffect, useRef } from "react";
 
 interface TimerProps {
 	duration: number; // 타이머의 전체 시간(초)
+	onTimeOver: () => void; // 타이머가 끝났을 때 호출되는 함수
 }
 
-function Timer({ duration }: TimerProps) {
+function Timer({ duration, onTimeOver }: TimerProps) {
 	const [timeLeft, setTimeLeft] = useState(duration);
 	const intervalRef = useRef<number | null>(null);
 
@@ -32,6 +32,12 @@ function Timer({ duration }: TimerProps) {
 			}
 		};
 	}, [duration]);
+
+	useEffect(() => {
+		if (timeLeft === 0) {
+			onTimeOver();
+		}
+	}, [timeLeft, onTimeOver]);
 
 	const formatTime = (seconds: number) => {
 		const hrs = Math.floor(seconds / 3600);

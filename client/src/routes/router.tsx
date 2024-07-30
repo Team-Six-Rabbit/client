@@ -4,6 +4,7 @@ import App from "@/App";
 import LoginPage from "@/pages/LoginPage";
 import SignUpPage from "@/pages/SignUpPage";
 import LiveBoardPage from "@/pages/LiveBoardPage";
+import LivePage from "@/pages/LivePage";
 
 const router = createBrowserRouter([
 	{
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
 	{
 		path: "/firework",
 		element: <LiveBoardPage />,
+	},
+	{
+		path: "/live",
+		element: <LivePage />,
 	},
 ]);
 

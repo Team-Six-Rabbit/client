@@ -30,7 +30,7 @@ function VideoAudioIcons() {
 			>
 				{isVideoDisabled ? (
 					<FaVideoSlash
-						size={38}
+						size={36}
 						className="text-white cursor-pointer transform hover:scale-110"
 						onClick={handleVideoClick}
 					/>
@@ -49,7 +49,7 @@ function VideoAudioIcons() {
 			>
 				{isMicMuted ? (
 					<FaMicrophoneSlash
-						size={38}
+						size={36}
 						className="text-white cursor-pointer transform hover:scale-110"
 						onClick={handleMicClick}
 					/>
