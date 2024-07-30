@@ -30,5 +30,12 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 	List<Object[]> findAllByCategoryAndStatus(@Param("category") Integer category,
 		@Param("status") int status);
 
+	@Query(value = "select bb.id as battleId, vi.id as voteInfoId, vi.title as title, vi.start_date as startDate, "
+		+ "vi.end_date as endDate, vi.category as category, bb.current_state as currentState, bb.detail as detail "
+		+ "from vote_info vi left join battle_board bb on vi.id = bb.vote_info_id "
+		+ "where bb.id = :id",
+		nativeQuery = true)
+	Object[] findByBattleId(@Param("id") Long id);
+
 }
 

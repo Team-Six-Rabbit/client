@@ -10,11 +10,14 @@ public class VoteOpinionDto {
 	private final Integer index;
 	private final String opinion;
 	@Setter
-	private Integer finalCount;
+	private Integer count;
+	@Setter
+	private Integer percentage;
 
 	public VoteOpinionDto(VoteOpinion vote) {
 		this.index = vote.getVoteOpinionIndex();
 		this.opinion = vote.getOpinion();
-		this.finalCount = vote.getFinalCount();
+		this.percentage = 0;
+		this.count = 0;
 	}
 }

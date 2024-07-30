@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.AddBalanceGameCommentRequest;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
@@ -68,6 +69,15 @@ public class BalanceGameController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(new ApiResponseDto<>("fail", "internal server error", null));
 		}
+	}
+
+	@GetMapping("/detail")
+	@Operation(summary = "Id 값으로 밸런스 게임 조회")
+	public ResponseEntity<ApiResponseDto<?>> getBalanceGameById(@RequestParam Long id, @RequestParam Long userId) {
+		User user = userRepository.findById(userId).orElseThrow();
+		BalanceGameResponse balanceGameResponse = balanceGameService.getBalanceGameById(id, user);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ApiResponseDto<>("success", "", null));
 	}
 
 	@PatchMapping("")

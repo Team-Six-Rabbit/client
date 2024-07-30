@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -83,7 +82,7 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	}
 
 	@Override
-	public Page<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user) {
+	public List<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user) {
 		Pageable pageable = PageRequest.of(page, 12);
 		List<Object[]> list = null;
 
@@ -98,35 +97,31 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 		for (Object[] result : list) {
 
-			Long battleId = ((Number)result[0]).longValue();
 			Long voteInfoId = ((Number)result[1]).longValue();
-			String title = (String)result[2];
-			Date startDate = (Date)result[3];
-			Date endDate = (Date)result[4];
-			Integer categoryId = ((Number)result[5]).intValue();
-			int currentStatus = ((Number)result[6]).intValue();
-			String detail = (String)result[7];
-
-			BalanceGameResponse dto = BalanceGameResponse.builder()
-				.id(battleId)
-				.title(title)
-				.detail(detail)
-				.startDate(startDate)
-				.endDate(endDate)
-				.category(categoryId)
-				.currentState(currentStatus)
-				.build();
+			BalanceGameResponse dto = convertToBalanceGameResponse(result);
 
 			List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
 			List<VoteOpinionDto> voteOpinionDtos = new ArrayList<>();
 
-			for (VoteOpinion vote : voteOpinions) {
+			int totalVotes = 0;
+			int[] cnt = new int[2];
+			for (int i = 0; i < voteOpinions.size(); i++) {
+				VoteOpinion vote = voteOpinions.get(i);
 				VoteOpinionDto voteOpinionDto = new VoteOpinionDto(vote);
-				voteOpinionDto.setFinalCount(
-					userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(voteInfoId, vote.getVoteOpinionIndex())
-						.size());
+				cnt[i] = userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(voteInfoId,
+					vote.getVoteOpinionIndex()).size();
+				voteOpinionDto.setCount(cnt[i]);
 				voteOpinionDtos.add(voteOpinionDto);
+				totalVotes += cnt[i];
 			}
+
+			if (totalVotes > 0) {
+				int percentage1 = (int)((cnt[0] * 100) / totalVotes);
+
+				voteOpinionDtos.get(0).setPercentage(percentage1);
+				voteOpinionDtos.get(1).setPercentage(100 - percentage1);
+			}
+
 			dto.setOpinions(voteOpinionDtos);
 
 			//유저 투표정보 확인
@@ -137,7 +132,7 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 			dtoResults.add(dto);
 		}
-		return new PageImpl<>(dtoResults, pageable, dtoResults.size());
+		return new PageImpl<>(dtoResults, pageable, dtoResults.size()).toList();
 	}
 
 	@Override
@@ -179,5 +174,66 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	public List<UserVoteOpinion> getUserVotelist(User user) {
 		List<UserVoteOpinion> list = userVoteOpinionRepository.findByUserId(user.getId());
 		return list;
+	}
+
+	@Override
+	public BalanceGameResponse getBalanceGameById(Long id, User user) {
+		Object[] obj = voteInfoRepository.findByBattleId(id);
+
+		Long voteInfoId = ((Number)obj[1]).longValue();
+		BalanceGameResponse balanceGameResponse = convertToBalanceGameResponse(obj);
+
+		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
+		List<VoteOpinionDto> voteOpinionDtos = new ArrayList<>();
+
+		int totalVotes = 0;
+		int[] cnt = new int[2];
+		for (int i = 0; i < voteOpinions.size(); i++) {
+			VoteOpinion vote = voteOpinions.get(i);
+			VoteOpinionDto voteOpinionDto = new VoteOpinionDto(vote);
+			cnt[i] = userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(voteInfoId,
+				vote.getVoteOpinionIndex()).size();
+			voteOpinionDto.setCount(cnt[i]);
+			voteOpinionDtos.add(voteOpinionDto);
+			totalVotes += cnt[i];
+		}
+
+		if (totalVotes > 0) {
+			int percentage1 = (int)((cnt[0] * 100) / totalVotes);
+
+			voteOpinionDtos.get(0).setPercentage(percentage1);
+			voteOpinionDtos.get(1).setPercentage(100 - percentage1);
+		}
+
+		balanceGameResponse.setOpinions(voteOpinionDtos);
+
+		//유저 투표정보 확인
+		UserVoteOpinion uvo = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(), voteInfoId);
+		if (uvo != null) {
+			balanceGameResponse.setUserVote(uvo.getVoteInfoIndex());
+		}
+		return balanceGameResponse;
+	}
+
+	public BalanceGameResponse convertToBalanceGameResponse(Object[] obj) {
+		Long battleId = ((Number)obj[0]).longValue();
+		String title = (String)obj[2];
+		Date startDate = (Date)obj[3];
+		Date endDate = (Date)obj[4];
+		Integer categoryId = ((Number)obj[5]).intValue();
+		int currentStatus = ((Number)obj[6]).intValue();
+		String detail = (String)obj[7];
+
+		BalanceGameResponse dto = BalanceGameResponse.builder()
+			.id(battleId)
+			.title(title)
+			.detail(detail)
+			.startDate(startDate)
+			.endDate(endDate)
+			.category(categoryId)
+			.currentState(currentStatus)
+			.build();
+
+		return dto;
 	}
 }
