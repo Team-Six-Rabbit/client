@@ -11,8 +11,8 @@ interface BoardHeaderProps {
 	categories: Category[];
 	selectedCategory: string;
 	onCategorySelect: (category: string) => void;
-	selectedStatus: LiveStatus;
-	onStatusSelect: (status: LiveStatus) => void;
+	selectedStatus?: LiveStatus;
+	onStatusSelect?: (status: LiveStatus) => void;
 	boardIcon?: string;
 }
 
@@ -64,7 +64,6 @@ function BoardHeader({
 	boardIcon,
 }: BoardHeaderProps) {
 	const getStatuses = (boardName: string): LiveStatus[] => {
-		// 수정된 부분
 		if (boardName === "불구경") {
 			return ["live", "upcoming", "ended"];
 		}
@@ -96,7 +95,7 @@ function BoardHeader({
 			)}
 			<div className="flex items-center justify-between mt-4">
 				<CategoryTitle>#{selectedCategory}</CategoryTitle>
-				{boardName !== "부채질" && (
+				{boardName !== "부채질" && selectedStatus && onStatusSelect && (
 					<RadioButtonGroup
 						statuses={getStatuses(boardName)}
 						selectedStatus={selectedStatus}
@@ -109,6 +108,8 @@ function BoardHeader({
 }
 
 BoardHeader.defaultProps = {
+	selectedStatus: undefined,
+	onStatusSelect: undefined,
 	boardIcon: fireIcon,
 };
 
