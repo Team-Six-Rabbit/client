@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
@@ -108,11 +109,17 @@ public class BattleController {
 		}
 	}
 
-	// 	@PostMapping("/apply")
-	// 	@Operation(summary = "모집중인 특정 배틀에 참여 신청한다.")
-	// 	public ResponseEntity<?> applyBattle(@RequestBody BattleApplyDto battleApplyDto) {
-	// 		battleService.addBattleApplyUser(battleApplyDto);
-	// 		return new ResponseEntity<>(HttpStatus.OK);
-	// 	}
-}
+	@PostMapping("/apply")
+	@Operation(summary = "모집중인 특정 배틀에 참여 신청한다.")
+	public ResponseEntity<?> applyBattle(@RequestBody @Valid BattleApplyDto battleApplyDto, @RequestParam Long userId) {
+		User user = userRepository.findById(userId).orElseThrow();
+		try {
+			battleService.applyBattle(battleApplyDto, user);
+			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("error", "", null));
+		}
 
+	}
+}

@@ -10,8 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.AwaitingBattleResponseDto;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
@@ -24,6 +26,7 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
+import com.woowahanrabbits.battle_people.global.AppProperties;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +39,7 @@ public class BattleServiceImpl implements BattleService {
 	private final BattleApplyUserRepository battleApplyUserRepository;
 	private final VoteInfoRepository voteInfoRepository;
 	private final UserRepository userRepository;
+	private final AppProperties appProperties;
 
 	@Override
 	public void registBattle(BattleInviteRequest battleInviteRequest, User user) {
@@ -156,75 +160,28 @@ public class BattleServiceImpl implements BattleService {
 			.collect(Collectors.toList());
 	}
 
-	// 	//배틀 등록
-	// 	@Override
-	// 	public void addBattle(BattleBoard battleBoard) {
-	// 		battleRepository.save(battleBoard);
-	// 	}
-	//
-	// 	//내가 요청한, 요청받은 배틀 리스트 조회
-	// 	@Override
-	// 	public Page<BattleReturnDto> getBattleList(String type, long userId, Pageable pageable) {
-	// 		List<BattleBoard> page = battleRepository.findByUserIdAndType(userId, type, pageable).getContent();
-	// 		List<BattleReturnDto> newList = new ArrayList<>();
-	// 		for (BattleBoard battleBoard : page) {
-	// 			BattleReturnDto battleReturnDto = new BattleReturnDto();
-	// 			battleReturnDto.setBattle(battleBoard);
-	// 			battleReturnDto.setOpinions(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
-	// 			newList.add(battleReturnDto);
-	// 		}
-	// 		// System.out.println(page.toList().toString());
-	// 		return new PageImpl<>(newList);
-	// 	}
-	//
-	// 	//voteInfoId로 Battle가져오기
-	// 	@Override
-	// 	public BattleBoard getBattleBoardByVoteInfoId(Long voteInfoId) {
-	// 		return battleRepository.findByVoteInfoId(voteInfoId);
-	// 	}
-	//
-	// 	@Override
-	// 	public Page<?> getAwaitingBattleList(int category, Pageable pageable) {
-	// 		List<BattleBoard> list = battleRepository.findByVoteInfo_CategoryAndCurrentState(category, 2, pageable)
-	// 			.getContent();
-	// 		List<BattleReturnDto> newList = new ArrayList<>();
-	// 		for (BattleBoard battleBoard : list) {
-	//
-	// 			BattleReturnDto battleReturnDto = new BattleReturnDto();
-	//
-	// 			battleReturnDto.setBattle(battleBoard);
-	// 			battleReturnDto.setOpinions(voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId()));
-	// 			newList.add(battleReturnDto);
-	// 		}
-	// 		return new PageImpl<>(newList, pageable, list.size());
-	// 	}
-	//
-	// 	//라이브에 참여 신청한 유저 리스트 리턴
-	// 	@Override
-	// 	public Page<?> getApplyUserList(Long battleBoardId, Pageable pageable) {
-	// 		Page<BattleApplyUser> list = battleApplyUserRepository.findByBattleBoard_Id(battleBoardId, pageable);
-	//
-	// 		return list;
-	// 	}
-	//
-	// 	//라이브 참여 신청한 유저 넣기
-	// 	@Override
-	// 	public void addBattleApplyUser(BattleApplyDto battleApplyDto) {
-	// 		BattleApplyUser battleApplyUser = new BattleApplyUser();
-	// 		BattleBoard battleBoard = new BattleBoard();
-	// 		battleBoard.setId(battleApplyDto.getBattleId());
-	// 		battleApplyUser.setBattleBoard(battleBoard);
-	// 		User user = new User();
-	// 		user.setId(battleApplyDto.getUserId());
-	// 		battleApplyUser.setUser(user);
-	// 		battleApplyUser.setSelectedOpinion(battleApplyDto.getSelectedOpinion());
-	// 		battleApplyUserRepository.save(battleApplyUser);
-	// 	}
-	//
-	// 	//rejectionReason 여부에 따라 battleBoard 내 currentState update
-	// 	@Override
-	// 	public void updateBattleStatus(Long battleId, String rejectionReason) {
-	// 		battleRepository.updateBattleBoardStatus(battleId, rejectionReason);
-	// 	}
+	@Override
+	public void applyBattle(BattleApplyDto battleApplyDto, User user) {
+		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId()).orElseThrow();
+		if (battleBoard.getOppositeUser().getId() == user.getId()
+			|| battleBoard.getRegistUser().getId() == user.getId()) {
+			//주최자는 참여 신청 X
+			throw new RuntimeException();
+		}
+		if (battleBoard.getCurrentState() != 2) {
+			//참여 모집중이 아닌 배틀
+			throw new RuntimeException();
+		}
+		BattleApplyUser battleApplyUser = BattleApplyUser.builder()
+			.battleBoard(battleBoard)
+			.user(user)
+			.selectedOpinion(battleApplyDto.getSelectedOpinion())
+			.build();
+		battleApplyUserRepository.save(battleApplyUser);
 
+		int currentPeopleCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
+		if (currentPeopleCount > appProperties.getMinPeopleCount()) {
+			battleRepository.updateBattleBoardStatus(battleBoard.getId(), 3, null);
+		}
+	}
 }
