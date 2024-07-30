@@ -9,10 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
+@ToString
 public class User {
 
 	@Id
@@ -36,4 +38,5 @@ public class User {
 	private String accessToken;
 	private LocalDate penaltyStartDate;
 	private LocalDate penaltyEndDate;
+
 }

@@ -11,17 +11,25 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * @deprecated
+ * This class is deprecated and will be removed in a future release.
+ * Use {@link BattleResponse} instead.
+ */
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+
+@Deprecated(forRemoval = true)
 public class BattleReturnDto {
 
 	// BattleBoard 관련 필드
-	private BattleBoard battleBoard;
+	private BattleBoard battle;
 
 	// VoteInfo 관련 필드
-	private List<VoteOpinion> opinionList;
+	private List<VoteOpinion> opinions;
 
 }
