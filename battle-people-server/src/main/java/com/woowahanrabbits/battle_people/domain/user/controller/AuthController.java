@@ -37,7 +37,7 @@ public class AuthController {
 	private final UserTokenRepository userTokenRepository;
 	private final JwtUtil jwtUtil;
 
-	@Secured("ROLE_USER")
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/test")
 	public ResponseEntity<?> test(@CookieValue(name = "access") String access, HttpServletRequest request) {
 		System.out.println(SecurityContextHolder.getContext().getAuthentication().toString());

@@ -11,7 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.woowahanrabbits.battle_people.domain.user.handler.ForbiddenException;
+import com.woowahanrabbits.battle_people.domain.user.handler.ForbiddenExceptionHandler;
 import com.woowahanrabbits.battle_people.domain.user.handler.JwtAuthenticationEntryPoint;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtFilter;
@@ -28,7 +28,7 @@ public class SecurityConfig {
 	private final UserRepository userRepository;
 	private final JwtUtil jwtUtil;
 	private final PrincipalDetailsService principalDetailsService;
-	private final ForbiddenException forbiddenException;
+	private final ForbiddenExceptionHandler forbiddenExceptionHandler;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 	@Bean
@@ -58,7 +58,7 @@ public class SecurityConfig {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http.exceptionHandling(exception -> exception // 수정된 부분
-			.accessDeniedHandler(forbiddenException) // 수정된 부분
+			.accessDeniedHandler(forbiddenExceptionHandler) // 수정된 부분
 			.authenticationEntryPoint(jwtAuthenticationEntryPoint)); // 수정된 부분
 		return http.build();
 	}

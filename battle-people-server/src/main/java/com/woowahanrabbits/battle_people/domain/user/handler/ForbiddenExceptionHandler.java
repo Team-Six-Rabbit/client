@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class ForbiddenException implements AccessDeniedHandler {
+public class ForbiddenExceptionHandler implements AccessDeniedHandler {
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
