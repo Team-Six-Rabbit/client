@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "@/assets/styles/scrollbar.css";
 import { RiCornerDownLeftLine } from "react-icons/ri";
+import "@/assets/styles/scrollbar.css";
 
 interface ChatMessageProps {
 	message: string;
