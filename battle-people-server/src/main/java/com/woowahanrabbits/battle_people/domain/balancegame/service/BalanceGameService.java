@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.AddBalanceGameCommentRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
@@ -19,7 +19,7 @@ public interface BalanceGameService {
 
 	List<?> getCommentsByBattleId(Long id);
 
-	void addComment(BalanceGameCommentDto balanceGameCommentDto);
+	void addComment(AddBalanceGameCommentRequest addBalanceGameCommentRequest, User user);
 
 	List<UserVoteOpinion> getUserVotelist(User user);
 }

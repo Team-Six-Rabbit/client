@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.balancegame.domain.BalanceGameBoardComment;
-import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.AddBalanceGameCommentRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
@@ -164,12 +164,12 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	}
 
 	@Override
-	public void addComment(BalanceGameCommentDto balanceGameCommentDto) {
+	public void addComment(AddBalanceGameCommentRequest addBalanceGameCommentRequest, User user) {
 
 		BalanceGameBoardComment bgbcomment = BalanceGameBoardComment.builder()
-			.user(balanceGameCommentDto.getUser())
-			.content(balanceGameCommentDto.getContent())
-			.battleBoard(BattleBoard.builder().id(balanceGameCommentDto.getBattleBoardId()).build())
+			.user(user)
+			.content(addBalanceGameCommentRequest.getContent())
+			.battleBoard(battleRepository.findById(addBalanceGameCommentRequest.getBattleId()).orElseThrow())
 			.build();
 
 		balanceGameRepository.save(bgbcomment);

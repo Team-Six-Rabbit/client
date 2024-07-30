@@ -9,7 +9,7 @@ import lombok.Getter;
 public class AddBalanceGameCommentRequest {
 	@NotNull
 	@Min(1)
-	private String battleId;
+	private Long battleId;
 	@NotBlank
 	private String content;
 }

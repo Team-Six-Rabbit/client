@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
-import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentDto;
+import com.woowahanrabbits.battle_people.domain.balancegame.dto.AddBalanceGameCommentRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
@@ -90,7 +90,7 @@ public class BalanceGameController {
 
 	@GetMapping("/comment")
 	@Operation(summary = "특정 밸런스 게임에 대한 댓글을 불러옵니다.")
-	public ResponseEntity<?> getCommentListByBattleId(@RequestParam Long id) {
+	public ResponseEntity<?> getCommentListByBattleId(@RequestParam @Valid Long id) {
 		try {
 			List<?> list = balanceGameService.getCommentsByBattleId(id);
 			if (list.isEmpty()) {
@@ -105,13 +105,11 @@ public class BalanceGameController {
 
 	@PostMapping("/comment")
 	@Operation(summary = "특정 밸런스 게임에 댓글을 작성합니다.")
-	public ResponseEntity<?> addComment(@RequestBody BalanceGameCommentDto balanceGameCommentDto,
+	public ResponseEntity<?> addComment(@RequestBody @Valid AddBalanceGameCommentRequest addBalanceGameCommentRequest,
 		@RequestParam("userId") int userId) {
 		try {
-			User user = new User();
-			user.setId(userId);
-			balanceGameCommentDto.setUser(user);
-			balanceGameService.addComment(balanceGameCommentDto);
+			User user = userRepository.findById((long)userId).orElseThrow();
+			balanceGameService.addComment(addBalanceGameCommentRequest, user);
 			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 		} catch (Exception e) {
 			e.printStackTrace();
