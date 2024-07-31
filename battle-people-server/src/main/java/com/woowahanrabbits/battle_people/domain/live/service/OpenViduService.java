@@ -12,9 +12,9 @@ public interface OpenViduService {
 
 	Recording startRecording(String roomId);
 
-	boolean stopRecording(Long battleId, Long userId, int selectedOpinion, String recordingId);
+	boolean stopRecording(Long battleId, Long userId, String recordingId);
 
 	Recording getRecording(String recordingId);
 
-	String changeRole(Long battleId, String roomId, Long userId, int selectedOpinion);
+	String changeRole(Long battleId, String roomId, Long userId);
 }

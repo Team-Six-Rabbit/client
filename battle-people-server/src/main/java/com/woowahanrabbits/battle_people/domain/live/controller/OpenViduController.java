@@ -1,7 +1,6 @@
 package com.woowahanrabbits.battle_people.domain.live.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,13 +49,13 @@ public class OpenViduController {
 		}
 	}
 
-	@GetMapping("/change-user-role")
-	public String changeUserRole(@RequestParam Long battleId, @RequestParam String roomId, @RequestParam Long userId,
-		@RequestParam int selectedOpinion) {
+	@PostMapping("/change-user-role")
+	public String changeUserRole(@RequestParam Long battleId, @RequestParam String roomId, @RequestParam Long userId) {
 		try {
-			return openViduService.changeRole(battleId, roomId, userId, selectedOpinion);
+			return openViduService.changeRole(battleId, roomId, userId);
 		} catch (Exception e) {
 			return null;
 		}
 	}
+
 }

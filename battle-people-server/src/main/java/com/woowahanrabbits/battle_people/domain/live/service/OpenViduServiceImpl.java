@@ -3,6 +3,7 @@ package com.woowahanrabbits.battle_people.domain.live.service;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import com.woowahanrabbits.battle_people.domain.live.infrastructure.LiveVoiceRec
 import com.woowahanrabbits.battle_people.domain.live.infrastructure.RoomRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 
 import io.openvidu.java.client.ConnectionProperties;
 import io.openvidu.java.client.ConnectionType;
@@ -36,6 +38,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 	private final UserRepository userRepository;
 	private final LiveVoiceRecordRepository liveVoiceRecordRepository;
 	private final BattleBoardRepository battleBoardRepository;
+	private final UserVoteOpinionRepository userVoteOpinionRepository;
 	private final Map<String, Session> sessions = new HashMap<>();
 	private final Map<Long, String> userRecordings = new HashMap<>();
 
@@ -45,7 +48,8 @@ public class OpenViduServiceImpl implements OpenViduService {
 		LiveApplyUserRepository liveApplyUserRepository,
 		UserRepository userRepository,
 		LiveVoiceRecordRepository liveVoiceRecordRepository,
-		BattleBoardRepository battleBoardRepository) {
+		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository) {
+		this.userVoteOpinionRepository = userVoteOpinionRepository;
 		this.openVidu = new OpenVidu(openviduUrl, secret);
 		this.roomRepository = roomRepository;
 		this.liveApplyUserRepository = liveApplyUserRepository;
@@ -114,12 +118,15 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	@Override
-	public boolean stopRecording(Long battleId, Long userId, int selectedOpinion, String recordingId) {
+	public boolean stopRecording(Long battleId, Long userId, String recordingId) {
 		try {
 			liveVoiceRecordRepository.save(LiveVoiceRecord.builder()
 				.battleBoard(battleBoardRepository.findById(battleId).orElse(null))
 				.user(userRepository.findById(userId).orElse(null))
-				.selectedOpinion(selectedOpinion)
+				.selectedOpinion(userVoteOpinionRepository.findByUser_IdAndVoteInfo_Id(userId,
+					Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null))
+						.getVoteInfo()
+						.getId()).getVoteInfoIndex())
 				.recordUrl(openVidu.stopRecording(recordingId).getUrl())
 				.build()
 			);
@@ -156,7 +163,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	@Override
-	public String changeRole(Long battleId, String roomId, Long userId, int selectedOpinion) {
+	public String changeRole(Long battleId, String roomId, Long userId) {
 		try {
 			LiveApplyUser liveApplyUser = liveApplyUserRepository.findByRoomIdAndParticipantId(
 				roomRepository.findByRoomId(roomId).getId(), userId);
@@ -166,7 +173,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 
 			if (liveApplyUser.getRole().equals("publisher")) {
 				String recordingId = userRecordings.get(userId);
-				stopRecording(battleId, userId, selectedOpinion, recordingId);
+				stopRecording(battleId, userId, recordingId);
 				userRecordings.remove(userId);
 			} else {
 				Recording recording = startRecording(roomId);
