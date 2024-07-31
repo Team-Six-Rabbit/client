@@ -1,6 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.user.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,7 +18,6 @@ import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
-import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 import com.woowahanrabbits.battle_people.util.HttpUtils;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Getter
-public class UserServiceImpl implements UserService {
+public class UserService implements com.woowahanrabbits.battle_people.domain.user.service.UserService {
 	private final UserRepository userRepository;
 	private final UserTokenRepository userTokenRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -102,6 +102,16 @@ public class UserServiceImpl implements UserService {
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(new ApiResponseDto<>("success", "User joined", userRepository.getUserIdByEmail(email)));
+	}
+
+	@Override
+	public ResponseEntity<ApiResponseDto<?>> findAllUsers() {
+		List<User> list = userRepository.findAll();
+		if (list.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+				.body(new ApiResponseDto<>("success", "user is Empty", null));
+		}
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "userList", list));
 	}
 
 }

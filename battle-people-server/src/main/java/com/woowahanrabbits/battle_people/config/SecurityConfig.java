@@ -46,7 +46,7 @@ public class SecurityConfig {
 		http.httpBasic(basic -> basic.disable());
 
 		http.authorizeHttpRequests(auth -> auth
-			.requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/")
+			.requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/", "/user")
 			.permitAll()
 			.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html",
 				"/webjars/**").permitAll() // Swagger 엔드포인트 허용

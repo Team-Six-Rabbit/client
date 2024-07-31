@@ -15,7 +15,7 @@ import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
-import com.woowahanrabbits.battle_people.domain.user.service.impl.UserServiceImpl;
+import com.woowahanrabbits.battle_people.domain.user.service.impl.UserService;
 import com.woowahanrabbits.battle_people.util.HttpUtils;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -27,13 +27,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-	private final UserServiceImpl userServiceImpl;
+	private final UserService userService;
 	private final UserTokenRepository userTokenRepository;
 	private final JwtUtil jwtUtil;
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-		Map<String, Object> map = userServiceImpl.login(loginRequest, response);
+		Map<String, Object> map = userService.login(loginRequest, response);
 		response = (HttpServletResponse)map.get("response");
 		return (ResponseEntity<?>)map.get("responseEntity");
 	}
