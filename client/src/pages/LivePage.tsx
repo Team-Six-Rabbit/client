@@ -6,7 +6,7 @@ import Timer from "@/components/Live/Timer";
 import LiveVote from "@/components/Live/LiveVote";
 import ItemBox from "@/components/Live/ItemBox";
 import EndedLive from "@/components/Live/EndLive";
-import Header from "@/components/header/header";
+import Header from "@/components/header";
 
 function LivePage() {
 	const [winner, setWinner] = useState("");
