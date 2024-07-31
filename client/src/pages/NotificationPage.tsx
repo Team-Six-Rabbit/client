@@ -9,25 +9,25 @@ const notificationsData = [
 	{
 		code: "A1",
 		message:
-			"‘마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
+			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
 		category: "Live",
 	},
 	{
 		code: "A2",
 		message:
-			"‘마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
+			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
 		category: "Live",
 	},
 	{
 		code: "A3",
 		message:
-			"‘마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
+			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
 		category: "Live",
 	},
 	{
 		code: "A4",
 		message:
-			"‘마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
+			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
 		category: "Live",
 	},
 	{
