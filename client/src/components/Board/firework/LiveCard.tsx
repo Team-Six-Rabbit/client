@@ -4,7 +4,7 @@ import { LiveStatus } from "@/types/Board/liveStatus";
 import UpcomingLivePreviewModal from "@/components/Modal/UpcomingLivePreviewModal";
 import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import { createLiveStateBorder } from "@/utils/textBorder";
-import { formatDate } from "@/utils/dateTransform";
+import { formatToLocalTime } from "@/utils/dateUtils";
 
 const getLiveStatusBackgroundColor = (status: LiveStatus, index: number) => {
 	if (status === "live") return "bg-transparent";
@@ -103,7 +103,9 @@ function LiveCard({
 					<div className="flex justify-between items-center">
 						<p className="text-base text-black">{regist_user_id}</p>
 						{status === "upcoming" && start_date && (
-							<div className="text-sm text-black">{formatDate(start_date)}</div>
+							<div className="text-sm text-black">
+								{formatToLocalTime(start_date, "Asia/Seoul")}
+							</div>
 						)}
 						{status === "live" && (
 							<div className="text-sm text-black">
