@@ -1,11 +1,11 @@
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { MouseEventHandler } from "react";
 import profileIcon from "@/assets/images/profile.png";
 import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
 import brandIcon from "@/assets/images/Logo.png";
-import { Link, useNavigate } from "react-router-dom";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useAuthStore } from "@/stores/userAuthStore";
-import { MouseEventHandler } from "react";
 import { authService } from "@/services/userAuthService";
 
 interface DropDownMenuItem {
@@ -121,15 +121,15 @@ function RightHeader() {
 	return (
 		<div className="flex items-center justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
 			<SearchBar />
-			<button
-				type="button"
-				className="size-8 btn hover:scale-105"
-				onClick={() => {
-					alert("Notification clicked"); // TODO: 알림 버튼 클릭시 수행 기능
-				}}
+			<Link
+				to="/notification"
+				className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
 			>
-				<img className="size-8" src={notificationIcon} alt="알림 버튼" />
-			</button>
+				<button type="button" className="size-8 btn hover:scale-105">
+					<img className="size-8" src={notificationIcon} alt="알림 버튼" />
+				</button>
+			</Link>
+
 			<ProfileBtn />
 		</div>
 	);
