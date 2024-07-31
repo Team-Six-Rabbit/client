@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import formatTime from "@/utils/formatTime";
 
 interface TimerProps {
 	duration: number; // 타이머의 전체 시간(초)
@@ -38,13 +39,6 @@ function Timer({ duration, onTimeOver }: TimerProps) {
 			onTimeOver();
 		}
 	}, [timeLeft, onTimeOver]);
-
-	const formatTime = (seconds: number) => {
-		const hrs = Math.floor(seconds / 3600);
-		const mins = Math.floor((seconds % 3600) / 60);
-		const secs = seconds % 60;
-		return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-	};
 
 	return (
 		<div className="absolute top-20 left-3">
