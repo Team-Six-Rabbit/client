@@ -37,6 +37,8 @@ out/
 ### secret key ###
 *.properties
 
+/ssl/
+
 
 ### VS Code ###
 .vscode/

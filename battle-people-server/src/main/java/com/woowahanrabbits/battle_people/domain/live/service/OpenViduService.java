@@ -10,7 +10,9 @@ public interface OpenViduService {
 
 	void userLeft(String roomId, Long userId);
 
-	String getToken(String roomId, OpenViduRole role, Long userId);
+	String getToken(String roomId, OpenViduRole role, Long userId) throws
+		OpenViduJavaClientException,
+		OpenViduHttpException;
 
 	Recording startRecording(String roomId);
 

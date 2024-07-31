@@ -60,27 +60,25 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	@Override
-	public String createSession(Long battleId) throws OpenViduJavaClientException, OpenViduHttpException {
-		// try {
-		if (Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null)).getRoom() != null) {
-			return Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null))
-				.getRoom()
-				.getRoomId();
+	public String createSession(Long battleId) {
+		try {
+			Room room;
+			if ((room = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null)).getRoom()) != null
+				&& sessions.get(room.getRoomId()) != null) {
+				return room.getRoomId();
+			}
+			BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
+			Session session = openVidu.createSession();
+			room = new Room();
+			room.setRoomId(session.getSessionId());
+			roomRepository.save(room);
+			battleBoard.setRoom(room);
+			battleBoardRepository.save(battleBoard);
+			sessions.put(session.getSessionId(), session);
+			return session.getSessionId();
+		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+			return null;
 		}
-		BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
-		System.out.println(battleBoard);
-		Session session = openVidu.createSession();
-		Room room = new Room();
-		room.setRoomId(session.getSessionId());
-		roomRepository.save(room);
-		// BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
-		battleBoard.setRoom(room);
-		battleBoardRepository.save(battleBoard);
-		sessions.put(session.getSessionId(), session);
-		return session.getSessionId();
-		// } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-		// 	return null;
-		// }
 	}
 
 	@Override

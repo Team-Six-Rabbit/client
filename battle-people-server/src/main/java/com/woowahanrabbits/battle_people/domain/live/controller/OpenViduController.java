@@ -22,7 +22,6 @@ public class OpenViduController {
 		try {
 			return openViduService.createSession(battleId);
 		} catch (Exception e) {
-			System.out.println(e);
 			return "session null";
 		}
 
@@ -34,6 +33,7 @@ public class OpenViduController {
 			OpenViduRole openViduRole = "broadcaster".equals(role) ? OpenViduRole.PUBLISHER : OpenViduRole.SUBSCRIBER;
 			return openViduService.getToken(roomId, openViduRole, userId);
 		} catch (Exception e) {
+			System.out.println(e);
 			return null;
 		}
 	}
