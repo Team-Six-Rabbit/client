@@ -56,7 +56,6 @@ public class UserController {
 	@PostMapping("/interest")
 	public ResponseEntity<ApiResponseDto<?>> setUserInterest(@LoginUsers User user,
 		@RequestBody InterestRequest request) {
-		System.out.println(request.getCategory());
 		return userService.setInterest(user.getId(), request);
 	}
 }
