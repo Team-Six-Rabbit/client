@@ -13,10 +13,10 @@ export const BalanceGameService = {
 		size: number,
 		category: number,
 		status: number,
-	): Promise<ApiResponse<PageableResponse<BalanceGameResponse[]>>> {
+	): Promise<ApiResponse<BalanceGameResponse[]>> {
 		try {
 			const response = await axiosInstance.get<
-				ApiResponse<PageableResponse<BalanceGameResponse[]>>
+				ApiResponse<BalanceGameResponse[]>
 			>("/balance-game", {
 				params: { page, size, category, status },
 			});
