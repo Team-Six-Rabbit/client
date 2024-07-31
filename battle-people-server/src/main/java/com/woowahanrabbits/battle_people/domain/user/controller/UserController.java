@@ -32,4 +32,10 @@ public class UserController {
 	public List<?> getAllUsers() {
 		return null;
 	}
+
+	// argument resolver 를 이용해서 사용자 불러올 때, 이렇게 쓰시면 됩니다.
+	// @GetMapping("/profile")
+	// public ResponseEntity<ApiResponseDto<User>> getProfile(@LoginUsers User user) {
+	// 	return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile retrieved", user));
+	// }
 }
