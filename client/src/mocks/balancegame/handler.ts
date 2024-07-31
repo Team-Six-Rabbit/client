@@ -2,14 +2,9 @@ import {
 	ApiResponse,
 	BalanceGameResponse,
 	CreateBalanceGameRequest,
-	CreateCommentRequest,
 } from "@/types/api";
 import { http, HttpResponse } from "msw";
-import {
-	generateBalanceGameResponse,
-	generateComment,
-	generatePageableResponse,
-} from "../util";
+import { generateBalanceGameResponse } from "../util";
 
 export const handlers = [
 	http.get<never, never, ApiResponse<BalanceGameResponse[]>>(
@@ -51,27 +46,6 @@ export const handlers = [
 				code: "success",
 				msg: undefined,
 				data: generateBalanceGameResponse(0, 5, Number(params.id)),
-			});
-		},
-	),
-	http.get("/balance-game/comment", async ({ request }) => {
-		const qs = new URLSearchParams(request.url);
-		const page = Number(qs.get("page") || 1);
-		const size = Number(qs.get("size") || 10);
-		const id = Number(qs.get("id")?.toString());
-		const totalElements = 50; // For example, total number of elements
-		const comments = Array.from({ length: size }, () => generateComment(id));
-		return HttpResponse.json({
-			code: "success",
-			data: generatePageableResponse(comments, page, size, totalElements),
-		});
-	}),
-	http.post<never, CreateCommentRequest, ApiResponse<string>>(
-		"/balance-game/comment",
-		() => {
-			return HttpResponse.json({
-				code: "success",
-				data: "",
 			});
 		},
 	),

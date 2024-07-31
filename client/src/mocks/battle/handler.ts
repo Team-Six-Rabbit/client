@@ -71,15 +71,6 @@ export const handlers = [
 			});
 		},
 	),
-	// http.get<
-	// 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// 	// @ts-ignore
-	// 	PageableParm & { battleBoardId: number },
-	// 	undefined,
-	// 	ApiResponse<PageableResponse<BasicUserInfo[]>>
-	// >("/apply-user-list/:battleBoardId", ({ params }) => {
-
-	// }),
 	http.post<never, ApplyBattleRequest, ApiResponse<string>>(
 		"/battle/apply",
 		() => {

@@ -10,24 +10,28 @@ interface LiveBattle {
 	summary?: string;
 }
 
-interface LiveVoteResult {
-	percentageRegisterOpinion: number;
-	percentageOppositeOpinion: number;
+export interface LiveBattleDetail extends LiveBattle {
+	roomId: string;
+	startDate: string;
+	endDate: string;
+	currentPeopleCount?: number;
+}
+
+export interface LiveBattleEndDetail extends LiveBattle {
+	preResult: LiveVoteResult;
+	finalResult: LiveVoteResult;
 }
 
 export interface UserWithOpinion extends BasicUserInfo {
 	opinion: string;
 }
 
-export interface LiveBattleList extends LiveBattle {
-	roomId: string;
-	startDate: string;
-	endDate: string;
-	currentPeopleCount?: number;
-	battleRule?: string;
+interface LiveVoteResult {
+	percentageRegisterOpinion: number;
+	percentageOppositeOpinion: number;
 }
 
-export interface LiveEndDetail extends LiveBattle {
-	preResult: LiveVoteResult;
-	finalResult: LiveVoteResult;
+export interface LiveViewer extends BasicUserInfo {
+	inTime: string;
+	outTime?: string;
 }

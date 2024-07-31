@@ -3,7 +3,6 @@ import {
 	BalanceGameResponse,
 	CreateBalanceGameRequest,
 	PageableResponse,
-	CreateCommentRequest,
 } from "@/types/api";
 import axiosInstance from "./axiosInstance";
 
@@ -67,21 +66,6 @@ export const BalanceGameService = {
 			return response.data;
 		} catch (error) {
 			console.error("Failed to fetch comments:", error);
-			throw error;
-		}
-	},
-
-	async createComment(
-		data: CreateCommentRequest,
-	): Promise<ApiResponse<string>> {
-		try {
-			const response = await axiosInstance.post<ApiResponse<string>>(
-				"/balance-game/comment",
-				data,
-			);
-			return response.data;
-		} catch (error) {
-			console.error("Failed to create comment:", error);
 			throw error;
 		}
 	},

@@ -5,9 +5,8 @@ import {
 } from "@/types/api";
 import { LoremIpsum } from "lorem-ipsum";
 import { Battle } from "@/types/battle";
-import { BalanceGameOpinion, LiveBattleOpinion } from "@/types/vote";
+import { Opinion } from "@/types/vote";
 import { BasicUserInfo } from "@/types/user";
-import { Comment } from "@/types/balancegame";
 
 const lorem = new LoremIpsum();
 
@@ -70,40 +69,38 @@ const generateBattle = (id: number, category?: number): Battle => ({
 	},
 	minPeopleCount: 2,
 	maxPeopleCount: 10,
-	battleRule: lorem.generateSentences(1),
 	registDate: new Date().getMilliseconds(),
 	currentState: Math.floor(Math.random() * 3),
-	rejectionReason: Math.random() > 0.5 ? lorem.generateSentences(1) : undefined,
 	imageUrl: Math.random() > 0.5 ? lorem.generateWords(1) : undefined,
 });
 
-const generateBalanceOpinion = (
+const generateOpinion = (
 	index: number,
 	totalCount: number,
 	count: number,
-): BalanceGameOpinion => ({
+): Opinion => ({
 	index,
 	opinion: lorem.generateSentences(1),
 	count,
 	percentage: (count / totalCount) * 100,
 });
 
-const generateLiveOpinion = (index: number): LiveBattleOpinion => ({
-	index,
-	opinion: lorem.generateSentences(1),
-	user: generateBasicUser(),
-	preCount: Math.floor(Math.random() * 100),
-	finalCount: Math.floor(Math.random() * 100),
-	isWinner: Math.random() > 0.5,
-});
-
 export const generateBattleResponse = (
 	id: number,
 	category?: number,
-): BattleResponse => ({
-	battle: generateBattle(id, category),
-	opinions: Array.from({ length: 2 }, (_, index) => generateLiveOpinion(index)),
-});
+): BattleResponse => {
+	const count1 = Math.floor(Math.random() * 100);
+	const count2 = Math.floor(Math.random() * 100);
+	const totalCount = count1 + count2;
+
+	return {
+		battle: generateBattle(id, category),
+		opinions: [
+			generateOpinion(0, totalCount, count1),
+			generateOpinion(1, totalCount, count2),
+		],
+	};
+};
 
 export const generateBalanceGameResponse = (
 	category: number,
@@ -117,8 +114,8 @@ export const generateBalanceGameResponse = (
 	return {
 		id,
 		opinions: [
-			generateBalanceOpinion(0, totalCount, count1),
-			generateBalanceOpinion(1, totalCount, count2),
+			generateOpinion(0, totalCount, count1),
+			generateOpinion(1, totalCount, count2),
 		],
 		detail: lorem.generateSentences(2),
 		currentState: status,
@@ -127,17 +124,5 @@ export const generateBalanceGameResponse = (
 		startDate: new Date().getTime(),
 		endDate: new Date(Date.now() + 86400000).getTime(),
 		category,
-	};
-};
-
-export const generateComment = (battleBoardId: number): Comment => {
-	return {
-		battleId: battleBoardId,
-		id: Math.floor(Math.random() * 1000),
-		content: lorem.generateSentences(3),
-		user: generateBasicUser(),
-		registDate: new Date(
-			Date.now() - Math.floor(Math.random() * 10000),
-		).toISOString(),
 	};
 };
