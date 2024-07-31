@@ -100,6 +100,7 @@ function NotificationPage() {
 							<NotificationItem
 								key={notification.code}
 								message={notification.message}
+								category={notification.category}
 								onDelete={() => onDelete(notification.code)}
 							/>
 						))}
