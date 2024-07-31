@@ -35,7 +35,7 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 		+ "from vote_info vi left join battle_board bb on vi.id = bb.vote_info_id "
 		+ "where bb.id = :id",
 		nativeQuery = true)
-	Object[] findByBattleId(@Param("id") Long id);
+	List<Object[]> findByBattleId(@Param("id") Long id);
 
 }
 

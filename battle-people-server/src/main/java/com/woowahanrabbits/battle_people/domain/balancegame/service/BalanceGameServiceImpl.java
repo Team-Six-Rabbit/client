@@ -3,7 +3,9 @@ package com.woowahanrabbits.battle_people.domain.balancegame.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,23 +32,18 @@ import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionR
 @Service
 public class BalanceGameServiceImpl implements BalanceGameService {
 
-	private final VoteInfoRepository voteInfoRepository;
-	private final VoteOpinionRepository voteOpinionRepository;
-	private final BattleRepository battleRepository;
-	private final BalanceGameRepository balanceGameRepository;
-	private final UserVoteOpinionRepository userVoteOpinionRepository;
-	private final UserRepository userRepository;
-
-	public BalanceGameServiceImpl(VoteInfoRepository voteInfoRepository, VoteOpinionRepository voteOpinionRepository,
-		BattleRepository battleRepository, BalanceGameRepository balanceGameRepository,
-		UserVoteOpinionRepository userVoteOpinionRepository, UserRepository userRepository) {
-		this.voteInfoRepository = voteInfoRepository;
-		this.voteOpinionRepository = voteOpinionRepository;
-		this.battleRepository = battleRepository;
-		this.balanceGameRepository = balanceGameRepository;
-		this.userVoteOpinionRepository = userVoteOpinionRepository;
-		this.userRepository = userRepository;
-	}
+	@Autowired
+	private VoteInfoRepository voteInfoRepository;
+	@Autowired
+	private VoteOpinionRepository voteOpinionRepository;
+	@Autowired
+	private BattleRepository battleRepository;
+	@Autowired
+	private BalanceGameRepository balanceGameRepository;
+	@Autowired
+	private UserVoteOpinionRepository userVoteOpinionRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	@Override
 	public void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, int userId) {
@@ -70,12 +67,12 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 				.build();
 
 			voteOpinionRepository.save(voteOpinion);
-
 		}
 		BattleBoard board = BattleBoard.builder()
 			.registUser(registUser)
 			.voteInfo(voteInfo)
 			.detail(createBalanceGameRequest.getDetail())
+			.currentState(5)
 			.build();
 
 		battleRepository.save(board);
@@ -84,54 +81,22 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	@Override
 	public List<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user) {
 		Pageable pageable = PageRequest.of(page, 12);
-		List<Object[]> list = null;
+		List<Object[]> list = (category == null)
+			? voteInfoRepository.findAllByStatus(status)
+			: voteInfoRepository.findAllByCategoryAndStatus(category, status);
 
-		//category가 있는지 체크
-		if (category == null) {
-			list = voteInfoRepository.findAllByStatus(status);
-		} else {
-			list = voteInfoRepository.findAllByCategoryAndStatus(category, status);
-		}
+		List<BalanceGameResponse> dtoResults = list.stream()
+			.map(result -> {
+				Long voteInfoId = ((Number)result[1]).longValue();
+				BalanceGameResponse dto = convertToBalanceGameResponse(result);
+				List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
+				List<VoteOpinionDto> voteOpinionDtos = convertToVoteOpinionDtos(voteInfoId, voteOpinions);
+				dto.setOpinions(voteOpinionDtos);
+				setUserVoteInfo(dto, user, voteInfoId);
+				return dto;
+			})
+			.collect(Collectors.toList());
 
-		List<BalanceGameResponse> dtoResults = new ArrayList<>();
-
-		for (Object[] result : list) {
-
-			Long voteInfoId = ((Number)result[1]).longValue();
-			BalanceGameResponse dto = convertToBalanceGameResponse(result);
-
-			List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
-			List<VoteOpinionDto> voteOpinionDtos = new ArrayList<>();
-
-			int totalVotes = 0;
-			int[] cnt = new int[2];
-			for (int i = 0; i < voteOpinions.size(); i++) {
-				VoteOpinion vote = voteOpinions.get(i);
-				VoteOpinionDto voteOpinionDto = new VoteOpinionDto(vote);
-				cnt[i] = userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(voteInfoId,
-					vote.getVoteOpinionIndex()).size();
-				voteOpinionDto.setCount(cnt[i]);
-				voteOpinionDtos.add(voteOpinionDto);
-				totalVotes += cnt[i];
-			}
-
-			if (totalVotes > 0) {
-				int percentage1 = (int)((cnt[0] * 100) / totalVotes);
-
-				voteOpinionDtos.get(0).setPercentage(percentage1);
-				voteOpinionDtos.get(1).setPercentage(100 - percentage1);
-			}
-
-			dto.setOpinions(voteOpinionDtos);
-
-			//유저 투표정보 확인
-			UserVoteOpinion uvo = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(), voteInfoId);
-			if (uvo != null) {
-				dto.setUserVote(uvo.getVoteInfoIndex());
-			}
-
-			dtoResults.add(dto);
-		}
 		return new PageImpl<>(dtoResults, pageable, dtoResults.size()).toList();
 	}
 
@@ -140,7 +105,7 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 		BattleBoard battleBoard = battleRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("Battle not found"));
 
-		if (battleBoard.getRegistUser().getId() != user.getId()) {
+		if (battleBoard.getRegistUser().getId() != (user.getId())) {
 			throw new RuntimeException("User not owned by this battle");
 		}
 
@@ -150,17 +115,13 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	@Override
 	public List<BalanceGameCommentResponse> getCommentsByBattleId(Long id) {
 		List<BalanceGameBoardComment> list = balanceGameRepository.findByBattleBoardId(id);
-		List<BalanceGameCommentResponse> returnList = new ArrayList<>();
-
-		for (BalanceGameBoardComment bgbc : list) {
-			returnList.add(new BalanceGameCommentResponse(bgbc));
-		}
-		return returnList;
+		return list.stream()
+			.map(BalanceGameCommentResponse::new)
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public void addComment(AddBalanceGameCommentRequest addBalanceGameCommentRequest, User user) {
-
 		BalanceGameBoardComment bgbcomment = BalanceGameBoardComment.builder()
 			.user(user)
 			.content(addBalanceGameCommentRequest.getContent())
@@ -172,50 +133,22 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 	@Override
 	public List<UserVoteOpinion> getUserVotelist(User user) {
-		List<UserVoteOpinion> list = userVoteOpinionRepository.findByUserId(user.getId());
-		return list;
+		return userVoteOpinionRepository.findByUserId(user.getId());
 	}
 
 	@Override
 	public BalanceGameResponse getBalanceGameById(Long id, User user) {
-		Object[] obj = voteInfoRepository.findByBattleId(id);
-
+		Object[] obj = voteInfoRepository.findByBattleId(id).get(0);
 		Long voteInfoId = ((Number)obj[1]).longValue();
 		BalanceGameResponse balanceGameResponse = convertToBalanceGameResponse(obj);
-
 		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
-		List<VoteOpinionDto> voteOpinionDtos = new ArrayList<>();
-
-		int totalVotes = 0;
-		int[] cnt = new int[2];
-		for (int i = 0; i < voteOpinions.size(); i++) {
-			VoteOpinion vote = voteOpinions.get(i);
-			VoteOpinionDto voteOpinionDto = new VoteOpinionDto(vote);
-			cnt[i] = userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(voteInfoId,
-				vote.getVoteOpinionIndex()).size();
-			voteOpinionDto.setCount(cnt[i]);
-			voteOpinionDtos.add(voteOpinionDto);
-			totalVotes += cnt[i];
-		}
-
-		if (totalVotes > 0) {
-			int percentage1 = (int)((cnt[0] * 100) / totalVotes);
-
-			voteOpinionDtos.get(0).setPercentage(percentage1);
-			voteOpinionDtos.get(1).setPercentage(100 - percentage1);
-		}
-
+		List<VoteOpinionDto> voteOpinionDtos = convertToVoteOpinionDtos(voteInfoId, voteOpinions);
 		balanceGameResponse.setOpinions(voteOpinionDtos);
-
-		//유저 투표정보 확인
-		UserVoteOpinion uvo = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(), voteInfoId);
-		if (uvo != null) {
-			balanceGameResponse.setUserVote(uvo.getVoteInfoIndex());
-		}
+		setUserVoteInfo(balanceGameResponse, user, voteInfoId);
 		return balanceGameResponse;
 	}
 
-	public BalanceGameResponse convertToBalanceGameResponse(Object[] obj) {
+	private BalanceGameResponse convertToBalanceGameResponse(Object[] obj) {
 		Long battleId = ((Number)obj[0]).longValue();
 		String title = (String)obj[2];
 		Date startDate = (Date)obj[3];
@@ -224,7 +157,7 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 		int currentStatus = ((Number)obj[6]).intValue();
 		String detail = (String)obj[7];
 
-		BalanceGameResponse dto = BalanceGameResponse.builder()
+		return BalanceGameResponse.builder()
 			.id(battleId)
 			.title(title)
 			.detail(detail)
@@ -233,7 +166,39 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 			.category(categoryId)
 			.currentState(currentStatus)
 			.build();
+	}
 
-		return dto;
+	private List<VoteOpinionDto> convertToVoteOpinionDtos(Long voteInfoId, List<VoteOpinion> voteOpinions) {
+		List<VoteOpinionDto> voteOpinionDtos = new ArrayList<>();
+		int totalVotes = 0;
+		int[] cnt = new int[voteOpinions.size()];
+
+		for (int i = 0; i < voteOpinions.size(); i++) {
+			VoteOpinion vote = voteOpinions.get(i);
+			VoteOpinionDto voteOpinionDto = new VoteOpinionDto(vote);
+			cnt[i] = userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(voteInfoId, vote.getVoteOpinionIndex())
+				.size();
+			voteOpinionDto.setCount(cnt[i]);
+			voteOpinionDtos.add(voteOpinionDto);
+			totalVotes += cnt[i];
+		}
+
+		if (totalVotes > 0) {
+			for (int i = 0; i < voteOpinions.size(); i++) {
+				int percentage = (cnt[i] * 100) / totalVotes;
+				voteOpinionDtos.get(i).setPercentage(percentage);
+			}
+		} else {
+			voteOpinionDtos.forEach(dto -> dto.setPercentage(0));
+		}
+
+		return voteOpinionDtos;
+	}
+
+	private void setUserVoteInfo(BalanceGameResponse dto, User user, Long voteInfoId) {
+		UserVoteOpinion uvo = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(), voteInfoId);
+		if (uvo != null) {
+			dto.setUserVote(uvo.getVoteInfoIndex());
+		}
 	}
 }

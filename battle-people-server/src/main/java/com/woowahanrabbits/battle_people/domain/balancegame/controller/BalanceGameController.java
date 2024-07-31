@@ -77,7 +77,7 @@ public class BalanceGameController {
 		User user = userRepository.findById(userId).orElseThrow();
 		BalanceGameResponse balanceGameResponse = balanceGameService.getBalanceGameById(id, user);
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ApiResponseDto<>("success", "", null));
+			.body(new ApiResponseDto<>("success", "", balanceGameResponse));
 	}
 
 	@PatchMapping("")
