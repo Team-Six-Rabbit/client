@@ -10,9 +10,7 @@ import com.woowahanrabbits.battle_people.domain.live.service.OpenViduService;
 
 import io.openvidu.java.client.OpenViduRole;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/openvidu")
