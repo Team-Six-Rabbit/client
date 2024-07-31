@@ -18,11 +18,12 @@ public class OpenViduController {
 	private final OpenViduService openViduService;
 
 	@PostMapping("/create-session")
-	public String createSession() {
+	public String createSession(@RequestParam Long battleId) {
 		try {
-			return openViduService.createSession();
+			return openViduService.createSession(battleId);
 		} catch (Exception e) {
-			return null;
+			System.out.println(e);
+			return "session null";
 		}
 
 	}

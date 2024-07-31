@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.live.domain.LiveApplyUser;
 import com.woowahanrabbits.battle_people.domain.live.domain.LiveVoiceRecord;
@@ -59,17 +60,27 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	@Override
-	public String createSession() {
-		try {
-			Session session = openVidu.createSession();
-			Room room = new Room();
-			room.setRoomId(session.getSessionId());
-			roomRepository.save(room);
-			sessions.put(session.getSessionId(), session);
-			return session.getSessionId();
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			return null;
+	public String createSession(Long battleId) throws OpenViduJavaClientException, OpenViduHttpException {
+		// try {
+		if (Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null)).getRoom() != null) {
+			return Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null))
+				.getRoom()
+				.getRoomId();
 		}
+		BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
+		System.out.println(battleBoard);
+		Session session = openVidu.createSession();
+		Room room = new Room();
+		room.setRoomId(session.getSessionId());
+		roomRepository.save(room);
+		// BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
+		battleBoard.setRoom(room);
+		battleBoardRepository.save(battleBoard);
+		sessions.put(session.getSessionId(), session);
+		return session.getSessionId();
+		// } catch (OpenViduJavaClientException | OpenViduHttpException e) {
+		// 	return null;
+		// }
 	}
 
 	@Override

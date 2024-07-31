@@ -1,10 +1,12 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Recording;
 
 public interface OpenViduService {
-	String createSession();
+	String createSession(Long battleId) throws OpenViduJavaClientException, OpenViduHttpException;
 
 	void userLeft(String roomId, Long userId);
 
