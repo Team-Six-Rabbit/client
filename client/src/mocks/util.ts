@@ -108,12 +108,14 @@ export const generateBattleResponse = (
 export const generateBalanceGameResponse = (
 	category: number,
 	status: number,
+	id: number = Math.floor(Math.random() * 1000),
 ): BalanceGameResponse => {
 	const count1 = Math.floor(Math.random() * 100);
 	const count2 = Math.floor(Math.random() * 100);
 	const totalCount = count1 + count2;
 
 	return {
+		id,
 		opinions: [
 			generateBalanceOpinion(0, totalCount, count1),
 			generateBalanceOpinion(1, totalCount, count2),
