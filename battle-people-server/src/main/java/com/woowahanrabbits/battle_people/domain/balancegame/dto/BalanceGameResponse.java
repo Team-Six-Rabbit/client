@@ -3,6 +3,7 @@ package com.woowahanrabbits.battle_people.domain.balancegame.dto;
 import java.util.Date;
 import java.util.List;
 
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import lombok.ToString;
 @ToString
 @Builder
 public class BalanceGameResponse {
-	private Long id;        // 밸런스 게임 ID
+	private Long id;        // voteInfoId
 	private String title;         // 투표 주제
 	private String detail;
 	private Date startDate; //시작일
@@ -29,4 +30,15 @@ public class BalanceGameResponse {
 	private List<VoteOpinionDto> opinions; //주장들
 	private int currentState; //현재상태
 	private Integer userVote; //유저의 선택
+
+	public BalanceGameResponse(VoteInfo voteInfo, List<VoteOpinionDto> opinions) {
+		this.id = voteInfo.getId();
+		this.title = voteInfo.getTitle();
+		this.detail = voteInfo.getDetail();
+		this.startDate = voteInfo.getStartDate();
+		this.endDate = voteInfo.getEndDate();
+		this.category = voteInfo.getCategory();
+		this.opinions = opinions;
+		this.currentState = voteInfo.getCurrentState();
+	}
 }
