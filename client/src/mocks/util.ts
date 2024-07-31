@@ -5,7 +5,7 @@ import {
 } from "@/types/api";
 import { LoremIpsum } from "lorem-ipsum";
 import { Battle } from "@/types/battle";
-import { Opinion } from "@/types/vote";
+import { BalanceGameOpinion, LiveBattleOpinion } from "@/types/vote";
 import { BasicUserInfo } from "@/types/user";
 import { Comment } from "@/types/balancegame";
 
@@ -77,7 +77,18 @@ const generateBattle = (id: number, category?: number): Battle => ({
 	imageUrl: Math.random() > 0.5 ? lorem.generateWords(1) : undefined,
 });
 
-const generateOpinion = (index: number): Opinion => ({
+const generateBalanceOpinion = (
+	index: number,
+	totalCount: number,
+	count: number,
+): BalanceGameOpinion => ({
+	index,
+	opinion: lorem.generateSentences(1),
+	count,
+	percentage: (count / totalCount) * 100,
+});
+
+const generateLiveOpinion = (index: number): LiveBattleOpinion => ({
 	index,
 	opinion: lorem.generateSentences(1),
 	user: generateBasicUser(),
@@ -91,22 +102,31 @@ export const generateBattleResponse = (
 	category?: number,
 ): BattleResponse => ({
 	battle: generateBattle(id, category),
-	opinions: Array.from({ length: 2 }, (_, index) => generateOpinion(index)),
+	opinions: Array.from({ length: 2 }, (_, index) => generateLiveOpinion(index)),
 });
 
 export const generateBalanceGameResponse = (
 	category: number,
 	status: number,
-): BalanceGameResponse => ({
-	opinions: Array.from({ length: 2 }, (_, index) => generateOpinion(index)),
-	detail: lorem.generateSentences(2),
-	currentState: status,
-	userVote: Math.random() > 0.5 ? 0 : undefined,
-	title: "",
-	startDate: new Date().getMilliseconds(),
-	endDate: new Date(Date.now() + 86400000).getMilliseconds(),
-	category,
-});
+): BalanceGameResponse => {
+	const count1 = Math.floor(Math.random() * 100);
+	const count2 = Math.floor(Math.random() * 100);
+	const totalCount = count1 + count2;
+
+	return {
+		opinions: [
+			generateBalanceOpinion(0, totalCount, count1),
+			generateBalanceOpinion(1, totalCount, count2),
+		],
+		detail: lorem.generateSentences(2),
+		currentState: status,
+		userVote: Math.random() > 0.5 ? 0 : undefined,
+		title: lorem.generateSentences(1),
+		startDate: new Date().getTime(),
+		endDate: new Date(Date.now() + 86400000).getTime(),
+		category,
+	};
+};
 
 export const generateComment = (battleBoardId: number): Comment => {
 	return {

@@ -1,5 +1,5 @@
 import { Battle } from "./battle";
-import { Opinion, Vote } from "./vote";
+import { BalanceGameOpinion, LiveBattleOpinion, Vote } from "./vote";
 
 export interface ApiResponse<T> {
 	code: "success" | "fail";
@@ -55,7 +55,7 @@ export interface BattleHistoryRequestParam extends PageableParm {
 
 export interface BattleResponse {
 	battle: Battle;
-	opinions: Opinion[];
+	opinions: LiveBattleOpinion[];
 }
 
 export interface BattleInviteRespondRequest {
@@ -83,7 +83,7 @@ export interface SearchBalanceGameRequestParam extends PageableParm {
 }
 
 export interface BalanceGameResponse extends Vote {
-	opinions: Opinion[];
+	opinions: BalanceGameOpinion[];
 	currentState: number;
 	userVote?: number;
 }
