@@ -30,25 +30,39 @@ public class LiveListServiceImpl implements LiveListService {
 	private final LiveApplyUserRepository liveApplyUserRepository;
 
 	@Override
-	public Page<LiveListResponseDto> getActiveLiveList(String keyword, String category, Pageable pageable) {
-		return battleBoardRepository.findAllActiveBattleBoards(new Date(), keyword, category, pageable)
+	public Page<LiveListResponseDto> getActiveLiveList(String keyword, Integer category, Pageable pageable) {
+		if (category == null) {
+			return battleBoardRepository.findAllActiveBattleBoards(new Date(), keyword, pageable)
+				.map(this::convertToDto);
+		}
+
+		return battleBoardRepository.findAllActiveBattleBoardsByCategory(new Date(), keyword, category, pageable)
 			.map(this::convertToDto);
 	}
 
 	@Override
-	public Page<LiveListResponseDto> getWaitLiveList(String keyword, String category, Pageable pageable) {
+	public Page<LiveListResponseDto> getWaitLiveList(String keyword, Integer category, Pageable pageable) {
 		Date currentTime = new Date();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(currentTime);
 		calendar.add(Calendar.MINUTE, 20);
 
-		return battleBoardRepository.findAllWaitBattleBoards(currentTime, calendar.getTime(), keyword, category,
-			pageable).map(this::convertToDto);
+		if (category == null) {
+			return battleBoardRepository.findAllWaitBattleBoards(currentTime, calendar.getTime(), keyword, pageable)
+				.map(this::convertToDto);
+		}
+
+		return battleBoardRepository.findAllWaitBattleBoardsByCategory(currentTime, calendar.getTime(), keyword,
+			category, pageable).map(this::convertToDto);
 	}
 
 	@Override
-	public Page<LiveListResponseDto> getEndLiveList(String keyword, String category, Pageable pageable) {
-		return battleBoardRepository.findAllEndBattleBoards(new Date(), keyword, category, pageable)
+	public Page<LiveListResponseDto> getEndLiveList(String keyword, Integer category, Pageable pageable) {
+		if (category == null) {
+			return battleBoardRepository.findAllEndBattleBoards(new Date(), keyword, pageable).map(this::convertToDto);
+		}
+
+		return battleBoardRepository.findAllEndBattleBoardsByCategory(new Date(), keyword, category, pageable)
 			.map(this::convertToDto);
 	}
 

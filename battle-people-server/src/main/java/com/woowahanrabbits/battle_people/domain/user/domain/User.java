@@ -49,7 +49,6 @@ public class User {
 	private String imgUrl;
 
 	private int rating;
-
 	private LocalDate penaltyStartDate;
 
 	private LocalDate penaltyEndDate;

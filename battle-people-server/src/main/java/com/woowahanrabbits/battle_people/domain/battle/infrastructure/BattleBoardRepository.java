@@ -14,35 +14,63 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 
 	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime BETWEEN vi.startDate AND vi.endDate "
 		+ "AND vi.title LIKE %:keyword% "
-		+ "AND vi.category LIKE %:category% "
+		+ "AND vi.category = :category "
+		+ "AND bb.room IS NOT NULL")
+	Page<BattleBoard> findAllActiveBattleBoardsByCategory(
+		@Param("currentTime") Date currentTime,
+		@Param("keyword") String keyword,
+		@Param("category") int category,
+		Pageable pageable
+	);
+
+	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime BETWEEN vi.startDate AND vi.endDate "
+		+ "AND vi.title LIKE %:keyword% "
 		+ "AND bb.room IS NOT NULL")
 	Page<BattleBoard> findAllActiveBattleBoards(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
-		@Param("category") String category,
 		Pageable pageable
 	);
 
 	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE vi.startDate BETWEEN :currentTime AND :endTime "
 		+ "AND vi.title LIKE %:keyword% "
-		+ "AND vi.category LIKE %:category% "
+		+ "AND vi.category = :category "
+		+ "AND bb.room IS NOT NULL")
+	Page<BattleBoard> findAllWaitBattleBoardsByCategory(
+		@Param("currentTime") Date currentTime,
+		@Param("endTime") Date endTime,
+		@Param("keyword") String keyword,
+		@Param("category") int category,
+		Pageable pageable
+	);
+
+	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE vi.startDate BETWEEN :currentTime AND :endTime "
+		+ "AND vi.title LIKE %:keyword% "
 		+ "AND bb.room IS NOT NULL")
 	Page<BattleBoard> findAllWaitBattleBoards(
 		@Param("currentTime") Date currentTime,
 		@Param("endTime") Date endTime,
 		@Param("keyword") String keyword,
-		@Param("category") String category,
 		Pageable pageable
 	);
 
 	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime > vi.endDate "
 		+ "AND vi.title LIKE %:keyword% "
-		+ "AND vi.category LIKE %:category% "
+		+ "AND vi.category = :category "
+		+ "AND bb.room IS NOT NULL")
+	Page<BattleBoard> findAllEndBattleBoardsByCategory(
+		@Param("currentTime") Date currentTime,
+		@Param("keyword") String keyword,
+		@Param("category") int category,
+		Pageable pageable
+	);
+
+	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime > vi.endDate "
+		+ "AND vi.title LIKE %:keyword% "
 		+ "AND bb.room IS NOT NULL")
 	Page<BattleBoard> findAllEndBattleBoards(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
-		@Param("category") String category,
 		Pageable pageable
 	);
 }
