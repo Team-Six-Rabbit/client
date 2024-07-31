@@ -11,13 +11,10 @@ import jakarta.transaction.Transactional;
 public interface UserTokenRepository extends JpaRepository<UserToken, Long> {
 	UserToken findUserTokenByUserId(Long userId);
 
-	UserToken findByAccessToken(String accessToken); // 추가된 부분
+	UserToken findByAccessToken(String accessToken);
 
 	@Transactional
 	void deleteByUserId(Long userId);
-
-	@Transactional
-	void deleteByAccessToken(String token);
 
 	@Modifying
 	@Transactional

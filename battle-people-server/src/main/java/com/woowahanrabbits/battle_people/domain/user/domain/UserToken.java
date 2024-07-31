@@ -27,5 +27,4 @@ public class UserToken {
 
 	private String accessToken;
 	private String refreshToken;
-	// private String expiration;
 }

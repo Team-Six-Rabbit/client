@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.woowahanrabbits.battle_people.domain.user.domain.UserToken;
 import com.woowahanrabbits.battle_people.domain.user.handler.JwtAuthenticationException;
-import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 
 import io.jsonwebtoken.Claims;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-	private final UserRepository userRepository;
 	private final UserTokenRepository userTokenRepository;
 
 	@Value("${jwt.secret}")
@@ -73,12 +71,11 @@ public class JwtUtil {
 	}
 
 	// DB에 토큰과 일치하고, 토큰 기간이 유효한지 체크
-	// DB에 토큰과 일치하고, 토큰 기간이 유효한지 체크
 	public boolean validateToken(String token, String type) {
 		try {
-			UserToken userToken = userTokenRepository.findByAccessToken(token); // 수정된 부분
+			UserToken userToken = userTokenRepository.findByAccessToken(token);
 
-			if (userToken == null) { // 수정된 부분
+			if (userToken == null) {
 				throw new JwtAuthenticationException("User token not found in DB for accessToken: " + token);
 			}
 
@@ -100,17 +97,4 @@ public class JwtUtil {
 			throw new JwtAuthenticationException("Token validation error: " + e.getMessage());
 		}
 	}
-	// // db에 토큰과 일치하고, 토큰 기간이 유효한지 체크
-	// public boolean validateToken(String token, String type) {
-	// 	Long userId = userRepository.getUserIdByEmail(this.extractUsername(token));
-	// 	Optional<UserToken> userToken = userTokenRepository.findById(userId);
-	// 	if (userToken.isEmpty())
-	// 		return false;
-	// 	if (isTokenExpired(token))
-	// 		return false;
-	// 	UserToken getToken = userToken.get();
-	// 	if (type.equals("access"))
-	// 		return getToken.getAccessToken().equals(token);
-	// 	return getToken.getRefreshToken().equals(token);
-	// }
 }

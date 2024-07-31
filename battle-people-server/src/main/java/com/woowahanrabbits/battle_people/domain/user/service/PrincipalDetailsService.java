@@ -24,7 +24,6 @@ public class PrincipalDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String access) throws UsernameNotFoundException {
 		User userEntity;
 		if (jwtUtil.validateToken(access, "access")) {
-			System.out.println("Valid access token found: " + access);
 			String email = jwtUtil.extractUsername(access);
 			String role = jwtUtil.extractUserRole(access);
 			Long userId = jwtUtil.extractUserId(access);

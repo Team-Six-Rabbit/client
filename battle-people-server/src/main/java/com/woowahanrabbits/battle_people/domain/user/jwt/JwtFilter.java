@@ -28,7 +28,6 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
-		System.out.println("do filter");
 
 		if (request.getCookies() == null) {
 			filterChain.doFilter(request, response);
@@ -57,7 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			handleException(response, "JWT authentication error: " + e.getMessage(),
 				HttpServletResponse.SC_UNAUTHORIZED);
 			return;
-		} catch (Exception e) { // 수정된 부분
+		} catch (Exception e) {
 			handleException(response, "Unexpected error: " + e.getMessage(),
 				HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return;

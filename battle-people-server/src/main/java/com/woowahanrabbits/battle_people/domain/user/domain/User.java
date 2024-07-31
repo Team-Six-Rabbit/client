@@ -36,11 +36,12 @@ public class User {
 
 	private String imgUrl;
 
-	@Column(nullable = false)
 	private int rating;
-	private String accessToken;
+
 	private LocalDate penaltyStartDate;
+
 	private LocalDate penaltyEndDate;
 
 	private String role; // ROLE_USER, ROLE_ADMIN
+
 }
