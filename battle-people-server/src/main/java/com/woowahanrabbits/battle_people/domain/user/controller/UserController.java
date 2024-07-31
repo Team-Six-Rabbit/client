@@ -4,14 +4,19 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
 import com.woowahanrabbits.battle_people.domain.user.service.impl.UserService;
+import com.woowahanrabbits.battle_people.domain.user.service.UserService;
+import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUsers;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,13 +34,29 @@ public class UserController {
 	}
 
 	@GetMapping
-	public List<?> getAllUsers() {
-		return null;
+	public ResponseEntity<ApiResponseDto<?>> getAllUsers() {
+		return userService.findAllUsers();
 	}
 
-	// argument resolver 를 이용해서 사용자 불러올 때, 이렇게 쓰시면 됩니다.
-	// @GetMapping("/profile")
-	// public ResponseEntity<ApiResponseDto<User>> getProfile(@LoginUsers User user) {
-	// 	return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile retrieved", user));
-	// }
+	@GetMapping("/profile")
+	public ResponseEntity<ApiResponseDto<?>> getLoginUserProfile(@LoginUsers User user) {
+		return userService.getUserProfile(user.getId());
+	}
+
+	@GetMapping("/profile/{userId}")
+	public ResponseEntity<ApiResponseDto<?>> getUserProfile(@PathVariable(value = "userId") Long userId) {
+		return userService.getUserProfile(userId);
+	}
+
+	@GetMapping("/interest")
+	public ResponseEntity<ApiResponseDto<?>> getUserInterest(@LoginUsers User user) {
+		return userService.getInterest(user.getId());
+	}
+
+	@PostMapping("/interest")
+	public ResponseEntity<ApiResponseDto<?>> setUserInterest(@LoginUsers User user,
+		@RequestBody InterestRequest request) {
+		System.out.println(request.getCategory());
+		return userService.setInterest(user.getId(), request);
+	}
 }

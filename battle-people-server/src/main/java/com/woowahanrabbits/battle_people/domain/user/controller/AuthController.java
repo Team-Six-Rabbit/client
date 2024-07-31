@@ -15,7 +15,7 @@ import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
-import com.woowahanrabbits.battle_people.domain.user.service.impl.UserService;
+import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 import com.woowahanrabbits.battle_people.util.HttpUtils;
 
 import io.jsonwebtoken.ExpiredJwtException;

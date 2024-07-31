@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.user.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +13,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
+import com.woowahanrabbits.battle_people.domain.interest.domain.Interest;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.domain.UserToken;
+import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
+import com.woowahanrabbits.battle_people.domain.user.infrastructure.InterestRepository;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
@@ -27,10 +32,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Getter
-public class UserService implements com.woowahanrabbits.battle_people.domain.user.service.UserService {
+public class UserServiceImpl implements com.woowahanrabbits.battle_people.domain.user.service.UserService {
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final UserRepository userRepository;
 	private final UserTokenRepository userTokenRepository;
-	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final InterestRepository interestRepository;
 	private final JwtUtil jwtUtil;
 
 	@Override
@@ -112,6 +118,41 @@ public class UserService implements com.woowahanrabbits.battle_people.domain.use
 				.body(new ApiResponseDto<>("success", "user is Empty", null));
 		}
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "userList", list));
+	}
+
+	@Override
+	public ResponseEntity<ApiResponseDto<?>> getInterest(long id) {
+		List<Interest> list = interestRepository.findAllByUserId(id);
+		List<Integer> response = new ArrayList<>();
+		for (Interest interest : list) {
+			response.add(interest.getCategory());
+		}
+		Collections.sort(response);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "interestList", response));
+	}
+
+	@Override
+	public ResponseEntity<ApiResponseDto<?>> setInterest(long userId, InterestRequest request) {
+		List<Integer> list = request.getCategory();
+		for (int category : list) {
+			Interest interest = Interest.builder()
+				.userId(userId)
+				.count(1)
+				.category(category)
+				.build();
+			interestRepository.save(interest);
+		}
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "Create User Interest", null));
+	}
+
+	@Override
+	public ResponseEntity<ApiResponseDto<?>> getUserProfile(long id) {
+		Optional<User> user = userRepository.findById(id);
+		if (user.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+				.body(new ApiResponseDto<>("fail", "NOT EXIST USER", null));
+		}
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "user", user));
 	}
 
 }
