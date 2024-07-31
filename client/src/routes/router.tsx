@@ -7,6 +7,7 @@ import LiveBoardPage from "@/pages/LiveBoardPage";
 import NotificationPage from "@/pages/NotificationPage";
 import PreVotingBoardPage from "@/pages/PreVotingBoardPage";
 import LivePage from "@/pages/LivePage";
+import BalanceGameBoardPage from "@/pages/BalanceGameBoardPage";
 
 const router = createBrowserRouter([
 	{
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
 	{
 		path: "/live",
 		element: <LivePage />,
+	},
+	{
+		path: "/bonfire",
+		element: <BalanceGameBoardPage />,
 	},
 ]);
 

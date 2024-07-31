@@ -120,10 +120,11 @@ export const SpeechBubble = styled.div`
 	width: 150px;
 	margin-bottom: 8px;
 	color: #ffffff;
-	text-align: center;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	text-align: center;
+
 	&:after {
 		content: "";
 		position: absolute;
