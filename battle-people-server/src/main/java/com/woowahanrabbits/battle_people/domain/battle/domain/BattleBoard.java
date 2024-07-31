@@ -48,8 +48,10 @@ public class BattleBoard {
 
 	private int minPeopleCount;
 	private int maxPeopleCount;
+	private String detail;
 	private String battleRule;
 	private Date registDate;
+	private int currentState;
 	private String rejectionReason;
 	private String imageUrl;
 	private String liveUri;

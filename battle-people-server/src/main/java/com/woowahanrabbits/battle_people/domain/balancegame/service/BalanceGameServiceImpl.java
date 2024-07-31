@@ -47,7 +47,7 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 	@Override
 	public void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, Long userId) {
-		User registUser = userRepository.findById(userId)
+		User registUser = userRepository.findById((long)userId)
 			.orElseThrow(() -> new RuntimeException("User not found"));
 
 		VoteInfo voteInfo = VoteInfo.builder()
@@ -71,8 +71,8 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 		BattleBoard board = BattleBoard.builder()
 			.registUser(registUser)
 			.voteInfo(voteInfo)
-			// .detail(createBalanceGameRequest.getDetail())
-			// .currentState(5)
+			.detail(createBalanceGameRequest.getDetail())
+			.currentState(5)
 			.build();
 
 		battleRepository.save(board);

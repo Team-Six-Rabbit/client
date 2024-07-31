@@ -46,6 +46,10 @@ public class BattleServiceImpl implements BattleService {
 	@Override
 	public void registBattle(BattleInviteRequest battleInviteRequest, User user) {
 
+		// if (user.getId() != (battleInviteRequest.getRegistUser().getId())) {
+		// 	throw new RuntimeException();
+		// }
+
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(battleInviteRequest.getStartDate());
 		calendar.add(Calendar.MINUTE, battleInviteRequest.getTime());
@@ -57,14 +61,13 @@ public class BattleServiceImpl implements BattleService {
 			.startDate(battleInviteRequest.getStartDate())
 			.endDate(endDate)
 			.category(battleInviteRequest.getCategory())
-			.currentState(0)
-			.detail(battleInviteRequest.getDetail())
 			.build();
 
 		//투표 정보 저장
 		voteInfoRepository.save(voteInfo);
 
 		//VoteOpinion 만들기
+		System.out.println(voteInfo.getId());
 		VoteOpinion voteOpinion = VoteOpinion.builder()
 			.voteOpinionIndex(0)
 			.voteInfoId(voteInfo.getId())
@@ -79,7 +82,8 @@ public class BattleServiceImpl implements BattleService {
 			.oppositeUser(userRepository.findById(battleInviteRequest.getOppositeUserId()).orElseThrow())
 			.voteInfo(voteInfo)
 			.maxPeopleCount(battleInviteRequest.getMaxPeopleCount())
-			.battleRule(battleInviteRequest.getBattleRule())
+			.detail(battleInviteRequest.getDetail())
+			.currentState(0)
 			.build();
 		battleRepository.save(battleBoard);
 	}
@@ -95,6 +99,11 @@ public class BattleServiceImpl implements BattleService {
 		}
 
 		List<BattleBoard> newList = new PageImpl<>(list).getContent();
+		// List<BattleResponse> returnList = new ArrayList<>();
+		// for (BattleBoard battleBoard : newList) {
+		// 	returnList.add(new BattleResponse(battleBoard, voteOpinionRepository.findByVoteInfoId(
+		// 		battleBoard.getVoteInfo().getId())));
+		// }
 
 		return newList.stream().map(battleBoard -> new BattleResponse(
 			battleBoard, voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId())
@@ -105,13 +114,13 @@ public class BattleServiceImpl implements BattleService {
 	public void acceptOrDeclineBattle(BattleRespondRequest battleRespondRequest, User user) {
 		BattleBoard battleBoard = battleRepository.findById(battleRespondRequest.getBattleId()).orElseThrow();
 
-		if (battleBoard.getOppositeUser().getId() != user.getId() || battleBoard.getVoteInfo().getCurrentState() != 0) {
+		if (battleBoard.getOppositeUser().getId() != user.getId() || battleBoard.getCurrentState() != 0) {
 			throw new RuntimeException();
 		}
 
 		//수락할 때
 		if (battleRespondRequest.getRespond().equals("accept")) {
-			// voteInfoRepository.updateBattleBoardStatus(battleRespondRequest.getBattleId(), 2, null);
+			battleRepository.updateBattleBoardStatus(battleRespondRequest.getBattleId(), 2, null);
 			VoteOpinion voteOpinion = VoteOpinion.builder()
 				.voteOpinionIndex(1)
 				.voteInfoId(battleBoard.getVoteInfo().getId())
@@ -164,10 +173,10 @@ public class BattleServiceImpl implements BattleService {
 			//주최자는 참여 신청 X
 			throw new RuntimeException();
 		}
-		// if (battleBoard.getCurrentState() != 2) {
-		// 	//참여 모집중이 아닌 배틀
-		// 	throw new RuntimeException();
-		// }
+		if (battleBoard.getCurrentState() != 2) {
+			//참여 모집중이 아닌 배틀
+			throw new RuntimeException();
+		}
 		BattleApplyUser battleApplyUser = BattleApplyUser.builder()
 			.battleBoard(battleBoard)
 			.user(user)
