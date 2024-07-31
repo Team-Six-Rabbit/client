@@ -3,7 +3,8 @@ import { BalanceGameOpinion, LiveBattleOpinion, Vote } from "./vote";
 
 export interface ApiResponse<T> {
 	code: "success" | "fail";
-	data: T;
+	msg?: string;
+	data?: T;
 }
 
 export interface PageableResponse<T> {
