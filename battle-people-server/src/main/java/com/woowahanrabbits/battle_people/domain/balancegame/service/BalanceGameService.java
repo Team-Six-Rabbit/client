@@ -9,7 +9,7 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 
 public interface BalanceGameService {
-	void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, int userId);
+	void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, Long userId);
 
 	List<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user);
 

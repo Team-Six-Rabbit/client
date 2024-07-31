@@ -14,5 +14,7 @@ public interface BattleApplyUserRepository
 
 	@Query("SELECT COUNT(ba) FROM BattleApplyUser ba WHERE ba.battleBoard.id = :battleBoardId")
 	int countByBattleBoardId(@Param("battleBoardId") Long battleBoardId);
+
+	boolean existsByBattleBoardIdAndUserId(Long id, long id1);
 }
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.dto.PrincipalDetails;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
@@ -48,10 +50,11 @@ public class BattleController {
 	@PostMapping("/invite")
 	@Operation(summary = "[점화] 배틀을 요청한다.")
 	public ResponseEntity<?> registBattle(@RequestBody @Valid BattleInviteRequest battleInviteRequest,
-		@RequestParam Long userId) {
+		Authentication authentication) {
 
 		try {
-			User user = userRepository.findById(userId).orElseThrow();
+			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
+			User user = principalDetails.getUser();
 
 			battleService.registBattle(battleInviteRequest, user);
 			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
@@ -65,10 +68,11 @@ public class BattleController {
 	@GetMapping("")
 	@Operation(summary = "요청한, 요청받는 배틀을 조회한다.")
 	public ResponseEntity<?> getRequestBattleList(@RequestParam(defaultValue = "received") String type,
-		@RequestParam Long userId,
+		Authentication authentication,
 		@RequestParam int page) {
 		try {
-			User user = userRepository.findById(userId).orElseThrow();
+			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
+			User user = principalDetails.getUser();
 			return ResponseEntity.status(HttpStatus.OK)
 				.body(new ApiResponseDto<>("success", "", battleService.getRequestBattleList(type, user, page)));
 
@@ -81,10 +85,11 @@ public class BattleController {
 	@PatchMapping("/accept-or-decline")
 	@Operation(summary = "[불씨] 배틀을 수락 또는 거절한다.")
 	public ResponseEntity<?> acceptOrDeclineBattle(@RequestBody BattleRespondRequest battleRespondRequest,
-		@RequestParam Long userId) {
+		Authentication authentication) {
 
 		try {
-			User user = userRepository.findById(userId).orElseThrow();
+			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
+			User user = principalDetails.getUser();
 			battleService.acceptOrDeclineBattle(battleRespondRequest, user);
 			return ResponseEntity.status(HttpStatus.OK)
 				.body(new ApiResponseDto<>("success", "", null));
@@ -97,9 +102,12 @@ public class BattleController {
 
 	@GetMapping("/apply-list")
 	@Operation(summary = "[불씨] 모집중인 배틀을 조회한다.")
-	public ResponseEntity<?> getAwaitingBattleList(@RequestParam(defaultValue = "") Integer category, int page) {
+	public ResponseEntity<?> getAwaitingBattleList(@RequestParam(defaultValue = "") Integer category, int page,
+		Authentication authentication) {
 		try {
-			List<?> list = battleService.getAwaitingBattleList(category, page);
+			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
+			User user = principalDetails.getUser();
+			List<?> list = battleService.getAwaitingBattleList(category, page, user);
 			return ResponseEntity.status(HttpStatus.OK)
 				.body(new ApiResponseDto<>("success", "", list));
 		} catch (Exception e) {
@@ -111,9 +119,11 @@ public class BattleController {
 
 	@PostMapping("/apply")
 	@Operation(summary = "모집중인 특정 배틀에 참여 신청한다.")
-	public ResponseEntity<?> applyBattle(@RequestBody @Valid BattleApplyDto battleApplyDto, @RequestParam Long userId) {
-		User user = userRepository.findById(userId).orElseThrow();
+	public ResponseEntity<?> applyBattle(@RequestBody @Valid BattleApplyDto battleApplyDto,
+		Authentication authentication) {
 		try {
+			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
+			User user = principalDetails.getUser();
 			battleService.applyBattle(battleApplyDto, user);
 			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 		} catch (Exception e) {

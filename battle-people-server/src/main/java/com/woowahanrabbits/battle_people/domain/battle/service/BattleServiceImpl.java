@@ -24,6 +24,7 @@ import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserReposito
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 import com.woowahanrabbits.battle_people.global.AppProperties;
@@ -40,13 +41,10 @@ public class BattleServiceImpl implements BattleService {
 	private final VoteInfoRepository voteInfoRepository;
 	private final UserRepository userRepository;
 	private final AppProperties appProperties;
+	private final UserVoteOpinionRepository userVoteOpinionRepository;
 
 	@Override
 	public void registBattle(BattleInviteRequest battleInviteRequest, User user) {
-
-		// if (user.getId() != (battleInviteRequest.getRegistUser().getId())) {
-		// 	throw new RuntimeException();
-		// }
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(battleInviteRequest.getStartDate());
@@ -59,13 +57,14 @@ public class BattleServiceImpl implements BattleService {
 			.startDate(battleInviteRequest.getStartDate())
 			.endDate(endDate)
 			.category(battleInviteRequest.getCategory())
+			.currentState(0)
+			.detail(battleInviteRequest.getDetail())
 			.build();
 
 		//투표 정보 저장
 		voteInfoRepository.save(voteInfo);
 
 		//VoteOpinion 만들기
-		System.out.println(voteInfo.getId());
 		VoteOpinion voteOpinion = VoteOpinion.builder()
 			.voteOpinionIndex(0)
 			.voteInfoId(voteInfo.getId())
@@ -80,8 +79,7 @@ public class BattleServiceImpl implements BattleService {
 			.oppositeUser(userRepository.findById(battleInviteRequest.getOppositeUserId()).orElseThrow())
 			.voteInfo(voteInfo)
 			.maxPeopleCount(battleInviteRequest.getMaxPeopleCount())
-			.detail(battleInviteRequest.getDetail())
-			.currentState(0)
+			.battleRule(battleInviteRequest.getBattleRule())
 			.build();
 		battleRepository.save(battleBoard);
 	}
@@ -97,11 +95,6 @@ public class BattleServiceImpl implements BattleService {
 		}
 
 		List<BattleBoard> newList = new PageImpl<>(list).getContent();
-		// List<BattleResponse> returnList = new ArrayList<>();
-		// for (BattleBoard battleBoard : newList) {
-		// 	returnList.add(new BattleResponse(battleBoard, voteOpinionRepository.findByVoteInfoId(
-		// 		battleBoard.getVoteInfo().getId())));
-		// }
 
 		return newList.stream().map(battleBoard -> new BattleResponse(
 			battleBoard, voteOpinionRepository.findByVoteInfoId(battleBoard.getVoteInfo().getId())
@@ -112,13 +105,13 @@ public class BattleServiceImpl implements BattleService {
 	public void acceptOrDeclineBattle(BattleRespondRequest battleRespondRequest, User user) {
 		BattleBoard battleBoard = battleRepository.findById(battleRespondRequest.getBattleId()).orElseThrow();
 
-		if (battleBoard.getOppositeUser().getId() != user.getId() || battleBoard.getCurrentState() != 0) {
+		if (battleBoard.getOppositeUser().getId() != user.getId() || battleBoard.getVoteInfo().getCurrentState() != 0) {
 			throw new RuntimeException();
 		}
 
 		//수락할 때
 		if (battleRespondRequest.getRespond().equals("accept")) {
-			battleRepository.updateBattleBoardStatus(battleRespondRequest.getBattleId(), 2, null);
+			// voteInfoRepository.updateBattleBoardStatus(battleRespondRequest.getBattleId(), 2, null);
 			VoteOpinion voteOpinion = VoteOpinion.builder()
 				.voteOpinionIndex(1)
 				.voteInfoId(battleBoard.getVoteInfo().getId())
@@ -133,7 +126,7 @@ public class BattleServiceImpl implements BattleService {
 	}
 
 	@Override
-	public List<?> getAwaitingBattleList(Integer category, int page) {
+	public List<?> getAwaitingBattleList(Integer category, int page, User user) {
 		Pageable pageable = PageRequest.of(page, 12);
 		List<BattleBoard> tempList = battleRepository.findByCategoryAndCurrentState(category, 2);
 		List<BattleBoard> list = new PageImpl<>(tempList, pageable, tempList.size()).toList();
@@ -146,6 +139,8 @@ public class BattleServiceImpl implements BattleService {
 					.collect(Collectors.toList());
 
 				int currentPeopleCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
+				boolean isVoted = battleApplyUserRepository.existsByBattleBoardIdAndUserId(battleBoard.getId(),
+					user.getId());
 
 				return AwaitingBattleResponseDto.builder()
 					.id(battleBoard.getId())
@@ -155,6 +150,7 @@ public class BattleServiceImpl implements BattleService {
 					.endDate(battleBoard.getVoteInfo().getEndDate())
 					.maxPeopleCount(battleBoard.getMaxPeopleCount())
 					.currentPeopleCount(currentPeopleCount)
+					.isVoted(isVoted)
 					.build();
 			})
 			.collect(Collectors.toList());
@@ -168,10 +164,10 @@ public class BattleServiceImpl implements BattleService {
 			//주최자는 참여 신청 X
 			throw new RuntimeException();
 		}
-		if (battleBoard.getCurrentState() != 2) {
-			//참여 모집중이 아닌 배틀
-			throw new RuntimeException();
-		}
+		// if (battleBoard.getCurrentState() != 2) {
+		// 	//참여 모집중이 아닌 배틀
+		// 	throw new RuntimeException();
+		// }
 		BattleApplyUser battleApplyUser = BattleApplyUser.builder()
 			.battleBoard(battleBoard)
 			.user(user)

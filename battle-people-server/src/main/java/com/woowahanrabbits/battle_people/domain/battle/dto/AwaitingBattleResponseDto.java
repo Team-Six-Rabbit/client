@@ -21,6 +21,7 @@ public class AwaitingBattleResponseDto {
 	private final Date endDate;
 	private final int maxPeopleCount;
 	private final int currentPeopleCount;
+	private boolean isVoted;
 
 	public static AwaitingBattleResponseDto from(BattleBoard battleBoard, List<VoteOpinion> voteOpinions,
 		int currentPeopleCount) {

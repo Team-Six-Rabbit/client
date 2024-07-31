@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
@@ -27,7 +26,6 @@ public class BattleInviteRequest {
 	@NotNull
 	@Min(1)
 	private Long oppositeUserId;
-	@Size(min = 1, max = 1)
 	private String opinion;
 	@Max(Long.MAX_VALUE)
 	private Integer maxPeopleCount;

@@ -48,6 +48,8 @@ public class SecurityConfig {
 		http.authorizeHttpRequests(auth -> auth
 			.requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/")
 			.permitAll()
+			.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html",
+				"/webjars/**").permitAll() // Swagger 엔드포인트 허용
 			.anyRequest()
 			.authenticated());
 

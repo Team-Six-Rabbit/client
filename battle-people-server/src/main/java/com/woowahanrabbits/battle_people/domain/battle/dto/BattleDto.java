@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.battle.dto;
 
+import java.util.Date;
+
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
@@ -14,10 +16,8 @@ public class BattleDto {
 	private final VoteInfo voteInfo;
 	private final int minPeopleCount;
 	private final int maxPeopleCount;
-	private final String detail;
 	private final String battleRule;
-	private final Long registDate;
-	private final int currentState;
+	private final Date registDate;
 	private final String rejectionReason;
 	private final String imageUrl;
 	private final String liveUri;
@@ -29,10 +29,8 @@ public class BattleDto {
 		this.voteInfo = battleBoard.getVoteInfo();
 		this.minPeopleCount = battleBoard.getMinPeopleCount();
 		this.maxPeopleCount = battleBoard.getMaxPeopleCount();
-		this.detail = battleBoard.getDetail();
 		this.battleRule = battleBoard.getBattleRule();
-		this.registDate = battleBoard.getRegistDate().getTime();
-		this.currentState = battleBoard.getCurrentState();
+		this.registDate = battleBoard.getRegistDate();
 		this.rejectionReason = battleBoard.getRejectionReason();
 		this.imageUrl = battleBoard.getImageUrl();
 		this.liveUri = battleBoard.getLiveUri();
