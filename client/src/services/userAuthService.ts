@@ -12,7 +12,7 @@ export const login = async (
 			"/auth/login",
 			loginRequest,
 		);
-		if (response.data.code === "success") {
+		if (response.data.code === "success" && response.data.data) {
 			useAuthStore.getState().login(response.data.data);
 		}
 		return response.data;
@@ -45,7 +45,7 @@ export const getUserInfo = async (
 	try {
 		const url = userId ? `/user/profile/${userId}` : "/user/profile";
 		const response = await axiosInstance.get<ApiResponse<DetailUserInfo>>(url);
-		if (!userId && response.data.code === "success") {
+		if (!userId && response.data.code === "success" && response.data.data) {
 			useAuthStore.getState().setUser(response.data.data);
 		}
 		return response.data;
