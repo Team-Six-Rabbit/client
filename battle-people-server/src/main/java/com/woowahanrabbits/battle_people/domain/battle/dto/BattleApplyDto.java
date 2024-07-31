@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class BattleApplyDto {
 	private Long battleId;
+
 	/**
 	 * @deprecated
 	 * This method is deprecated due to security concerns, as it relies on trusting the userId provided in the input.

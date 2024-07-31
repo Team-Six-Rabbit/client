@@ -1,23 +1,33 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 
-import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
 public interface BattleService {
-	void addBattle(BattleBoard battleBoard);
+	void registBattle(BattleInviteRequest battleInviteRequest, User user);
 
-	Page<?> getBattleList(String type, long userId, Pageable pageable);
+	List<?> getRequestBattleList(String type, User user, int page);
 
-	void updateBattleStatus(Long battleId, String rejectionReason);
+	void acceptOrDeclineBattle(BattleRespondRequest battleRespondRequest, User user);
 
-	BattleBoard getBattleBoardByVoteInfoId(Long voteInfoId);
+	List<?> getAwaitingBattleList(Integer category, int page);
 
-	Page<?> getAwaitingBattleList(int category, Pageable pageable);
-
-	Page<?> getApplyUserList(Long battleId, Pageable pageable);
-
-	void addBattleApplyUser(BattleApplyDto battleApplyDto);
+	void applyBattle(BattleApplyDto battleApplyDto, User user);
+	// void addBattle(BattleBoard battleBoard);
+	//
+	// Page<?> getBattleList(String type, long userId, Pageable pageable);
+	//
+	// void updateBattleStatus(Long battleId, String rejectionReason);
+	//
+	// BattleBoard getBattleBoardByVoteInfoId(Long voteInfoId);
+	//
+	// Page<?> getAwaitingBattleList(int category, Pageable pageable);
+	//
+	// Page<?> getApplyUserList(Long battleId, Pageable pageable);
+	//
+	// void addBattleApplyUser(BattleApplyDto battleApplyDto);
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class BattleApplyUserId implements Serializable {
+
 	private Long battleBoard;
 	private Long user;
 

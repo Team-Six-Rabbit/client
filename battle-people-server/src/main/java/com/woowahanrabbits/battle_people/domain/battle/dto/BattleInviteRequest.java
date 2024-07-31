@@ -1,6 +1,6 @@
 package com.woowahanrabbits.battle_people.domain.battle.dto;
 
-import java.util.List;
+import java.util.Date;
 
 import org.hibernate.validator.constraints.Range;
 
@@ -18,20 +18,19 @@ public class BattleInviteRequest {
 	@NotNull
 	private String detail;
 	@NotNull
-	private Long startDate;
+	private Date startDate;
 	@NotNull
-	private Long endDate;
+	private int time;
 	@Range(min = 0, max = 7)
 	private Integer category;
 
 	@NotNull
 	@Min(1)
 	private Long oppositeUserId;
-	@Size(min = 2, max = 2)
-	private List<String> opinions;
-	@Min(5)
-	private Integer minPeopleCount;
+	@Size(min = 1, max = 1)
+	private String opinion;
 	@Max(Long.MAX_VALUE)
 	private Integer maxPeopleCount;
+	@NotNull
 	private String battleRule;
 }

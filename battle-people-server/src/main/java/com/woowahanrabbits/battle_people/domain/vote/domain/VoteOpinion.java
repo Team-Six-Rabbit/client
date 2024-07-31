@@ -21,6 +21,7 @@ import lombok.ToString;
 @ToString
 @IdClass(VoteOpinionId.class)
 public class VoteOpinion {
+
 	@Id
 	private Integer voteOpinionIndex;
 

@@ -22,6 +22,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+
 @Deprecated(forRemoval = true)
 public class BattleReturnDto {
 
