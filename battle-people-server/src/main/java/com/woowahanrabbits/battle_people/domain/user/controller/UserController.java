@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
-import com.woowahanrabbits.battle_people.domain.user.service.impl.UserServiceImpl;
+import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,11 +19,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 
-	private final UserServiceImpl userServiceImpl;
+	private final UserService userService;
 
 	@PostMapping("/join")
 	public ResponseEntity<?> join(@RequestBody JoinRequest request) {
-		return userServiceImpl.join(request);
+		return userService.join(request);
 	}
 
 	@GetMapping

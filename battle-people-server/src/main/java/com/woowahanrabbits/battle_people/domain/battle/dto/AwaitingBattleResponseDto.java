@@ -1,43 +1,35 @@
-// package com.woowahanrabbits.battle_people.domain.battle.dto;
-//
-// import java.util.Date;
-// import java.util.List;
-// import java.util.stream.Collectors;
-//
-// import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
-// import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
-// import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
-//
-// import lombok.Builder;
-// import lombok.Getter;
-//
-// @Getter
-// @Builder
-// public class AwaitingBattleResponseDto {
-// 	private final Long id;
-// 	private final String title;
-// 	private final List<VoteOpinionDto> opinionDtos;
-// 	private final Date startDate;
-// 	private final Date endDate;
-// 	private final int maxPeopleCount;
-// 	private final int currentPeopleCount;
-// 	private boolean isVoted;
-//
-// 	public static AwaitingBattleResponseDto from(BattleBoard battleBoard, List<VoteOpinion> voteOpinions,
-// 		int currentPeopleCount) {
-// 		List<VoteOpinionDto> voteOpinionDtos = voteOpinions.stream()
-// 			.map(VoteOpinionDto::new)
-// 			.collect(Collectors.toList());
-//
-// 		return AwaitingBattleResponseDto.builder()
-// 			.id(battleBoard.getId())
-// 			.title(battleBoard.getVoteInfo().getTitle())
-// 			.opinionDtos(voteOpinionDtos)
-// 			.startDate(battleBoard.getVoteInfo().getStartDate())
-// 			.endDate(battleBoard.getVoteInfo().getEndDate())
-// 			.maxPeopleCount(battleBoard.getMaxPeopleCount())
-// 			.currentPeopleCount(currentPeopleCount)
-// 			.build();
-//
-// 	}
-// }
+package com.woowahanrabbits.battle_people.domain.battle.dto;
+
+import java.util.Date;
+import java.util.List;
+
+import com.woowahanrabbits.battle_people.domain.vote.dto.BattleOpinionDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.GetVoteInfoWithUserCountDto;
+
+import lombok.Getter;
+
+@Getter
+public class AwaitingBattleResponseDto {
+	private Long id;
+	private String title;
+	private List<BattleOpinionDto> opinionDtos;
+	private Date startDate;
+	private Date endDate;
+	private int category;
+	private int maxPeopleCount;
+	private int userCount;
+	private boolean isUserApplied;
+
+	public AwaitingBattleResponseDto(GetVoteInfoWithUserCountDto getVoteInfoWithUserCountDto,
+		List<BattleOpinionDto> battleOpinionDtos) {
+		this.id = getVoteInfoWithUserCountDto.getId();
+		this.title = getVoteInfoWithUserCountDto.getTitle();
+		this.opinionDtos = battleOpinionDtos;
+		this.startDate = getVoteInfoWithUserCountDto.getStartDate();
+		this.endDate = getVoteInfoWithUserCountDto.getEndDate();
+		this.category = getVoteInfoWithUserCountDto.getCategory();
+		this.maxPeopleCount = getVoteInfoWithUserCountDto.getMaxPeopleCount();
+		this.userCount = getVoteInfoWithUserCountDto.getUserCount();
+		this.isUserApplied = getVoteInfoWithUserCountDto.isUserApplied();
+	}
+}

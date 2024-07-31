@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
@@ -26,6 +27,7 @@ public class VoteInfo {
 	private Date startDate;
 	private Date endDate;
 	private int category;
+	@Setter
 	private int currentState;
 	private String detail;
 }
