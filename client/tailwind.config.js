@@ -8,6 +8,7 @@ export default {
 				blue: "#0B68EC",
 				yellow: "#FBCA27",
 				olive: "#B4CC38",
+				royalBlue: "#1D3D6B",
 			},
 			scale: {
 				"120": "1.2",
