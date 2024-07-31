@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.woowahanrabbits.battle_people.domain.api.dto.APIResponseDto;
+import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.domain.UserToken;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 		Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 		if (userOptional.isEmpty()) {
 			result.put("responseEntity", ResponseEntity.status(HttpStatus.NO_CONTENT)
-				.body(new APIResponseDto<>("fail", "Email is Wrong", null)));
+				.body(new ApiResponseDto<>("fail", "Email is Wrong", null)));
 			return result;
 		}
 
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
 		if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
 			result.put("responseEntity", ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-				.body(new APIResponseDto<>("fail", "Password is Wrong", null)));
+				.body(new ApiResponseDto<>("fail", "Password is Wrong", null)));
 			return result;
 		}
 
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
 		String userId = String.valueOf(jwtUtil.extractUserId(userToken.getAccessToken()));
 		result.put("responseEntity", ResponseEntity.ok(
-			new APIResponseDto<>("success", "Login Successful", "userId : " + userId)));
+			new ApiResponseDto<>("success", "Login Successful", "userId : " + userId)));
 		result.put("response", response);
 		return result;
 	}
@@ -80,13 +80,13 @@ public class UserServiceImpl implements UserService {
 		if (userRepository.existsByEmail(email)) {
 			return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new APIResponseDto<>("fail", "Email is exist", null));
+				.body(new ApiResponseDto<>("fail", "Email is exist", null));
 		}
 
 		if (userRepository.existsByNickname(nickname)) {
 			return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new APIResponseDto<>("fail", "Nickname is exist", null));
+				.body(new ApiResponseDto<>("fail", "Nickname is exist", null));
 		}
 
 		User user = User.builder()
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
 
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
-			.body(new APIResponseDto<>("success", "User joined", userRepository.getUserIdByEmail(email)));
+			.body(new ApiResponseDto<>("success", "User joined", userRepository.getUserIdByEmail(email)));
 	}
 
 }

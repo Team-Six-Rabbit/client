@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.woowahanrabbits.battle_people.domain.api.dto.APIResponseDto;
+import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.handler.JwtAuthenticationException;
 import com.woowahanrabbits.battle_people.domain.user.service.PrincipalDetailsService;
 
@@ -76,7 +76,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	}
 
 	private void handleException(HttpServletResponse response, String message, int status) throws IOException {
-		APIResponseDto<String> apiResponse = new APIResponseDto<String>("fail", message, "");
+		ApiResponseDto<String> apiResponse = new ApiResponseDto<String>("fail", message, "");
 		response.setStatus(status);
 		response.setContentType("application/json");
 		ObjectMapper objectMapper = new ObjectMapper();

@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class APIResponseDto<T> {
+public class ApiResponseDto<T> {
 
 	private String code;
 	private String msg;

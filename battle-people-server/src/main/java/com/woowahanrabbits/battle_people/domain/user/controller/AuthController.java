@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.woowahanrabbits.battle_people.domain.api.dto.APIResponseDto;
+import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
@@ -48,7 +48,7 @@ public class AuthController {
 			HttpUtils.refreshTokenRemovalCookie
 		);
 
-		return ResponseEntity.ok(new APIResponseDto<>("success", "Logout", null));
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "Logout", null));
 	}
 
 	@PostMapping("/refresh")
@@ -57,7 +57,7 @@ public class AuthController {
 			jwtUtil.isTokenExpired(refresh);
 		} catch (ExpiredJwtException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-				.body(new APIResponseDto<>("fail", "Refresh expired", null));
+				.body(new ApiResponseDto<>("fail", "Refresh expired", null));
 		}
 
 		long userId = jwtUtil.extractUserId(refresh);
@@ -67,6 +67,6 @@ public class AuthController {
 
 		userTokenRepository.updateAccessTokenByUserId(userId, newAccess);
 		response.addCookie(HttpUtils.createCookie("access", newAccess, "/"));
-		return ResponseEntity.ok(new APIResponseDto<>("success", "Refresh", null));
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "Refresh", null));
 	}
 }

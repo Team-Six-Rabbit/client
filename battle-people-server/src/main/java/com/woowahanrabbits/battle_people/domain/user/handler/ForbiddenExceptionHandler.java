@@ -7,7 +7,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.woowahanrabbits.battle_people.domain.api.dto.APIResponseDto;
+import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +18,7 @@ public class ForbiddenExceptionHandler implements AccessDeniedHandler {
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 		AccessDeniedException accessDeniedException) throws IOException {
-		APIResponseDto<String> apiResponse = new APIResponseDto<>("fail", "Forbidden: Access is denied", null);
+		ApiResponseDto<String> apiResponse = new ApiResponseDto<>("fail", "Forbidden: Access is denied", null);
 		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 		response.setContentType("application/json");
 		ObjectMapper objectMapper = new ObjectMapper();
