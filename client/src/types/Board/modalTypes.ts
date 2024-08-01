@@ -37,3 +37,22 @@ export interface UpcomingLivePreviewModalType {
 	battleRule: string;
 	summary: string;
 }
+
+export interface Opinion {
+	index: number;
+	opinion: string;
+	count: number;
+	percentage: number;
+}
+
+export interface BalanceGameModalType {
+	id: number;
+	title: string;
+	detail: string;
+	startDate: string;
+	endDate: string;
+	category: number;
+	opinions: Opinion[];
+	currentState: number;
+	userVote: number | null;
+}

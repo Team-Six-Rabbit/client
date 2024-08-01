@@ -1,113 +1,53 @@
-import React from "react";
-import person_orange from "@/assets/images/person_orange.png";
+import ModalContent from "@/components/Modal/ModalContent";
+import ModalForm from "@/components/Modal/ModalForm";
+import { BalanceGameModalType, User } from "@/types/Board/modalTypes";
 import person_blue from "@/assets/images/person_blue.png";
-import {
-	ModalBackdrop,
-	ModalContent,
-	ModalHeader,
-	ModalTitle,
-	CloseButton,
-	ModalBody,
-	InfoText,
-	InfoTextSpan,
-	Opponents,
-	Opponent,
-	OpponentImage,
-	SpeechBubble,
-	VoteResult,
-	VoteColumn,
-	ProgressBarContainer,
-	ProgressBar,
-	VoteRow,
-	VoteText,
-	VoteResultsContainer,
-} from "@/components/Modal/ModalStyles";
-import styled from "styled-components";
-import { BalanceGameCardType } from "@/types/Board/balancegameCard";
+import person_orange from "@/assets/images/person_orange.png";
 
 interface BalanceGameModalProps {
-	data: BalanceGameCardType;
+	data: BalanceGameModalType;
 	onClose: () => void;
 }
 
-const CustomModalContent = styled(ModalContent)`
-	border: 8px solid #fbca27;
-`;
+const defaultUser1: User = {
+	id: 0,
+	nickname: "",
+	imgUrl: person_orange,
+	rating: 0,
+	opinion: "No opinion",
+};
 
-const CustomInfoText = styled(InfoText)`
-	border: 3px solid #fbca27;
-`;
-
-const CustomSpeechBubble = styled(SpeechBubble)`
-	background: #fbca27;
-
-	&:after {
-		border-top-color: #fbca27;
-	}
-`;
+const defaultUser2: User = {
+	id: 0,
+	nickname: "",
+	imgUrl: person_blue,
+	rating: 0,
+	opinion: "No opinion",
+};
 
 function BalanceGameModal({ data, onClose }: BalanceGameModalProps) {
-	const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-		if (event.target === event.currentTarget) {
-			onClose();
-		}
-	};
+	if (!data) {
+		return null;
+	}
+
+	const { title, detail, opinions } = data;
 
 	return (
-		<ModalBackdrop onClick={handleBackdropClick}>
-			<CustomModalContent>
-				<ModalHeader>
-					<ModalTitle>밸런스게임 상세보기</ModalTitle>
-					<CloseButton type="button" onClick={onClose}>
-						X
-					</CloseButton>
-				</ModalHeader>
-				<ModalBody>
-					<CustomInfoText>
-						<InfoTextSpan>{data.title}</InfoTextSpan>
-					</CustomInfoText>
-					<Opponents>
-						<Opponent>
-							<CustomSpeechBubble>
-								{data.opinions[0].opinion}
-							</CustomSpeechBubble>
-							<OpponentImage src={person_orange} alt="User A" />
-						</Opponent>
-						<VoteResultsContainer>
-							<VoteResult>
-								<VoteColumn>
-									<VoteText>투표 현황</VoteText>
-									<ProgressBarContainer>
-										<ProgressBar
-											percentage={data.opinions[0].percentage}
-											color="#F66C23"
-										/>
-										<ProgressBar
-											percentage={data.opinions[1].percentage}
-											color="#0B68EC"
-											style={{ left: `${data.opinions[0].percentage}%` }}
-										/>
-									</ProgressBarContainer>
-									<VoteRow>
-										<VoteText>{data.opinions[0].percentage}%</VoteText>
-										<VoteText>{data.opinions[1].percentage}%</VoteText>
-									</VoteRow>
-								</VoteColumn>
-							</VoteResult>
-						</VoteResultsContainer>
-						<Opponent>
-							<CustomSpeechBubble>
-								{data.opinions[1].opinion}
-							</CustomSpeechBubble>
-							<OpponentImage src={person_blue} alt="User B" />
-						</Opponent>
-					</Opponents>
-					<CustomInfoText>
-						<InfoTextSpan>{data.detail}</InfoTextSpan>
-					</CustomInfoText>
-				</ModalBody>
-			</CustomModalContent>
-		</ModalBackdrop>
+		<ModalForm
+			title="밸런스게임 상세보기"
+			infoText={title}
+			summary={detail}
+			onClose={onClose}
+			borderColor="#fbca27"
+		>
+			<ModalContent
+				registerUser={defaultUser1}
+				oppositeUser={defaultUser2}
+				speechBubbleColor="#fbca27"
+				status="balance"
+				opinions={opinions}
+			/>
+		</ModalForm>
 	);
 }
 

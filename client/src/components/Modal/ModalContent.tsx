@@ -1,7 +1,7 @@
 import { Opponents as StyledOpponents, VS } from "@/assets/styles/modalStyles";
 import Opponent from "@/components/Modal/Opponent";
 import VoteResultBar from "@/components/Modal/VoteResultBar";
-import { Result } from "@/types/Board/modalTypes";
+import { Result, Opinion } from "@/types/Board/modalTypes";
 
 interface UserProps {
 	nickname: string;
@@ -13,9 +13,10 @@ interface OpponentsProps {
 	registerUser: UserProps;
 	oppositeUser: UserProps;
 	speechBubbleColor: string;
-	status: "upcoming" | "ended";
+	status: "upcoming" | "ended" | "balance";
 	preResult?: Result;
 	finalResult?: Result;
+	opinions?: Opinion[];
 }
 
 function Opponents({
@@ -25,6 +26,7 @@ function Opponents({
 	status,
 	preResult,
 	finalResult,
+	opinions,
 }: OpponentsProps) {
 	return (
 		<StyledOpponents>
@@ -53,6 +55,17 @@ function Opponents({
 					/>
 				</div>
 			)}
+			{status === "balance" && opinions && (
+				<div style={{ width: "100%" }}>
+					<VoteResultBar
+						title="투표 결과"
+						percentageRegisterOpinion={opinions[0].percentage}
+						percentageOppositeOpinion={opinions[1].percentage}
+						registerColor="#F66C23"
+						oppositeColor="#0B68EC"
+					/>
+				</div>
+			)}
 			<Opponent
 				nickname={oppositeUser.nickname}
 				imgUrl={oppositeUser.imgUrl}
@@ -72,6 +85,10 @@ Opponents.defaultProps = {
 		percentageRegisterOpinion: 50,
 		percentageOppositeOpinion: 50,
 	},
+	opinions: [
+		{ index: 0, opinion: "Option 1", count: 0, percentage: 50 },
+		{ index: 1, opinion: "Option 2", count: 0, percentage: 50 },
+	],
 };
 
 export default Opponents;
