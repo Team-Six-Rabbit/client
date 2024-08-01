@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,9 +16,6 @@ import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
-import com.woowahanrabbits.battle_people.domain.user.service.impl.UserService;
-import com.woowahanrabbits.battle_people.domain.user.service.UserService;
-import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUsers;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 
