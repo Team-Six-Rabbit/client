@@ -82,7 +82,7 @@ function ChatBox() {
 	};
 
 	return (
-		<div className="flex flex-col h-160 w-1/4 ms-6 mt-2">
+		<div className="flex flex-col h-150 w-1/4 ms-6 mt-2">
 			<SpeechRequestList />
 			<div className="flex-1 overflow-y-auto p-2 my-2 border-solid border-4 border-black rounded-lg flex flex-col-reverse scrollbar-hide">
 				<div>
