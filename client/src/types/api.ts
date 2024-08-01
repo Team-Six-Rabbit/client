@@ -88,7 +88,3 @@ export interface BalanceGameResponse extends Vote {
 	currentState: number;
 	userVote?: number;
 }
-
-export interface GetBalanceGameCommentRequestParam extends PageableParm {
-	voteId: number;
-}
