@@ -8,7 +8,7 @@ import PlusButton from "@/components/Board/fanning/PlusButton";
 import { TicketType } from "@/types/Board/ticket";
 import { categories } from "@/constant/boardCategory";
 import { sampleTickets } from "@/constant/exampleTicket";
-import { formatToLocalTime } from "@/utils/dateUtils";
+import { convertToTimeZone } from "@/utils/dateUtils";
 
 const PreVotingBoardContainer = styled.div`
 	display: flex;
@@ -66,8 +66,8 @@ function PreVotingBoardPage() {
 								key={ticket.id}
 								ticket={{
 									...ticket,
-									startDate: formatToLocalTime(ticket.startDate, "Asia/Seoul"),
-									endDate: formatToLocalTime(ticket.endDate, "Asia/Seoul"),
+									startDate: convertToTimeZone(ticket.startDate, "Asia/Seoul"),
+									endDate: convertToTimeZone(ticket.endDate, "Asia/Seoul"),
 								}}
 								theme={getTheme(index)}
 							/>
