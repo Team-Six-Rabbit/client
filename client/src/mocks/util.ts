@@ -10,6 +10,11 @@ import { BasicUserInfo } from "@/types/user";
 
 const lorem = new LoremIpsum();
 
+const generateTitle = (length: number = 16) => {
+	const title = lorem.generateSentences(1);
+	return title.substring(0, length);
+};
+
 export const generateBasicUser = (): BasicUserInfo => {
 	return {
 		id: Math.floor(Math.random() * 3000),
@@ -61,7 +66,7 @@ const generateBattle = (id: number, category?: number): Battle => ({
 	},
 	voteInfo: {
 		id: Math.floor(Math.random() * 10000),
-		title: lorem.generateWords(5),
+		title: generateTitle(),
 		startDate: new Date().toString(),
 		endDate: new Date(Date.now() + 86400000).toString(),
 		category: category || (Math.floor(Math.random() * 10) % 7) + 1,
@@ -110,11 +115,6 @@ export const generateBalanceGameResponse = (
 	const count1 = Math.floor(Math.random() * 100);
 	const count2 = 100 - count1; // Ensure that the sum of percentages is 100
 	const totalCount = count1 + count2;
-
-	const generateTitle = () => {
-		const title = lorem.generateSentences(1);
-		return title.length > 16 ? title.substring(0, 16) : title;
-	};
 
 	return {
 		id,
