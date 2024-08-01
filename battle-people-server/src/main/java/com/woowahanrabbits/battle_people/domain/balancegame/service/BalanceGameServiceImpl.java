@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,15 +19,15 @@ import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpin
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class BalanceGameServiceImpl implements BalanceGameService {
 
-	@Autowired
-	private VoteInfoRepository voteInfoRepository;
-	@Autowired
-	private VoteOpinionRepository voteOpinionRepository;
-	@Autowired
-	private UserVoteOpinionRepository userVoteOpinionRepository;
+	private final VoteInfoRepository voteInfoRepository;
+	private final VoteOpinionRepository voteOpinionRepository;
+	private final UserVoteOpinionRepository userVoteOpinionRepository;
 
 	@Override
 	public void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, User user) {

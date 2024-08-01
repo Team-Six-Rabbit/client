@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import com.woowahanrabbits.battle_people.domain.balancegame.domain.BalanceGameBoardComment;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameCommentResponse;
 
+@Deprecated
 public interface BalanceGameRepository extends JpaRepository<BalanceGameBoardComment, Long> {
 
 	@Query(
