@@ -1,14 +1,14 @@
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { categories } from "@/constant/boardCategory";
 import { LiveStatus } from "@/types/Board/liveStatus";
-
+import PlusButton from "@/components/Board/fanning/PlusButton";
 import BalanceGameCard from "@/components/Board/bonfire/BalanceGameCard";
 import { BalanceGameCardType } from "@/types/Board/balancegameCard";
-import { balanceGameCards } from "@/constant/balanceGameCards";
 import styled from "styled-components";
+import { getBalanceGames } from "@/services/balanceGameService";
+import { ApiResponse, BalanceGameResponse } from "@/types/api";
 
 const BalanceGameBoardContainer = styled.div`
 	display: flex;
@@ -32,8 +32,34 @@ const BoardCardContainer = styled.div`
 function BalanceGameBoardPage() {
 	const [selectedCategory, setSelectedCategory] = useState<string>("전체");
 	const [selectedStatus, setSelectedStatus] = useState<LiveStatus>("live");
-	const [balanceGameState, setBalanceGameState] =
-		useState<BalanceGameCardType[]>(balanceGameCards);
+	const [balanceGameState, setBalanceGameState] = useState<
+		BalanceGameCardType[]
+	>([]);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+
+	useEffect(() => {
+		const fetchBalanceGames = async () => {
+			try {
+				setIsLoading(true);
+				const categoryIndex = categories.findIndex(
+					(category) => category.name === selectedCategory,
+				);
+				const status = selectedStatus === "live" ? 6 : 7;
+				const response: ApiResponse<BalanceGameResponse[]> =
+					await getBalanceGames(1, 10, categoryIndex, status);
+				if (response.data)
+					setBalanceGameState(
+						response.data as unknown as BalanceGameCardType[],
+					);
+			} catch (error) {
+				console.error("Failed to fetch balance games:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchBalanceGames();
+	}, [selectedCategory, selectedStatus]);
 
 	const handleCategorySelect = (category: string) => {
 		setSelectedCategory(category);
@@ -92,6 +118,10 @@ function BalanceGameBoardPage() {
 		return false;
 	});
 
+	if (isLoading) {
+		return <div>Loading...</div>;
+	}
+
 	return (
 		<div>
 			<Header />
@@ -117,6 +147,7 @@ function BalanceGameBoardPage() {
 					</BoardCardContainer>
 				</BalanceGameBoardContainer>
 			</div>
+			<PlusButton />
 		</div>
 	);
 }

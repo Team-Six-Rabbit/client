@@ -33,7 +33,7 @@ function Opponents({
 			<Opponent
 				nickname={registerUser.nickname}
 				imgUrl={registerUser.imgUrl}
-				opinion={registerUser.opinion}
+				opinion={opinions?.at(0)?.opinion || ""}
 				speechBubbleColor={speechBubbleColor}
 			/>
 			{status === "upcoming" && <VS>VS</VS>}
@@ -69,7 +69,7 @@ function Opponents({
 			<Opponent
 				nickname={oppositeUser.nickname}
 				imgUrl={oppositeUser.imgUrl}
-				opinion={oppositeUser.opinion}
+				opinion={opinions?.at(1)?.opinion || ""}
 				speechBubbleColor={speechBubbleColor}
 			/>
 		</StyledOpponents>

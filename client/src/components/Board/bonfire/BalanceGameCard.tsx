@@ -7,6 +7,7 @@ import {
 	BalanceGameCardWrapper,
 	Question,
 } from "@/assets/styles/balanceGameStyle";
+import { getBalanceGameById } from "@/services/balanceGameService"; // Import the service
 
 interface BalanceGameCardProps {
 	data: BalanceGameCardType;
@@ -17,7 +18,8 @@ interface BalanceGameCardProps {
 function BalanceGameCard({ data, onVote, disabled }: BalanceGameCardProps) {
 	const [hasVoted, setHasVoted] = useState(data.userVote !== null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-
+	const [modalData, setModalData] = useState<BalanceGameCardType | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 	const handleVote = (option: number) => {
 		if (hasVoted || disabled) return;
 
@@ -25,12 +27,22 @@ function BalanceGameCard({ data, onVote, disabled }: BalanceGameCardProps) {
 		onVote(data.id, option);
 	};
 
-	const handleCardClick = () => {
-		setIsModalOpen(true);
+	const handleCardClick = async () => {
+		setIsLoading(true);
+		try {
+			const response = await getBalanceGameById(data.id.toString());
+			setModalData(response.data as unknown as BalanceGameCardType);
+			setIsModalOpen(true);
+		} catch (error) {
+			console.error("Failed to fetch balance game details:", error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
+		setModalData(null);
 	};
 
 	return (
@@ -43,8 +55,9 @@ function BalanceGameCard({ data, onVote, disabled }: BalanceGameCardProps) {
 					<ActiveBalanceGameCard opinions={data.opinions} onVote={handleVote} />
 				)}
 			</BalanceGameCardWrapper>
-			{isModalOpen && (
-				<BalanceGameModal data={data} onClose={handleCloseModal} />
+			{isLoading && <div>Loading...</div>}
+			{isModalOpen && modalData && (
+				<BalanceGameModal data={modalData} onClose={handleCloseModal} />
 			)}
 		</>
 	);
