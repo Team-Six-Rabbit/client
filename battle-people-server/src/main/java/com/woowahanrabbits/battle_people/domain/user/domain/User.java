@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,10 +15,23 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
+	public User(long id, String email, String role) {
+		this.id = id;
+		this.email = email;
+		this.role = role;
+	}
+
+	public User(String email, String password, String nickname, String imgUrl, String role) {
+		this.email = email;
+		this.password = password;
+		this.nickname = nickname;
+		this.imgUrl = imgUrl;
+		this.role = role;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

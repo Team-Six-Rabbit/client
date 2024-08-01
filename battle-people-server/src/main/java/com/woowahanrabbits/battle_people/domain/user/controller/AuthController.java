@@ -1,7 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.user.controller;
 
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -12,7 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.domain.UserToken;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
+import com.woowahanrabbits.battle_people.domain.user.dto.LoginResponse;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
@@ -33,9 +34,22 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-		Map<String, Object> map = userService.login(loginRequest, response);
-		response = (HttpServletResponse)map.get("response");
-		return (ResponseEntity<?>)map.get("responseEntity");
+		User user = userService.login(loginRequest);
+
+		long userId = user.getId();
+		String email = user.getEmail();
+		String role = user.getRole();
+		String access = jwtUtil.generateAccessToken(userId, email, role);
+		String refresh = jwtUtil.generateRefreshToken(userId, email, role);
+		UserToken userToken = new UserToken(user, access, refresh);
+		userTokenRepository.save(userToken);
+
+		response.addCookie(HttpUtils.createCookie("access", access, "/"));
+		response.addCookie(
+			HttpUtils.createCookie("refresh", refresh, "/battle-people/auth/refresh"));
+		LoginResponse loginResponse = new LoginResponse(email, user.getNickname(), user.getRating(),
+			user.getImgUrl());
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "login success", loginResponse));
 	}
 
 	@DeleteMapping("/logout")

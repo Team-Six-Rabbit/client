@@ -5,22 +5,25 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @Entity
 @Data
-@Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class Interest {
+
+	public Interest(Long userId, int category, int count) {
+		this.userId = userId;
+		this.category = category;
+		this.count = count;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// @ManyToOne
-	// @JoinColumn(name = "user_id")
 	private Long userId;
 
 	private int category;

@@ -1,5 +1,9 @@
 package com.woowahanrabbits.battle_people.domain.user.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,7 @@ import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
 import com.woowahanrabbits.battle_people.domain.user.service.impl.UserService;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUsers;
+import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,33 +34,41 @@ public class UserController {
 	private final UserService userService;
 
 	@PostMapping("/join")
-	public ResponseEntity<?> join(@RequestBody JoinRequest request) {
-		return userService.join(request);
+	public ResponseEntity<ApiResponseDto<User>> join(@RequestBody JoinRequest request) {
+		User user = userService.join(request);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User joined", user));
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponseDto<?>> getAllUsers() {
-		return userService.findAllUsers();
+	public ResponseEntity<ApiResponseDto<List<User>>> getAllUsers() {
+		List<User> list = userService.findAllUsers();
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User list", list));
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<ApiResponseDto<?>> getLoginUserProfile(@LoginUsers User user) {
-		return userService.getUserProfile(user.getId());
+	public ResponseEntity<ApiResponseDto<User>> getLoginUserProfile(@LoginUser User loginUser) {
+		User user = userService.getUserProfile(loginUser.getId());
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile", user));
 	}
 
 	@GetMapping("/profile/{userId}")
-	public ResponseEntity<ApiResponseDto<?>> getUserProfile(@PathVariable(value = "userId") Long userId) {
-		return userService.getUserProfile(userId);
+	public ResponseEntity<ApiResponseDto<User>> getUserProfile(@PathVariable(value = "userId") Long userId) {
+		User user = userService.getUserProfile(userId);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile", user));
 	}
 
 	@GetMapping("/interest")
-	public ResponseEntity<ApiResponseDto<?>> getUserInterest(@LoginUsers User user) {
-		return userService.getInterest(user.getId());
+	public ResponseEntity<ApiResponseDto<Map<String, List<Integer>>>> getUserInterest(@LoginUser User user) {
+		List<Integer> list = userService.getInterest(user.getId());
+		Map<String, List<Integer>> response = new HashMap<>();
+		response.put("category", list);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User interest", response));
 	}
 
 	@PostMapping("/interest")
-	public ResponseEntity<ApiResponseDto<?>> setUserInterest(@LoginUsers User user,
+	public ResponseEntity<ApiResponseDto<Void>> setUserInterest(@LoginUser User user,
 		@RequestBody InterestRequest request) {
-		return userService.setInterest(user.getId(), request);
+		userService.setInterest(user.getId(), request);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "Create User Category", null));
 	}
 }
