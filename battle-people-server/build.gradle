@@ -45,9 +45,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
     // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
+    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 }
 

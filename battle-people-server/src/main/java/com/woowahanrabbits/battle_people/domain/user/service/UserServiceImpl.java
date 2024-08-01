@@ -1,4 +1,4 @@
-package com.woowahanrabbits.battle_people.domain.user.service.impl;
+package com.woowahanrabbits.battle_people.domain.user.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
