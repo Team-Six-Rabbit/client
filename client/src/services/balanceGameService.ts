@@ -49,3 +49,17 @@ export async function deleteBalanceGame(): Promise<ApiResponse<string>> {
 		throw error;
 	}
 }
+
+export async function getBalanceGameById(
+	id: string,
+): Promise<ApiResponse<BalanceGameResponse>> {
+	try {
+		const response = await axiosInstance.get<ApiResponse<BalanceGameResponse>>(
+			`/balance-game/${id}`,
+		);
+		return response.data;
+	} catch (error) {
+		console.error(`Failed to fetch balance game with id ${id}:`, error);
+		throw error;
+	}
+}
