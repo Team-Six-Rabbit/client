@@ -20,7 +20,7 @@ function LivePage() {
 		<>
 			<Header />
 			<div className="flex flex-col h-screen">
-				<div className="flex-1 flex mt-16 p-8">
+				<div className="flex-1 flex mt-16 px-8 pt-8">
 					<Timer duration={10} onTimeOver={() => setIsTimeOver(true)} />
 					<div className="flex-col justify-center items-center h-144">
 						<LiveVote
