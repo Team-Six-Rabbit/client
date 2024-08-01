@@ -6,7 +6,7 @@ import { format, toZonedTime } from "date-fns-tz";
  * @param timeZone 변환할 시간대 (예: 'America/New_York', 'Asia/Seoul')
  * @returns 변환된 로컬 시간 문자열
  */
-export const formatToLocalTime = (
+export const convertToTimeZone = (
 	isoString: string,
 	timeZone: string,
 ): string => {
