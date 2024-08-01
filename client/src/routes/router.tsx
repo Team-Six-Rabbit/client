@@ -5,6 +5,7 @@ import LoginPage from "@/pages/LoginPage";
 import SignUpPage from "@/pages/SignUpPage";
 import LiveBoardPage from "@/pages/LiveBoardPage";
 import PreVotingBoardPage from "@/pages/PreVotingBoardPage";
+import LivePage from "@/pages/LivePage";
 
 const router = createBrowserRouter([
 	{
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
 	{
 		path: "/fanning",
 		element: <PreVotingBoardPage />,
+	},
+	{
+		path: "/live",
+		element: <LivePage />,
 	},
 ]);
 
