@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.woowahanrabbits.battle_people.config.AppProperties;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.AwaitingBattleResponseDto;
@@ -26,7 +27,6 @@ import com.woowahanrabbits.battle_people.domain.vote.dto.BattleOpinionDto;
 import com.woowahanrabbits.battle_people.domain.vote.dto.GetVoteInfoWithUserCountDto;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
-import com.woowahanrabbits.battle_people.global.AppProperties;
 
 import lombok.RequiredArgsConstructor;
 
