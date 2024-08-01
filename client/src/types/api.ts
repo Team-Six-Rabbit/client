@@ -65,7 +65,7 @@ export interface BattleInviteRespondRequest {
 	content: string;
 }
 
-export interface SearchRecruitingBattleRequestParam extends PageableParm {
+export interface RecruitingBattleListParam extends PageableParm {
 	category: number;
 }
 
@@ -78,7 +78,7 @@ export interface CreateBalanceGameRequest extends Vote {
 	opinions: string[];
 }
 
-export interface SearchBalanceGameRequestParam extends PageableParm {
+export interface BalanceGameListRequestParam extends PageableParm {
 	category: number;
 	status: number;
 }
