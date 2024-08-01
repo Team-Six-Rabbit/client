@@ -1,18 +1,18 @@
 import axiosInstance from "@/services/axiosInstance";
 import { JoinRequest, LoginRequest, ApiResponse } from "@/types/api";
-import { User } from "@/types/user";
+import { DetailUserInfo } from "@/types/user";
 import { useAuthStore } from "@/stores/userAuthStore";
 
 // 로그인 함수
 export const login = async (
 	loginRequest: LoginRequest,
-): Promise<ApiResponse<User>> => {
+): Promise<ApiResponse<DetailUserInfo>> => {
 	try {
-		const response = await axiosInstance.post<ApiResponse<User>>(
+		const response = await axiosInstance.post<ApiResponse<DetailUserInfo>>(
 			"/auth/login",
 			loginRequest,
 		);
-		if (response.data.code === "success") {
+		if (response.data.code === "success" && response.data.data) {
 			useAuthStore.getState().login(response.data.data);
 		}
 		return response.data;
@@ -41,11 +41,11 @@ export const join = async (
 // 사용자 정보 가져오기 함수
 export const getUserInfo = async (
 	userId?: number,
-): Promise<ApiResponse<User>> => {
+): Promise<ApiResponse<DetailUserInfo>> => {
 	try {
 		const url = userId ? `/user/profile/${userId}` : "/user/profile";
-		const response = await axiosInstance.get<ApiResponse<User>>(url);
-		if (!userId && response.data.code === "success") {
+		const response = await axiosInstance.get<ApiResponse<DetailUserInfo>>(url);
+		if (!userId && response.data.code === "success" && response.data.data) {
 			useAuthStore.getState().setUser(response.data.data);
 		}
 		return response.data;

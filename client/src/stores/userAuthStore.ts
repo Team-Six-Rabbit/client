@@ -1,18 +1,18 @@
 // userAuthStore.ts
 
-import { User } from "@/types/user";
+import { DetailUserInfo } from "@/types/user";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 interface AuthState {
 	isLogin: boolean;
-	user: User | null;
+	user: DetailUserInfo | null;
 }
 
 interface AuthAction {
-	login: (user: User) => void;
+	login: (user: DetailUserInfo) => void;
 	logout: () => void;
-	setUser: (user: User | null) => void;
+	setUser: (user: DetailUserInfo | null) => void;
 }
 
 export const useAuthStore = create<AuthState & AuthAction>()(
@@ -20,7 +20,10 @@ export const useAuthStore = create<AuthState & AuthAction>()(
 		(set) => ({
 			isLogin: false,
 			user: null,
-			login: (user: User, expireAt: Date = new Date(Date.now() + 3600000)) => {
+			login: (
+				user: DetailUserInfo,
+				expireAt: Date = new Date(Date.now() + 3600000),
+			) => {
 				set({ isLogin: true, user });
 				sessionStorage.setItem(
 					"user",
@@ -31,7 +34,7 @@ export const useAuthStore = create<AuthState & AuthAction>()(
 				set({ isLogin: false, user: null });
 				sessionStorage.removeItem("user");
 			},
-			setUser: (user: User | null) => set({ user }),
+			setUser: (user: DetailUserInfo | null) => set({ user }),
 		}),
 		{
 			name: "auth",

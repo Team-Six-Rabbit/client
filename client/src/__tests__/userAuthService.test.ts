@@ -40,7 +40,7 @@ describe("userAuthService", () => {
 		const response = await login(loginRequest);
 
 		expect(response.code).toBe("success");
-		expect(response.data.email).toBe("test@email.com");
+		expect(response.data?.email).toBe("test@email.com");
 
 		const state = useAuthStore.getState();
 		expect(state.isLogin).toBe(true);
@@ -90,7 +90,7 @@ describe("userAuthService", () => {
 
 		const response = await getUserInfo();
 		expect(response.code).toBe("success");
-		expect(response.data.email).toBe("test@email.com");
+		expect(response.data?.email).toBe("test@email.com");
 
 		const state = useAuthStore.getState();
 		expect(state.user).toEqual(response.data);
@@ -99,7 +99,7 @@ describe("userAuthService", () => {
 	it("should get user profile successfully", async () => {
 		const response = await getUserInfo(1);
 		expect(response.code).toBe("success");
-		expect(response.data.email).toBe("test1.email.com");
+		expect(response.data?.email).toBe("test1.email.com");
 	});
 
 	it("should return 404 for non-existing user profile", async () => {
