@@ -2,8 +2,8 @@ export interface Vote {
 	id?: number;
 	title: string;
 	detail?: string;
-	startDate: number;
-	endDate: number;
+	startDate: string;
+	endDate: string;
 	category: number;
 }
 

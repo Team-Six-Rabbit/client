@@ -62,8 +62,8 @@ const generateBattle = (id: number, category?: number): Battle => ({
 	voteInfo: {
 		id: Math.floor(Math.random() * 10000),
 		title: lorem.generateWords(5),
-		startDate: new Date().getMilliseconds(),
-		endDate: new Date(Date.now() + 86400000).getMilliseconds(),
+		startDate: new Date().toString(),
+		endDate: new Date(Date.now() + 86400000).toString(),
 		category: category || (Math.floor(Math.random() * 10) % 7) + 1,
 		detail: lorem.generateSentences(2),
 	},
@@ -80,7 +80,7 @@ const generateOpinion = (
 	count: number,
 ): Opinion => ({
 	index,
-	opinion: lorem.generateSentences(1),
+	opinion: lorem.generateSentences(1).substring(0, 16),
 	count,
 	percentage: (count / totalCount) * 100,
 });
@@ -108,8 +108,13 @@ export const generateBalanceGameResponse = (
 	id: number = Math.floor(Math.random() * 1000),
 ): BalanceGameResponse => {
 	const count1 = Math.floor(Math.random() * 100);
-	const count2 = Math.floor(Math.random() * 100);
+	const count2 = 100 - count1; // Ensure that the sum of percentages is 100
 	const totalCount = count1 + count2;
+
+	const generateTitle = () => {
+		const title = lorem.generateSentences(1);
+		return title.length > 16 ? title.substring(0, 16) : title;
+	};
 
 	return {
 		id,
@@ -120,9 +125,9 @@ export const generateBalanceGameResponse = (
 		detail: lorem.generateSentences(2),
 		currentState: status,
 		userVote: Math.random() > 0.5 ? 0 : undefined,
-		title: lorem.generateSentences(1),
-		startDate: new Date().getTime(),
-		endDate: new Date(Date.now() + 86400000).getTime(),
+		title: generateTitle(),
+		startDate: new Date().toString(),
+		endDate: new Date(Date.now() + 86400000).toString(),
 		category,
 	};
 };
