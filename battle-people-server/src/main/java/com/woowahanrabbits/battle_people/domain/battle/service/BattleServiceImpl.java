@@ -27,7 +27,7 @@
 // import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 // import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 // import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
-// import com.woowahanrabbits.battle_people.global.AppProperties;
+// import com.woowahanrabbits.battle_people.config.AppProperties;
 //
 // import lombok.RequiredArgsConstructor;
 //
