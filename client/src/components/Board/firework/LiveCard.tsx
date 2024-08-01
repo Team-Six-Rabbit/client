@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CardType } from "@/types/Board/liveBoardCard";
 import { LiveStatus } from "@/types/Board/liveStatus";
 import UpcomingLivePreviewModal from "@/components/Modal/UpcomingLivePreviewModal";
@@ -37,10 +38,14 @@ function LiveCard({
 	index,
 }: CardType) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const navigate = useNavigate();
 
 	const handleCardClick = () => {
 		if (status !== "live") {
 			setIsModalOpen(true);
+		}
+		if (status === "live") {
+			navigate("/live");
 		}
 	};
 
