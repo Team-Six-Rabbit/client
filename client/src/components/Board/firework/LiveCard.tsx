@@ -6,6 +6,10 @@ import UpcomingLivePreviewModal from "@/components/Modal/UpcomingLivePreviewModa
 import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import { createLiveStateBorder } from "@/utils/textBorder";
 import { formatDate } from "@/utils/dateTransform";
+import {
+	endedLivePreviewModalData,
+	upcomingLivePreviewModalData,
+} from "@/constant/modalSampleData";
 
 const getLiveStatusBackgroundColor = (status: LiveStatus, index: number) => {
 	if (status === "live") return "bg-transparent";
@@ -35,6 +39,8 @@ function LiveCard({
 	status,
 	live_apply_user_count,
 	start_date,
+	end_date,
+	category,
 	index,
 }: CardType) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -85,6 +91,39 @@ function LiveCard({
 		);
 	};
 
+	const endedModalData = {
+		...endedLivePreviewModalData,
+		title,
+		registerUser: {
+			...endedLivePreviewModalData.registerUser,
+			nickname: regist_user_id,
+		},
+		oppositeUser: {
+			...endedLivePreviewModalData.oppositeUser,
+			nickname: opposite_user_id,
+		},
+		imageUri: image_uri,
+		category: category.toString(),
+	};
+
+	const upcomingModalData = {
+		...upcomingLivePreviewModalData,
+		title,
+		registerUser: {
+			...upcomingLivePreviewModalData.registerUser,
+			nickname: regist_user_id,
+		},
+		oppositeUser: {
+			...upcomingLivePreviewModalData.oppositeUser,
+			nickname: opposite_user_id,
+		},
+		imageUri: image_uri,
+		startDate: start_date,
+		endDate: end_date,
+		currentPeopleCount: live_apply_user_count,
+		category: category.toString(),
+	};
+
 	return (
 		<>
 			<div
@@ -120,17 +159,13 @@ function LiveCard({
 			</div>
 			{isModalOpen && status === "upcoming" && (
 				<UpcomingLivePreviewModal
-					title={title}
-					regist_user_id={regist_user_id}
-					opposite_user_id={opposite_user_id}
+					data={upcomingModalData}
 					onClose={handleCloseModal}
 				/>
 			)}
 			{isModalOpen && status === "ended" && (
 				<EndedLivePreviewModal
-					title={title}
-					regist_user_id={regist_user_id}
-					opposite_user_id={opposite_user_id}
+					data={endedModalData}
 					onClose={handleCloseModal}
 				/>
 			)}

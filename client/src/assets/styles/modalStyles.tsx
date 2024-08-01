@@ -13,13 +13,14 @@ export const ModalBackdrop = styled.div`
 	z-index: 50;
 `;
 
-export const ModalContent = styled.div`
+export const ModalContent = styled.div<{ borderColor: string }>`
 	background-color: white;
 	padding: 16px;
 	border-radius: 20px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	max-width: 800px;
 	width: 100%;
+	border: 8px solid ${({ borderColor }) => borderColor};
 `;
 
 export const ModalHeader = styled.div`
@@ -34,9 +35,10 @@ export const ModalHeader = styled.div`
 
 export const ModalTitle = styled.h2`
 	font-size: 1.5rem;
+	flex: 1;
 `;
 
-export const CloseButton = styled.button`
+export const CloseButton = styled.button<{ borderColor: string }>`
 	font-size: 1.5rem;
 	background: none;
 	border: none;
@@ -44,6 +46,7 @@ export const CloseButton = styled.button`
 	position: absolute;
 	top: 0;
 	right: 0;
+	color: ${({ borderColor }) => borderColor};
 `;
 
 export const ModalBody = styled.div`
@@ -53,17 +56,36 @@ export const ModalBody = styled.div`
 	padding: 8px;
 `;
 
-export const InfoText = styled.p`
-	font-size: 1rem;
+export const InfoText = styled.p<{ borderColor: string }>`
+	font-size: 1.1rem;
 	font-weight: 600;
 	color: #4b5563;
 	border-radius: 15px;
 	padding: 10px;
+	height: 150px;
+	overflow: auto;
+	background-color: #f9fafb;
+	border: 3px solid ${({ borderColor }) => borderColor};
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `;
 
 export const InfoTextSpan = styled.span`
 	font-weight: 400;
 	color: #6b7280;
+`;
+
+export const TitleText = styled.p<{ borderColor: string }>`
+	font-size: 1.1rem;
+	color: #4b5563;
+	border-radius: 15px;
+	padding: 10px;
+	padding-left: 20px;
+	height: 50px;
+	background-color: #f9fafb;
+	border: 3px solid ${({ borderColor }) => borderColor};
 `;
 
 export const Opponents = styled.div`
@@ -72,6 +94,8 @@ export const Opponents = styled.div`
 	align-items: center;
 	width: 100%;
 	position: relative;
+	margin-top: 10px;
+	margin-bottom: 10px;
 `;
 
 export const Opponent = styled.div`
@@ -96,7 +120,10 @@ export const SpeechBubble = styled.div`
 	width: 150px;
 	margin-bottom: 8px;
 	color: #ffffff;
-
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	&:after {
 		content: "";
 		position: absolute;
@@ -155,6 +182,7 @@ export const VoteRow = styled.div`
 
 export const VoteText = styled.p`
 	font-size: 1rem;
+	margin-bottom: 5px;
 `;
 
 export const VoteResultsContainer = styled.div`
