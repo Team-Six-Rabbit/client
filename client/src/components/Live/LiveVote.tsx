@@ -41,7 +41,7 @@ function LiveVote({ title, optionA, optionB, onVoteEnd }: LiveVoteProps) {
 	}, [votesA, votesB, optionA, optionB, onVoteEnd]);
 
 	return (
-		<div className="flex flex-col items-center">
+		<div className="flex flex-col items-center mb-2">
 			<h1 className="text-2xl my-2">{title}</h1>
 			<div className="flex flex-row items-center justify-between w-3/4">
 				<button

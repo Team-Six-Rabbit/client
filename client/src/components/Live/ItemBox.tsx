@@ -105,7 +105,7 @@ function BombTicketIcons() {
 
 function ItemBox() {
 	return (
-		<div className="flex justify-between w-full p-2 mt-5 bg-black rounded-lg">
+		<div className="flex justify-between w-full p-2 mt-6 bg-black rounded-lg">
 			<VideoAudioIcons />
 			<BombTicketIcons />
 		</div>
