@@ -20,7 +20,6 @@ export const authService = {
 			return response.data;
 		} catch (error) {
 			console.error("Login Error: ", error);
-			console.error("Login Error: ", error);
 			throw error;
 		}
 	},
@@ -34,7 +33,6 @@ export const authService = {
 			);
 			return response.data;
 		} catch (error) {
-			console.error("Join Error: ", error);
 			console.error("Join Error: ", error);
 			throw error;
 		}
@@ -53,7 +51,6 @@ export const authService = {
 			}
 			return response.data;
 		} catch (error) {
-			console.error("Get User Info Error: ", error);
 			console.error("Get User Info Error: ", error);
 			throw error;
 		}
