@@ -62,14 +62,14 @@ const generateBattle = (id: number, category?: number): Battle => ({
 	voteInfo: {
 		id: Math.floor(Math.random() * 10000),
 		title: generateSentences(),
-		startDate: new Date().toString(),
-		endDate: new Date(Date.now() + 86400000).toString(),
+		startDate: new Date().toISOString(),
+		endDate: new Date(Date.now() + 86400000).toISOString(),
 		category: category || (Math.floor(Math.random() * 10) % 7) + 1,
 		detail: lorem.generateSentences(2),
 	},
 	minPeopleCount: 2,
 	maxPeopleCount: 10,
-	registDate: new Date().getMilliseconds(),
+	registDate: new Date().toISOString(),
 	currentState: Math.floor(Math.random() * 3),
 	imageUrl: Math.random() > 0.5 ? lorem.generateWords(1) : undefined,
 });
@@ -138,8 +138,8 @@ export const generateBalanceGameResponse = (
 		currentState: status,
 		userVote: Math.random() > 0.5 ? userVote : undefined,
 		title: generateSentences(),
-		startDate: new Date().toString(),
-		endDate: new Date(Date.now() + 86400000).toString(),
+		startDate: new Date().toISOString(),
+		endDate: new Date(Date.now() + 86400000).toISOString(),
 		category,
 	};
 };
@@ -151,8 +151,8 @@ export const generateLiveBattleCard = (
 	return {
 		id: battleId,
 		category,
-		startDate: new Date().toString(),
-		endDate: new Date(Date.now() + 86400000).toString(),
+		startDate: new Date().toISOString(),
+		endDate: new Date(Date.now() + 86400000).toISOString(),
 		registerUser: { ...generateBasicUser(), opinion: generateSentences(1, 16) },
 		oppositeUser: { ...generateBasicUser(), opinion: generateSentences(1, 16) },
 		roomId: generateInteger().toString(),
