@@ -53,7 +53,10 @@ function BalanceGameCard({ data, onVote, disabled }: BalanceGameCardProps) {
 			<BalanceGameCardWrapper>
 				<Question onClick={handleCardClick}>{data.title}</Question>
 				{hasVoted || disabled ? (
-					<EndedBalanceGameCard opinions={data.opinions} />
+					<EndedBalanceGameCard
+						opinions={data.opinions}
+						userVote={data.userVote}
+					/>
 				) : (
 					<ActiveBalanceGameCard opinions={data.opinions} onVote={handleVote} />
 				)}
