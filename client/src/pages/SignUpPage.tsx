@@ -29,8 +29,8 @@ import {
 	checkNicknameAvailability,
 	checkEmailAvailability,
 } from "@/services/userAuthService";
-import { JoinRequest } from "@/types/api";
 import "@/assets/styles/shake.css";
+import { JoinRequest } from "@/types/api";
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 >>>>>>> 0180dae (Feat: 회원가입 로직 구현)

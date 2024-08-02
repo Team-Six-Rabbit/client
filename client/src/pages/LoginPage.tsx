@@ -9,6 +9,9 @@ import GoogleLoginButton from "@/components/auth/googleLoginBtn";
 import { LoginRequest } from "@/types/api";
 <<<<<<< HEAD
 import { authService } from "@/services/userAuthService";
+=======
+import { login } from "@/services/userAuthService";
+>>>>>>> 5246c8b (Feat: 로그인 페이지 오류 메시지 생성)
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
 =======
 import { login } from "@/services/userAuthService";
@@ -77,11 +80,14 @@ function LoginPage() {
 		}
 
 		try {
-			await authService.login(formValues);
+			await login(formValues);
 			navigator("/");
 		} catch (err) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3516697 (Feat: 로그인 페이지 오류 메시지 생성)
 =======
 			// console.error("로그인 실패");
 			// // TODO: 로그인 실패 시 처리
@@ -89,9 +95,13 @@ function LoginPage() {
 			// setTimeout(() => {
 			// 	setDoShake(false);
 			// }, 500);
+<<<<<<< HEAD
 >>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
 =======
 >>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
+=======
+>>>>>>> 5246c8b (Feat: 로그인 페이지 오류 메시지 생성)
+>>>>>>> 3516697 (Feat: 로그인 페이지 오류 메시지 생성)
 			setErrors({ general: "로그인에 실패했습니다." }); // 로그인 실패 메시지
 			setDoShake(true);
 			setTimeout(() => {

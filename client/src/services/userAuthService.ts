@@ -37,7 +37,6 @@ export const authService = {
 		}
 	},
 
-<<<<<<< HEAD
 	// 사용자 정보 가져오기 함수
 	getUserInfo: async (
 		userId?: number,
@@ -66,6 +65,7 @@ export const authService = {
 			throw error;
 		}
 	},
+<<<<<<< HEAD
 <<<<<<< HEAD
 	// 닉네임 중복 체크 함수
 	checkNicknameAvailability: async (nickname: string): Promise<boolean> => {
@@ -107,6 +107,8 @@ export const logout = async (): Promise<void> => {
 		throw error;
 	}
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+=======
+>>>>>>> 5246c8b (Feat: 로그인 페이지 오류 메시지 생성)
 };
 
 // 닉네임 중복 체크 함수
