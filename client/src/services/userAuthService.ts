@@ -37,6 +37,7 @@ export const authService = {
 		}
 	},
 
+<<<<<<< HEAD
 	// 사용자 정보 가져오기 함수
 	getUserInfo: async (
 		userId?: number,
@@ -89,4 +90,45 @@ export const authService = {
 			throw error;
 		}
 	},
+=======
+// 로그아웃 함수
+export const logout = async (): Promise<void> => {
+	try {
+		await axiosInstance.delete("/auth/logout");
+		useAuthStore.getState().logout();
+	} catch (error) {
+		console.error("Logout Error: ", error);
+		throw error;
+	}
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+};
+
+// 닉네임 중복 체크 함수
+export const checkNicknameAvailability = async (
+	nickname: string,
+): Promise<boolean> => {
+	try {
+		const response = await axiosInstance.get<ApiResponse<boolean>>(
+			`/user/check/nickname?nickname=${nickname}`,
+		);
+		return response.data.data;
+	} catch (error) {
+		console.error("Check Nickname Error: ", error);
+		throw error;
+	}
+};
+
+// 이메일 중복 체크 함수
+export const checkEmailAvailability = async (
+	email: string,
+): Promise<ApiResponse<boolean>> => {
+	try {
+		const response = await axiosInstance.get<ApiResponse<boolean>>(
+			`/user/check/email?email=${email}`,
+		);
+		return response.data;
+	} catch (error) {
+		console.error("Check Email Error: ", error);
+		throw error;
+	}
 };

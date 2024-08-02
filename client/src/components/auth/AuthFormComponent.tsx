@@ -16,7 +16,10 @@ interface AuthInputProps {
 	onChange: ChangeEventHandler;
 	className?: string;
 	error?: string; // 에러 메시지 추가
+<<<<<<< HEAD
 	onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+=======
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 }
 
 export function AuthInput({
@@ -28,7 +31,10 @@ export function AuthInput({
 	onChange,
 	className,
 	error, // 에러 메시지 추가
+<<<<<<< HEAD
 	onKeyDown,
+=======
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 }: AuthInputProps) {
 	return (
 		<div className="mb-4">
@@ -47,7 +53,11 @@ export function AuthInput({
 						className,
 					)}
 				/>
+<<<<<<< HEAD
 				{error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+=======
+				{error && <p className="text-red-500 text-sm mt-1">{error}</p>}{" "}
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 				{/* 에러 메시지 표시 */}
 			</label>
 		</div>

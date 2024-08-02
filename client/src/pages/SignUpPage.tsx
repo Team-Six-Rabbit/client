@@ -1,9 +1,19 @@
 import { ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
+<<<<<<< HEAD
 import { authService } from "@/services/userAuthService";
 import "@/assets/styles/shake.css";
 import { JoinRequest } from "@/types/api";
+=======
+import {
+	join,
+	checkNicknameAvailability,
+	checkEmailAvailability,
+} from "@/services/userAuthService";
+import { JoinRequest } from "@/types/api";
+import "@/assets/styles/shake.css";
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
 
 function SignUpPage() {
@@ -47,8 +57,12 @@ function SignUpPage() {
 					errorMsg = "유효한 이메일 형식이 아닙니다.";
 				} else {
 					try {
+<<<<<<< HEAD
 						const isEmailAvailable =
 							await authService.checkEmailAvailability(value);
+=======
+						const isEmailAvailable = await checkEmailAvailability(value);
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 						if (!isEmailAvailable) {
 							errorMsg = "이미 사용 중인 이메일입니다.";
 						}
@@ -60,8 +74,12 @@ function SignUpPage() {
 			case "nickname":
 				if (value) {
 					try {
+<<<<<<< HEAD
 						const isNicknameAvailable =
 							await authService.checkNicknameAvailability(value);
+=======
+						const isNicknameAvailable = await checkNicknameAvailability(value);
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 						if (!isNicknameAvailable) {
 							errorMsg = "이미 사용 중인 닉네임입니다.";
 						}
@@ -139,10 +157,17 @@ function SignUpPage() {
 		}
 
 		try {
+<<<<<<< HEAD
 			// TODO: 비밀번호 규칙 검사
 			await authService.join(formValues);
 			navigator("/");
 		} catch (err) {
+=======
+			await join(formValues);
+			navigator("/");
+		} catch (err) {
+			console.error("회원가입 실패");
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 			setDoShake(true);
 			setTimeout(() => {
 				setDoShake(false);

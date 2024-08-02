@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "start": "vite",
+<<<<<<< HEAD
     "local": "vite --mode local",
+=======
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
     "dev": "vite --mode test",
     "build": "tsc -b && vite build",
     "lint": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives",
