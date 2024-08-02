@@ -148,7 +148,10 @@ export const checkEmailAvailability = async (
 >>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
 };
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> fca91ba (Feat: 회원가입 로직 구현)
 
 // 닉네임 중복 체크 함수
 export const checkNicknameAvailability = async (
@@ -179,6 +182,7 @@ export const checkEmailAvailability = async (
 		throw error;
 	}
 };
+<<<<<<< HEAD
 
 // 닉네임 중복 체크 함수
 export const checkNicknameAvailability = async (
@@ -238,3 +242,5 @@ export const checkEmailAvailability = async (
 >>>>>>> 2796077 (Chore: 로그인 회원가입 push)
 };
 >>>>>>> a53a2e1 (Feat: 회원가입 로직 구현)
+=======
+>>>>>>> fca91ba (Feat: 회원가입 로직 구현)
