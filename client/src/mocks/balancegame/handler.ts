@@ -12,8 +12,8 @@ export const handlers = [
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const size = Number(qs.get("size") || 10);
-			const category = Number(qs.get("category")?.toString());
-			const status = Number(qs.get("status")?.toString());
+			const category = Number(qs.get("category"));
+			const status = Number(qs.get("status"));
 			const balanceGames = Array.from({ length: size }, () =>
 				generateBalanceGameResponse(category, status),
 			);

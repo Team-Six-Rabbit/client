@@ -6,24 +6,22 @@ import {
 	BattleInviteRequest,
 	BattleInviteRespondRequest,
 	BattleResponse,
-	PageableResponse,
 } from "@/types/api";
-import { generateBattleResponse, generatePageableResponse } from "@/mocks/util";
+import { generateBattleResponse } from "@/mocks/util";
 
 export const handlers = [
-	http.get<never, never, ApiResponse<PageableResponse<BattleResponse[]>>>(
+	http.get<never, never, ApiResponse<BattleResponse[]>>(
 		"/battle",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const page = Number(qs.get("page") || 1);
 			const size = Number(qs.get("size") || 10);
-			const totalElements = 50; // For example, total number of elements
 			const battles = Array.from({ length: size }, (_, index) =>
 				generateBattleResponse((page - 1) * size + index + 1),
 			);
 			return HttpResponse.json({
 				code: "success",
-				data: generatePageableResponse(battles, page, size, totalElements),
+				data: battles,
 			});
 		},
 	),
@@ -54,20 +52,19 @@ export const handlers = [
 			});
 		},
 	),
-	http.get<never, never, ApiResponse<PageableResponse<BattleResponse[]>>>(
+	http.get<never, never, ApiResponse<BattleResponse[]>>(
 		"/battle/apply-list",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const page = Number(qs.get("page") || 1);
 			const size = Number(qs.get("size") || 10);
 			const category = Number(qs.get("category")?.toString());
-			const totalElements = 50; // For example, total number of elements
 			const battles = Array.from({ length: size }, (_, index) =>
 				generateBattleResponse((page - 1) * size + index + 1, category),
 			);
 			return HttpResponse.json({
 				code: "success",
-				data: generatePageableResponse(battles, page, size, totalElements),
+				data: battles,
 			});
 		},
 	),

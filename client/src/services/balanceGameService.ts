@@ -7,10 +7,10 @@ import axiosInstance from "./axiosInstance";
 
 export const balanceGameService = {
 	getBalanceGames: async (
-		page: number,
-		size: number,
 		category: number,
 		status: number,
+		page: number = 0,
+		size: number = 10,
 	): Promise<ApiResponse<BalanceGameResponse[]>> => {
 		try {
 			const response = await axiosInstance.get<

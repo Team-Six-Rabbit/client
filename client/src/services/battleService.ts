@@ -4,22 +4,23 @@ import {
 	BattleInviteRequest,
 	BattleInviteRespondRequest,
 	ApplyBattleRequest,
-	PageableResponse,
 } from "@/types/api";
 import axiosInstance from "./axiosInstance";
 
 export const battleService = {
 	// 배틀 목록 가져오기
 	getBattles: async (
-		page: number,
-		size: number,
-	): Promise<ApiResponse<PageableResponse<BattleResponse[]>>> => {
+		category: number,
+		page: number = 0,
+		size: number = 10,
+	): Promise<ApiResponse<BattleResponse[]>> => {
 		try {
-			const response = await axiosInstance.get<
-				ApiResponse<PageableResponse<BattleResponse[]>>
-			>("/battle", {
-				params: { page, size },
-			});
+			const response = await axiosInstance.get<ApiResponse<BattleResponse[]>>(
+				"/battle",
+				{
+					params: { category, page, size },
+				},
+			);
 			return response.data;
 		} catch (error) {
 			console.error("Failed to fetch battles:", error);
@@ -61,16 +62,17 @@ export const battleService = {
 
 	// 배틀 신청 목록 가져오기
 	getApplyList: async (
-		page: number,
-		size: number,
 		category: number,
-	): Promise<ApiResponse<PageableResponse<BattleResponse[]>>> => {
+		page: number = 0,
+		size: number = 10,
+	): Promise<ApiResponse<BattleResponse[]>> => {
 		try {
-			const response = await axiosInstance.get<
-				ApiResponse<PageableResponse<BattleResponse[]>>
-			>("/battle/apply-list", {
-				params: { page, size, category },
-			});
+			const response = await axiosInstance.get<ApiResponse<BattleResponse[]>>(
+				"/battle/apply-list",
+				{
+					params: { page, size, category },
+				},
+			);
 			return response.data;
 		} catch (error) {
 			console.error("Failed to fetch apply list:", error);
