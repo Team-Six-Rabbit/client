@@ -7,12 +7,17 @@ import { LoremIpsum } from "lorem-ipsum";
 import { Battle } from "@/types/battle";
 import { Opinion } from "@/types/vote";
 import { BasicUserInfo } from "@/types/user";
+import { FinishedLiveBattleDetail, LiveBattleCardInfo } from "@/types/live";
 
 const lorem = new LoremIpsum();
 
-const generateTitle = (length: number = 16) => {
-	const title = lorem.generateSentences(1);
+const generateSentences = (sentenceNum: number = 1, length: number = 16) => {
+	const title = lorem.generateSentences(sentenceNum);
 	return title.substring(0, length);
+};
+
+const generateInteger = (max: number = 1000) => {
+	return Math.floor(Math.random() * max);
 };
 
 export const generateBasicUser = (): BasicUserInfo => {
@@ -52,21 +57,11 @@ export const generatePageableResponse = <T>(
 
 const generateBattle = (id: number, category?: number): Battle => ({
 	id,
-	registUser: {
-		id: Math.floor(Math.random() * 3000),
-		nickname: lorem.generateWords(2),
-		imgUrl: lorem.generateWords(1),
-		rating: 100,
-	},
-	oppositeUser: {
-		id: Math.floor(Math.random() * 3000),
-		nickname: lorem.generateWords(2),
-		imgUrl: lorem.generateWords(1),
-		rating: 100,
-	},
+	registUser: generateBasicUser(),
+	oppositeUser: generateBasicUser(),
 	voteInfo: {
 		id: Math.floor(Math.random() * 10000),
-		title: generateTitle(),
+		title: generateSentences(),
 		startDate: new Date().toString(),
 		endDate: new Date(Date.now() + 86400000).toString(),
 		category: category || (Math.floor(Math.random() * 10) % 7) + 1,
@@ -87,7 +82,7 @@ const generateOpinion = (
 	index,
 	opinion: lorem.generateSentences(1).substring(0, 16),
 	count,
-	percentage: (count / totalCount) * 100,
+	percentage: Math.floor((count / totalCount) * 100),
 });
 
 function generateOpinions(...counts: number[]): Opinion[] {
@@ -97,15 +92,12 @@ function generateOpinions(...counts: number[]): Opinion[] {
 		generateOpinion(index, count, totalCount),
 	);
 
-	// Calculate the total percentage
 	const totalPercentage = opinions.reduce(
 		(acc, curr) => acc + curr.percentage,
 		0,
 	);
 
-	// Adjust the percentage to ensure the total is 100
 	if (totalPercentage !== 100) {
-		// Find the opinion with the largest percentage
 		const maxIndex = opinions.reduce(
 			(maxIdx, curr, idx, arr) =>
 				curr.percentage > arr[maxIdx].percentage ? idx : maxIdx,
@@ -144,9 +136,52 @@ export const generateBalanceGameResponse = (
 		detail: lorem.generateSentences(2),
 		currentState: status,
 		userVote: Math.random() > 0.5 ? 0 : undefined,
-		title: generateTitle(),
+		title: generateSentences(),
 		startDate: new Date().toString(),
 		endDate: new Date(Date.now() + 86400000).toString(),
 		category,
+	};
+};
+
+export const generateLiveBattleCard = (
+	category: number,
+	battleId: number = generateInteger(7),
+): LiveBattleCardInfo => {
+	return {
+		id: battleId,
+		category,
+		startDate: new Date().toString(),
+		endDate: new Date(Date.now() + 86400000).toString(),
+		registerUser: { ...generateBasicUser(), opinion: generateSentences(1, 16) },
+		oppositeUser: { ...generateBasicUser(), opinion: generateSentences(1, 16) },
+		roomId: generateInteger().toString(),
+		title: generateSentences(1, 16),
+		currentPeopleCount: Math.floor(Math.random() * 1000),
+		imageUri: `/img/${lorem.generateWords(1)}`,
+	};
+};
+
+export const generateFinishedLiveBattleResponse = (
+	battleId: number,
+	category: number,
+): FinishedLiveBattleDetail => {
+	const finalPercentageA = generateInteger(100);
+	const prePercentageA = generateInteger(100);
+	return {
+		id: battleId,
+		title: generateSentences(1, 16),
+		category,
+		registerUser: { ...generateBasicUser(), opinion: generateSentences(1, 16) },
+		oppositeUser: { ...generateBasicUser(), opinion: generateSentences(1, 16) },
+		preResult: {
+			percentageRegisterOpinion: prePercentageA,
+			percentageOppositeOpinion: 100 - finalPercentageA,
+		},
+		finalResult: {
+			percentageRegisterOpinion: finalPercentageA,
+			percentageOppositeOpinion: 100 - finalPercentageA,
+		},
+		imageUri: `/img/${lorem.generateWords(1)}`,
+		summary: generateSentences(3, 1000),
 	};
 };

@@ -5,16 +5,18 @@ interface LiveBattle {
 	title: string;
 	registerUser: UserWithOpinion;
 	oppositeUser: UserWithOpinion;
-	category: string;
+	category: number;
 	imageUri?: string;
 }
 
-export interface UpcomingLiveBattleDetail extends LiveBattle {
+export interface LiveBattleCardInfo extends LiveBattle {
 	roomId: string;
 	startDate: string;
 	endDate: string;
 	currentPeopleCount?: number;
 }
+
+export interface WaitingLiveBattleDetail extends LiveBattleCardInfo {}
 
 export interface FinishedLiveBattleDetail extends LiveBattle {
 	preResult: LiveVoteResult;
