@@ -1,5 +1,5 @@
 import { BasicUserInfo } from "./user";
-import { Vote } from "./vote";
+import { Opinion, Vote } from "./vote";
 
 export interface Battle {
 	id: number;
@@ -12,4 +12,15 @@ export interface Battle {
 	registDate: string;
 	currentState: number;
 	imageUrl?: string;
+}
+
+export interface BattleWaitingParticipant {
+	id: number;
+	title: string;
+	opinions: Opinion[];
+	startDate: string;
+	endDate: string;
+	maxPeopleCount: number;
+	currentPeopleCount: number;
+	isVoted: boolean;
 }

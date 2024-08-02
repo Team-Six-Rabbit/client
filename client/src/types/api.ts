@@ -1,5 +1,5 @@
 import { Battle } from "./battle";
-import { Opinion, Vote } from "./vote";
+import { OpinionWithPercentage, Vote } from "./vote";
 
 export interface ApiResponse<T> {
 	code: "success" | "fail";
@@ -56,7 +56,7 @@ export interface BattleHistoryRequestParam extends PageableParm {
 
 export interface BattleResponse {
 	battle: Battle;
-	opinions: Opinion[];
+	opinions: OpinionWithPercentage[];
 }
 
 export interface BattleInviteRespondRequest {
@@ -84,7 +84,7 @@ export interface BalanceGameListRequestParam extends PageableParm {
 }
 
 export interface BalanceGameResponse extends Vote {
-	opinions: Opinion[];
+	opinions: OpinionWithPercentage[];
 	currentState: number;
 	userVote?: number;
 }

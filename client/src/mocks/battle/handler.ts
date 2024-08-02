@@ -7,7 +7,11 @@ import {
 	BattleInviteRespondRequest,
 	BattleResponse,
 } from "@/types/api";
-import { generateBattleResponse } from "@/mocks/util";
+import {
+	generateBattleResponse,
+	generateBattleWaitingParticipant,
+} from "@/mocks/util";
+import { BattleWaitingParticipant } from "@/types/battle";
 
 export const handlers = [
 	http.get<never, never, ApiResponse<BattleResponse[]>>(
@@ -52,15 +56,13 @@ export const handlers = [
 			});
 		},
 	),
-	http.get<never, never, ApiResponse<BattleResponse[]>>(
+	http.get<never, never, ApiResponse<BattleWaitingParticipant[]>>(
 		"/battle/apply-list",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
-			const page = Number(qs.get("page") || 1);
 			const size = Number(qs.get("size") || 10);
-			const category = Number(qs.get("category")?.toString());
-			const battles = Array.from({ length: size }, (_, index) =>
-				generateBattleResponse((page - 1) * size + index + 1, category),
+			const battles = Array.from({ length: size }, () =>
+				generateBattleWaitingParticipant(),
 			);
 			return HttpResponse.json({
 				code: "success",
@@ -68,12 +70,12 @@ export const handlers = [
 			});
 		},
 	),
-	http.post<never, ApplyBattleRequest, ApiResponse<string>>(
+	http.post<never, ApplyBattleRequest, ApiResponse<number>>(
 		"/battle/apply",
 		() => {
 			return HttpResponse.json({
 				code: "success",
-				data: "",
+				data: Math.floor(Math.random() * 10),
 			});
 		},
 	),

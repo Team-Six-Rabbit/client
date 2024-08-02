@@ -1,8 +1,8 @@
+import { ChangeEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
 import { authService } from "@/services/userAuthService";
 import { JoinRequest } from "@/types/api";
-import { ChangeEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 
 function SignUpPage() {
 	const navigator = useNavigate();

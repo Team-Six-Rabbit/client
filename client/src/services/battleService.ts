@@ -5,6 +5,7 @@ import {
 	BattleInviteRespondRequest,
 	ApplyBattleRequest,
 } from "@/types/api";
+import { BattleWaitingParticipant } from "@/types/battle";
 import axiosInstance from "./axiosInstance";
 
 export const battleService = {
@@ -65,14 +66,13 @@ export const battleService = {
 		category: number,
 		page: number = 0,
 		size: number = 10,
-	): Promise<ApiResponse<BattleResponse[]>> => {
+	): Promise<ApiResponse<BattleWaitingParticipant[]>> => {
 		try {
-			const response = await axiosInstance.get<ApiResponse<BattleResponse[]>>(
-				"/battle/apply-list",
-				{
-					params: { page, size, category },
-				},
-			);
+			const response = await axiosInstance.get<
+				ApiResponse<BattleWaitingParticipant[]>
+			>("/battle/apply-list", {
+				params: { page, size, category },
+			});
 			return response.data;
 		} catch (error) {
 			console.error("Failed to fetch apply list:", error);
@@ -80,12 +80,12 @@ export const battleService = {
 		}
 	},
 
-	// 배틀 신청하기
-	applyToBattle: async (
+	// 배틀 사전 신청하기
+	preVoteToBattle: async (
 		data: ApplyBattleRequest,
-	): Promise<ApiResponse<string>> => {
+	): Promise<ApiResponse<number>> => {
 		try {
-			const response = await axiosInstance.post<ApiResponse<string>>(
+			const response = await axiosInstance.post<ApiResponse<number>>(
 				"/battle/apply",
 				data,
 			);

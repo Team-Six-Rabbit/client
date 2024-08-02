@@ -1,4 +1,3 @@
-/* src/styles/scrollbar.css */
 .custom-scrollbar::-webkit-scrollbar {
   width: 12px; /* 스크롤바의 너비 */
 }
