@@ -7,7 +7,7 @@ import {
 	BalanceGameCardWrapper,
 	Question,
 } from "@/assets/styles/balanceGameStyle";
-import { getBalanceGameById } from "@/services/balanceGameService"; // Import the service
+import { getBalanceGameById } from "@/services/balanceGameService";
 
 interface BalanceGameCardProps {
 	data: BalanceGameCardType;
@@ -16,10 +16,13 @@ interface BalanceGameCardProps {
 }
 
 function BalanceGameCard({ data, onVote, disabled }: BalanceGameCardProps) {
-	const [hasVoted, setHasVoted] = useState(data.userVote !== null);
+	const [hasVoted, setHasVoted] = useState(
+		data.userVote !== null && data.userVote !== undefined,
+	);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalData, setModalData] = useState<BalanceGameCardType | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
+
 	const handleVote = (option: number) => {
 		if (hasVoted || disabled) return;
 
