@@ -1,20 +1,24 @@
 import { create } from "zustand";
+import { Session, StreamManager } from "openvidu-browser";
 
 interface WebRTCState {
-	localStream: MediaStream | null;
-	remoteStream: MediaStream | null;
+	session: Session | null;
+	streams: StreamManager[];
+	setSession: (session: Session) => void;
+	addStream: (stream: StreamManager) => void;
+	removeStream: (stream: StreamManager) => void;
 }
 
-interface WebRTCAction {
-	setLocalStream: (stream: MediaStream) => void;
-	setRemoteStream: (stream: MediaStream) => void;
-}
-
-const useWebRTCStore = create<WebRTCState & WebRTCAction>((set) => ({
-	localStream: null,
-	remoteStream: null,
-	setLocalStream: (stream) => set({ localStream: stream }),
-	setRemoteStream: (stream) => set({ remoteStream: stream }),
+const useWebRTCStore = create<WebRTCState>((set) => ({
+	session: null,
+	streams: [],
+	setSession: (session) => set({ session }),
+	addStream: (stream) =>
+		set((state) => ({ streams: [...state.streams, stream] })),
+	removeStream: (stream) =>
+		set((state) => ({
+			streams: state.streams.filter((s) => s !== stream),
+		})),
 }));
 
 export default useWebRTCStore;

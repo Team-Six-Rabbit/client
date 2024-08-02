@@ -1,55 +1,64 @@
-import { useState, useEffect, useCallback } from "react";
-import Peer from "simple-peer";
-import io, { Socket } from "socket.io-client";
+import { useCallback } from "react";
+import { OpenVidu, Session, StreamManager } from "openvidu-browser";
 import useWebRTCStore from "@/stores/WebRTCStore";
+import { createSession, getToken } from "@/services/openviduService";
 
-const useWebRTC = () => {
-	const [peer, setPeer] = useState<Peer.Instance | null>(null);
-	const [socket, setSocket] = useState<Socket | null>(null);
-	const { setLocalStream, setRemoteStream } = useWebRTCStore();
+const useWebRTC = (battleId: string, role: string, userId: string) => {
+	const { setSession, addStream, removeStream } = useWebRTCStore();
 
-	const initializeWebRTC = useCallback(async () => {
+	const initWebRTC = useCallback(async () => {
+		const OV = new OpenVidu();
+		const session: Session = OV.initSession();
+
+		session.on("streamCreated", (event) => {
+			const subscriber: StreamManager = session.subscribe(
+				event.stream,
+				undefined,
+			);
+			addStream(subscriber);
+		});
+
+		session.on("streamDestroyed", (event) => {
+			removeStream(event.stream.streamManager);
+		});
+
+		setSession(session);
+
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true,
-				audio: true,
-			});
-			setLocalStream(stream);
+			const createResponse = await createSession(battleId);
+			if (createResponse.code === "success") {
+				const tokenResponse = await getToken(
+					createResponse.data!,
+					role,
+					userId,
+				);
+				if (tokenResponse.code === "success") {
+					await session.connect(tokenResponse.data!, { clientData: "User" });
 
-			const newSocket = io("시그널링 서버 url");
-			setSocket(newSocket);
+					const publisher: StreamManager = OV.initPublisher(undefined, {
+						audioSource: undefined,
+						videoSource: undefined,
+						publishAudio: true,
+						publishVideo: true,
+						resolution: "640x480",
+						frameRate: 30,
+						insertMode: "APPEND",
+					});
 
-			const newPeer = new Peer({ initiator: true, stream });
-			setPeer(newPeer);
-
-			newPeer.on("signal", (data) => {
-				newSocket.emit("signal", data);
-			});
-
-			newPeer.on("stream", (remoteStream) => {
-				setRemoteStream(remoteStream);
-			});
-
-			newSocket.on("signal", (data) => {
-				newPeer.signal(data);
-			});
+					session.publish(publisher);
+				} else {
+					throw new Error("Failed to get token");
+				}
+			} else {
+				console.log(createResponse.code);
+				throw new Error("Failed to create session");
+			}
 		} catch (error) {
-			console.error("WebRTC 초기화 에러:", error);
+			console.error("There was an error connecting to the session:", error);
 		}
-	}, [setLocalStream, setRemoteStream]);
+	}, [battleId, role, userId, setSession, addStream, removeStream]);
 
-	useEffect(() => {
-		return () => {
-			if (peer) {
-				peer.destroy();
-			}
-			if (socket) {
-				socket.disconnect();
-			}
-		};
-	}, [peer, socket]);
-
-	return { initializeWebRTC };
+	return initWebRTC;
 };
 
-export default { useWebRTC };
+export default useWebRTC;
