@@ -2,12 +2,14 @@ package com.woowahanrabbits.battle_people.domain.live.service;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.live.domain.LiveApplyUser;
@@ -40,8 +42,9 @@ public class OpenViduServiceImpl implements OpenViduService {
 	private final LiveVoiceRecordRepository liveVoiceRecordRepository;
 	private final BattleBoardRepository battleBoardRepository;
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
-	private final Map<String, Session> sessions = new HashMap<>();
-	private final Map<Long, String> userRecordings = new HashMap<>();
+	private final RedisTemplate<String, Object> redisTemplate;
+	private final HashMap<String, Session> sessions = new HashMap<>();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public OpenViduServiceImpl(@Value("${openvidu.url}") String openviduUrl,
 		@Value("${openvidu.secret}") String secret,
@@ -49,8 +52,10 @@ public class OpenViduServiceImpl implements OpenViduService {
 		LiveApplyUserRepository liveApplyUserRepository,
 		UserRepository userRepository,
 		LiveVoiceRecordRepository liveVoiceRecordRepository,
-		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository) {
+		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository,
+		RedisTemplate<String, Object> redisTemplate) {
 		this.userVoteOpinionRepository = userVoteOpinionRepository;
+		this.redisTemplate = redisTemplate;
 		this.openVidu = new OpenVidu(openviduUrl, secret);
 		this.roomRepository = roomRepository;
 		this.liveApplyUserRepository = liveApplyUserRepository;
@@ -60,70 +65,76 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	@Override
-	public String createSession(Long battleId) {
-		try {
-			Room room;
-			if ((room = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null)).getRoom()) != null
-				&& sessions.get(room.getRoomId()) != null) {
-				return room.getRoomId();
-			}
-			BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
-			Session session = openVidu.createSession();
-			room = new Room();
-			room.setRoomId(session.getSessionId());
-			roomRepository.save(room);
-			battleBoard.setRoom(room);
-			battleBoardRepository.save(battleBoard);
-			sessions.put(session.getSessionId(), session);
-			return session.getSessionId();
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			return null;
+	public String createSession(Long battleId) throws OpenViduJavaClientException, OpenViduHttpException {
+		Room room;
+		if ((room = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null)).getRoom()) != null
+			&& Boolean.TRUE.equals(redisTemplate.hasKey("session:" + room.getRoomId()))
+			&& sessions.containsKey(room.getRoomId())) {
+			return room.getRoomId();
 		}
+		BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
+		Session session = openVidu.createSession();
+
+		room = new Room();
+		room.setRoomId(session.getSessionId());
+		roomRepository.save(room);
+
+		battleBoard.setRoom(room);
+		battleBoardRepository.save(battleBoard);
+
+		redisTemplate.opsForValue()
+			.set("session:" + session.getSessionId(), session.getSessionId(), 24, TimeUnit.HOURS);
+		sessions.put(session.getSessionId(), session);
+
+		return session.getSessionId();
 	}
 
 	@Override
-	public String getToken(String roomId, OpenViduRole role, Long userId) {
-		try {
-			Room room = roomRepository.findByRoomId(roomId);
-			Session session = sessions.get(room.getRoomId());
+	public String getToken(String roomId, OpenViduRole role, Long userId) throws
+		OpenViduJavaClientException,
+		OpenViduHttpException {
+		Room room = roomRepository.findByRoomId(roomId);
+		Session session = sessions.get(roomId);
 
-			User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-			liveApplyUserRepository.save(LiveApplyUser.builder()
-				.room(room)
-				.participant(user)
-				.role(role == OpenViduRole.PUBLISHER ? "broadcaster" : "viewer")
-				.build());
+		if (session == null) {
+			return null;
+		}
 
-			ConnectionProperties.Builder connectionPropertiesBuilder = new ConnectionProperties.Builder()
-				.type(ConnectionType.WEBRTC)
-				.role(role);
+		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+		liveApplyUserRepository.save(LiveApplyUser.builder()
+			.room(room)
+			.participant(user)
+			.role(role == OpenViduRole.PUBLISHER ? "broadcaster" : "viewer")
+			.build());
 
-			if (role == OpenViduRole.PUBLISHER) {
-				connectionPropertiesBuilder.record(true); // 발언자 스트림만 녹화 설정
-				startRecording(roomId);
+		ConnectionProperties.Builder connectionPropertiesBuilder = new ConnectionProperties.Builder()
+			.type(ConnectionType.WEBRTC)
+			.role(role);
 
+		if (role == OpenViduRole.PUBLISHER) {
+			connectionPropertiesBuilder.record(true); // 발언자 스트림만 녹화 설정
+			try {
 				Recording recording = startRecording(session.getSessionId());
 				if (recording != null) {
-					userRecordings.put(userId, recording.getId());
+					redisTemplate.opsForValue().set("recording:" + userId, recording.getId(), 24, TimeUnit.HOURS);
 				}
+			} catch (Exception e) {
+				System.out.println(e);
 			}
 
-			return session.createConnection(connectionPropertiesBuilder.build()).getToken();
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			return null;
 		}
+
+		return session.createConnection(connectionPropertiesBuilder.build()).getToken();
+
 	}
 
 	@Override
-	public Recording startRecording(String roomId) {
-		try {
-			RecordingProperties recordingProperties = new RecordingProperties.Builder()
-				.outputMode(Recording.OutputMode.INDIVIDUAL) // 개별 스트림 녹화 모드
-				.build();
-			return openVidu.startRecording(roomId, recordingProperties);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			return null;
-		}
+	public Recording startRecording(String roomId) throws OpenViduJavaClientException, OpenViduHttpException {
+		RecordingProperties recordingProperties = new RecordingProperties.Builder()
+			.outputMode(Recording.OutputMode.INDIVIDUAL) // 개별 스트림 녹화 모드
+			.build();
+
+		return openVidu.startRecording(roomId, recordingProperties);
 	}
 
 	@Override
@@ -147,16 +158,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	@Override
-	public Recording getRecording(String recordingId) {
-		try {
-			return openVidu.getRecording(recordingId);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			return null;
-		}
-	}
-
-	@Override
-	public void userLeft(String roomId, Long userId) {
+	public void userLeft(Long battleId, String roomId, Long userId) {
 		Room room = roomRepository.findByRoomId(roomId);
 		if (room == null) {
 			throw new RuntimeException("Room not found");
@@ -165,6 +167,10 @@ public class OpenViduServiceImpl implements OpenViduService {
 		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByRoomIdAndParticipantId(room.getId(), userId);
 		if (liveApplyUser == null) {
 			throw new RuntimeException("User not found in room");
+		}
+
+		if (liveApplyUser.getRole().equals("broadcaster")) {
+			stopRecording(battleId, userId, (String)redisTemplate.opsForValue().get("recording:" + userId));
 		}
 
 		liveApplyUser.setOutTime(new Date());
@@ -181,12 +187,12 @@ public class OpenViduServiceImpl implements OpenViduService {
 			liveApplyUserRepository.save(liveApplyUser);
 
 			if (liveApplyUser.getRole().equals("publisher")) {
-				String recordingId = userRecordings.get(userId);
+				String recordingId = (String)redisTemplate.opsForValue().get("recording:" + userId);
 				stopRecording(battleId, userId, recordingId);
-				userRecordings.remove(userId);
+				redisTemplate.delete("recording:" + userId);
 			} else {
 				Recording recording = startRecording(roomId);
-				userRecordings.put(userId, recording.getId());
+				redisTemplate.opsForValue().set("recording:" + userId, recording.getId(), 24, TimeUnit.HOURS);
 			}
 
 			return getToken(roomId,

@@ -12,7 +12,9 @@ import com.woowahanrabbits.battle_people.domain.live.service.OpenViduService;
 
 import io.openvidu.java.client.OpenViduRole;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/openvidu")
@@ -26,7 +28,7 @@ public class OpenViduController {
 				.body(new ApiResponseDto<>("success", "", openViduService.createSession(battleId)));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "", ""));
+				.body(new ApiResponseDto<>("fail", "", "fail"));
 		}
 
 	}
@@ -40,15 +42,17 @@ public class OpenViduController {
 				.body(new ApiResponseDto<>("success", "", openViduService.getToken(roomId, openViduRole, userId)));
 
 		} catch (Exception e) {
+			System.out.println(e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "", ""));
+				.body(new ApiResponseDto<>("fail", "", "fail"));
 		}
 	}
 
 	@PostMapping("/user-left")
-	public ResponseEntity<ApiResponseDto<?>> userLeft(@RequestParam String roomId, @RequestParam Long userId) {
+	public ResponseEntity<ApiResponseDto<?>> userLeft(@RequestParam Long battleId, @RequestParam String roomId,
+		@RequestParam Long userId) {
 		try {
-			openViduService.userLeft(roomId, userId);
+			openViduService.userLeft(battleId, roomId, userId);
 			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponseDto<>("fail", "", null));
