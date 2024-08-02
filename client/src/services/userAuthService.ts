@@ -37,7 +37,6 @@ export const authService = {
 		}
 	},
 
-<<<<<<< HEAD
 	// 사용자 정보 가져오기 함수
 	getUserInfo: async (
 		userId?: number,
@@ -66,17 +65,6 @@ export const authService = {
 			throw error;
 		}
 	},
-=======
-// 로그아웃 함수
-export const logout = async (): Promise<void> => {
-	try {
-		await axiosInstance.delete("/auth/logout");
-		useAuthStore.getState().logout();
-	} catch (error) {
-		console.error("Logout Error: ", error);
-		throw error;
-	}
->>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 };
 
 // 닉네임 중복 체크 함수
