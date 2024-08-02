@@ -129,13 +129,14 @@ export const generateBalanceGameResponse = (
 ): BalanceGameResponse => {
 	const count1 = Math.floor(Math.random() * 100);
 	const count2 = 100 - count1; // Ensure that the sum of percentages is 100
+	const userVote = Math.random() > 0.5 ? 0 : 1;
 
 	return {
 		id,
 		opinions: generateOpinions(count1, count2),
 		detail: lorem.generateSentences(2),
 		currentState: status,
-		userVote: Math.random() > 0.5 ? 0 : undefined,
+		userVote: Math.random() > 0.5 ? userVote : undefined,
 		title: generateSentences(),
 		startDate: new Date().toString(),
 		endDate: new Date(Date.now() + 86400000).toString(),
