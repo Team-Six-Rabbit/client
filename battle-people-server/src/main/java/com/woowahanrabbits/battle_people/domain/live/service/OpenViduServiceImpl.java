@@ -67,7 +67,6 @@ public class OpenViduServiceImpl implements OpenViduService {
 	@Override
 	public String createSession(Long battleId) throws OpenViduJavaClientException, OpenViduHttpException {
 		Room room;
-		System.out.println(Objects.requireNonNull(battleBoardRepository.findById(battleId)));
 		if ((room = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null)).getRoom()) != null
 			&& Boolean.TRUE.equals(redisTemplate.hasKey("session:" + room.getRoomId()))
 			&& sessions.containsKey(room.getRoomId())) {
@@ -120,7 +119,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 					redisTemplate.opsForValue().set("recording:" + userId, recording.getId(), 24, TimeUnit.HOURS);
 				}
 			} catch (Exception e) {
-				System.out.println(e);
+				e.printStackTrace();
 			}
 
 		}
