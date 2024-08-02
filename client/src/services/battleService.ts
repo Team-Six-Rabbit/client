@@ -49,7 +49,7 @@ export const battleService = {
 	): Promise<ApiResponse<string>> => {
 		try {
 			const response = await axiosInstance.post<ApiResponse<string>>(
-				`/battle/${data.respond}`,
+				"/battle/accept-or-decline",
 				data,
 			);
 			return response.data;
