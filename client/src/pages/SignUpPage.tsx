@@ -11,9 +11,12 @@ import {
 	checkNicknameAvailability,
 	checkEmailAvailability,
 } from "@/services/userAuthService";
-import { JoinRequest } from "@/types/api";
 import "@/assets/styles/shake.css";
+<<<<<<< HEAD
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+=======
+import { JoinRequest } from "@/types/api";
+>>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
 
 function SignUpPage() {
