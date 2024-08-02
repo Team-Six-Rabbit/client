@@ -9,7 +9,7 @@ import { FinishedLiveBattleDetail, LiveBattleCardInfo } from "@/types/live";
 
 export const handlers = [
 	http.get<never, never, ApiResponse<LiveBattleCardInfo[]>>(
-		"/live/wait/list",
+		"/battle-people/live/wait/list",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const category = Number(qs.get("category"));
@@ -24,7 +24,7 @@ export const handlers = [
 		},
 	),
 	http.get<never, never, ApiResponse<LiveBattleCardInfo[]>>(
-		"/live/active/list",
+		"/battle-people/live/active/list",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const category = Number(qs.get("category"));
@@ -39,7 +39,7 @@ export const handlers = [
 		},
 	),
 	http.get<never, never, ApiResponse<LiveBattleCardInfo[]>>(
-		"/live/end/list",
+		"/battle-people/live/end/list",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const category = Number(qs.get("category"));
@@ -54,7 +54,7 @@ export const handlers = [
 		},
 	),
 	http.get<{ battleId: string }, never, ApiResponse<FinishedLiveBattleDetail>>(
-		"/live/end/detail/:battleId",
+		"/battle-people/live/end/detail/:battleId",
 		async ({ params }) => {
 			const battleId = Number(params.battleId);
 			const battle = generateFinishedLiveBattleResponse(
@@ -68,7 +68,7 @@ export const handlers = [
 		},
 	),
 	http.get<{ battleId: string }, never, ApiResponse<LiveBattleCardInfo>>(
-		"/live/wait/detail/:battleId",
+		"/battle-people/live/wait/detail/:battleId",
 		async ({ params }) => {
 			const battle = generateLiveBattleCard(
 				Math.floor(Math.random() * 7),

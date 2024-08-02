@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --mode test",
+    "start": "vite",
+    "local": "vite --mode local",
+    "dev": "vite --mode mock",
     "build": "tsc -b && vite build",
     "lint": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives",
     "lint:fix": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives --fix",

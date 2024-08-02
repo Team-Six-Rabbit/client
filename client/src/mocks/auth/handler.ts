@@ -4,7 +4,7 @@ import { http, HttpResponse, PathParams } from "msw";
 
 export const handlers = [
 	http.post<PathParams, LoginRequest, ApiResponse<DetailUserInfo | string>>(
-		"/auth/login",
+		"/battle-people/auth/login",
 		async ({ request }) => {
 			const { email } = await request.json();
 			if (email === "test@email.com") {
@@ -34,7 +34,7 @@ export const handlers = [
 			);
 		},
 	),
-	http.post("/auth/logout", () => {
+	http.post("/battle-people/auth/logout", () => {
 		return HttpResponse.json({
 			code: "success",
 			data: "로그아웃 성공",

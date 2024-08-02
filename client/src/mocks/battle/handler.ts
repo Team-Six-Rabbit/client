@@ -15,7 +15,7 @@ import { BattleWaitingParticipant } from "@/types/battle";
 
 export const handlers = [
 	http.get<never, never, ApiResponse<BattleResponse[]>>(
-		"/battle",
+		"/battle-people/battle",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const page = Number(qs.get("page") || 1);
@@ -30,7 +30,7 @@ export const handlers = [
 		},
 	),
 	http.post<never, BattleInviteRequest, ApiResponse<string>>(
-		"/battle/invite",
+		"/battle-people/battle/invite",
 		() => {
 			return HttpResponse.json({
 				code: "success",
@@ -39,7 +39,7 @@ export const handlers = [
 		},
 	),
 	http.post<never, BattleInviteRespondRequest, ApiResponse<string>>(
-		"/battle/accept",
+		"/battle-people/battle/accept",
 		() => {
 			return HttpResponse.json({
 				code: "success",
@@ -48,7 +48,7 @@ export const handlers = [
 		},
 	),
 	http.post<never, BattleInviteRespondRequest, ApiResponse<string>>(
-		"/battle/decline",
+		"/battle-people/battle/decline",
 		() => {
 			return HttpResponse.json({
 				code: "success",
@@ -57,7 +57,7 @@ export const handlers = [
 		},
 	),
 	http.get<never, never, ApiResponse<BattleWaitingParticipant[]>>(
-		"/battle/apply-list",
+		"/battle-people/battle/apply-list",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const size = Number(qs.get("size") || 10);
@@ -71,7 +71,7 @@ export const handlers = [
 		},
 	),
 	http.post<never, ApplyBattleRequest, ApiResponse<number>>(
-		"/battle/apply",
+		"/battle-people/battle/apply",
 		() => {
 			return HttpResponse.json({
 				code: "success",

@@ -6,9 +6,12 @@ import { RouterProvider } from "react-router-dom";
 import router from "@/routes/router";
 
 import "./index.css";
-import { worker } from "./mocks/browser";
 
-worker.start();
+if (import.meta.env.MODE === "mock") {
+	import("./mocks/browser").then(({ worker }) => {
+		worker.start();
+	});
+}
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>

@@ -8,7 +8,7 @@ import { generateBalanceGameResponse } from "../util";
 
 export const handlers = [
 	http.get<never, never, ApiResponse<BalanceGameResponse[]>>(
-		"/balance-game",
+		"/battle-people/balance-game",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const size = Number(qs.get("size") || 10);
@@ -24,7 +24,7 @@ export const handlers = [
 		},
 	),
 	http.post<never, CreateBalanceGameRequest, ApiResponse<string>>(
-		"/balance-game",
+		"/battle-people/balance-game",
 		() => {
 			return HttpResponse.json({
 				code: "success",
@@ -33,14 +33,17 @@ export const handlers = [
 			});
 		},
 	),
-	http.delete<never, never, ApiResponse<string>>("/balance-game", () => {
-		return HttpResponse.json({
-			code: "success",
-			data: "",
-		});
-	}),
+	http.delete<never, never, ApiResponse<string>>(
+		"/battle-people/balance-game",
+		() => {
+			return HttpResponse.json({
+				code: "success",
+				data: "",
+			});
+		},
+	),
 	http.get<{ id: string }, never, ApiResponse<BalanceGameResponse>>(
-		"/balance-game/:id",
+		"/battle-people/balance-game/:id",
 		({ params }) => {
 			return HttpResponse.json({
 				code: "success",
