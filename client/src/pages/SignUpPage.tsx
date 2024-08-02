@@ -5,6 +5,7 @@ import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
 import { authService } from "@/services/userAuthService";
 import "@/assets/styles/shake.css";
 import { JoinRequest } from "@/types/api";
+<<<<<<< HEAD
 =======
 import {
 	join,
@@ -17,7 +18,22 @@ import "@/assets/styles/shake.css";
 =======
 import { JoinRequest } from "@/types/api";
 >>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
+=======
+<<<<<<< HEAD
+>>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
+=======
+=======
+import {
+	join,
+	checkNicknameAvailability,
+	checkEmailAvailability,
+} from "@/services/userAuthService";
+import { JoinRequest } from "@/types/api";
+import "@/assets/styles/shake.css";
+import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+>>>>>>> 0180dae (Feat: 회원가입 로직 구현)
 
 function SignUpPage() {
 	const navigator = useNavigate();
@@ -65,7 +81,11 @@ function SignUpPage() {
 							await authService.checkEmailAvailability(value);
 =======
 						const isEmailAvailable = await checkEmailAvailability(value);
+<<<<<<< HEAD
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+=======
+>>>>>>> 0180dae (Feat: 회원가입 로직 구현)
+>>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
 						if (!isEmailAvailable) {
 							errorMsg = "이미 사용 중인 이메일입니다.";
 						}
@@ -82,7 +102,11 @@ function SignUpPage() {
 							await authService.checkNicknameAvailability(value);
 =======
 						const isNicknameAvailable = await checkNicknameAvailability(value);
+<<<<<<< HEAD
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+=======
+>>>>>>> 0180dae (Feat: 회원가입 로직 구현)
+>>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
 						if (!isNicknameAvailable) {
 							errorMsg = "이미 사용 중인 닉네임입니다.";
 						}
@@ -163,10 +187,14 @@ function SignUpPage() {
 <<<<<<< HEAD
 			// TODO: 비밀번호 규칙 검사
 			await authService.join(formValues);
+=======
+			await join(formValues);
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 			navigator("/");
 		} catch (err) {
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
 			await join(formValues);
 			navigator("/");
 		} catch (err) {
@@ -175,6 +203,10 @@ function SignUpPage() {
 =======
 			// console.error("회원가입 실패");
 >>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
+=======
+			console.error("회원가입 실패");
+>>>>>>> 0180dae (Feat: 회원가입 로직 구현)
+>>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
 			setDoShake(true);
 			setTimeout(() => {
 				setDoShake(false);

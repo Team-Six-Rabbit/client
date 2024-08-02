@@ -66,6 +66,7 @@ export const authService = {
 			throw error;
 		}
 	},
+<<<<<<< HEAD
 	// 닉네임 중복 체크 함수
 	checkNicknameAvailability: async (nickname: string): Promise<boolean> => {
 		try {
@@ -92,6 +93,10 @@ export const authService = {
 	},
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
 // 로그아웃 함수
 export const logout = async (): Promise<void> => {
 	try {
@@ -132,9 +137,13 @@ export const checkEmailAvailability = async (
 		console.error("Check Email Error: ", error);
 		throw error;
 	}
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
+=======
+>>>>>>> 0180dae (Feat: 회원가입 로직 구현)
+>>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
 };
 <<<<<<< HEAD
 =======

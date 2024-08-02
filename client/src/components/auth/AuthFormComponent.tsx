@@ -82,6 +82,11 @@ export function AuthSubmitBtn({
 		</button>
 	);
 }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> 0180dae (Feat: 회원가입 로직 구현)
 
 AuthInput.defaultProps = {
 	className: "",
@@ -91,3 +96,7 @@ AuthInput.defaultProps = {
 AuthSubmitBtn.defaultProps = {
 	className: "",
 };
+<<<<<<< HEAD
+=======
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+>>>>>>> 0180dae (Feat: 회원가입 로직 구현)
