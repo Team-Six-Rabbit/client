@@ -157,7 +157,7 @@ export const generateLiveBattleCard = (
 		roomId: generateInteger().toString(),
 		title: generateSentences(1, 16),
 		currentPeopleCount: Math.floor(Math.random() * 1000),
-		imageUri: `/img/${lorem.generateWords(1)}`,
+		imageUri: "https://picsum.photos/400/400",
 	};
 };
 
@@ -181,7 +181,7 @@ export const generateFinishedLiveBattleResponse = (
 			percentageRegisterOpinion: finalPercentageA,
 			percentageOppositeOpinion: 100 - finalPercentageA,
 		},
-		imageUri: `/img/${lorem.generateWords(1)}`,
+		imageUri: "https://picsum.photos/400/400",
 		summary: generateSentences(3, 1000),
 	};
 };
