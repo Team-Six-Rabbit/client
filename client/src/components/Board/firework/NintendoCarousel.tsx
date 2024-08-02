@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { liveBattleService } from "@/services/liveBattleService";
+import { LiveBattleCardInfo } from "@/types/live";
+import { createLiveStateBorder, CustomCSSProperties } from "@/utils/textBorder";
 
 const CarouselContainer = styled.div`
 	display: flex;
@@ -21,6 +25,7 @@ const CarouselNintendo = styled.div`
 	width: 100%;
 	height: 100%;
 	overflow-y: hidden;
+	position: relative;
 `;
 
 const CarouselButtonLeft = styled.div`
@@ -101,9 +106,11 @@ const CarouselContent = styled.div`
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	position: relative;
 	color: white;
 	font-size: 1.5rem;
 	font-weight: bold;
+	cursor: pointer; /* Ensure pointer indicates clickable area */
 `;
 
 const CarouselBorder = styled.div`
@@ -112,14 +119,67 @@ const CarouselBorder = styled.div`
 	background-color: black;
 `;
 
-const images = [
-	"https://via.placeholder.com/600x300?text=Slide+1",
-	"https://via.placeholder.com/600x300?text=Slide+2",
-	"https://via.placeholder.com/600x300?text=Slide+3",
-];
+const ContentOverlay = styled.div`
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	padding: 10px;
+	pointer-events: none;
+	align-items: flex-start;
+`;
+
+const LiveBadge = styled.div`
+	background-color: red;
+	color: white;
+	padding: 5px 10px;
+	border-radius: 5px;
+	font-size: 0.9rem;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-left: 5px;
+`;
+
+const ImageTitle = styled.div<CustomCSSProperties>`
+	color: white;
+	padding: 5px;
+	border-radius: 5px;
+	font-size: 1.7rem;
+	text-shadow: ${({ textShadow }) => textShadow || "none"};
+	margin-left: 5px;
+`;
 
 function Carousel() {
+	const [images, setImages] = useState<string[]>([]);
+	const [titles, setTitles] = useState<string[]>([]);
 	const [currentIndex, setCurrentIndex] = useState(0);
+
+	const navigate = useNavigate(); // Initialize navigate
+
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const response = await liveBattleService.getActiveList(0);
+				const liveBattles: LiveBattleCardInfo[] = response.data || [];
+
+				const imageList = liveBattles
+					.map((battle) => battle.imageUri || "")
+					.filter(Boolean);
+				const titleList = liveBattles.map((battle) => battle.title);
+
+				setImages(imageList);
+				setTitles(titleList);
+			} catch (error) {
+				console.error("Failed to fetch carousel images:", error);
+			}
+		};
+
+		fetchImages();
+	}, []);
 
 	const nextSlide = () => {
 		setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -139,6 +199,12 @@ function Carousel() {
 		}
 	};
 
+	const handleNavigation = () => {
+		navigate("/live"); // Navigate to the live page
+	};
+
+	const liveStateBorder = createLiveStateBorder("#000000", 3);
+
 	return (
 		<CarouselContainer tabIndex={0} role="region" aria-label="Image Carousel">
 			<CarouselArrowLeft
@@ -148,21 +214,33 @@ function Carousel() {
 				type="button"
 			/>
 			<CarouselNintendo>
-				<CarouselButtonLeft>
+				<CarouselButtonLeft onClick={handleNavigation}>
 					<ControllerButton>
 						<span>M</span>
 					</ControllerButton>
 				</CarouselButtonLeft>
 				<CarouselBorder />
-				<CarouselContent>
-					<img
-						src={images[currentIndex]}
-						alt={`Slide ${currentIndex + 1}`}
-						style={{ width: "600px", height: "300px", objectFit: "cover" }}
-					/>
+				<CarouselContent onClick={handleNavigation}>
+					{images.length > 0 ? (
+						<>
+							<img
+								src={images[currentIndex]}
+								alt={`Slide ${currentIndex + 1}`}
+								style={{ width: "600px", height: "300px", objectFit: "cover" }}
+							/>
+							<ContentOverlay>
+								<LiveBadge>라이브</LiveBadge>
+								<ImageTitle textShadow={liveStateBorder.textShadow}>
+									{titles[currentIndex]}
+								</ImageTitle>
+							</ContentOverlay>
+						</>
+					) : (
+						<div>No Images Available</div>
+					)}
 				</CarouselContent>
 				<CarouselBorder />
-				<CarouselButtonRight>
+				<CarouselButtonRight onClick={handleNavigation}>
 					<ControllerButton>
 						<span>A</span>
 					</ControllerButton>

@@ -32,6 +32,7 @@ const getLiveStatusBackgroundText = (status: LiveStatus) => {
 };
 
 function LiveCard({
+	id,
 	image_uri,
 	title,
 	regist_user_id,
@@ -41,7 +42,6 @@ function LiveCard({
 	start_date,
 	end_date,
 	category,
-	index,
 }: CardType) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const navigate = useNavigate();
@@ -79,7 +79,7 @@ function LiveCard({
 		return (
 			<>
 				<div
-					className={`absolute inset-0 ${getLiveStatusBackgroundColor(status, index)} opacity-75 flex items-center justify-center`}
+					className={`absolute inset-0 ${getLiveStatusBackgroundColor(status, id)} opacity-75 flex items-center justify-center`}
 				/>
 				<div
 					className="absolute inset-0 flex items-center justify-center text-white text-3xl"

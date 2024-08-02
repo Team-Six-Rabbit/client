@@ -11,5 +11,4 @@ export interface CardType {
 	image_uri: string;
 	live_uri: string;
 	status: "live" | "upcoming" | "ended";
-	index: number;
 }
