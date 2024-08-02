@@ -15,6 +15,7 @@ interface AuthInputProps {
 	value: string;
 	onChange: ChangeEventHandler;
 	className?: string;
+	error?: string; // 에러 메시지 추가
 }
 
 export function AuthInput({
@@ -25,6 +26,7 @@ export function AuthInput({
 	value,
 	onChange,
 	className,
+	error, // 에러 메시지 추가
 }: AuthInputProps) {
 	return (
 		<div className="mb-4">
@@ -42,6 +44,8 @@ export function AuthInput({
 						className,
 					)}
 				/>
+				{error && <p className="text-red-500 text-sm mt-1">{error}</p>}{" "}
+				{/* 에러 메시지 표시 */}
 			</label>
 		</div>
 	);
@@ -65,3 +69,15 @@ export function AuthSubmitBtn({
 		</button>
 	);
 }
+<<<<<<< HEAD
+=======
+
+AuthInput.defaultProps = {
+	className: "",
+	error: "", // 에러 메시지 기본값 추가
+};
+
+AuthSubmitBtn.defaultProps = {
+	className: "",
+};
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)

@@ -1,8 +1,19 @@
 import { ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
+<<<<<<< HEAD
 import { authService } from "@/services/userAuthService";
 import { JoinRequest } from "@/types/api";
+=======
+import {
+	join,
+	checkNicknameAvailability,
+	checkEmailAvailability,
+} from "@/services/userAuthService";
+import { JoinRequest } from "@/types/api";
+import "@/assets/styles/shake.css";
+import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 
 function SignUpPage() {
 	const navigator = useNavigate();
@@ -12,13 +23,78 @@ function SignUpPage() {
 		nickname: "",
 	});
 	const [passwordConfirm, setPasswordConfirm] = useState<string>("");
+	const [errors, setErrors] = useState({
+		email: "",
+		nickname: "",
+		password: "",
+		passwordConfirm: "",
+	});
+	const [doShake, setDoShake] = useState<boolean>(false);
 
-	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+	const validateEmail = (email: string) => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(email);
+	};
+
+	const validatePassword = (password: string) => {
+		const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$/;
+		return passwordRegex.test(password);
+	};
+
+	const handleInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = event.target;
 		setFormValues({
 			...formValues,
 			[name]: value,
 		});
+
+		let errorMsg = "";
+
+		switch (name) {
+			case "email":
+				if (!validateEmail(value)) {
+					errorMsg = "유효한 이메일 형식이 아닙니다.";
+				} else {
+					try {
+						const isEmailAvailable = await checkEmailAvailability(value);
+						if (!isEmailAvailable) {
+							errorMsg = "이미 사용 중인 이메일입니다.";
+						}
+					} catch (error) {
+						errorMsg = "이메일 중복 확인 중 오류가 발생했습니다.";
+					}
+				}
+				break;
+			case "nickname":
+				if (value) {
+					try {
+						const isNicknameAvailable = await checkNicknameAvailability(value);
+						if (!isNicknameAvailable) {
+							errorMsg = "이미 사용 중인 닉네임입니다.";
+						}
+					} catch (error) {
+						errorMsg = "닉네임 중복 확인 중 오류가 발생했습니다.";
+					}
+				}
+				break;
+			case "password":
+				if (!validatePassword(value)) {
+					errorMsg = "8~16자 영문 대소문자, 숫자를 포함해야 합니다.";
+				}
+				break;
+			case "passwordConfirm":
+				if (value !== formValues.password) {
+					errorMsg = "비밀번호가 일치하지 않습니다.";
+				}
+				break;
+			default:
+				break;
+		}
+
+		setErrors((prevErrors) => ({
+			...prevErrors,
+			[name]: errorMsg,
+		}));
 	};
 
 	const handlePasswordConfirmChange = (
@@ -26,17 +102,63 @@ function SignUpPage() {
 	) => {
 		const { value } = event.target;
 		setPasswordConfirm(value);
-
-		// TODO: 비밀번호와 일치 여부 표시하기
+		if (value !== formValues.password) {
+			setErrors((prevErrors) => ({
+				...prevErrors,
+				passwordConfirm: "비밀번호가 일치하지 않습니다.",
+			}));
+		} else {
+			setErrors((prevErrors) => ({
+				...prevErrors,
+				passwordConfirm: "",
+			}));
+		}
 	};
 
 	const doJoin = async () => {
+		const hasErrors = Object.values(errors).some((error) => error !== "");
+		const hasEmptyFields =
+			Object.values(formValues).some((value) => value === "") ||
+			passwordConfirm === "";
+
+		if (hasErrors || hasEmptyFields) {
+			setErrors({
+				email:
+					formValues.email === "" ? "이메일을 입력해주세요." : errors.email,
+				nickname:
+					formValues.nickname === ""
+						? "닉네임을 입력해주세요."
+						: errors.nickname,
+				password:
+					formValues.password === ""
+						? "비밀번호를 입력해주세요."
+						: errors.password,
+				passwordConfirm:
+					passwordConfirm === ""
+						? "비밀번호 확인을 입력해주세요."
+						: errors.passwordConfirm,
+			});
+			setDoShake(true);
+			setTimeout(() => {
+				setDoShake(false);
+			}, 500);
+			return;
+		}
+
 		try {
+<<<<<<< HEAD
 			// TODO: 비밀번호 규칙 검사
 			await authService.join(formValues);
+=======
+			await join(formValues);
+>>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 			navigator("/");
 		} catch (err) {
-			console.error("회원가입 실패"); // TODO: 회원가입 실패 시 처리
+			console.error("회원가입 실패");
+			setDoShake(true);
+			setTimeout(() => {
+				setDoShake(false);
+			}, 500);
 		}
 	};
 
@@ -48,47 +170,78 @@ function SignUpPage() {
 			>
 				<h1
 					className="text-center text-white text-5xl mb-4"
-					style={{
-						textShadow:
-							"-4px -4px 0 black, 4px -4px 0 black, -4px 4px 0 black, 4px 4px 0 black",
-					}}
+					style={createLiveStateBorder("black", 4)} // textShadow 스타일 적용
 				>
 					회원가입
 				</h1>
 				<form>
-					<AuthInput
-						label="이메일"
-						type="email"
-						name="email"
-						value={formValues.email}
-						onChange={handleInputChange}
-						placeholder="이메일을 입력해주세요."
-					/>
-					<AuthInput
-						label="닉네임"
-						type="text"
-						name="nickname"
-						value={formValues.nickname}
-						onChange={handleInputChange}
-						placeholder="닉네임을 입력해주세요."
-					/>
-					<AuthInput
-						label="비밀번호"
-						type="password"
-						name="password"
-						value={formValues.password}
-						onChange={handleInputChange}
-						placeholder="6~20자/ 영문 소문자, 숫자, 특수문자 중 2개"
-					/>
-					<AuthInput
-						label="비밀번호 확인"
-						type="password"
-						name="confirm-password"
-						value={passwordConfirm}
-						onChange={handlePasswordConfirmChange}
-						placeholder="비밀번호 확인"
-					/>
-					<AuthSubmitBtn text="확인" onClick={doJoin} />
+					<div className="mb-4 relative">
+						<AuthInput
+							label="이메일"
+							type="email"
+							name="email"
+							value={formValues.email}
+							onChange={handleInputChange}
+							placeholder="이메일을 입력해주세요."
+						/>
+						{errors.email && (
+							<div className="text-red-500 text-xs absolute right-0 top-0 mt-1 mr-2">
+								{errors.email}
+							</div>
+						)}
+					</div>
+					<div className="mb-4 relative">
+						<AuthInput
+							label="닉네임"
+							type="text"
+							name="nickname"
+							value={formValues.nickname}
+							onChange={handleInputChange}
+							placeholder="닉네임을 입력해주세요."
+						/>
+						{errors.nickname && (
+							<div className="text-red-500 text-xs absolute right-0 top-0 mt-1 mr-2">
+								{errors.nickname}
+							</div>
+						)}
+					</div>
+					<div className="mb-4 relative">
+						<AuthInput
+							label="비밀번호"
+							type="password"
+							name="password"
+							value={formValues.password}
+							onChange={handleInputChange}
+							placeholder="8~16자 영문 대소문자, 숫자 포함."
+						/>
+						{errors.password && (
+							<div className="text-red-500 text-xs absolute right-0 top-0 mt-1 mr-2">
+								{errors.password}
+							</div>
+						)}
+					</div>
+					<div className="mb-4 relative">
+						<AuthInput
+							label="비밀번호 확인"
+							type="password"
+							name="passwordConfirm"
+							value={passwordConfirm}
+							onChange={handlePasswordConfirmChange}
+							placeholder="비밀번호 확인"
+						/>
+						{errors.passwordConfirm && (
+							<div className="text-red-500 text-xs absolute right-0 top-0 mt-1 mr-2">
+								{errors.passwordConfirm}
+							</div>
+						)}
+					</div>
+					<div id="submit-btn">
+						<AuthSubmitBtn
+							text="확인"
+							onClick={doJoin}
+							className={doShake ? "shake" : ""}
+						/>
+					</div>
 				</form>
 				<div className="flex justify-between mt-4">
 					<Link
