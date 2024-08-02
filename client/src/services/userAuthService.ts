@@ -106,3 +106,33 @@ export const authService = {
 		}
 	},
 };
+
+// 닉네임 중복 체크 함수
+export const checkNicknameAvailability = async (
+	nickname: string,
+): Promise<ApiResponse<boolean>> => {
+	try {
+		const response = await axiosInstance.get<ApiResponse<boolean>>(
+			`/user/check/nickname?nickname=${nickname}`,
+		);
+		return response.data;
+	} catch (error) {
+		console.error("Check Nickname Error: ", error);
+		throw error;
+	}
+};
+
+// 이메일 중복 체크 함수
+export const checkEmailAvailability = async (
+	email: string,
+): Promise<ApiResponse<boolean>> => {
+	try {
+		const response = await axiosInstance.get<ApiResponse<boolean>>(
+			`/user/check/email?email=${email}`,
+		);
+		return response.data;
+	} catch (error) {
+		console.error("Check Email Error: ", error);
+		throw error;
+	}
+};
