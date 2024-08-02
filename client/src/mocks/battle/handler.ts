@@ -7,7 +7,11 @@ import {
 	BattleInviteRespondRequest,
 	BattleResponse,
 } from "@/types/api";
-import { generateBattleResponse } from "@/mocks/util";
+import {
+	generateBattleResponse,
+	generateBattleUnconfirmed,
+} from "@/mocks/util";
+import { BattleUnconfirmed } from "@/types/battle";
 
 export const handlers = [
 	http.get<never, never, ApiResponse<BattleResponse[]>>(
@@ -52,15 +56,13 @@ export const handlers = [
 			});
 		},
 	),
-	http.get<never, never, ApiResponse<BattleResponse[]>>(
+	http.get<never, never, ApiResponse<BattleUnconfirmed[]>>(
 		"/battle/apply-list",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
-			const page = Number(qs.get("page") || 1);
 			const size = Number(qs.get("size") || 10);
-			const category = Number(qs.get("category")?.toString());
-			const battles = Array.from({ length: size }, (_, index) =>
-				generateBattleResponse((page - 1) * size + index + 1, category),
+			const battles = Array.from({ length: size }, () =>
+				generateBattleUnconfirmed(),
 			);
 			return HttpResponse.json({
 				code: "success",

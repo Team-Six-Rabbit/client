@@ -4,8 +4,8 @@ import {
 	PageableResponse,
 } from "@/types/api";
 import { LoremIpsum } from "lorem-ipsum";
-import { Battle } from "@/types/battle";
-import { Opinion } from "@/types/vote";
+import { Battle, BattleUnconfirmed } from "@/types/battle";
+import { OpinionWithPercentage } from "@/types/vote";
 import { BasicUserInfo } from "@/types/user";
 import { FinishedLiveBattleDetail, LiveBattleCardInfo } from "@/types/live";
 
@@ -20,12 +20,20 @@ const generateInteger = (max: number = 1000) => {
 	return Math.floor(Math.random() * max);
 };
 
+const generateDate = (offset?: number) => {
+	return (offset ? new Date(Date.now() + offset) : new Date()).toISOString();
+};
+
+const generateBoolean = (possibleProbability: number = 0.5) => {
+	return Math.random() <= possibleProbability;
+};
+
 export const generateBasicUser = (): BasicUserInfo => {
 	return {
-		id: Math.floor(Math.random() * 3000),
+		id: generateInteger(3000),
 		imgUrl: "img/default",
 		nickname: lorem.generateWords(2),
-		rating: Math.floor(Math.random() * 1000),
+		rating: generateInteger(),
 	};
 };
 
@@ -60,32 +68,32 @@ const generateBattle = (id: number, category?: number): Battle => ({
 	registUser: generateBasicUser(),
 	oppositeUser: generateBasicUser(),
 	voteInfo: {
-		id: Math.floor(Math.random() * 10000),
+		id: generateInteger(10000),
 		title: generateSentences(),
-		startDate: new Date().toISOString(),
-		endDate: new Date(Date.now() + 86400000).toISOString(),
-		category: category || (Math.floor(Math.random() * 10) % 7) + 1,
+		startDate: generateDate(),
+		endDate: generateDate(86400000),
+		category: category || (generateInteger(10) % 7) + 1,
 		detail: lorem.generateSentences(2),
 	},
 	minPeopleCount: 2,
 	maxPeopleCount: 10,
-	registDate: new Date().toISOString(),
-	currentState: Math.floor(Math.random() * 3),
-	imageUrl: Math.random() > 0.5 ? lorem.generateWords(1) : undefined,
+	registDate: generateDate(),
+	currentState: generateInteger(3),
+	imageUrl: generateBoolean() ? lorem.generateWords(1) : undefined,
 });
 
 const generateOpinion = (
 	index: number,
 	totalCount: number,
 	count: number,
-): Opinion => ({
+): OpinionWithPercentage => ({
 	index,
 	opinion: lorem.generateSentences(1).substring(0, 16),
 	count,
 	percentage: Math.floor((count / totalCount) * 100),
 });
 
-function generateOpinions(...counts: number[]): Opinion[] {
+function generateOpinions(...counts: number[]): OpinionWithPercentage[] {
 	const totalCount = counts.reduce((sum, count) => sum + count, 0);
 
 	const opinions = counts.map((count, index) =>
@@ -113,8 +121,8 @@ export const generateBattleResponse = (
 	id: number,
 	category?: number,
 ): BattleResponse => {
-	const count1 = Math.floor(Math.random() * 100);
-	const count2 = Math.floor(Math.random() * 100);
+	const count1 = generateInteger(100);
+	const count2 = generateInteger(100);
 
 	return {
 		battle: generateBattle(id, category),
@@ -122,12 +130,28 @@ export const generateBattleResponse = (
 	};
 };
 
+export const generateBattleUnconfirmed = (): BattleUnconfirmed => {
+	const maxPeopleCount = generateInteger(100) + 5;
+	const currentPeopleCount = generateInteger(maxPeopleCount - 1);
+
+	return {
+		id: generateInteger(),
+		title: generateSentences(),
+		opinions: [],
+		startDate: generateDate(),
+		endDate: generateDate(86400000),
+		maxPeopleCount,
+		currentPeopleCount,
+		isVoted: generateBoolean(),
+	};
+};
+
 export const generateBalanceGameResponse = (
 	category: number,
 	status: number,
-	id: number = Math.floor(Math.random() * 1000),
+	id: number = generateInteger(1000),
 ): BalanceGameResponse => {
-	const count1 = Math.floor(Math.random() * 100);
+	const count1 = generateInteger(100);
 	const count2 = 100 - count1; // Ensure that the sum of percentages is 100
 	const userVote = Math.random() > 0.5 ? 0 : 1;
 
@@ -136,10 +160,10 @@ export const generateBalanceGameResponse = (
 		opinions: generateOpinions(count1, count2),
 		detail: lorem.generateSentences(2),
 		currentState: status,
-		userVote: Math.random() > 0.5 ? userVote : undefined,
+		userVote: generateBoolean() ? userVote : undefined,
 		title: generateSentences(),
-		startDate: new Date().toISOString(),
-		endDate: new Date(Date.now() + 86400000).toISOString(),
+		startDate: generateDate(),
+		endDate: generateDate(86400000),
 		category,
 	};
 };
@@ -151,13 +175,13 @@ export const generateLiveBattleCard = (
 	return {
 		id: battleId,
 		category,
-		startDate: new Date().toISOString(),
-		endDate: new Date(Date.now() + 86400000).toISOString(),
+		startDate: generateDate(),
+		endDate: generateDate(86400000),
 		registerUser: { ...generateBasicUser(), opinion: generateSentences(1, 16) },
 		oppositeUser: { ...generateBasicUser(), opinion: generateSentences(1, 16) },
 		roomId: generateInteger().toString(),
 		title: generateSentences(1, 16),
-		currentPeopleCount: Math.floor(Math.random() * 1000),
+		currentPeopleCount: generateInteger(),
 		imageUri: "https://picsum.photos/400/400",
 	};
 };

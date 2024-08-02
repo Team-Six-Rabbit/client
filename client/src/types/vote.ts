@@ -10,6 +10,9 @@ export interface Vote {
 export interface Opinion {
 	index: number;
 	opinion: string;
+}
+
+export interface OpinionWithPercentage extends Opinion {
 	count: number;
 	percentage: number;
 }
