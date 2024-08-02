@@ -25,6 +25,13 @@ function NotificationMenu({
 			</button>
 			<button
 				type="button"
+				className={`block w-full text-left py-2 px-4 pr-12 ${selectedMenu === "Invite" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
+				onClick={() => onSelectMenu("Invite")}
+			>
+				Invite
+			</button>
+			<button
+				type="button"
 				className={`block w-full text-left py-2 px-4 pr-12 ${selectedMenu === "Punishment" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
 				onClick={() => onSelectMenu("Punishment")}
 			>

@@ -1,19 +1,15 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useState } from "react";
-import Modal from "@/components/Notification/NotificationModal";
+import NotificationModal from "@/components/Notification/NotificationModal";
+import { Notification } from "@/types/notification";
 
 interface NotificationItemProps {
-	message: string;
-	category: string;
+	notification: Notification;
 	onDelete: () => void;
 }
 
-function NotificationItem({
-	message,
-	category,
-	onDelete,
-}: NotificationItemProps) {
+function NotificationItem({ notification, onDelete }: NotificationItemProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 
@@ -31,18 +27,17 @@ function NotificationItem({
 										${isDeleting ? "transform -translate-x-full" : ""}`}
 			>
 				<div className="cursor-pointer" onClick={() => setIsModalOpen(true)}>
-					{message}
+					{notification.message}
 				</div>
 				<button type="button" onClick={handleDelete} className="text-royalBlue">
 					X
 				</button>
 			</div>
-			<Modal
+			<NotificationModal
 				isModalOpen={isModalOpen}
 				onModalClose={() => setIsModalOpen(false)}
 				handleDelete={handleDelete}
-				message={message}
-				showModalButtons={category === "Live"}
+				notification={notification}
 			/>
 		</div>
 	);

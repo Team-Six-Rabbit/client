@@ -1,77 +1,18 @@
-// src/pages/NotificationPage.tsx
 import { useState } from "react";
 import Header from "@/components/header";
 import NotificationItem from "@/components/Notification/NotificationItem";
 import NotificationMenu from "@/components/Notification/NotificationMenu";
+import { Notification } from "@/types/notification";
+import { notificationsData } from "@/components/Notification/NotificationData";
 import "@/assets/styles/scrollbar.css";
-
-const notificationsData = [
-	{
-		code: "A1",
-		message:
-			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
-		category: "Live",
-	},
-	{
-		code: "A2",
-		message:
-			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
-		category: "Live",
-	},
-	{
-		code: "A3",
-		message:
-			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
-		category: "Live",
-	},
-	{
-		code: "A4",
-		message:
-			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
-		category: "Live",
-	},
-	{
-		code: "B1",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B2",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B3",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B4",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B5",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B6",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B7",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-];
 
 function NotificationPage() {
 	const [selectedMenu, setSelectedMenu] = useState("Notify");
-	const [notifications, setNotifications] = useState(notificationsData);
+	const [notifications, setNotifications] =
+		useState<Notification[]>(notificationsData);
 
 	const onDelete = (code: string) => {
+		// 삭제 요청 api
 		setNotifications(notifications.filter((n) => n.code !== code));
 	};
 
@@ -99,8 +40,7 @@ function NotificationPage() {
 						{filteredNotifications.map((notification) => (
 							<NotificationItem
 								key={notification.code}
-								message={notification.message}
-								category={notification.category}
+								notification={notification}
 								onDelete={() => onDelete(notification.code)}
 							/>
 						))}
