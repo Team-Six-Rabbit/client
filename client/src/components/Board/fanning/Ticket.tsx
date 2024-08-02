@@ -32,7 +32,7 @@ function Ticket({ ticket, theme = "navy" }: TicketProps) {
 				<TicketDetails
 					themeData={themeData}
 					title={ticket.title}
-					opinions={ticket.opinionDtos}
+					opinions={ticket.opinions}
 					startDate={ticket.startDate}
 				/>
 			</TicketContent>
@@ -49,8 +49,8 @@ function Ticket({ ticket, theme = "navy" }: TicketProps) {
 				showModal={showModal}
 				setShowModal={setShowModal}
 				title={ticket.title}
-				opinion1={ticket.opinionDtos[0].opinion}
-				opinion2={ticket.opinionDtos[1].opinion}
+				opinion1={ticket.opinions[0].opinion}
+				opinion2={ticket.opinions[1].opinion}
 				onVote={handleVote}
 			/>
 		</TicketContainer>

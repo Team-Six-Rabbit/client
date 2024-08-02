@@ -1,13 +1,12 @@
 export interface Opinion {
 	index: number;
 	opinion: string;
-	finalCount: number | null;
 }
 
 export interface TicketType {
 	id: number;
 	title: string;
-	opinionDtos: Opinion[];
+	opinions: Opinion[];
 	startDate: string;
 	endDate: string;
 	maxPeopleCount: number;

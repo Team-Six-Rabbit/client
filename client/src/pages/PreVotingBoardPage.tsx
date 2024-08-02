@@ -7,8 +7,9 @@ import WindIcon from "@/assets/images/Wind.png";
 import PlusButton from "@/components/Board/fanning/PlusButton";
 import { TicketType } from "@/types/Board/ticket";
 import { categories } from "@/constant/boardCategory";
-import { sampleTickets } from "@/constant/exampleTicket";
 import { convertToTimeZone } from "@/utils/dateUtils";
+import { battleService } from "@/services/battleService";
+import { BattleResponse } from "@/types/api";
 
 const PreVotingBoardContainer = styled.div`
 	display: flex;
@@ -33,14 +34,54 @@ const BoardTicketContainer = styled.div`
 function PreVotingBoardPage() {
 	const [selectedCategory, setSelectedCategory] = useState<string>("전체");
 	const [filteredTickets, setFilteredTickets] = useState<TicketType[]>([]);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const handleCategorySelect = (category: string) => {
 		setSelectedCategory(category);
 	};
 
 	useEffect(() => {
-		setFilteredTickets(sampleTickets);
-	}, [selectedCategory]);
+		const fetchBattles = async () => {
+			try {
+				setIsLoading(true);
+
+				const categoryIndex = categories.findIndex(
+					(category) => category.name === selectedCategory,
+				);
+
+				const response = await battleService.getBattles(categoryIndex);
+				const battles: BattleResponse[] = response.data!;
+
+				const tickets: TicketType[] = battles.map((battleResponse) => {
+					const { battle, opinions } = battleResponse;
+					return {
+						id: battle.id,
+						title: battle.voteInfo.title,
+						opinions: opinions.map((opinion) => ({
+							index: opinion.index,
+							opinion: opinion.opinion,
+						})),
+						startDate: convertToTimeZone(
+							battle.voteInfo.startDate,
+							"Asia/Seoul",
+						),
+						endDate: convertToTimeZone(battle.voteInfo.endDate, "Asia/Seoul"),
+						maxPeopleCount: battle.maxPeopleCount,
+						currentPeopleCount: battle.minPeopleCount,
+						isVoted: false,
+					};
+				});
+
+				setFilteredTickets(tickets);
+			} catch (error) {
+				console.error("Failed to fetch battles:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchBattles();
+	}, [selectedCategory]); // Add dependencies as needed
 
 	const getTheme = (index: number) => {
 		return index === 1 || index === 2 || (index >= 5 && (index - 1) % 4 < 2)
@@ -60,19 +101,19 @@ function PreVotingBoardPage() {
 					boardIcon={WindIcon}
 				/>
 				<PreVotingBoardContainer>
-					<BoardTicketContainer>
-						{filteredTickets.map((ticket, index) => (
-							<Ticket
-								key={ticket.id}
-								ticket={{
-									...ticket,
-									startDate: convertToTimeZone(ticket.startDate, "Asia/Seoul"),
-									endDate: convertToTimeZone(ticket.endDate, "Asia/Seoul"),
-								}}
-								theme={getTheme(index)}
-							/>
-						))}
-					</BoardTicketContainer>
+					{isLoading ? (
+						<div>Loading...</div>
+					) : (
+						<BoardTicketContainer>
+							{filteredTickets.map((ticket, index) => (
+								<Ticket
+									key={ticket.id}
+									ticket={ticket}
+									theme={getTheme(index)}
+								/>
+							))}
+						</BoardTicketContainer>
+					)}
 				</PreVotingBoardContainer>
 			</div>
 			<PlusButton />
