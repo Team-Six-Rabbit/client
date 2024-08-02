@@ -3,7 +3,7 @@ import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
 import GoogleLoginButton from "@/components/auth/googleLoginBtn";
 import { Link, useNavigate } from "react-router-dom";
 import { LoginRequest } from "@/types/api";
-import { login } from "@/services/userAuthService";
+import { authService } from "@/services/userAuthService";
 
 interface CustomCSSProperties extends React.CSSProperties {
 	textShadow?: string;
@@ -31,7 +31,7 @@ function LoginPage() {
 
 	const doLogin = async () => {
 		try {
-			await login(formValues);
+			await authService.login(formValues);
 			navigator("/");
 		} catch (err) {
 			console.error("로그인 실패"); // TODO: 로그인 실패 시 처리

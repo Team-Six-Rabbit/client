@@ -5,61 +5,63 @@ import {
 } from "@/types/api";
 import axiosInstance from "./axiosInstance";
 
-export async function getBalanceGames(
-	page: number,
-	size: number,
-	category: number,
-	status: number,
-): Promise<ApiResponse<BalanceGameResponse[]>> {
-	try {
-		const response = await axiosInstance.get<
-			ApiResponse<BalanceGameResponse[]>
-		>("/balance-game", {
-			params: { page, size, category, status },
-		});
-		return response.data;
-	} catch (error) {
-		console.error("Failed to fetch balance games:", error);
-		throw error;
-	}
-}
+export const balanceGameService = {
+	getBalanceGames: async (
+		page: number,
+		size: number,
+		category: number,
+		status: number,
+	): Promise<ApiResponse<BalanceGameResponse[]>> => {
+		try {
+			const response = await axiosInstance.get<
+				ApiResponse<BalanceGameResponse[]>
+			>("/balance-game", {
+				params: { page, size, category, status },
+			});
+			return response.data;
+		} catch (error) {
+			console.error("Failed to fetch balance games:", error);
+			throw error;
+		}
+	},
 
-export async function createBalanceGame(
-	data: CreateBalanceGameRequest,
-): Promise<ApiResponse<string>> {
-	try {
-		const response = await axiosInstance.post<ApiResponse<string>>(
-			"/balance-game",
-			data,
-		);
-		return response.data;
-	} catch (error) {
-		console.error("Failed to create balance game:", error);
-		throw error;
-	}
-}
+	createBalanceGame: async (
+		data: CreateBalanceGameRequest,
+	): Promise<ApiResponse<string>> => {
+		try {
+			const response = await axiosInstance.post<ApiResponse<string>>(
+				"/balance-game",
+				data,
+			);
+			return response.data;
+		} catch (error) {
+			console.error("Failed to create balance game:", error);
+			throw error;
+		}
+	},
 
-export async function deleteBalanceGame(): Promise<ApiResponse<string>> {
-	try {
-		const response =
-			await axiosInstance.delete<ApiResponse<string>>("/balance-game");
-		return response.data;
-	} catch (error) {
-		console.error("Failed to delete balance game:", error);
-		throw error;
-	}
-}
+	deleteBalanceGame: async (): Promise<ApiResponse<string>> => {
+		try {
+			const response =
+				await axiosInstance.delete<ApiResponse<string>>("/balance-game");
+			return response.data;
+		} catch (error) {
+			console.error("Failed to delete balance game:", error);
+			throw error;
+		}
+	},
 
-export async function getBalanceGameById(
-	id: string,
-): Promise<ApiResponse<BalanceGameResponse>> {
-	try {
-		const response = await axiosInstance.get<ApiResponse<BalanceGameResponse>>(
-			`/balance-game/${id}`,
-		);
-		return response.data;
-	} catch (error) {
-		console.error(`Failed to fetch balance game with id ${id}:`, error);
-		throw error;
-	}
-}
+	getBalanceGameById: async (
+		id: string,
+	): Promise<ApiResponse<BalanceGameResponse>> => {
+		try {
+			const response = await axiosInstance.get<
+				ApiResponse<BalanceGameResponse>
+			>(`/balance-game/${id}`);
+			return response.data;
+		} catch (error) {
+			console.error(`Failed to fetch balance game with id ${id}:`, error);
+			throw error;
+		}
+	},
+};

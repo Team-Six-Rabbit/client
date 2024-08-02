@@ -1,5 +1,5 @@
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
-import { join } from "@/services/userAuthService";
+import { authService } from "@/services/userAuthService";
 import { JoinRequest } from "@/types/api";
 import { ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -33,7 +33,7 @@ function SignUpPage() {
 	const doJoin = async () => {
 		try {
 			// TODO: 비밀번호 규칙 검사
-			await join(formValues);
+			await authService.join(formValues);
 			navigator("/");
 		} catch (err) {
 			console.error("회원가입 실패"); // TODO: 회원가입 실패 시 처리

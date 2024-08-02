@@ -11,8 +11,8 @@ import {
 } from "vitest";
 import { setupServer } from "msw/node";
 import { handlers } from "@/mocks/handlers";
-import { login, join, getUserInfo, logout } from "@/services/userAuthService";
 import { useAuthStore } from "@/stores/userAuthStore";
+import { authService } from "@/services/userAuthService";
 
 // Mock server 설정
 const server = setupServer(...handlers);
@@ -37,7 +37,7 @@ beforeEach(() => {
 describe("userAuthService", () => {
 	it("should login successfully", async () => {
 		const loginRequest = { email: "test@email.com", password: "password" };
-		const response = await login(loginRequest);
+		const response = await authService.login(loginRequest);
 
 		expect(response.code).toBe("success");
 		expect(response.data?.email).toBe("test@email.com");
@@ -50,7 +50,7 @@ describe("userAuthService", () => {
 	it("should fail to login with incorrect credentials", async () => {
 		const loginRequest = { email: "wrong.email.com", password: "password" };
 
-		await expect(login(loginRequest)).rejects.toThrow(
+		await expect(authService.login(loginRequest)).rejects.toThrow(
 			"Request failed with status code 400",
 		);
 
@@ -65,7 +65,7 @@ describe("userAuthService", () => {
 			password: "password",
 			nickname: "nickname",
 		};
-		const response = await join(joinRequest);
+		const response = await authService.join(joinRequest);
 
 		expect(response.code).toBe("success");
 		expect(response.data).toBe("가입 완료");
@@ -78,7 +78,7 @@ describe("userAuthService", () => {
 			nickname: "testuser",
 		};
 
-		await expect(join(joinRequest)).rejects.toThrow(
+		await expect(authService.join(joinRequest)).rejects.toThrow(
 			"Request failed with status code 400",
 		);
 	});
@@ -86,9 +86,9 @@ describe("userAuthService", () => {
 	it("should get user info successfully", async () => {
 		// 로그인 후 사용자 정보 가져오기 테스트
 		const loginRequest = { email: "test@email.com", password: "password" };
-		await login(loginRequest);
+		await authService.login(loginRequest);
 
-		const response = await getUserInfo();
+		const response = await authService.getUserInfo();
 		expect(response.code).toBe("success");
 		expect(response.data?.email).toBe("test@email.com");
 
@@ -97,13 +97,13 @@ describe("userAuthService", () => {
 	});
 
 	it("should get user profile successfully", async () => {
-		const response = await getUserInfo(1);
+		const response = await authService.getUserInfo(1);
 		expect(response.code).toBe("success");
 		expect(response.data?.email).toBe("test1.email.com");
 	});
 
 	it("should return 404 for non-existing user profile", async () => {
-		await expect(getUserInfo(999)).rejects.toThrow(
+		await expect(authService.getUserInfo(999)).rejects.toThrow(
 			"Request failed with status code 404",
 		);
 	});
@@ -111,9 +111,9 @@ describe("userAuthService", () => {
 	it("should logout successfully", async () => {
 		// 로그인 후 로그아웃 테스트
 		const loginRequest = { email: "test@email.com", password: "password" };
-		await login(loginRequest);
+		await authService.login(loginRequest);
 
-		await logout();
+		await authService.logout();
 
 		const state = useAuthStore.getState();
 		expect(state.isLogin).toBe(false);

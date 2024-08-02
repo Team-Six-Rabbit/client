@@ -90,20 +90,43 @@ const generateOpinion = (
 	percentage: (count / totalCount) * 100,
 });
 
+function generateOpinions(...counts: number[]): Opinion[] {
+	const totalCount = counts.reduce((sum, count) => sum + count, 0);
+
+	const opinions = counts.map((count, index) =>
+		generateOpinion(index, count, totalCount),
+	);
+
+	// Calculate the total percentage
+	const totalPercentage = opinions.reduce(
+		(acc, curr) => acc + curr.percentage,
+		0,
+	);
+
+	// Adjust the percentage to ensure the total is 100
+	if (totalPercentage !== 100) {
+		// Find the opinion with the largest percentage
+		const maxIndex = opinions.reduce(
+			(maxIdx, curr, idx, arr) =>
+				curr.percentage > arr[maxIdx].percentage ? idx : maxIdx,
+			0,
+		);
+		opinions[maxIndex].percentage += 100 - totalPercentage;
+	}
+
+	return opinions;
+}
+
 export const generateBattleResponse = (
 	id: number,
 	category?: number,
 ): BattleResponse => {
 	const count1 = Math.floor(Math.random() * 100);
 	const count2 = Math.floor(Math.random() * 100);
-	const totalCount = count1 + count2;
 
 	return {
 		battle: generateBattle(id, category),
-		opinions: [
-			generateOpinion(0, totalCount, count1),
-			generateOpinion(1, totalCount, count2),
-		],
+		opinions: generateOpinions(count1, count2),
 	};
 };
 
@@ -114,14 +137,10 @@ export const generateBalanceGameResponse = (
 ): BalanceGameResponse => {
 	const count1 = Math.floor(Math.random() * 100);
 	const count2 = 100 - count1; // Ensure that the sum of percentages is 100
-	const totalCount = count1 + count2;
 
 	return {
 		id,
-		opinions: [
-			generateOpinion(0, totalCount, count1),
-			generateOpinion(1, totalCount, count2),
-		],
+		opinions: generateOpinions(count1, count2),
 		detail: lorem.generateSentences(2),
 		currentState: status,
 		userVote: Math.random() > 0.5 ? 0 : undefined,

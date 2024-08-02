@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useAuthStore } from "@/stores/userAuthStore";
 import { MouseEventHandler } from "react";
-import { logout } from "@/services/userAuthService";
+import { authService } from "@/services/userAuthService";
 
 interface DropDownMenuItem {
 	link: string;
@@ -20,7 +20,7 @@ export function ProfileBtn() {
 
 	const doLogout = async () => {
 		try {
-			await logout();
+			await authService.logout();
 		} catch (err) {
 			console.error("로그아웃 실패");
 		} finally {
