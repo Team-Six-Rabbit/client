@@ -25,7 +25,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/1",
 		status: "live",
-		index: 0,
 	},
 	{
 		id: 2,
@@ -40,7 +39,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/2",
 		status: "upcoming",
-		index: 1,
 	},
 	{
 		id: 3,
@@ -55,7 +53,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/3",
 		status: "ended",
-		index: 2,
 	},
 	{
 		id: 4,
@@ -70,7 +67,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/4",
 		status: "live",
-		index: 3,
 	},
 	{
 		id: 5,
@@ -85,7 +81,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/5",
 		status: "upcoming",
-		index: 4,
 	},
 	{
 		id: 6,
@@ -100,7 +95,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/6",
 		status: "ended",
-		index: 5,
 	},
 	{
 		id: 7,
@@ -115,7 +109,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/7",
 		status: "live",
-		index: 6,
 	},
 	{
 		id: 8,
@@ -130,7 +123,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/8",
 		status: "upcoming",
-		index: 7,
 	},
 	{
 		id: 9,
@@ -145,7 +137,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/9",
 		status: "ended",
-		index: 8,
 	},
 	{
 		id: 10,
@@ -160,7 +151,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/10",
 		status: "live",
-		index: 9,
 	},
 	{
 		id: 11,
@@ -175,7 +165,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/11",
 		status: "upcoming",
-		index: 10,
 	},
 	{
 		id: 12,
@@ -190,7 +179,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/12",
 		status: "ended",
-		index: 11,
 	},
 	{
 		id: 13,
@@ -205,7 +193,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/12",
 		status: "upcoming",
-		index: 12,
 	},
 	{
 		id: 14,
@@ -220,7 +207,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/12",
 		status: "upcoming",
-		index: 13,
 	},
 	{
 		id: 15,
@@ -235,7 +221,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/15",
 		status: "upcoming",
-		index: 14,
 	},
 	{
 		id: 16,
@@ -250,7 +235,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/16",
 		status: "ended",
-		index: 15,
 	},
 	{
 		id: 17,
@@ -265,7 +249,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/17",
 		status: "live",
-		index: 16,
 	},
 	{
 		id: 18,
@@ -280,7 +263,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/18",
 		status: "upcoming",
-		index: 17,
 	},
 	{
 		id: 19,
@@ -295,7 +277,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/19",
 		status: "ended",
-		index: 18,
 	},
 	{
 		id: 20,
@@ -310,7 +291,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/20",
 		status: "live",
-		index: 19,
 	},
 	{
 		id: 21,
@@ -325,7 +305,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/21",
 		status: "upcoming",
-		index: 20,
 	},
 	{
 		id: 22,
@@ -340,7 +319,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/22",
 		status: "live",
-		index: 21,
 	},
 	{
 		id: 23,
@@ -355,7 +333,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/23",
 		status: "ended",
-		index: 22,
 	},
 	{
 		id: 24,
@@ -370,7 +347,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/24",
 		status: "upcoming",
-		index: 23,
 	},
 	{
 		id: 25,
@@ -385,7 +361,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/25",
 		status: "ended",
-		index: 24,
 	},
 	{
 		id: 26,
@@ -400,7 +375,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/26",
 		status: "live",
-		index: 25,
 	},
 	{
 		id: 27,
@@ -415,7 +389,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/27",
 		status: "upcoming",
-		index: 26,
 	},
 	{
 		id: 28,
@@ -430,7 +403,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/28",
 		status: "ended",
-		index: 27,
 	},
 	{
 		id: 29,
@@ -445,7 +417,6 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/29",
 		status: "live",
-		index: 28,
 	},
 	{
 		id: 30,
@@ -460,6 +431,5 @@ export const sampleCards: CardType[] = [
 		image_uri: "https://picsum.photos/400/400",
 		live_uri: "https://live.example.com/30",
 		status: "upcoming",
-		index: 39,
 	},
 ];
