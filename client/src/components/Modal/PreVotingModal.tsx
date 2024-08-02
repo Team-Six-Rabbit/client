@@ -1,3 +1,4 @@
+import React from "react";
 import styled from "styled-components";
 
 interface PreVoteModalProps {
@@ -83,9 +84,19 @@ function PreVoteModal({
 }: PreVoteModalProps) {
 	if (!showModal) return null;
 
+	// Handler to close modal when clicking on the background
+	const handleBackgroundClick = () => {
+		setShowModal(false);
+	};
+
+	// Stop click event from propagating to the background when clicking inside the modal
+	const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		e.stopPropagation();
+	};
+
 	return (
-		<PreVoteModalBackground>
-			<PreVoteModalContainer>
+		<PreVoteModalBackground onClick={handleBackgroundClick}>
+			<PreVoteModalContainer onClick={handleContainerClick}>
 				<PreVoteModalCloseIcon onClick={() => setShowModal(false)}>
 					X
 				</PreVoteModalCloseIcon>
