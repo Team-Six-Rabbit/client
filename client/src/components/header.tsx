@@ -1,6 +1,6 @@
+import { MouseEvent, MouseEventHandler } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { MouseEventHandler } from "react";
 import profileIcon from "@/assets/images/profile.png";
 import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
@@ -18,7 +18,9 @@ export function ProfileBtn() {
 	const { isLogin } = useAuthStore();
 	const navigator = useNavigate();
 
-	const doLogout = async () => {
+	const doLogout = async (event: MouseEvent) => {
+		event.preventDefault();
+
 		try {
 			await authService.logout();
 		} catch (err) {
@@ -35,7 +37,7 @@ export function ProfileBtn() {
 
 	const dropdownAfterLogin: DropDownMenuItem[] = [
 		{ link: "/my-page", text: "마이페이지" },
-		{ link: "/logout", text: "로그아웃", onClick: doLogout },
+		{ link: "/", text: "로그아웃", onClick: doLogout },
 	];
 
 	const menuItems = isLogin ? dropdownAfterLogin : dropdownBeforeLogin;
