@@ -118,7 +118,7 @@ public class LiveListServiceImpl implements LiveListService {
 			new LiveEndDetailDto.VoteResult(registFinalPercent, 100 - registFinalPercent),
 			voteInfo.getCategory(),
 			battleBoard.getImageUrl(),
-			battleBoard.getDetail()
+			battleBoard.getVoteInfo().getDetail()
 		);
 	}
 
@@ -146,7 +146,7 @@ public class LiveListServiceImpl implements LiveListService {
 			battleBoard.getVoteInfo().getCategory(),
 			battleBoard.getImageUrl(),
 			battleBoard.getBattleRule(),
-			battleBoard.getDetail()
+			battleBoard.getVoteInfo().getDetail()
 
 		);
 

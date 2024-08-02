@@ -15,4 +15,6 @@ public interface UserVoteOpinionRepository extends JpaRepository<UserVoteOpinion
 	List<UserVoteOpinion> findByVoteInfoIdAndVoteInfoIndex(Long id, int voteOpinionIndex);
 
 	UserVoteOpinion findByUserIdAndVoteInfoId(long id, Long voteInfoId);
+
+	UserVoteOpinion findByUser_IdAndVoteInfo_Id(Long userId, Long id);
 }
