@@ -7,7 +7,7 @@ import {
 	BalanceGameCardWrapper,
 	Question,
 } from "@/assets/styles/balanceGameStyle";
-import { getBalanceGameById } from "@/services/balanceGameService";
+import { balanceGameService } from "@/services/balanceGameService";
 
 interface BalanceGameCardProps {
 	data: BalanceGameCardType;
@@ -33,7 +33,9 @@ function BalanceGameCard({ data, onVote, disabled }: BalanceGameCardProps) {
 	const handleCardClick = async () => {
 		setIsLoading(true);
 		try {
-			const response = await getBalanceGameById(data.id.toString());
+			const response = await balanceGameService.getBalanceGameById(
+				data.id.toString(),
+			);
 			setModalData(response.data as unknown as BalanceGameCardType);
 			setIsModalOpen(true);
 		} catch (error) {
@@ -63,7 +65,13 @@ function BalanceGameCard({ data, onVote, disabled }: BalanceGameCardProps) {
 			</BalanceGameCardWrapper>
 			{isLoading && <div>Loading...</div>}
 			{isModalOpen && modalData && (
-				<BalanceGameModal data={modalData} onClose={handleCloseModal} />
+				<BalanceGameModal
+					data={{
+						...modalData,
+						detail: modalData.detail ?? "No details available",
+					}}
+					onClose={handleCloseModal}
+				/>
 			)}
 		</>
 	);

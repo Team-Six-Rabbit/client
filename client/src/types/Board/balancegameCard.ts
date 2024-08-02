@@ -8,7 +8,7 @@ export interface OpinionType {
 export interface BalanceGameCardType {
 	id: number;
 	title: string;
-	detail: string;
+	detail?: string;
 	startDate: string;
 	endDate: string;
 	category: number;

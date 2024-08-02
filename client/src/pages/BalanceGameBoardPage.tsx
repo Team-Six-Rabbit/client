@@ -1,14 +1,15 @@
+import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
-import { useEffect, useState } from "react";
-import { categories } from "@/constant/boardCategory";
-import { LiveStatus } from "@/types/Board/liveStatus";
 import PlusButton from "@/components/Board/fanning/PlusButton";
 import BalanceGameCard from "@/components/Board/bonfire/BalanceGameCard";
+import { categories } from "@/constant/boardCategory";
+import { LiveStatus } from "@/types/Board/liveStatus";
+import { balanceGameService } from "@/services/balanceGameService";
 import { BalanceGameCardType } from "@/types/Board/balancegameCard";
 import styled from "styled-components";
-import { getBalanceGames } from "@/services/balanceGameService";
 import { ApiResponse, BalanceGameResponse } from "@/types/api";
+import bonfireIcon from "@/assets/images/bonfire.png";
 
 const BalanceGameBoardContainer = styled.div`
 	display: flex;
@@ -32,25 +33,67 @@ const BoardCardContainer = styled.div`
 function BalanceGameBoardPage() {
 	const [selectedCategory, setSelectedCategory] = useState<string>("전체");
 	const [selectedStatus, setSelectedStatus] = useState<LiveStatus>("live");
-	const [balanceGameState, setBalanceGameState] = useState<
-		BalanceGameCardType[]
-	>([]);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [filteredCards, setFilteredCards] = useState<BalanceGameCardType[]>([]);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+
+	const handleCategorySelect = (category: string) => {
+		setSelectedCategory(category);
+	};
+
+	const handleStatusSelect = (status: LiveStatus) => {
+		setSelectedStatus(status);
+	};
 
 	useEffect(() => {
 		const fetchBalanceGames = async () => {
 			try {
 				setIsLoading(true);
+
 				const categoryIndex = categories.findIndex(
 					(category) => category.name === selectedCategory,
 				);
-				const status = selectedStatus === "live" ? 6 : 7;
-				const response: ApiResponse<BalanceGameResponse[]> =
-					await getBalanceGames(1, 10, categoryIndex, status);
-				if (response.data)
-					setBalanceGameState(
-						response.data as unknown as BalanceGameCardType[],
-					);
+
+				let response: ApiResponse<BalanceGameResponse[]>;
+				switch (selectedStatus) {
+					case "live":
+						response = await balanceGameService.getBalanceGames(
+							1,
+							6,
+							categoryIndex,
+							10,
+						);
+						break;
+					case "ended":
+						response = await balanceGameService.getBalanceGames(
+							1,
+							7,
+							categoryIndex,
+							10,
+						);
+						break;
+					default:
+						return;
+				}
+
+				const balanceGames: BalanceGameCardType[] =
+					response.data?.map((game) => {
+						if (game.id === undefined) {
+							throw new Error("Invalid data: id is undefined");
+						}
+
+						return {
+							id: game.id,
+							title: game.title,
+							opinions: game.opinions,
+							currentState: game.currentState,
+							startDate: game.startDate,
+							endDate: game.endDate,
+							category: game.category,
+							userVote: game.userVote ?? null, // userVote가 undefined일 수 있으므로 기본값 설정
+						};
+					}) || [];
+
+				setFilteredCards(balanceGames);
 			} catch (error) {
 				console.error("Failed to fetch balance games:", error);
 			} finally {
@@ -61,16 +104,8 @@ function BalanceGameBoardPage() {
 		fetchBalanceGames();
 	}, [selectedCategory, selectedStatus]);
 
-	const handleCategorySelect = (category: string) => {
-		setSelectedCategory(category);
-	};
-
-	const handleStatusSelect = (status: LiveStatus) => {
-		setSelectedStatus(status);
-	};
-
 	const handleVote = (cardId: number, option: number) => {
-		setBalanceGameState((prevState) => {
+		setFilteredCards((prevState) => {
 			const newState = prevState.map((card) => {
 				if (card.id === cardId) {
 					const updatedCard = { ...card };
@@ -108,20 +143,6 @@ function BalanceGameBoardPage() {
 		});
 	};
 
-	const filteredBalanceGameState = balanceGameState.filter((card) => {
-		if (selectedStatus === "live") {
-			return card.currentState === 6;
-		}
-		if (selectedStatus === "ended") {
-			return card.currentState === 7;
-		}
-		return false;
-	});
-
-	if (isLoading) {
-		return <div>Loading...</div>;
-	}
-
 	return (
 		<div>
 			<Header />
@@ -133,18 +154,23 @@ function BalanceGameBoardPage() {
 					onCategorySelect={handleCategorySelect}
 					selectedStatus={selectedStatus}
 					onStatusSelect={handleStatusSelect}
+					boardIcon={bonfireIcon}
 				/>
 				<BalanceGameBoardContainer>
-					<BoardCardContainer>
-						{filteredBalanceGameState.map((card) => (
-							<BalanceGameCard
-								key={card.id}
-								data={card}
-								onVote={handleVote}
-								disabled={selectedStatus === "ended"}
-							/>
-						))}
-					</BoardCardContainer>
+					{isLoading ? (
+						<div>Loading...</div>
+					) : (
+						<BoardCardContainer>
+							{filteredCards.map((card) => (
+								<BalanceGameCard
+									key={card.id}
+									data={card}
+									onVote={handleVote}
+									disabled={selectedStatus === "ended"}
+								/>
+							))}
+						</BoardCardContainer>
+					)}
 				</BalanceGameBoardContainer>
 			</div>
 			<PlusButton />
