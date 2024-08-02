@@ -6,7 +6,7 @@
   "scripts": {
     "start": "vite",
     "local": "vite --mode local",
-    "dev": "vite --mode mock",
+    "dev": "vite --mode test",
     "build": "tsc -b && vite build",
     "lint": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives",
     "lint:fix": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives --fix",

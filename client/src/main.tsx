@@ -7,7 +7,7 @@ import router from "@/routes/router";
 
 import "./index.css";
 
-if (import.meta.env.MODE === "mock") {
+if (import.meta.env.MODE === "test") {
 	import("./mocks/browser").then(({ worker }) => {
 		worker.start();
 	});
