@@ -14,7 +14,7 @@ export interface Battle {
 	imageUrl?: string;
 }
 
-export interface BattleUnconfirmed {
+export interface BattleWaitingParticipant {
 	id: number;
 	title: string;
 	opinions: Opinion[];

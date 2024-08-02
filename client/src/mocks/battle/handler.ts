@@ -9,9 +9,9 @@ import {
 } from "@/types/api";
 import {
 	generateBattleResponse,
-	generateBattleUnconfirmed,
+	generateBattleWaitingParticipant,
 } from "@/mocks/util";
-import { BattleUnconfirmed } from "@/types/battle";
+import { BattleWaitingParticipant } from "@/types/battle";
 
 export const handlers = [
 	http.get<never, never, ApiResponse<BattleResponse[]>>(
@@ -56,13 +56,13 @@ export const handlers = [
 			});
 		},
 	),
-	http.get<never, never, ApiResponse<BattleUnconfirmed[]>>(
+	http.get<never, never, ApiResponse<BattleWaitingParticipant[]>>(
 		"/battle/apply-list",
 		async ({ request }) => {
 			const qs = new URLSearchParams(request.url);
 			const size = Number(qs.get("size") || 10);
 			const battles = Array.from({ length: size }, () =>
-				generateBattleUnconfirmed(),
+				generateBattleWaitingParticipant(),
 			);
 			return HttpResponse.json({
 				code: "success",
@@ -70,12 +70,12 @@ export const handlers = [
 			});
 		},
 	),
-	http.post<never, ApplyBattleRequest, ApiResponse<string>>(
+	http.post<never, ApplyBattleRequest, ApiResponse<number>>(
 		"/battle/apply",
 		() => {
 			return HttpResponse.json({
 				code: "success",
-				data: "",
+				data: Math.floor(Math.random() * 10),
 			});
 		},
 	),

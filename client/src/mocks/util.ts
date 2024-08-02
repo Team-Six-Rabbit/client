@@ -4,7 +4,7 @@ import {
 	PageableResponse,
 } from "@/types/api";
 import { LoremIpsum } from "lorem-ipsum";
-import { Battle, BattleUnconfirmed } from "@/types/battle";
+import { Battle, BattleWaitingParticipant } from "@/types/battle";
 import { OpinionWithPercentage } from "@/types/vote";
 import { BasicUserInfo } from "@/types/user";
 import { FinishedLiveBattleDetail, LiveBattleCardInfo } from "@/types/live";
@@ -130,21 +130,22 @@ export const generateBattleResponse = (
 	};
 };
 
-export const generateBattleUnconfirmed = (): BattleUnconfirmed => {
-	const maxPeopleCount = generateInteger(100) + 5;
-	const currentPeopleCount = generateInteger(maxPeopleCount - 1);
+export const generateBattleWaitingParticipant =
+	(): BattleWaitingParticipant => {
+		const maxPeopleCount = generateInteger(100) + 5;
+		const currentPeopleCount = generateInteger(maxPeopleCount - 1);
 
-	return {
-		id: generateInteger(),
-		title: generateSentences(),
-		opinions: [],
-		startDate: generateDate(),
-		endDate: generateDate(86400000),
-		maxPeopleCount,
-		currentPeopleCount,
-		isVoted: generateBoolean(),
+		return {
+			id: generateInteger(),
+			title: generateSentences(),
+			opinions: [],
+			startDate: generateDate(),
+			endDate: generateDate(86400000),
+			maxPeopleCount,
+			currentPeopleCount,
+			isVoted: generateBoolean(),
+		};
 	};
-};
 
 export const generateBalanceGameResponse = (
 	category: number,
