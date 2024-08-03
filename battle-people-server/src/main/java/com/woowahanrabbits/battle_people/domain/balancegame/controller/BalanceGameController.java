@@ -71,7 +71,8 @@ public class BalanceGameController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Id 값으로 밸런스 게임 조회")
-	public ResponseEntity<ApiResponseDto<?>> getBalanceGameById(@PathVariable Long id, Authentication authentication) {
+	public ResponseEntity<ApiResponseDto<BalanceGameResponse>> getBalanceGameById(@PathVariable Long id,
+		Authentication authentication) {
 		try {
 			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
 			User user = principalDetails.getUser();
