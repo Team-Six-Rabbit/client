@@ -97,15 +97,19 @@ public class BattleServiceImpl implements BattleService {
 			.oppositeUser(userRepository.findById(battleInviteRequest.getOppositeUserId()).orElseThrow())
 			.voteInfo(voteInfo)
 			.maxPeopleCount(battleInviteRequest.getMaxPeopleCount())
+			.battleRule(battleInviteRequest.getBattleRule())
 			.build();
 		battleRepository.save(battleBoard);
 	}
 
 	@Override
-	public List<BattleResponse> getReceivedBattleList(User user, int page) {
+	public List<BattleResponse> getReceivedBattleList(User user, int page, Long id) {
 		Pageable pageable = PageRequest.of(page, 12);
-		List<BattleBoard> list = battleRepository.findByOppositeUserIdAndVoteInfoCurrentState(user.getId(), 0, pageable)
-			.getContent();
+
+		List<BattleBoard> list = id == null
+			? battleRepository.findByOppositeUserIdAndVoteInfoCurrentState(user.getId(), 0, pageable)
+			.getContent()
+			: battleRepository.findById(id, pageable).getContent();
 
 		List<BattleResponse> returnList = new ArrayList<>();
 

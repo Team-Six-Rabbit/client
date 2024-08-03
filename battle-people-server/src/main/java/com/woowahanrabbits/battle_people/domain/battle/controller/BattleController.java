@@ -57,12 +57,12 @@ public class BattleController {
 	@GetMapping("")
 	@Operation(summary = "요청받는 배틀을 조회한다.")
 	public ResponseEntity<?> getRequestBattleList(Authentication authentication,
-		@RequestParam int page) {
+		@RequestParam(defaultValue = "0") int page, @RequestParam(required = false) Long id) {
 		try {
 			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
 			User user = principalDetails.getUser();
 			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "", battleService.getReceivedBattleList(user, page)));
+				.body(new ApiResponseDto<>("success", "", battleService.getReceivedBattleList(user, page, id)));
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -12,7 +12,7 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 public interface BattleService {
 	void registBattle(BattleInviteRequest battleInviteRequest, User user);
 
-	List<BattleResponse> getReceivedBattleList(User user, int page);
+	List<BattleResponse> getReceivedBattleList(User user, int page, Long id);
 
 	void acceptOrDeclineBattle(BattleRespondRequest battleRespondRequest, User user);
 
