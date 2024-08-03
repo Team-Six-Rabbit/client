@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import { CardType } from "@/types/Board/liveBoardCard";
 import { categories } from "@/constant/boardCategory";
 import { liveBattleService } from "@/services/liveBattleService";
+import LargeCarousel from "@/components/Main/LargeCarousel";
 
 const PageContainer = styled.div`
 	padding: 40px;
@@ -33,13 +34,13 @@ const LoadingMessage = styled.div`
 `;
 
 function MainPage() {
+	const [largeCarouselCards, setLargeCarouselCards] = useState<CardType[]>([]);
 	const [interestedCards, setInterestedCards] = useState<
 		Record<number, CardType[]>
 	>({});
 	const [otherCards, setOtherCards] = useState<Record<number, CardType[]>>({});
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
-	// useMemo를 사용하여 userInterestedCategories를 메모이제이션합니다.
 	const userInterestedCategories = useMemo(() => [1, 2, 6], []);
 
 	useEffect(() => {
@@ -47,7 +48,6 @@ function MainPage() {
 			try {
 				setIsLoading(true);
 
-				// 각 카테고리의 데이터를 가져오기 위한 비동기 요청 배열을 생성합니다.
 				const promises = categories
 					.filter((category) => category.id !== 7) // id가 7인 카테고리를 제외합니다.
 					.map(async (category) => {
@@ -72,20 +72,23 @@ function MainPage() {
 						return { categoryId: category.id, cards };
 					});
 
-				// 모든 비동기 요청을 동시에 처리합니다.
 				const results = await Promise.all(promises);
 
 				const interested: Record<number, CardType[]> = {};
 				const others: Record<number, CardType[]> = {};
+				const largeCarouselData: CardType[] = []; // Initialize data for LargeCarousel
 
 				results.forEach(({ categoryId, cards }) => {
+					// Collect data for LargeCarousel (e.g., top cards from interested categories)
 					if (userInterestedCategories.includes(categoryId)) {
+						largeCarouselData.push(...cards.slice(0, 3)); // Add top 3 cards from each interested category
 						interested[categoryId] = cards;
 					} else {
 						others[categoryId] = cards;
 					}
 				});
 
+				setLargeCarouselCards(largeCarouselData); // Set state for LargeCarousel
 				setInterestedCards(interested);
 				setOtherCards(others);
 			} catch (error) {
@@ -101,6 +104,7 @@ function MainPage() {
 	return (
 		<>
 			<Header />
+			<LargeCarousel cards={largeCarouselCards} />
 			<PageContainer>
 				{isLoading ? (
 					<LoadingMessage>Loading...</LoadingMessage>
