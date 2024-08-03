@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
+import com.woowahanrabbits.battle_people.domain.battle.dto.AwaitingBattleResponseDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
@@ -94,11 +95,10 @@ public class BattleController {
 		try {
 			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
 			User user = principalDetails.getUser();
-			List<?> list = battleService.getAwaitingBattleList(category, page, user);
+			List<AwaitingBattleResponseDto> list = battleService.getAwaitingBattleList(category, page, user);
 			return ResponseEntity.status(HttpStatus.OK)
 				.body(new ApiResponseDto<>("success", "", list));
 		} catch (Exception e) {
-			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(new ApiResponseDto<>("error", "", e.getMessage()));
 		}

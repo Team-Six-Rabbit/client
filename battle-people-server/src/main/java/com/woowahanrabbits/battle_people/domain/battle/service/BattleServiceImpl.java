@@ -24,7 +24,6 @@ import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserReposito
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.BattleOpinionDto;
-import com.woowahanrabbits.battle_people.domain.vote.dto.GetVoteInfoWithUserCountDto;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
@@ -164,28 +163,37 @@ public class BattleServiceImpl implements BattleService {
 	@Override
 	public List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user) {
 		Pageable pageable = PageRequest.of(page, 12);
-		List<GetVoteInfoWithUserCountDto> list = voteInfoRepository.getVoteInfoWithUserCount(user.getId(), pageable)
-			.getContent();
 
+		List<VoteInfo> voteInfos = category == null
+			? voteInfoRepository.findAllByCurrentState(2, pageable).getContent()
+			: voteInfoRepository.findAllByCategoryAndCurrentState(category, 2, pageable).getContent();
 		List<AwaitingBattleResponseDto> returnList = new ArrayList<>();
 
-		for (GetVoteInfoWithUserCountDto getVoteInfoWithUserCountDto : list) {
-			List<VoteOpinion> votes = voteOpinionRepository.findByVoteInfoId(
-				getVoteInfoWithUserCountDto.getId());
+		for (VoteInfo voteInfo : voteInfos) {
+			List<VoteOpinion> votes = voteOpinionRepository.findByVoteInfoId(voteInfo.getId());
 
-			List<BattleOpinionDto> battleOpinionDtos = new ArrayList<>();
+			List<BattleOpinionDto> opinions = new ArrayList<>();
 			for (VoteOpinion voteOpinion : votes) {
-				battleOpinionDtos.add(new BattleOpinionDto(voteOpinion));
+				opinions.add(new BattleOpinionDto(voteOpinion));
 			}
+			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
+			int userCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
+			int maxPeopleCount = battleBoard.getMaxPeopleCount();
+			boolean isVoted = battleApplyUserRepository.existsByBattleBoardIdAndUserId(battleBoard.getId(),
+				user.getId());
 
-			returnList.add(new AwaitingBattleResponseDto(getVoteInfoWithUserCountDto, battleOpinionDtos));
+			AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(voteInfo, opinions,
+				userCount, maxPeopleCount, isVoted);
+
+			returnList.add(awaitingBattleResponseDto);
 		}
 		return returnList;
 	}
 
 	@Override
 	public int applyBattle(BattleApplyDto battleApplyDto, User user) {
-		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId()).orElseThrow();
+		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId())
+			.orElseThrow();
 		if (battleBoard.getOppositeUser().getId() == user.getId()
 			|| battleBoard.getRegistUser().getId() == user.getId()) {
 			//주최자는 참여 신청 X

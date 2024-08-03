@@ -19,5 +19,9 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 	Page<VoteInfo> findByCurrentStateAndCategory(int status, Integer category, Pageable pageable);
 
 	Page<VoteInfo> findByCurrentState(int status, Pageable pageable);
+
+	Page<VoteInfo> findAllByCurrentState(int currentState, Pageable pageable);
+
+	Page<VoteInfo> findAllByCategoryAndCurrentState(Integer category, int currentState, Pageable pageable);
 }
 

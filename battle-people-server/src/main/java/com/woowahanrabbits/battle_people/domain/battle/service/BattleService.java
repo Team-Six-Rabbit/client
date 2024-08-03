@@ -2,6 +2,7 @@ package com.woowahanrabbits.battle_people.domain.battle.service;
 
 import java.util.List;
 
+import com.woowahanrabbits.battle_people.domain.battle.dto.AwaitingBattleResponseDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
@@ -15,7 +16,7 @@ public interface BattleService {
 
 	void acceptOrDeclineBattle(BattleRespondRequest battleRespondRequest, User user);
 
-	List<?> getAwaitingBattleList(Integer category, int page, User user);
+	List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user);
 
 	int applyBattle(BattleApplyDto battleApplyDto, User user);
 

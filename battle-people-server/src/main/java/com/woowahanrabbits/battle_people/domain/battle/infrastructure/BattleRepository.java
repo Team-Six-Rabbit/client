@@ -22,4 +22,5 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
 	List<VoteInfo> findVoteInfosByUserIds(@Param("registUserId") long registUserId,
 		@Param("oppositeUserId") long oppositeUserId);
 
+	BattleBoard findByVoteInfoId(Long id);
 }
