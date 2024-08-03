@@ -111,8 +111,9 @@ public class BattleController {
 		try {
 			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
 			User user = principalDetails.getUser();
-			battleService.applyBattle(battleApplyDto, user);
-			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
+
+			return ResponseEntity.status(HttpStatus.OK)
+				.body(new ApiResponseDto<>("success", "", battleService.applyBattle(battleApplyDto, user)));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(new ApiResponseDto<>("error", "", e.getMessage()));

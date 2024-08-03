@@ -17,6 +17,6 @@ public interface BattleService {
 
 	List<?> getAwaitingBattleList(Integer category, int page, User user);
 
-	void applyBattle(BattleApplyDto battleApplyDto, User user);
+	int applyBattle(BattleApplyDto battleApplyDto, User user);
 
 }

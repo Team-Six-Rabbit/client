@@ -184,7 +184,7 @@ public class BattleServiceImpl implements BattleService {
 	}
 
 	@Override
-	public void applyBattle(BattleApplyDto battleApplyDto, User user) {
+	public int applyBattle(BattleApplyDto battleApplyDto, User user) {
 		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId()).orElseThrow();
 		if (battleBoard.getOppositeUser().getId() == user.getId()
 			|| battleBoard.getRegistUser().getId() == user.getId()) {
@@ -212,5 +212,8 @@ public class BattleServiceImpl implements BattleService {
 			voteInfo.setCurrentState(3);
 			voteInfoRepository.save(voteInfo);
 		}
+
+		//참여 신청한 인원 수 return
+		return battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
 	}
 }
