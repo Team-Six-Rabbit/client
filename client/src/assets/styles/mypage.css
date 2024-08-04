@@ -139,9 +139,9 @@
 	width: 100%;
 }
 
-/* 저장 버튼 스타일 */
+/* Save 버튼 스타일 */
 .save-btn {
-	margin-top: 10px;
+	margin-left: 10px; /* Edit 버튼과의 간격 */
 	padding: 10px 20px;
 	background-color: #1D3D6B;
 	color: #fff;
