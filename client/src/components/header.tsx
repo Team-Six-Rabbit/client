@@ -6,7 +6,11 @@ import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
 import brandIcon from "@/assets/images/Logo.png";
 import { useAuthStore } from "@/stores/userAuthStore";
+<<<<<<< HEAD
 import { authService } from "@/services/userAuthService";
+=======
+import { logout } from "@/services/userAuthService";
+>>>>>>> 1ccc20e (Feat: 마이페이지 구현)
 
 interface DropDownMenuItem {
 	link: string;
