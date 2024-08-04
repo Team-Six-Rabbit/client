@@ -10,14 +10,14 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.woowahanrabbits.battle_people.domain.vote.dto.VoteSubscriber;
+import com.woowahanrabbits.battle_people.domain.vote.dto.VoteMessageSubscriber;
 
 @Configuration
 public class RedisConfig {
 
 	@Bean
-	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-		RedisTemplate<String, Object> template = new RedisTemplate<>();
+	public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, String> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setHashKeySerializer(new StringRedisSerializer());
@@ -27,17 +27,16 @@ public class RedisConfig {
 	}
 
 	@Bean
-	RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
-		MessageListenerAdapter listenerAdapter) {
-
+	public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory,
+		MessageListenerAdapter messageListenerAdapter) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-		container.setConnectionFactory(connectionFactory);
-		container.addMessageListener(listenerAdapter, new ChannelTopic("voteResults"));
+		container.setConnectionFactory(redisConnectionFactory);
+		container.addMessageListener(messageListenerAdapter, new ChannelTopic("live-voteResults"));
 		return container;
 	}
 
 	@Bean
-	MessageListenerAdapter listenerAdapter(VoteSubscriber subscriber) {
-		return new MessageListenerAdapter(subscriber, "handleMessage");
+	public MessageListenerAdapter messageListenerAdapter(VoteMessageSubscriber voteMessageSubscriber) {
+		return new MessageListenerAdapter(voteMessageSubscriber);
 	}
 }
