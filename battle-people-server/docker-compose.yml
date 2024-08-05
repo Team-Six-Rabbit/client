@@ -33,14 +33,14 @@ services:
   #   depends_on:
   #     - kurento
 
-  backend:
-    image: i11a706.p.ssafy.io:5000/backend:${TAG:-develop-server}
-    container_name: backend
-    restart: on-failure
-    depends_on:
-      - mysql
-    ports:
-      - "8080:8080" # backend 서비스가 사용하는 포트
+  #  backend:
+  #    image: i11a706.p.ssafy.io:5000/backend:${TAG:-develop-server}
+  #    container_name: backend
+  #    restart: on-failure
+  #    depends_on:
+  #      - mysql
+  #    ports:
+  #      - "8080:8080" # backend 서비스가 사용하는 포트
 
   mysql:
     image: mysql:8.0.33

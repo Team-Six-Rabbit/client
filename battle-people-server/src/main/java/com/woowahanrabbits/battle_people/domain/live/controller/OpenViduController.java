@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.service.OpenViduService;
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
+import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 
 import io.openvidu.java.client.OpenViduRole;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/openvidu")
 public class OpenViduController {
 	private final OpenViduService openViduService;
+	private final UserService userService;
 
 	@PostMapping("/create-session")
 	public ResponseEntity<ApiResponseDto<String>> createSession(@RequestParam Long battleId) {
@@ -35,11 +39,13 @@ public class OpenViduController {
 
 	@PostMapping("/get-token")
 	public ResponseEntity<ApiResponseDto<String>> getToken(@RequestParam String roomId, @RequestParam String role,
-		@RequestParam Long userId) {
+		@LoginUser User loginUser) {
 		try {
+			System.out.println("User: " + loginUser);
 			OpenViduRole openViduRole = "broadcaster".equals(role) ? OpenViduRole.PUBLISHER : OpenViduRole.SUBSCRIBER;
 			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "", openViduService.getToken(roomId, openViduRole, userId)));
+				.body(new ApiResponseDto<>("success", "",
+					openViduService.getToken(roomId, openViduRole, loginUser.getId())));
 
 		} catch (Exception e) {
 			System.out.println(e);
