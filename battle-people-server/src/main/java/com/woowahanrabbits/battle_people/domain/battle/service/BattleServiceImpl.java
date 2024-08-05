@@ -5,11 +5,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.woowahanrabbits.battle_people.config.AppProperties;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.AwaitingBattleResponseDto;
@@ -38,7 +38,9 @@ public class BattleServiceImpl implements BattleService {
 	private final BattleApplyUserRepository battleApplyUserRepository;
 	private final VoteInfoRepository voteInfoRepository;
 	private final UserRepository userRepository;
-	private final AppProperties appProperties;
+
+	@Value("${min.people.count.value}")
+	private Integer minPeopleCount;
 
 	@Override
 	public void registBattle(BattleInviteRequest battleInviteRequest, User user) {
@@ -219,7 +221,7 @@ public class BattleServiceImpl implements BattleService {
 		battleApplyUserRepository.save(battleApplyUser);
 
 		//최소 인원 충족 체크
-		if (currentPeopleCount > appProperties.getMinPeopleCount()) {
+		if (currentPeopleCount > minPeopleCount) {
 			VoteInfo voteInfo = battleBoard.getVoteInfo();
 			voteInfo.setCurrentState(3);
 			voteInfoRepository.save(voteInfo);
