@@ -34,7 +34,7 @@ services:
   #     - kurento
 
   backend:
-    image: i11a706.p.ssafy.io:5000/backend:${TAG}
+    image: i11a706.p.ssafy.io:5000/backend:${TAG:-develop-server}
     container_name: backend
     restart: on-failure
     depends_on:
