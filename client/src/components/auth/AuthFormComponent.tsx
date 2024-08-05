@@ -65,11 +65,3 @@ export function AuthSubmitBtn({
 		</button>
 	);
 }
-
-AuthInput.defaultProps = {
-	className: "",
-};
-
-AuthSubmitBtn.defaultProps = {
-	className: "",
-};
