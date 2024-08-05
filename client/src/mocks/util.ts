@@ -90,14 +90,14 @@ const generateOpinion = (
 	index,
 	opinion: lorem.generateSentences(1).substring(0, 16),
 	count,
-	percentage: Math.floor((count / totalCount) * 100),
+	percentage: Math.round((count / totalCount) * 100),
 });
 
 function generateOpinions(...counts: number[]): OpinionWithPercentage[] {
 	const totalCount = counts.reduce((sum, count) => sum + count, 0);
 
 	const opinions = counts.map((count, index) =>
-		generateOpinion(index, count, totalCount),
+		generateOpinion(index, totalCount, count),
 	);
 
 	const totalPercentage = opinions.reduce(
@@ -111,7 +111,11 @@ function generateOpinions(...counts: number[]): OpinionWithPercentage[] {
 				curr.percentage > arr[maxIdx].percentage ? idx : maxIdx,
 			0,
 		);
-		opinions[maxIndex].percentage += 100 - totalPercentage;
+
+		opinions[maxIndex].percentage = Math.max(
+			0,
+			opinions[maxIndex].percentage + (100 - totalPercentage),
+		);
 	}
 
 	return opinions;
