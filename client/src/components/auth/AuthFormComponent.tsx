@@ -4,7 +4,7 @@ import { ChangeEventHandler, MouseEventHandler } from "react";
 interface AuthSubmitBtnProps {
 	text: string;
 	onClick: MouseEventHandler;
-	className: string;
+	className?: string;
 }
 
 interface AuthInputProps {
@@ -14,7 +14,7 @@ interface AuthInputProps {
 	placeholder: string;
 	value: string;
 	onChange: ChangeEventHandler;
-	className: string;
+	className?: string;
 }
 
 export function AuthInput({
@@ -24,7 +24,7 @@ export function AuthInput({
 	placeholder,
 	value,
 	onChange,
-	className = "",
+	className,
 }: AuthInputProps) {
 	return (
 		<div className="mb-4">
@@ -50,7 +50,7 @@ export function AuthInput({
 export function AuthSubmitBtn({
 	text,
 	onClick,
-	className = "",
+	className,
 }: AuthSubmitBtnProps) {
 	return (
 		<button

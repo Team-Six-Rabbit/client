@@ -10,7 +10,7 @@ module.exports = {
 		"prettier/prettier",
 		"plugin:prettier/recommended",
 	],
-	ignorePatterns: ['dist', '/*.*'],
+	ignorePatterns: ["dist", "/*.*"],
 	parser: "@typescript-eslint/parser",
 	parserOptions: {
 		ecmaFeatures: {
@@ -25,6 +25,7 @@ module.exports = {
 		"no-shadow": 0,
 		"import/no-extraneous-dependencies": 0,
 		"react/react-in-jsx-scope": 0,
+		"react/require-default-props": "warn",
 		"react/jsx-filename-extension": [1, { extensions: [".tsx", ".jsx"] }],
 		"import/extensions": 0,
 		"@typescript-eslint/no-shadow": 0,
