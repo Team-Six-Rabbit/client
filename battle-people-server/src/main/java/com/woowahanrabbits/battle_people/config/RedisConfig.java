@@ -4,8 +4,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import com.woowahanrabbits.battle_people.domain.live.service.RedisSubscriber;
 
 @Configuration
 public class RedisConfig {
@@ -20,4 +25,22 @@ public class RedisConfig {
 		template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 		return template;
 	}
+
+	@Bean
+	public RedisMessageListenerContainer container(RedisConnectionFactory redisConnectionFactory,
+		MessageListenerAdapter messageListener) {
+		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+		container.setConnectionFactory(redisConnectionFactory);
+		//라이브 입장하면 battleBoardId에 대한 addMessageListener추가
+		//live:{battleBoardId}:chat
+		//live:{battleBoardId}:request
+		container.addMessageListener(messageListener, new ChannelTopic("live:1:chat"));
+		return container;
+	}
+
+	@Bean
+	public MessageListenerAdapter messageListener(RedisSubscriber redisSubscriber) {
+		return new MessageListenerAdapter(redisSubscriber);
+	}
+
 }
