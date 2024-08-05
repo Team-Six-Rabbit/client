@@ -22,7 +22,7 @@ export function ProfileBtn() {
 		try {
 			await logout();
 		} catch (err) {
-			console.error("로그아웃 실패");
+			// console.error("로그아웃 실패");
 		} finally {
 			navigator("/");
 		}
@@ -34,7 +34,7 @@ export function ProfileBtn() {
 	];
 
 	const dropdownAfterLogin: DropDownMenuItem[] = [
-		{ link: "/my-page", text: "마이페이지" },
+		{ link: "/profile", text: "마이페이지" },
 		{ link: "/logout", text: "로그아웃", onClick: doLogout },
 	];
 
@@ -124,9 +124,9 @@ function RightHeader() {
 			<button
 				type="button"
 				className="size-8 btn hover:scale-105"
-				onClick={() => {
-					alert("Notification clicked"); // TODO: 알림 버튼 클릭시 수행 기능
-				}}
+				// onClick={() => {
+				// 	alert("Notification clicked"); // TODO: 알림 버튼 클릭시 수행 기능
+				// }}
 			>
 				<img className="size-8" src={notificationIcon} alt="알림 버튼" />
 			</button>

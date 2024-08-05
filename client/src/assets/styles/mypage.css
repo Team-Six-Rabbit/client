@@ -5,6 +5,22 @@
 	flex-direction: column;
 	align-items: center;
 	padding: 20px;
+
+	width: 90%; /* 너비를 더 넓게 설정 */
+	max-width: 1200px; /* 최대 너비 설정 */
+	margin-left: auto; /* 가운데 정렬 */
+	margin-right: auto; /* 가운데 정렬 */
+	margin-bottom: 70px; /* 상단과 동일한 패딩 */
+}
+
+
+.mypage-header,
+.mypage-nav,
+.mypage-content {
+	width: 100%; /* container의 폭과 일치 */
+	/* max-width: 1200px; container의 최대 폭과 일치 */
+	margin-left: auto; /* 가운데 정렬 */
+	margin-right: auto; /* 가운데 정렬 */
 }
 
 .mypage-header {
@@ -12,7 +28,7 @@
 	width: 100%;
 	max-width: 800px;
 	margin-bottom: 20px;
-	justify-content: center;
+	justify-content: space-between;
 }
 
 /* 왼쪽 섹션 (프로필 + 티어) */
@@ -28,6 +44,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
+	width: 100%; /* 너비를 늘림 */
 }
 
 /* 프로필 섹션 */
@@ -39,6 +56,12 @@
 	align-items: center;
 }
 
+.profile-img-container {
+	position: relative;
+	width: 150px;
+	height: 150px;
+}
+
 /* 프로필 이미지 스타일 */
 .profile-img {
 	width: 150px;
@@ -46,6 +69,20 @@
 	border-radius: 50%;
 	border: 4px solid #1D3D6B; /* 테두리 색상 */
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-img.darken {
+	filter: brightness(0.5);
+}
+
+.edit-icon {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 50px;
+	height: 50px;
+	opacity: 1;
 }
 
 /* 티어 섹션 */
@@ -82,7 +119,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	width: 250px;
+	width: 100%; /* 너비를 늘림 */
 }
 
 /* 인적사항 레이블 스타일 */
@@ -103,9 +140,9 @@
 	width: 100%;
 }
 
-/* 저장 버튼 스타일 */
+/* Save 버튼 스타일 */
 .save-btn {
-	margin-top: 10px;
+	margin-left: 10px; /* Edit 버튼과의 간격 */
 	padding: 10px 20px;
 	background-color: #1D3D6B;
 	color: #fff;
@@ -114,6 +151,44 @@
 	cursor: pointer;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	width: 100%;
+}
+
+/* Edit 버튼 스타일 */
+.edit-btn {
+	padding: 10px 20px;
+	background-color: #e0e0e0; /* 버튼 색상 */
+	color: #1D3D6B; /* 텍스트 색상 */
+	border: 2px solid #1D3D6B; /* 테두리 색상 */
+	border-radius: 5px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	width: 100%;
+}
+
+/* 중복 체크 버튼 스타일 */
+.check-btn {
+	margin-left: 5px;
+	padding: 8px 12px;
+	background-color: #1d3d6b;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* input과 버튼을 포함하는 div 스타일 */
+.input-with-button {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+/* 버튼 그룹 스타일 */
+.button-group {
+	display: flex;
+	align-items: center;
+	width: 100%; /* profile-info와 동일한 너비 */
 }
 
 /* 내비게이션 스타일 */
@@ -146,7 +221,7 @@
 
 /* 마이페이지 콘텐츠 스타일 */
 .mypage-content {
-	width: 80%;
+	width: 100%;
 	max-width: 800px;
 	border: 2px solid #1D3D6B; /* 테두리 색상 */
 	border-radius: 5px;

@@ -43,7 +43,7 @@ const router = createBrowserRouter([
 		element: <LivePage />,
 	},
 	{
-		path: "/my-page",
+		path: "/profile",
 		element: <MyPage />,
 		children: [
 			{
