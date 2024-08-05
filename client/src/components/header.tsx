@@ -75,7 +75,7 @@ function Logo() {
 	return (
 		<Link
 			to="/"
-			className="flex items-center no-underline hover:text-white text-white text-2xl font-[BMHANNA\_11yrs] space-x-2 mr-8 lg:mr-16"
+			className="flex items-center no-underline hover:text-white text-white text-2xl font-[BMHANNA\\_11yrs] space-x-2 mr-8 lg:mr-16 whitespace-nowrap"
 		>
 			<img className="h-[35px]" src={brandIcon} alt="로고" />
 			<span>배틀의 민족</span>
@@ -87,7 +87,7 @@ function LeftHeader() {
 	return (
 		<>
 			<Logo />
-			<div className="flex space-x-4 lg:space-x-8 text-white text-lg">
+			<div className="flex space-x-4 lg:space-x-8 text-white text-lg whitespace-nowrap ml-4 sm:ml-8">
 				<Link className="text-white hover:text-gray-400" to="/firework">
 					불구경
 				</Link>
@@ -104,7 +104,7 @@ function LeftHeader() {
 
 function SearchBar() {
 	return (
-		<div className="text-base relative w-full max-w-[300px] lg:max-w-96 h-[35px] flex items-center bg-[#fff] border-[2px] border-solid border-[#fff] rounded-[10px]">
+		<div className="text-base relative w-full max-w-[300px] lg:max-w-96 h-[35px] flex items-center bg-[#fff] border-[2px] border-solid border-[#fff] rounded-[10px] mt-4 sm:mt-0">
 			<input
 				type="text"
 				className="w-full h-full pl-4 pr-10 bg-transparent border-none outline-none"
@@ -121,9 +121,9 @@ function SearchBar() {
 
 function RightHeader() {
 	return (
-		<div className="flex items-center justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
+		<div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
 			<SearchBar />
-			<div className="flex items-center justify-center space-x-4 h-[32px] mt-[4px]">
+			<div className="flex items-center justify-center space-x-4 mt-4 sm:mt-1">
 				<Link
 					to="/notification"
 					className="block text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
@@ -141,8 +141,8 @@ function RightHeader() {
 
 function Header() {
 	return (
-		<div className="fixed top-0 left-0 w-full h-[68px] bg-[#000] overflow-hidden z-50">
-			<div className="flex items-center h-full px-4 lg:px-8">
+		<div className="fixed top-0 left-0 w-full h-auto sm:h-[68px] bg-[#000] overflow-hidden z-50 overflow-x-auto">
+			<div className="flex flex-col sm:flex-row items-center h-full px-4 lg:px-8">
 				<LeftHeader />
 				<RightHeader />
 			</div>
