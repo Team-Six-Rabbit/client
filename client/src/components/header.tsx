@@ -43,9 +43,9 @@ export function ProfileBtn() {
 	const menuItems = isLogin ? dropdownAfterLogin : dropdownBeforeLogin;
 
 	return (
-		<Menu as="div" className="size-8 relative inline-block text-left">
-			<MenuButton className="size-8 inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105">
-				<img className="size-8" src={profileIcon} alt="프로필 이미지" />
+		<Menu as="div" className="relative inline-block text-left">
+			<MenuButton className="inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105">
+				<img className="w-8 h-8" src={profileIcon} alt="프로필 이미지" />
 			</MenuButton>
 
 			<MenuItems
@@ -111,7 +111,7 @@ function SearchBar() {
 				placeholder="검색"
 			/>
 			<img
-				className="absolute right-2 size-5"
+				className="absolute right-2 w-5 h-5"
 				src={searchIcon}
 				alt="검색 아이콘"
 			/>
@@ -123,16 +123,18 @@ function RightHeader() {
 	return (
 		<div className="flex items-center justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
 			<SearchBar />
-			<Link
-				to="/notification"
-				className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-			>
-				<button type="button" className="size-8 btn hover:scale-105">
-					<img className="size-8" src={notificationIcon} alt="알림 버튼" />
-				</button>
-			</Link>
+			<div className="flex items-center justify-center space-x-4 h-[32px] mt-[4px]">
+				<Link
+					to="/notification"
+					className="block text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+				>
+					<button type="button" className="btn hover:scale-105">
+						<img className="w-8 h-8" src={notificationIcon} alt="알림 버튼" />
+					</button>
+				</Link>
 
-			<ProfileBtn />
+				<ProfileBtn />
+			</div>
 		</div>
 	);
 }
@@ -140,7 +142,7 @@ function RightHeader() {
 function Header() {
 	return (
 		<div className="fixed top-0 left-0 w-full h-[68px] bg-[#000] overflow-hidden z-50">
-			<div className="flex items-center h-full px-4 lg:px-8 hover:none">
+			<div className="flex items-center h-full px-4 lg:px-8">
 				<LeftHeader />
 				<RightHeader />
 			</div>
