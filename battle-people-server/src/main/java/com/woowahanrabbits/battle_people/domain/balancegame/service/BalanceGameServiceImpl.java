@@ -58,8 +58,8 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	public List<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user) {
 		Pageable pageable = PageRequest.of(page, 12);
 		List<VoteInfo> list = (category == null)
-			? voteInfoRepository.findByCurrentState(status, pageable).getContent()
-			: voteInfoRepository.findByCurrentStateAndCategory(status, category, pageable).getContent();
+			? voteInfoRepository.findAllByCurrentState(status, pageable).getContent()
+			: voteInfoRepository.findAllByCategoryAndCurrentState(category, status, pageable).getContent();
 
 		List<BalanceGameResponse> returnList = new ArrayList<>();
 

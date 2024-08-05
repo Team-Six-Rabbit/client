@@ -3,8 +3,8 @@ package com.woowahanrabbits.battle_people.domain.battle.dto;
 import java.util.Date;
 import java.util.List;
 
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.dto.BattleOpinionDto;
-import com.woowahanrabbits.battle_people.domain.vote.dto.GetVoteInfoWithUserCountDto;
 
 import lombok.Getter;
 
@@ -18,18 +18,18 @@ public class AwaitingBattleResponseDto {
 	private int category;
 	private int maxPeopleCount;
 	private int userCount;
-	private boolean isUserApplied;
+	private boolean isVoted;
 
-	public AwaitingBattleResponseDto(GetVoteInfoWithUserCountDto getVoteInfoWithUserCountDto,
-		List<BattleOpinionDto> battleOpinionDtos) {
-		this.id = getVoteInfoWithUserCountDto.getId();
-		this.title = getVoteInfoWithUserCountDto.getTitle();
+	public AwaitingBattleResponseDto(VoteInfo voteInfo,
+		List<BattleOpinionDto> battleOpinionDtos, int userCount, int maxPeopleCount, boolean isVoted) {
+		this.id = voteInfo.getId();
+		this.title = voteInfo.getTitle();
 		this.opinionDtos = battleOpinionDtos;
-		this.startDate = getVoteInfoWithUserCountDto.getStartDate();
-		this.endDate = getVoteInfoWithUserCountDto.getEndDate();
-		this.category = getVoteInfoWithUserCountDto.getCategory();
-		this.maxPeopleCount = getVoteInfoWithUserCountDto.getMaxPeopleCount();
-		this.userCount = getVoteInfoWithUserCountDto.getUserCount();
-		this.isUserApplied = getVoteInfoWithUserCountDto.isUserApplied();
+		this.userCount = userCount;
+		this.maxPeopleCount = maxPeopleCount;
+		this.isVoted = isVoted;
+		this.startDate = voteInfo.getStartDate();
+		this.endDate = voteInfo.getEndDate();
+		this.category = voteInfo.getCategory();
 	}
 }

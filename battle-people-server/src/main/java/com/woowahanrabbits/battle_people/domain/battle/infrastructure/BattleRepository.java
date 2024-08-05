@@ -17,9 +17,13 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
 
 	Page<BattleBoard> findByOppositeUserIdAndVoteInfoCurrentState(long id, int currentState, Pageable pageable);
 
+	Page<BattleBoard> findById(Long id, Pageable pageable);
+
 	@Query("SELECT v FROM BattleBoard b JOIN b.voteInfo v "
 		+ "WHERE b.registUser.id = :registUserId OR b.oppositeUser.id = :oppositeUserId")
 	List<VoteInfo> findVoteInfosByUserIds(@Param("registUserId") long registUserId,
 		@Param("oppositeUserId") long oppositeUserId);
+
+	BattleBoard findByVoteInfoId(Long id);
 
 }
