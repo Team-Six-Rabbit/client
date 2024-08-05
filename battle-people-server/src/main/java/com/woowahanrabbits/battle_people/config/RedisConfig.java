@@ -39,4 +39,5 @@ public class RedisConfig {
 	public MessageListenerAdapter messageListenerAdapter(VoteMessageSubscriber voteMessageSubscriber) {
 		return new MessageListenerAdapter(voteMessageSubscriber);
 	}
+
 }
