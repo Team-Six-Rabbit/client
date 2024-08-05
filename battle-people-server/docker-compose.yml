@@ -1,31 +1,68 @@
-version: '3.1'
-
 services:
-  openvidu-server:
-    image: openvidu/openvidu-server-kms:latest
-    environment:
-      - OPENVIDU_SECRET=woowahanrabbits
-      - OPENVIDU_PUBLICURL=https://localhost
-    ports:
-      - "4443:4443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  coturn:
-    image: instrumentisto/coturn
-    environment:
-      - TZ=UTC
-    ports:
-      - "3478:3478"
-      - "3478:3478/udp"
-    command: [ "-n", "--log-file=stdout", "--min-port=49152", "--max-port=65535", "--lt-cred-mech", "--realm=localhost", "--user=myuser:kevinhomealone" ]
-
   nginx:
     image: nginx:latest
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl/certificate.crt:/etc/nginx/ssl/certificate.crt
-      - ./ssl/private.key:/etc/nginx/ssl/private.key
+    container_name: nginx
     ports:
       - "80:80"
-      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+  # kurento:
+  #   image: kurento/kurento-media-server:latest
+  #   container_name: kurento
+  #   restart: always
+  #   environment:
+  #     - KMS_MIN_PORT=40000
+  #     - KMS_MAX_PORT=57000
+
+  # openvidu:
+  #   image: openvidu/openvidu-server-kms:latest
+  #   container_name: openvidu
+  #   restart: always
+  #   environment:
+  #     - OPENVIDU_SECRET=DEVELOPONLYSECRET
+  #     - OPENVIDU_CDR=true
+  #     - OPENVIDU_RECORDING=true
+  #     - OPENVIDU_RECORDING_PATH=/opt/openvidu/recordings
+  #     - KMS_URI=ws://kurento:8888/kurento
+  #     - OPENVIDU_STREAMS_ALLOW_TRANSCODING=false # SFU = false, MCU = true
+  #   ports:
+  #     - "4443:4443"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   depends_on:
+  #     - kurento
+
+  backend:
+    image: i11a706.p.ssafy.io:5000/backend:${TAG}
+    container_name: backend
+    restart: on-failure
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080" # backend 서비스가 사용하는 포트
+
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql
+    restart: on-failure
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: on-failure
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql-data:
