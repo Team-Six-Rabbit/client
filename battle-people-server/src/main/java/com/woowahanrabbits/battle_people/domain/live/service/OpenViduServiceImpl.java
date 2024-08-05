@@ -117,22 +117,23 @@ public class OpenViduServiceImpl implements OpenViduService {
 			.type(ConnectionType.WEBRTC)
 			.role(role);
 
-		if (role == OpenViduRole.PUBLISHER) {
-			connectionPropertiesBuilder.record(true); // 발언자 스트림만 녹화 설정
-			try {
-				Recording recording = startRecording(session.getSessionId());
-				logger.info("[Recording Success] room: " + session.getSessionId() + "userId: " + userId);
-				if (recording != null) {
-					redisTemplate.opsForValue().set("recording:" + userId, recording.getId(), 24, TimeUnit.HOURS);
-				}
-			} catch (Exception e) {
-				logger.info("[Recording Fail] room: " + session.getSessionId() + "userId: " + userId);
-				e.printStackTrace();
-			}
-
-		}
-
-		return session.createConnection(connectionPropertiesBuilder.build()).getToken();
+		// if (role == OpenViduRole.PUBLISHER) {
+		// 	connectionPropertiesBuilder.record(true); // 발언자 스트림만 녹화 설정
+		// 	try {
+		// 		Recording recording = startRecording(session.getSessionId());
+		// 		logger.info("[Recording Success] room: " + session.getSessionId() + "userId: " + userId);
+		// 		if (recording != null) {
+		// 			redisTemplate.opsForValue().set("recording:" + userId, recording.getId(), 24, TimeUnit.HOURS);
+		// 		}
+		// 	} catch (Exception e) {
+		// 		logger.info("[Recording Fail] room: " + session.getSessionId() + "userId: " + userId);
+		// 		e.printStackTrace();
+		// 	}
+		//
+		// }
+		String token = session.createConnection(connectionPropertiesBuilder.build()).getToken();
+		System.out.println("[User Token] :" + token + ", userid: " + userId);
+		return token;
 
 	}
 
