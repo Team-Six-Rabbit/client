@@ -58,7 +58,7 @@ export const authService = {
 	// 로그아웃 함수
 	logout: async (): Promise<void> => {
 		try {
-			await axiosInstance.post("/auth/logout");
+			await axiosInstance.delete("/auth/logout");
 			useAuthStore.getState().logout();
 		} catch (error) {
 			console.error("Logout Error: ", error);
