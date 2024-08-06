@@ -1,6 +1,6 @@
-import { MouseEvent, MouseEventHandler } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { MouseEventHandler } from "react";
 import profileIcon from "@/assets/images/profile.png";
 import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
@@ -18,13 +18,11 @@ export function ProfileBtn() {
 	const { isLogin } = useAuthStore();
 	const navigator = useNavigate();
 
-	const doLogout = async (event: MouseEvent) => {
-		event.preventDefault();
-
+	const doLogout = async () => {
 		try {
 			await authService.logout();
 		} catch (err) {
-			console.error("로그아웃 실패");
+			// console.error("로그아웃 실패");
 		} finally {
 			navigator("/");
 		}
@@ -36,16 +34,16 @@ export function ProfileBtn() {
 	];
 
 	const dropdownAfterLogin: DropDownMenuItem[] = [
-		{ link: "/my-page", text: "마이페이지" },
-		{ link: "/", text: "로그아웃", onClick: doLogout },
+		{ link: "/profile", text: "마이페이지" },
+		{ link: "/logout", text: "로그아웃", onClick: doLogout },
 	];
 
 	const menuItems = isLogin ? dropdownAfterLogin : dropdownBeforeLogin;
 
 	return (
-		<Menu as="div" className="relative inline-block text-left">
-			<MenuButton className="inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105">
-				<img className="w-8 h-8" src={profileIcon} alt="프로필 이미지" />
+		<Menu as="div" className="size-8 relative inline-block text-left">
+			<MenuButton className="size-8 inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105">
+				<img className="size-8" src={profileIcon} alt="프로필 이미지" />
 			</MenuButton>
 
 			<MenuItems
@@ -75,7 +73,7 @@ function Logo() {
 	return (
 		<Link
 			to="/"
-			className="flex items-center no-underline hover:text-white text-white text-2xl font-[BMHANNA\\_11yrs] space-x-2 mr-8 lg:mr-16 whitespace-nowrap"
+			className="flex items-center no-underline hover:text-white text-white text-2xl font-[BMHANNA\_11yrs] space-x-2 mr-8 lg:mr-16"
 		>
 			<img className="h-[35px]" src={brandIcon} alt="로고" />
 			<span>배틀의 민족</span>
@@ -87,7 +85,7 @@ function LeftHeader() {
 	return (
 		<>
 			<Logo />
-			<div className="flex space-x-4 lg:space-x-8 text-white text-lg whitespace-nowrap ml-4 sm:ml-8">
+			<div className="flex space-x-4 lg:space-x-8 text-white text-lg">
 				<Link className="text-white hover:text-gray-400" to="/firework">
 					불구경
 				</Link>
@@ -104,14 +102,14 @@ function LeftHeader() {
 
 function SearchBar() {
 	return (
-		<div className="text-base relative w-full max-w-[300px] lg:max-w-96 h-[35px] flex items-center bg-[#fff] border-[2px] border-solid border-[#fff] rounded-[10px] mt-4 sm:mt-0">
+		<div className="text-base relative w-full max-w-[300px] lg:max-w-96 h-[35px] flex items-center bg-[#fff] border-[2px] border-solid border-[#fff] rounded-[10px]">
 			<input
 				type="text"
 				className="w-full h-full pl-4 pr-10 bg-transparent border-none outline-none"
 				placeholder="검색"
 			/>
 			<img
-				className="absolute right-2 w-5 h-5"
+				className="absolute right-2 size-5"
 				src={searchIcon}
 				alt="검색 아이콘"
 			/>
@@ -121,28 +119,26 @@ function SearchBar() {
 
 function RightHeader() {
 	return (
-		<div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
+		<div className="flex items-center justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
 			<SearchBar />
-			<div className="flex items-center justify-center space-x-4 mt-4 sm:mt-1">
-				<Link
-					to="/notification"
-					className="block text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-				>
-					<button type="button" className="btn hover:scale-105">
-						<img className="w-8 h-8" src={notificationIcon} alt="알림 버튼" />
-					</button>
-				</Link>
-
-				<ProfileBtn />
-			</div>
+			<button
+				type="button"
+				className="size-8 btn hover:scale-105"
+				// onClick={() => {
+				// 	alert("Notification clicked"); // TODO: 알림 버튼 클릭시 수행 기능
+				// }}
+			>
+				<img className="size-8" src={notificationIcon} alt="알림 버튼" />
+			</button>
+			<ProfileBtn />
 		</div>
 	);
 }
 
 function Header() {
 	return (
-		<div className="fixed top-0 left-0 w-full h-auto sm:h-[68px] bg-[#000] overflow-hidden z-50 overflow-x-auto">
-			<div className="flex flex-col sm:flex-row items-center h-full px-4 lg:px-8">
+		<div className="fixed top-0 left-0 w-full h-[68px] bg-[#000] overflow-hidden z-50">
+			<div className="flex items-center h-full px-4 lg:px-8 hover:none">
 				<LeftHeader />
 				<RightHeader />
 			</div>

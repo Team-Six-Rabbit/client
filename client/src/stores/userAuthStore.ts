@@ -1,8 +1,8 @@
 // userAuthStore.ts
 
-import { DetailUserInfo } from "@/types/user";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { DetailUserInfo } from "@/types/user";
 
 interface AuthState {
 	isLogin: boolean;
