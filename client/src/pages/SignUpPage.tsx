@@ -139,6 +139,8 @@ function SignUpPage() {
 		}
 
 		try {
+			// TODO: 비밀번호 규칙 검사
+			await authService.join(formValues);
 			navigator("/");
 		} catch (err) {
 			// console.error("회원가입 실패");

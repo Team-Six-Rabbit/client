@@ -2,7 +2,6 @@ import axiosInstance from "@/services/axiosInstance";
 import { JoinRequest, LoginRequest, ApiResponse } from "@/types/api";
 import { BasicUserInfo, DetailUserInfo } from "@/types/user";
 import { useAuthStore } from "@/stores/userAuthStore";
-// import { generateBasicUser } from "@/mocks/util";
 
 export const authService = {
 	// 로그인 함수
