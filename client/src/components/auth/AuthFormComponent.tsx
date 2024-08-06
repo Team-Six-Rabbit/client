@@ -69,8 +69,6 @@ export function AuthSubmitBtn({
 		</button>
 	);
 }
-<<<<<<< HEAD
-=======
 
 AuthInput.defaultProps = {
 	className: "",
@@ -80,4 +78,3 @@ AuthInput.defaultProps = {
 AuthSubmitBtn.defaultProps = {
 	className: "",
 };
->>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)

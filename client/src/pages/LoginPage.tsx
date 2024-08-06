@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
 import GoogleLoginButton from "@/components/auth/googleLoginBtn";
 import { LoginRequest } from "@/types/api";
-import { login } from "@/services/userAuthService";
+import { authService } from "@/services/userAuthService";
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
 
 interface CustomCSSProperties extends React.CSSProperties {
@@ -58,7 +58,7 @@ function LoginPage() {
 		}
 
 		try {
-			await login(formValues);
+			await authService.login(formValues);
 			navigator("/");
 		} catch (err) {
 			// console.error("로그인 실패");

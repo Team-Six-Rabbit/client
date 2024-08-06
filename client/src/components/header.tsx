@@ -6,7 +6,7 @@ import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
 import brandIcon from "@/assets/images/Logo.png";
 import { useAuthStore } from "@/stores/userAuthStore";
-import { logout } from "@/services/userAuthService";
+import { authService } from "@/services/userAuthService";
 
 interface DropDownMenuItem {
 	link: string;
@@ -20,7 +20,7 @@ export function ProfileBtn() {
 
 	const doLogout = async () => {
 		try {
-			await logout();
+			await authService.logout();
 		} catch (err) {
 			// console.error("로그아웃 실패");
 		} finally {
