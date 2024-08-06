@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 export const BalanceGameCardWrapper = styled.div`
 	border: 4px solid #000000;
@@ -59,6 +59,15 @@ export const OptionButton = styled.div<{ bgColor: string }>`
 	}
 `;
 
+export const fillAnimation = keyframes`
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+`;
+
 export const OptionText = styled.div<{
 	borderColor: string;
 	bgColor: string;
@@ -66,11 +75,6 @@ export const OptionText = styled.div<{
 }>`
 	flex-grow: 1;
 	padding: 8px;
-	background: linear-gradient(
-		to right,
-		${(props) => props.bgColor} ${(props) => props.width}%,
-		transparent ${(props) => props.width}%
-	);
 	border: 3px solid ${(props) => props.borderColor};
 	border-radius: 14px;
 	color: #000000;
@@ -82,13 +86,21 @@ export const OptionText = styled.div<{
 	justify-content: center;
 	position: relative;
 	z-index: 1;
+	background: linear-gradient(
+		to right,
+		${(props) => props.bgColor} ${(props) => props.width}%,
+		transparent ${(props) => props.width}%
+	);
+	background-size: 0 100%;
+	background-repeat: no-repeat;
+	animation: ${fillAnimation} 1s forwards;
 `;
 
 export const PercentageLabel = styled.div<{ color: string }>`
 	font-size: 1.3rem;
 	font-weight: bold;
 	color: ${(props) => props.color};
-	margin-right: 8px;
+	margin-right: 15px;
 	width: 50px;
 	text-align: right;
 `;

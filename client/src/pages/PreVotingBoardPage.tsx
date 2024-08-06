@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
 import Ticket from "@/components/Board/fanning/Ticket";
-import WindIcon from "@/assets/images/Wind.png";
+import WindIcon from "@/assets/images/Wind.gif";
 import PlusButton from "@/components/Board/fanning/PlusButton";
 import { TicketType } from "@/types/Board/ticket";
 import { categories } from "@/constant/boardCategory";

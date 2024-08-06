@@ -8,14 +8,30 @@ import {
 	Question,
 } from "@/assets/styles/balanceGameStyle";
 import { balanceGameService } from "@/services/balanceGameService";
+import fireExtinguisher from "@/assets/images/fireExtinguisher.gif";
+import fire from "@/assets/images/fire.gif";
+import styled from "styled-components";
 
 interface BalanceGameCardProps {
 	data: BalanceGameCardType;
 	onVote: (id: number, option: number) => void;
 	disabled: boolean;
+	isEnded: boolean; // Add a prop to indicate if the game is ended
 }
 
-function BalanceGameCard({ data, onVote, disabled }: BalanceGameCardProps) {
+// Styled component for the like GIF
+const LikeImage = styled.img`
+	width: 50px; // Adjust size as needed
+	height: 50px; // Adjust size as needed
+	margin-right: 8px; // Space between the GIF and the title
+`;
+
+function BalanceGameCard({
+	data,
+	onVote,
+	disabled,
+	isEnded,
+}: BalanceGameCardProps) {
 	const [hasVoted, setHasVoted] = useState(
 		data.userVote !== null && data.userVote !== undefined,
 	);
@@ -53,7 +69,11 @@ function BalanceGameCard({ data, onVote, disabled }: BalanceGameCardProps) {
 	return (
 		<>
 			<BalanceGameCardWrapper>
-				<Question onClick={handleCardClick}>{data.title}</Question>
+				<Question onClick={handleCardClick}>
+					{isEnded && <LikeImage src={fireExtinguisher} alt="Ended" />}
+					{!isEnded && <LikeImage src={fire} alt="Ing" />}
+					{data.title}
+				</Question>
 				{hasVoted || disabled ? (
 					<EndedBalanceGameCard
 						opinions={data.opinions}

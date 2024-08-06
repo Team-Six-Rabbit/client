@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import fireIcon from "@/assets/images/Fire.png";
+import fireIcon from "@/assets/images/fire.gif";
 import NintendoCarousel from "@/components/Board/firework/NintendoCarousel";
 import RadioButtonGroup from "@/components/Board/firework/RadioButtonGroup";
 import BoardCategory from "@/components/Board/BoardCategory";
@@ -36,7 +36,8 @@ const HeaderTitle = styled.h1`
 `;
 
 const HeaderIcon = styled.img`
-	height: 3.5rem;
+	height: 4rem;
+	width: 4rem;
 `;
 
 const HeaderCategoryContainer = styled.div`
@@ -76,7 +77,7 @@ function BoardHeader({
 	return (
 		<BoardHeaderContainer>
 			<HeaderTop>
-				<div className="flex items-center space-x-3 flex-shrink-0">
+				<div className="flex items-center space-x-1 flex-shrink-0">
 					<HeaderTitle>{boardName}</HeaderTitle>
 					<HeaderIcon src={boardIcon} alt="Board Icon" />
 				</div>
