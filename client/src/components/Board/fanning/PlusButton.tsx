@@ -1,9 +1,14 @@
 import styled from "styled-components";
 
-const Button = styled.button`
+interface ButtonProps {
+	strokeColor?: string;
+	fillColor?: string;
+}
+
+const Button = styled.button<ButtonProps>`
 	position: fixed;
 	bottom: 40px;
-	right: 50px;
+	right: 30px;
 	background: none;
 	border: none;
 	cursor: pointer;
@@ -20,20 +25,25 @@ const Button = styled.button`
 
 	&:hover .plus-button-svg {
 		transform: rotate(90deg);
-		stroke: #1d3d6b;
-		fill: #fbca27;
+		stroke: ${(props) => props.strokeColor};
+		fill: ${(props) => props.fillColor};
 	}
 
 	&:active .plus-button-svg {
-		stroke: #1d3d6b;
-		fill: #fbca27;
+		stroke: ${(props) => props.strokeColor};
+		fill: ${(props) => props.fillColor};
 		transition-duration: 0s;
 	}
 `;
 
-function PlusButton() {
+function PlusButton({ strokeColor, fillColor }: ButtonProps) {
 	return (
-		<Button title="새로운 토론 주제 작성" className="plus-button">
+		<Button
+			title="새로운 토론 주제 작성"
+			className="plus-button"
+			strokeColor={strokeColor}
+			fillColor={fillColor}
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 24 24"
@@ -49,5 +59,11 @@ function PlusButton() {
 		</Button>
 	);
 }
+
+// Default Props Declaration
+PlusButton.defaultProps = {
+	strokeColor: "#1d3d6b",
+	fillColor: "#fbca27",
+};
 
 export default PlusButton;

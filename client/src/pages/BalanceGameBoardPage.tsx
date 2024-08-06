@@ -9,7 +9,7 @@ import { balanceGameService } from "@/services/balanceGameService";
 import { BalanceGameCardType } from "@/types/Board/balancegameCard";
 import styled from "styled-components";
 import { ApiResponse, BalanceGameResponse } from "@/types/api";
-import bonfireIcon from "@/assets/images/bonfire.png";
+import bonfireIcon from "@/assets/images/bonfire.gif";
 
 const BalanceGameBoardContainer = styled.div`
 	display: flex;
@@ -161,19 +161,23 @@ function BalanceGameBoardPage() {
 						<div>Loading...</div>
 					) : (
 						<BoardCardContainer>
-							{filteredCards.map((card) => (
-								<BalanceGameCard
-									key={card.id}
-									data={card}
-									onVote={handleVote}
-									disabled={selectedStatus === "ended"}
-								/>
-							))}
+							{filteredCards.map((card) => {
+								const isEnded = card.currentState === 7; // Check currentState to determine if the game is ended
+								return (
+									<BalanceGameCard
+										key={card.id}
+										data={card}
+										onVote={handleVote}
+										disabled={selectedStatus === "ended"}
+										isEnded={isEnded}
+									/>
+								);
+							})}
 						</BoardCardContainer>
 					)}
 				</BalanceGameBoardContainer>
 			</div>
-			<PlusButton />
+			<PlusButton strokeColor="#000000" fillColor="#F66C23" />
 		</div>
 	);
 }
