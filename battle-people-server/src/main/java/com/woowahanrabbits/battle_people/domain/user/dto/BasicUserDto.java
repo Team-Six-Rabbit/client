@@ -2,14 +2,22 @@ package com.woowahanrabbits.battle_people.domain.user.dto;
 
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class BasicUserDto {
-	private final Long id;
-	private final String nickname;
-	private final String imgUrl;
-	private final Integer rating;
+	private Long id;
+	private String nickname;
+	private String imgUrl;
+	private Integer rating;
 
 	public BasicUserDto(User user) {
 		this.id = user.getId();

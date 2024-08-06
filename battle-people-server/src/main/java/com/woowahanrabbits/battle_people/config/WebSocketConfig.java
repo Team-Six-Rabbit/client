@@ -15,7 +15,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/battle-people/live-chat")
+		registry.addEndpoint("/live-chat")
 			.setAllowedOriginPatterns("*");
 
 	}

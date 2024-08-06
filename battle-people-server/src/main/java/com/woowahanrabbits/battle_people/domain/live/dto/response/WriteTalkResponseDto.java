@@ -12,13 +12,9 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WriteChatResponseDto {
-	private String userName;
-	private String message;
+public class WriteTalkResponseDto {
+	private Long userId;
+	private String userNickname;
 	@Setter
-	private Integer userVote;
-
-	// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
-	// private Date regDate;
-
+	private int userVote;
 }
