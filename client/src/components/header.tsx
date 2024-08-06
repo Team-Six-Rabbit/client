@@ -6,15 +6,7 @@ import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
 import brandIcon from "@/assets/images/Logo.png";
 import { useAuthStore } from "@/stores/userAuthStore";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { authService } from "@/services/userAuthService";
-=======
-import { logout } from "@/services/userAuthService";
->>>>>>> 1ccc20e (Feat: 마이페이지 구현)
-=======
-import { logout } from "@/services/userAuthService";
->>>>>>> 6b657da (Feat: 마이페이지 구현)
 
 interface DropDownMenuItem {
 	link: string;
@@ -28,7 +20,7 @@ export function ProfileBtn() {
 
 	const doLogout = async () => {
 		try {
-			await logout();
+			await authService.logout();
 		} catch (err) {
 			// console.error("로그아웃 실패");
 		} finally {
@@ -42,11 +34,7 @@ export function ProfileBtn() {
 	];
 
 	const dropdownAfterLogin: DropDownMenuItem[] = [
-<<<<<<< HEAD
 		{ link: "/profile", text: "마이페이지" },
-=======
-		{ link: "/my-page", text: "마이페이지" },
->>>>>>> a9a2a58 (Feat: 마이페이지 구현)
 		{ link: "/logout", text: "로그아웃", onClick: doLogout },
 	];
 
@@ -136,15 +124,9 @@ function RightHeader() {
 			<button
 				type="button"
 				className="size-8 btn hover:scale-105"
-<<<<<<< HEAD
 				// onClick={() => {
 				// 	alert("Notification clicked"); // TODO: 알림 버튼 클릭시 수행 기능
 				// }}
-=======
-				onClick={() => {
-					alert("Notification clicked"); // TODO: 알림 버튼 클릭시 수행 기능
-				}}
->>>>>>> a9a2a58 (Feat: 마이페이지 구현)
 			>
 				<img className="size-8" src={notificationIcon} alt="알림 버튼" />
 			</button>
