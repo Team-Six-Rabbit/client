@@ -1,38 +1,11 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { ChangeEvent, useState, KeyboardEvent } from "react";
-=======
-import React, { ChangeEvent, useState } from "react";
->>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
-=======
-import { ChangeEvent, useState, KeyboardEvent } from "react";
->>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 import { Link, useNavigate } from "react-router-dom";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
 import GoogleLoginButton from "@/components/auth/googleLoginBtn";
 import { LoginRequest } from "@/types/api";
-<<<<<<< HEAD
 import { authService } from "@/services/userAuthService";
-=======
-import { login } from "@/services/userAuthService";
->>>>>>> 5246c8b (Feat: 로그인 페이지 오류 메시지 생성)
-import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
-=======
-import { login } from "@/services/userAuthService";
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
 
-<<<<<<< HEAD
-interface CustomCSSProperties extends React.CSSProperties {
-	textShadow?: string;
-}
-
-const headingTagStyles: CustomCSSProperties = {
-	...createLiveStateBorder("black", 4),
-};
->>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
-
-=======
->>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 function LoginPage() {
 	const navigator = useNavigate();
 	const [formValues, setFormValues] = useState<LoginRequest>({
@@ -54,16 +27,6 @@ function LoginPage() {
 			[name]: value,
 		});
 		setErrors((prevErrors) => ({ ...prevErrors, [name]: "", general: "" })); // 입력 변경 시 에러 초기화
-<<<<<<< HEAD
-	};
-
-	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === "Enter") {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			doLogin();
-		}
-=======
->>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
 	};
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -94,36 +57,9 @@ function LoginPage() {
 		}
 
 		try {
-			await login(formValues);
+			await authService.login(formValues);
 			navigator("/");
 		} catch (err) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 3516697 (Feat: 로그인 페이지 오류 메시지 생성)
-=======
->>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
-=======
-			// console.error("로그인 실패");
-			// // TODO: 로그인 실패 시 처리
-			// setDoShake(true);
-			// setTimeout(() => {
-			// 	setDoShake(false);
-			// }, 500);
-<<<<<<< HEAD
->>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
-=======
->>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
-=======
->>>>>>> 5246c8b (Feat: 로그인 페이지 오류 메시지 생성)
-<<<<<<< HEAD
->>>>>>> 3516697 (Feat: 로그인 페이지 오류 메시지 생성)
-=======
-=======
->>>>>>> 0e5627c (Chore: 로그인 회원가입 push)
->>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 			setErrors({ general: "로그인에 실패했습니다." }); // 로그인 실패 메시지
 			setDoShake(true);
 			setTimeout(() => {
@@ -148,14 +84,7 @@ function LoginPage() {
 						name="email"
 						value={formValues.email}
 						onChange={handleInputChange}
-<<<<<<< HEAD
-<<<<<<< HEAD
 						onKeyDown={handleKeyDown}
-=======
->>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
-=======
-						onKeyDown={handleKeyDown}
->>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 						placeholder="이메일"
 					/>
 					{errors.email && (
@@ -171,14 +100,7 @@ function LoginPage() {
 						name="password"
 						value={formValues.password}
 						onChange={handleInputChange}
-<<<<<<< HEAD
-<<<<<<< HEAD
 						onKeyDown={handleKeyDown}
-=======
->>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
-=======
-						onKeyDown={handleKeyDown}
->>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 						placeholder="비밀번호"
 					/>
 					{errors.password && (
