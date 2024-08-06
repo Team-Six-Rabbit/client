@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/stores/userAuthStore";
 
 interface ButtonProps {
 	strokeColor?: string;
@@ -37,12 +39,24 @@ const Button = styled.button<ButtonProps>`
 `;
 
 function PlusButton({ strokeColor, fillColor }: ButtonProps) {
+	const navigate = useNavigate();
+	const { isLogin, user } = useAuthStore();
+
+	const handleClick = () => {
+		if (isLogin && user) {
+			navigate("/ignition", { state: { user } });
+		} else {
+			navigate("/login");
+		}
+	};
+
 	return (
 		<Button
 			title="새로운 토론 주제 작성"
 			className="plus-button"
 			strokeColor={strokeColor}
 			fillColor={fillColor}
+			onClick={handleClick}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +74,6 @@ function PlusButton({ strokeColor, fillColor }: ButtonProps) {
 	);
 }
 
-// Default Props Declaration
 PlusButton.defaultProps = {
 	strokeColor: "#1d3d6b",
 	fillColor: "#fbca27",

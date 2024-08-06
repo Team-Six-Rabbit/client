@@ -8,6 +8,7 @@ import NotificationPage from "@/pages/NotificationPage";
 import PreVotingBoardPage from "@/pages/PreVotingBoardPage";
 import LivePage from "@/pages/LivePage";
 import BalanceGameBoardPage from "@/pages/BalanceGameBoardPage";
+import BattleRegistPage from "@/pages/BattleRegistPage";
 
 const router = createBrowserRouter([
 	{
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
 	{
 		path: "/bonfire",
 		element: <BalanceGameBoardPage />,
+	},
+	{
+		path: "/ignition",
+		element: <BattleRegistPage />,
 	},
 ]);
 
