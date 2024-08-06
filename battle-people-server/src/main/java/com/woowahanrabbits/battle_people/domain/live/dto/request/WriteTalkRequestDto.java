@@ -3,9 +3,7 @@ package com.woowahanrabbits.battle_people.domain.live.dto.request;
 import lombok.Data;
 
 @Data
-public class WriteChatRequestDto {
+public class WriteTalkRequestDto {
 	private Long battleBoardId;
-	private String message;
-
+	private int opinion;
 }
-
