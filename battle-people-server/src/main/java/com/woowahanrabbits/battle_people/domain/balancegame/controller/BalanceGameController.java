@@ -2,7 +2,6 @@ package com.woowahanrabbits.battle_people.domain.balancegame.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +15,7 @@ import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameRespo
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
-import com.woowahanrabbits.battle_people.domain.user.dto.PrincipalDetails;
+import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,17 +35,9 @@ public class BalanceGameController {
 	@PostMapping("")
 	@Operation(summary = "[점화] 밸런스 게임을 생성한다.")
 	public ResponseEntity<?> registBalanceGame(@RequestBody @Valid CreateBalanceGameRequest createBalanceGameRequest,
-		Authentication authentication) {
-		try {
-			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-			User user = principalDetails.getUser();
-			balanceGameService.addBalanceGame(createBalanceGameRequest, user);
-			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "internal server error", null));
-		}
+		@LoginUser User user) {
+		balanceGameService.addBalanceGame(createBalanceGameRequest, user);
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 	}
 
 	@GetMapping("")
@@ -54,34 +45,18 @@ public class BalanceGameController {
 	public ResponseEntity<ApiResponseDto<?>> getBalanceGameByConditions(
 		@RequestParam(defaultValue = "") Integer category,
 		@RequestParam(defaultValue = "5") int status, @RequestParam int page,
-		Authentication authentication) {
+		@LoginUser User user) {
 
-		try {
-
-			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-			User user = principalDetails.getUser();
-
-			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "",
-				balanceGameService.getBalanceGameByConditions(category, status, page, user)));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "internal server error", null));
-		}
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "",
+			balanceGameService.getBalanceGameByConditions(category, status, page, user)));
 	}
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Id 값으로 밸런스 게임 조회")
-	public ResponseEntity<ApiResponseDto<?>> getBalanceGameById(@PathVariable Long id, Authentication authentication) {
-		try {
-			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-			User user = principalDetails.getUser();
-			BalanceGameResponse balanceGameResponse = balanceGameService.getBalanceGameById(id, user);
-			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "", balanceGameResponse));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "internal server error", null));
-		}
+	public ResponseEntity<ApiResponseDto<?>> getBalanceGameById(@PathVariable Long id, @LoginUser User user) {
+		BalanceGameResponse balanceGameResponse = balanceGameService.getBalanceGameById(id, user);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ApiResponseDto<>("success", "", balanceGameResponse));
 	}
 
 }
