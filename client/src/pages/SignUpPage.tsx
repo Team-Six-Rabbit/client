@@ -143,7 +143,7 @@ function SignUpPage() {
 			await authService.join(formValues);
 			navigator("/");
 		} catch (err) {
-			console.error("회원가입 실패");
+			// console.error("회원가입 실패");
 			setDoShake(true);
 			setTimeout(() => {
 				setDoShake(false);
