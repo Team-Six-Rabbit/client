@@ -78,14 +78,12 @@ export const authService = {
 		}
 	},
 	// 이메일 중복 체크 함수
-	checkEmailAvailability: async (
-		email: string,
-	): Promise<ApiResponse<boolean>> => {
+	checkEmailAvailability: async (email: string): Promise<boolean> => {
 		try {
 			const response = await axiosInstance.get<ApiResponse<boolean>>(
 				`/user/check/email?email=${email}`,
 			);
-			return response.data;
+			return response.data.data ?? false;
 		} catch (error) {
 			console.error("Check Email Error: ", error);
 			throw error;
