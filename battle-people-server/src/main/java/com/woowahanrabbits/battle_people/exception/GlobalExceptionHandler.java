@@ -12,19 +12,19 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ApiResponseDto> handleRuntimeException(RuntimeException error) {
-		ApiResponseDto res = new ApiResponseDto("error", error.getMessage(), null);
+		ApiResponseDto res = new ApiResponseDto("fail", error.getMessage(), null);
 		return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ApiResponseDto<String>> handleIllegalArgumentException(IllegalArgumentException error) {
-		ApiResponseDto<String> response = new ApiResponseDto<>("error", error.getMessage(), null);
+		ApiResponseDto<String> response = new ApiResponseDto<>("fail", error.getMessage(), null);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponseDto<String>> handleException(Exception error) {
-		ApiResponseDto<String> response = new ApiResponseDto<>("error", "An unexpected error occurred",
+		ApiResponseDto<String> response = new ApiResponseDto<>("fail", "An unexpected error occurred",
 			error.getMessage());
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
