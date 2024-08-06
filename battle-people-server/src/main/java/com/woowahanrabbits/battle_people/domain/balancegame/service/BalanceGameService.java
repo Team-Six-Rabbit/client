@@ -12,4 +12,6 @@ public interface BalanceGameService {
 	List<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user);
 
 	BalanceGameResponse getBalanceGameById(Long id, User user);
+
+	// void checkBalanceGameEndDate();
 }

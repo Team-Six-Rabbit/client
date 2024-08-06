@@ -62,11 +62,11 @@ public class BattleServiceImpl implements BattleService {
 		calendar = Calendar.getInstance();
 		calendar.setTime(now);
 
-		calendar.add(Calendar.MINUTE, 5);
-		Date fiveMinutesLater = calendar.getTime();
+		calendar.add(Calendar.MINUTE, 60);
+		Date minutesLater = calendar.getTime();
 
-		if (startDate.before(fiveMinutesLater)) {
-			throw new IllegalArgumentException("Invalid start time: must be after at least 5 minutes");
+		if (startDate.before(minutesLater)) {
+			throw new IllegalArgumentException("Invalid start time: must be after at least 60 minutes");
 		}
 
 		//VoteInfo 만들기
@@ -227,5 +227,9 @@ public class BattleServiceImpl implements BattleService {
 
 		//참여 신청한 인원 수 return
 		return battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
+	}
+
+	@Override
+	public void createThumbnail(Long battleId) {
 	}
 }

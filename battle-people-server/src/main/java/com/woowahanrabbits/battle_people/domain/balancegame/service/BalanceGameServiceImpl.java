@@ -1,6 +1,8 @@
 package com.woowahanrabbits.battle_people.domain.balancegame.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -32,10 +34,16 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	@Override
 	public void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, User user) {
 
+		Calendar calendar = Calendar.getInstance();
+		Date now = new Date();
+		calendar.setTime(createBalanceGameRequest.getStartDate());
+
+		calendar.add(Calendar.DATE, 3);
+
 		VoteInfo voteInfo = VoteInfo.builder()
 			.title(createBalanceGameRequest.getTitle())
 			.startDate(createBalanceGameRequest.getStartDate())
-			.endDate(createBalanceGameRequest.getEndDate())
+			.endDate(calendar.getTime())
 			.category(createBalanceGameRequest.getCategory())
 			.detail(createBalanceGameRequest.getDetail())
 			.currentState(5)

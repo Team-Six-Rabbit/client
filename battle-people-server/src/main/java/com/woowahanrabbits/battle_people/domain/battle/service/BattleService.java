@@ -20,4 +20,5 @@ public interface BattleService {
 
 	int applyBattle(BattleApplyDto battleApplyDto, User user);
 
+	void createThumbnail(Long battleId);
 }

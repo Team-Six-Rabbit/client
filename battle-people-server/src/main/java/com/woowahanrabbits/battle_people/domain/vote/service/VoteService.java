@@ -8,4 +8,5 @@ public interface VoteService {
 
 	void addVoteOpinion(VoteOpinion voteOpinion);
 
+	void updateCurrentState();
 }
