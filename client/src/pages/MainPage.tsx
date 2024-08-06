@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import LiveSlickCarousel from "@/components/Main/LiveSlickCarousel";
 import Header from "@/components/header";
@@ -41,7 +41,7 @@ function MainPage() {
 	const [otherCards, setOtherCards] = useState<Record<number, CardType[]>>({});
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
-	const userInterestedCategories = useMemo(() => [1, 2, 6], []);
+	const [userInterestedCategories] = useState<number[]>([1, 2, 6]);
 
 	useEffect(() => {
 		const fetchLiveData = async () => {
@@ -49,7 +49,7 @@ function MainPage() {
 				setIsLoading(true);
 
 				const promises = categories
-					.filter((category) => category.id !== 7) // id가 7인 카테고리를 제외합니다.
+					.filter((category) => category.id !== 7)
 					.map(async (category) => {
 						const response = await liveBattleService.getActiveList(category.id);
 						const liveBattles = response.data || [];
@@ -76,19 +76,18 @@ function MainPage() {
 
 				const interested: Record<number, CardType[]> = {};
 				const others: Record<number, CardType[]> = {};
-				const largeCarouselData: CardType[] = []; // Initialize data for LargeCarousel
+				const largeCarouselData: CardType[] = [];
 
 				results.forEach(({ categoryId, cards }) => {
-					// Collect data for LargeCarousel (e.g., top cards from interested categories)
 					if (userInterestedCategories.includes(categoryId)) {
-						largeCarouselData.push(...cards.slice(0, 3)); // Add top 3 cards from each interested category
+						largeCarouselData.push(...cards.slice(0, 3));
 						interested[categoryId] = cards;
 					} else {
 						others[categoryId] = cards;
 					}
 				});
 
-				setLargeCarouselCards(largeCarouselData); // Set state for LargeCarousel
+				setLargeCarouselCards(largeCarouselData);
 				setInterestedCards(interested);
 				setOtherCards(others);
 			} catch (error) {

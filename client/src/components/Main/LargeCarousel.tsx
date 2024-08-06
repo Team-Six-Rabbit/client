@@ -43,14 +43,14 @@ const StyledSlider = styled(Slider)`
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		position: relative; /* 텍스트 위치 설정을 위해 */
-		overflow: hidden; /* 넘치는 텍스트 자르기 */
+		position: relative;
+		overflow: hidden;
 	}
 `;
 
 const ImageContainer = styled.div`
 	width: 100%;
-	height: 400px; // 고정 높이 설정
+	height: 400px;
 	position: relative;
 	display: flex;
 	align-items: center;
