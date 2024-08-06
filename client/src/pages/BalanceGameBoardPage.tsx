@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
 import PlusButton from "@/components/Board/fanning/PlusButton";
@@ -7,7 +8,6 @@ import { categories } from "@/constant/boardCategory";
 import { LiveStatus } from "@/types/Board/liveStatus";
 import { balanceGameService } from "@/services/balanceGameService";
 import { BalanceGameCardType } from "@/types/Board/balancegameCard";
-import styled from "styled-components";
 import { ApiResponse, BalanceGameResponse } from "@/types/api";
 import bonfireIcon from "@/assets/images/bonfire.gif";
 

@@ -19,6 +19,7 @@ export const authService = {
 			return response.data;
 		} catch (error) {
 			console.error("Login Error: ", error);
+			console.error("Login Error: ", error);
 			throw error;
 		}
 	},
@@ -32,6 +33,7 @@ export const authService = {
 			);
 			return response.data;
 		} catch (error) {
+			console.error("Join Error: ", error);
 			console.error("Join Error: ", error);
 			throw error;
 		}
@@ -50,6 +52,7 @@ export const authService = {
 			}
 			return response.data;
 		} catch (error) {
+			console.error("Get User Info Error: ", error);
 			console.error("Get User Info Error: ", error);
 			throw error;
 		}
@@ -78,14 +81,12 @@ export const authService = {
 		}
 	},
 	// 이메일 중복 체크 함수
-	checkEmailAvailability: async (
-		email: string,
-	): Promise<ApiResponse<boolean>> => {
+	checkEmailAvailability: async (email: string): Promise<boolean> => {
 		try {
 			const response = await axiosInstance.get<ApiResponse<boolean>>(
 				`/user/check/email?email=${email}`,
 			);
-			return response.data;
+			return response.data.data ?? false;
 		} catch (error) {
 			console.error("Check Email Error: ", error);
 			throw error;

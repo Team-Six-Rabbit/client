@@ -16,6 +16,7 @@ interface AuthInputProps {
 	onChange: ChangeEventHandler;
 	className?: string;
 	error?: string; // 에러 메시지 추가
+	// eslint-disable-next-line react/require-default-props
 	onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
 }
 
