@@ -1,6 +1,7 @@
 import React from "react";
 import "@/assets/styles/scrollbar.css";
 
+import styled from "styled-components";
 import {
 	ModalBackdrop,
 	ModalContent,
@@ -12,7 +13,6 @@ import {
 	InfoTextSpan,
 	TitleText,
 } from "@/assets/styles/modalStyles";
-import styled from "styled-components";
 
 interface ModalFormProps {
 	title: string;

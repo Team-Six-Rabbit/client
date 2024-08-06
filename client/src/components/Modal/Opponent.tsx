@@ -1,10 +1,10 @@
+import styled from "styled-components";
 import {
 	Opponent as StyledOpponent,
 	OpponentImage,
 	SpeechBubble,
 	InfoTextSpan,
 } from "@/assets/styles/modalStyles";
-import styled from "styled-components";
 
 interface OpponentProps {
 	nickname: string;

@@ -11,7 +11,7 @@
     },
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "types": ["vite/client", "vite-plugin-svgr/client", "node"],
+    "types": ["vite/client", "node"],
 
     /* Bundler mode */
     "moduleResolution": "Node",
@@ -27,8 +27,11 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Type declaration file inclusion */
+    "typeRoots": ["./node_modules/@types", "./declarations.d.ts"]
   },
-  "include": ["src"],
+  "include": ["src", "./declarations.d.ts"],
   "exclude": ["node_modules"]
 }
