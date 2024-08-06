@@ -86,8 +86,11 @@ function LoginPage() {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 3516697 (Feat: 로그인 페이지 오류 메시지 생성)
+=======
+>>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 =======
 			// console.error("로그인 실패");
 			// // TODO: 로그인 실패 시 처리
@@ -101,7 +104,12 @@ function LoginPage() {
 >>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
 =======
 >>>>>>> 5246c8b (Feat: 로그인 페이지 오류 메시지 생성)
+<<<<<<< HEAD
 >>>>>>> 3516697 (Feat: 로그인 페이지 오류 메시지 생성)
+=======
+=======
+>>>>>>> 0e5627c (Chore: 로그인 회원가입 push)
+>>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 			setErrors({ general: "로그인에 실패했습니다." }); // 로그인 실패 메시지
 			setDoShake(true);
 			setTimeout(() => {

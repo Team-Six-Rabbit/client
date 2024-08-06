@@ -10,9 +10,12 @@ import LivePage from "@/pages/LivePage";
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import BalanceGameBoardPage from "@/pages/BalanceGameBoardPage";
 =======
 >>>>>>> 6b657da (Feat: 마이페이지 구현)
+=======
+>>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 =======
 import MyPage from "@/pages/MyPage";
 import CreatedLives from "@/components/tabs/CreatedLives";
@@ -25,7 +28,12 @@ import WinRate from "@/components/tabs/WinRate";
 >>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
 =======
 >>>>>>> a9a2a58 (Feat: 마이페이지 구현)
+<<<<<<< HEAD
 >>>>>>> 6b657da (Feat: 마이페이지 구현)
+=======
+=======
+>>>>>>> 0e5627c (Chore: 로그인 회원가입 push)
+>>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 
 const router = createBrowserRouter([
 	{
@@ -58,12 +66,15 @@ const router = createBrowserRouter([
 	},
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	{
 <<<<<<< HEAD
 		path: "/bonfire",
 		element: <BalanceGameBoardPage />,
 =======
 =======
+=======
+>>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 =======
 	{
 >>>>>>> 6b657da (Feat: 마이페이지 구현)
@@ -95,7 +106,12 @@ const router = createBrowserRouter([
 =======
 	},
 >>>>>>> a9a2a58 (Feat: 마이페이지 구현)
+<<<<<<< HEAD
 >>>>>>> 6b657da (Feat: 마이페이지 구현)
+=======
+=======
+>>>>>>> 0e5627c (Chore: 로그인 회원가입 push)
+>>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 ]);
 
 export default router;

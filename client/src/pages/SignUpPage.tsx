@@ -1,8 +1,8 @@
 import { ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
-<<<<<<< HEAD
 import { authService } from "@/services/userAuthService";
+<<<<<<< HEAD
 import "@/assets/styles/shake.css";
 import { JoinRequest } from "@/types/api";
 <<<<<<< HEAD
@@ -34,6 +34,11 @@ import { JoinRequest } from "@/types/api";
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 >>>>>>> 0180dae (Feat: 회원가입 로직 구현)
+=======
+import "@/assets/styles/shake.css";
+import { JoinRequest } from "@/types/api";
+import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
+>>>>>>> 0e5627c (Chore: 로그인 회원가입 push)
 
 function SignUpPage() {
 	const navigator = useNavigate();
@@ -77,6 +82,7 @@ function SignUpPage() {
 				} else {
 					try {
 <<<<<<< HEAD
+<<<<<<< HEAD
 						const isEmailAvailable =
 							await authService.checkEmailAvailability(value);
 =======
@@ -85,7 +91,14 @@ function SignUpPage() {
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 =======
 >>>>>>> 0180dae (Feat: 회원가입 로직 구현)
+<<<<<<< HEAD
 >>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
+=======
+=======
+						const isEmailAvailable =
+							await authService.checkEmailAvailability(value);
+>>>>>>> 0e5627c (Chore: 로그인 회원가입 push)
+>>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 						if (!isEmailAvailable) {
 							errorMsg = "이미 사용 중인 이메일입니다.";
 						}
@@ -98,6 +111,7 @@ function SignUpPage() {
 				if (value) {
 					try {
 <<<<<<< HEAD
+<<<<<<< HEAD
 						const isNicknameAvailable =
 							await authService.checkNicknameAvailability(value);
 =======
@@ -106,7 +120,14 @@ function SignUpPage() {
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 =======
 >>>>>>> 0180dae (Feat: 회원가입 로직 구현)
+<<<<<<< HEAD
 >>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
+=======
+=======
+						const isNicknameAvailable =
+							await authService.checkNicknameAvailability(value);
+>>>>>>> 0e5627c (Chore: 로그인 회원가입 push)
+>>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 						if (!isNicknameAvailable) {
 							errorMsg = "이미 사용 중인 닉네임입니다.";
 						}
@@ -184,14 +205,11 @@ function SignUpPage() {
 		}
 
 		try {
-<<<<<<< HEAD
 			// TODO: 비밀번호 규칙 검사
 			await authService.join(formValues);
-=======
-			await join(formValues);
->>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 			navigator("/");
 		} catch (err) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
@@ -206,7 +224,13 @@ function SignUpPage() {
 =======
 			console.error("회원가입 실패");
 >>>>>>> 0180dae (Feat: 회원가입 로직 구현)
+<<<<<<< HEAD
 >>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
+=======
+=======
+			// console.error("회원가입 실패");
+>>>>>>> 0e5627c (Chore: 로그인 회원가입 push)
+>>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
 			setDoShake(true);
 			setTimeout(() => {
 				setDoShake(false);
