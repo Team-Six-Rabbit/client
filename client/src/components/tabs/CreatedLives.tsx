@@ -1,5 +1,3 @@
-import React from "react";
-
 function CreatedLives() {
 	return (
 		<div className="created-lives">

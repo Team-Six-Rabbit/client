@@ -1,4 +1,3 @@
-import React from "react";
 import { CircularProgressBar } from "@tomickigrzegorz/react-circular-progress-bar";
 
 function WinRate() {
