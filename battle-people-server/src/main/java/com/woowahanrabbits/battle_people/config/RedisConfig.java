@@ -25,24 +25,6 @@ public class RedisConfig {
 		return template;
 	}
 
-	// @Bean
-	// public RedisMessageListenerContainer container(RedisConnectionFactory redisConnectionFactory,
-	// 	MessageListenerAdapter messageListener) {
-	// 	RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-	// 	container.setConnectionFactory(redisConnectionFactory);
-	// 	//라이브 입장하면 battleBoardId에 대한 addMessageListener추가
-	// 	//live:{battleBoardId}:chat
-	// 	//live:{battleBoardId}:request
-	// 	container.addMessageListener(messageListener, new ChannelTopic("live:7:chat"));
-	// 	container.addMessageListener(messageListener, new ChannelTopic("live:7:request"));
-	// 	return container;
-	// }
-	//
-	// @Bean
-	// public MessageListenerAdapter messageListener(RedisSubscriber redisSubscriber) {
-	// 	return new MessageListenerAdapter(redisSubscriber);
-	// }
-
 	@Bean
 	public RedisMessageListenerContainer container(RedisConnectionFactory redisConnectionFactory) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
