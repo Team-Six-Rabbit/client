@@ -10,10 +10,10 @@ import LivePage from "@/pages/LivePage";
 import BalanceGameBoardPage from "@/pages/BalanceGameBoardPage";
 import BattleRegistPage from "@/pages/BattleRegistPage";
 import MyPage from "@/pages/MyPage";
-import CreatedLives from "@/components/tabs/CreatedLives";
-import Interests from "@/components/tabs/Interests";
-import ParticipatedVotes from "@/components/tabs/ParticipatedVotes";
 import WinRate from "@/components/tabs/WinRate";
+import CreatedLives from "@/components/tabs/CreatedLives";
+import ParticipatedVotes from "@/components/tabs/ParticipatedVotes";
+import Interests from "@/components/tabs/Interests";
 
 const router = createBrowserRouter([
 	{
