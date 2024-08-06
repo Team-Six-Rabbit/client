@@ -19,6 +19,7 @@ export const authService = {
 			return response.data;
 		} catch (error) {
 			console.error("Login Error: ", error);
+			console.error("Login Error: ", error);
 			throw error;
 		}
 	},
@@ -32,6 +33,7 @@ export const authService = {
 			);
 			return response.data;
 		} catch (error) {
+			console.error("Join Error: ", error);
 			console.error("Join Error: ", error);
 			throw error;
 		}
@@ -51,6 +53,7 @@ export const authService = {
 			return response.data;
 		} catch (error) {
 			console.error("Get User Info Error: ", error);
+			console.error("Get User Info Error: ", error);
 			throw error;
 		}
 	},
@@ -65,8 +68,6 @@ export const authService = {
 			throw error;
 		}
 	},
-<<<<<<< HEAD
-<<<<<<< HEAD
 	// 닉네임 중복 체크 함수
 	checkNicknameAvailability: async (nickname: string): Promise<boolean> => {
 		try {
@@ -91,185 +92,4 @@ export const authService = {
 			throw error;
 		}
 	},
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
-// 로그아웃 함수
-export const logout = async (): Promise<void> => {
-	try {
-		await axiosInstance.delete("/auth/logout");
-		useAuthStore.getState().logout();
-	} catch (error) {
-		console.error("Logout Error: ", error);
-		throw error;
-	}
->>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
-=======
->>>>>>> 5246c8b (Feat: 로그인 페이지 오류 메시지 생성)
 };
-
-// 닉네임 중복 체크 함수
-export const checkNicknameAvailability = async (
-	nickname: string,
-): Promise<boolean> => {
-	try {
-		const response = await axiosInstance.get<ApiResponse<boolean>>(
-			`/user/check/nickname?nickname=${nickname}`,
-		);
-		return response.data.data;
-	} catch (error) {
-		console.error("Check Nickname Error: ", error);
-		throw error;
-	}
-};
-
-// 이메일 중복 체크 함수
-export const checkEmailAvailability = async (
-	email: string,
-): Promise<ApiResponse<boolean>> => {
-	try {
-		const response = await axiosInstance.get<ApiResponse<boolean>>(
-			`/user/check/email?email=${email}`,
-		);
-		return response.data;
-	} catch (error) {
-		console.error("Check Email Error: ", error);
-		throw error;
-	}
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
-=======
->>>>>>> 0180dae (Feat: 회원가입 로직 구현)
->>>>>>> 91bd253 (Feat: 회원가입 로직 구현)
-};
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> fca91ba (Feat: 회원가입 로직 구현)
-
-// 닉네임 중복 체크 함수
-export const checkNicknameAvailability = async (
-	nickname: string,
-): Promise<boolean> => {
-	try {
-		const response = await axiosInstance.get<ApiResponse<boolean>>(
-			`/user/check/nickname?nickname=${nickname}`,
-		);
-		return response.data.data;
-	} catch (error) {
-		console.error("Check Nickname Error: ", error);
-		throw error;
-	}
-};
-
-// 이메일 중복 체크 함수
-export const checkEmailAvailability = async (
-	email: string,
-): Promise<ApiResponse<boolean>> => {
-	try {
-		const response = await axiosInstance.get<ApiResponse<boolean>>(
-			`/user/check/email?email=${email}`,
-		);
-		return response.data;
-	} catch (error) {
-		console.error("Check Email Error: ", error);
-		throw error;
-	}
-=======
-	// 닉네임 중복 체크 함수
-	checkNicknameAvailability: async (nickname: string): Promise<boolean> => {
-		try {
-			const response = await axiosInstance.get<ApiResponse<boolean>>(
-				`/user/check/nickname?nickname=${nickname}`,
-			);
-			return response.data.data ?? false;
-		} catch (error) {
-			console.error("Check Nickname Error: ", error);
-			throw error;
-		}
-	},
-	// 이메일 중복 체크 함수
-	checkEmailAvailability: async (
-		email: string,
-	): Promise<ApiResponse<boolean>> => {
-		try {
-			const response = await axiosInstance.get<ApiResponse<boolean>>(
-				`/user/check/email?email=${email}`,
-			);
-			return response.data;
-		} catch (error) {
-			console.error("Check Email Error: ", error);
-			throw error;
-		}
-	},
->>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
-};
-<<<<<<< HEAD
-
-// 닉네임 중복 체크 함수
-export const checkNicknameAvailability = async (
-	nickname: string,
-): Promise<boolean> => {
-	try {
-		const response = await axiosInstance.get<ApiResponse<boolean>>(
-			`/user/check/nickname?nickname=${nickname}`,
-		);
-		return response.data.data;
-	} catch (error) {
-		console.error("Check Nickname Error: ", error);
-		throw error;
-	}
-};
-
-// 이메일 중복 체크 함수
-export const checkEmailAvailability = async (
-	email: string,
-): Promise<ApiResponse<boolean>> => {
-	try {
-		const response = await axiosInstance.get<ApiResponse<boolean>>(
-			`/user/check/email?email=${email}`,
-		);
-		return response.data;
-	} catch (error) {
-		console.error("Check Email Error: ", error);
-		throw error;
-	}
-=======
-	// 닉네임 중복 체크 함수
-	checkNicknameAvailability: async (nickname: string): Promise<boolean> => {
-		try {
-			const response = await axiosInstance.get<ApiResponse<boolean>>(
-				`/user/check/nickname?nickname=${nickname}`,
-			);
-			return response.data.data ?? false;
-		} catch (error) {
-			console.error("Check Nickname Error: ", error);
-			throw error;
-		}
-	},
-	// 이메일 중복 체크 함수
-	checkEmailAvailability: async (
-		email: string,
-	): Promise<ApiResponse<boolean>> => {
-		try {
-			const response = await axiosInstance.get<ApiResponse<boolean>>(
-				`/user/check/email?email=${email}`,
-			);
-			return response.data;
-		} catch (error) {
-			console.error("Check Email Error: ", error);
-			throw error;
-		}
-	},
->>>>>>> 2796077 (Chore: 로그인 회원가입 push)
-};
->>>>>>> a53a2e1 (Feat: 회원가입 로직 구현)
-=======
->>>>>>> fca91ba (Feat: 회원가입 로직 구현)
