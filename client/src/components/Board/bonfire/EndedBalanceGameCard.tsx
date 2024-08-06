@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import like from "@/assets/images/like.png"; // Path to your like GIF
 import {
 	OptionWrapper,
