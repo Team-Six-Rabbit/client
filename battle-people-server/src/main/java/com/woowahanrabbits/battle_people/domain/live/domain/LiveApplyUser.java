@@ -6,36 +6,55 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.PrePersist;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@ToString
+@IdClass(LiveApplyUserId.class)
 public class LiveApplyUser {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@Column(name = "room_id", insertable = false, updatable = false)
+	private Long roomId;
+
+	@Id
+	@Column(name = "participant_id", insertable = false, updatable = false)
+	private Long participantId;
 
 	@ManyToOne
 	@JoinColumn(name = "room_id", nullable = false)
+	@MapsId("roomId")
 	private Room room;
 
 	@ManyToOne
 	@JoinColumn(name = "participant_id", nullable = false)
+	@MapsId("participantId")
 	private User participant;
 
 	@Column(nullable = false)
 	private Date inTime;
+
 	private Date outTime;
 
 	private String role;
+
+	private String token;
 
 	@PrePersist
 	protected void onCreate() {

@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.service.OpenViduService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 
-import io.openvidu.java.client.OpenViduRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,32 +25,19 @@ public class OpenViduController {
 	private final OpenViduService openViduService;
 	private final UserService userService;
 
-	@PostMapping("/create-session")
-	public ResponseEntity<ApiResponseDto<String>> createSession(@RequestParam Long battleId) {
-		try {
-			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "", openViduService.createSession(battleId)));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "", "fail"));
-		}
-
-	}
-
 	@PostMapping("/get-token")
-	public ResponseEntity<ApiResponseDto<String>> getToken(@RequestParam String roomId, @RequestParam String role,
-		@LoginUser User loginUser) {
+	public ResponseEntity<ApiResponseDto<OpenViduTokenResponseDto>> getToken(@RequestParam Long battleId,
+		@LoginUser User user) {
 		try {
-			System.out.println("User: " + loginUser);
-			OpenViduRole openViduRole = "broadcaster".equals(role) ? OpenViduRole.PUBLISHER : OpenViduRole.SUBSCRIBER;
+			System.out.println("User: " + user);
 			return ResponseEntity.status(HttpStatus.OK)
 				.body(new ApiResponseDto<>("success", "",
-					openViduService.getToken(roomId, openViduRole, loginUser.getId())));
+					openViduService.getToken(battleId, user)));
 
 		} catch (Exception e) {
 			System.out.println(e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "", "fail"));
+				.body(new ApiResponseDto<>("fail", "", null));
 		}
 	}
 
@@ -65,18 +52,18 @@ public class OpenViduController {
 		}
 	}
 
-	@PostMapping("/change-user-role")
-	public ResponseEntity<ApiResponseDto<String>> changeUserRole(@RequestParam Long battleId,
-		@RequestParam String roomId,
-		@RequestParam Long userId) {
-		try {
-			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "", openViduService.changeRole(battleId, roomId, userId)));
-
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "", ""));
-		}
-	}
+	// @PostMapping("/change-user-role")
+	// public ResponseEntity<ApiResponseDto<OpenViduTokenResponseDto>> changeUserRole(@RequestParam Long battleId,
+	// 	@RequestParam String roomId,
+	// 	@LoginUser User user) {
+	// 	try {
+	// 		return ResponseEntity.status(HttpStatus.OK)
+	// 			.body(new ApiResponseDto<>("success", "", openViduService.changeRole(roomId, user)));
+	//
+	// 	} catch (Exception e) {
+	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	// 			.body(new ApiResponseDto<>("fail", "", null));
+	// 	}
+	// }
 
 }
