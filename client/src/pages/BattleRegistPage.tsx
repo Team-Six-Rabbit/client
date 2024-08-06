@@ -17,6 +17,7 @@ const ContentContainer = styled.div`
 	border-radius: 18px;
 	margin-top: 32px;
 	border: 3.5px solid #000000;
+	margin-bottom: 50px;
 `;
 
 const TitleContainer = styled.div`
@@ -27,12 +28,12 @@ const TitleContainer = styled.div`
 `;
 
 const Title = styled.h1`
-	font-size: 1.5rem; /* text-2xl */
+	font-size: 1.5rem;
 `;
 
 const FormTypeSelector = styled.div`
 	display: flex;
-	gap: 16px; /* space-x-4 */
+	gap: 16px;
 `;
 
 const FormTypeOption = styled.div<{ isSelected: boolean }>`
@@ -102,7 +103,7 @@ function BattleRegistPage() {
 			<Header />
 			<ContentContainer>
 				<TitleContainer>
-					<Title>새로운 주제 등록</Title>
+					<Title>새로운 토론 주제 등록</Title>
 					<FormTypeSelector>
 						{["general", "live"].map((type) => (
 							<FormTypeOption
@@ -123,7 +124,9 @@ function BattleRegistPage() {
 									onChange={() => setActiveForm(type as BattleRegistOption)}
 								/>
 								<RadioButtonCustom isSelected={activeForm === type} />
-								<span>{type === "general" ? "일반 투표" : "라이브 개최"}</span>
+								<span>
+									{type === "general" ? "밸런스 게임" : "라이브 개최"}
+								</span>
 							</FormTypeOption>
 						))}
 					</FormTypeSelector>

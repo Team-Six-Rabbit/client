@@ -1,111 +1,236 @@
+import React, { useState } from "react";
 import styled from "styled-components";
+import { useLocation, useNavigate } from "react-router-dom";
 import Dropdown from "@/components/Board/regist/Dropdown";
 import { categories } from "@/constant/boardCategory";
+import { BasicUserInfo } from "@/types/user";
+import {
+	Form,
+	FormGroup,
+	FlexFormGroup,
+	Label,
+	Input,
+	TextArea,
+	ButtonGroup,
+	Button,
+	ErrorLabel,
+} from "@/assets/styles/battleRegist";
+import { battleService } from "@/services/battleService";
+import { authService } from "@/services/userAuthService";
 
-const Form = styled.form`
-	margin-top: 16px;
-	max-width: 800px;
-	margin: 0 auto;
+const Options = styled.div`
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	z-index: 100;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const FormGroup = styled.div`
-	margin-top: 13px;
-	display: flex;
-	flex-direction: column;
-`;
-
-const FlexFormGroup = styled.div`
-	margin-top: 13px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 15px; /* Space between flex items */
-`;
-
-const Label = styled.label`
-	color: #000000;
-	margin-bottom: 8px;
-	font-size: 17px;
-	display: block;
-`;
-
-const Input = styled.input`
-	border-radius: 15px;
-	border: 3.5px solid #000000;
-	padding: 12px 16px;
-	color: #000000;
-	font-size: 14px;
-	outline: none;
-	flex: 1;
-	box-sizing: border-box;
-
-	&:focus {
-		border-color: #f66c23;
-	}
-`;
-
-const TextArea = styled.textarea`
-	width: 100%;
-	border-radius: 15px;
-	border: 3.5px solid #000000;
-	color: #000000;
-	padding: 12px 16px;
-	font-size: 14px;
-	outline: none;
-	box-sizing: border-box;
-
-	&:focus {
-		border-color: #f66c23;
-	}
-`;
-
-const ButtonGroup = styled.div`
-	display: flex;
-	justify-content: flex-end;
-`;
-
-const Button = styled.button`
-	margin-top: 16px;
-	background-color: #000000;
-	color: white;
-	border-radius: 15px;
-	padding: 8px 16px;
+const Option = styled.div`
+	padding: 8px;
 	cursor: pointer;
-	border: none;
+	transition: background-color 0.2s;
 
 	&:hover {
-		background-color: #f66c23;
+		background-color: #f0f0f0;
 	}
 `;
 
-// const UserIcon = styled.div`
-// 	width: 40px;
-// 	height: 40px;
-// 	border-radius: 50%;
-// 	background-color: #ddd;
-// 	display: inline-block;
-// 	margin-right: 10px;
-// 	background-image: url("https://via.placeholder.com/40");
-// 	background-size: cover;
-// `;
+const fetchUserSuggestions = async (nickname: string) => {
+	const users = await authService.searchUserByNickname(nickname);
+	return users.data || [];
+};
 
 function LiveDebateRegistForm() {
-	const categoryNames = categories.map((category) => category.name);
+	const navigate = useNavigate();
+	const categoryNames = categories
+		.filter((category) => category.name !== "전체")
+		.map((category) => category.name);
+	const location = useLocation();
+	const user = location.state?.user as BasicUserInfo | null;
+
+	const [title, setTitle] = useState("");
+	const [category, setCategory] = useState("");
+	const [opponent, setOpponent] = useState("");
+	const [opponentId, setOpponentId] = useState<number | null>(null);
+	const [opponentSuggestions, setOpponentSuggestions] = useState<
+		BasicUserInfo[]
+	>([]);
+	const [authorChoice, setAuthorChoice] = useState("");
+	const [startTime, setStartTime] = useState("");
+	const [duration, setDuration] = useState("10");
+	const [maxParticipants, setMaxParticipants] = useState("");
+	const [details, setDetails] = useState("");
+	const [errors, setErrors] = useState({
+		title: false,
+		category: false,
+		opponent: false,
+		authorChoice: false,
+		startTime: false,
+		duration: false,
+		maxParticipants: false,
+		details: false,
+	});
 
 	const handleCategorySelect = (category: string) => {
-		console.log("Selected category:", category);
+		setCategory(category);
+		setErrors((prevErrors) => ({ ...prevErrors, category: false }));
+	};
+
+	const handleDurationSelect = (value: string) => {
+		setDuration(value);
+		setErrors((prevErrors) => ({ ...prevErrors, duration: false }));
+	};
+
+	const getMinDateTime = (): string => {
+		const now = new Date();
+		now.setMinutes(now.getMinutes() + 60);
+
+		const year = now.getFullYear();
+		const month = String(now.getMonth() + 1).padStart(2, "0");
+		const day = String(now.getDate()).padStart(2, "0");
+		const hours = String(now.getHours()).padStart(2, "0");
+		const minutes = String(now.getMinutes()).padStart(2, "0");
+
+		const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+		return minDateTime;
+	};
+
+	const handleStartTimeChange = (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		const selectedTime = new Date(event.target.value);
+		const minDateTime = new Date(getMinDateTime());
+
+		if (selectedTime < minDateTime) {
+			alert("라이브 개최 희망 시간은 최소 60분 이후로 설정해주세요.");
+			setStartTime(getMinDateTime());
+		} else {
+			setStartTime(event.target.value);
+			setErrors((prevErrors) => ({ ...prevErrors, startTime: false }));
+		}
+	};
+
+	const handleOpponentInputChange = async (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		const nickname = event.target.value;
+		setOpponent(nickname);
+		setErrors((prevErrors) => ({ ...prevErrors, opponent: false }));
+
+		if (nickname.length > 0) {
+			const suggestions = await fetchUserSuggestions(nickname);
+			setOpponentSuggestions(suggestions);
+		} else {
+			setOpponentSuggestions([]);
+		}
+		setOpponentId(null);
+	};
+
+	const selectOpponent = (selectedOpponent: BasicUserInfo) => {
+		setOpponent(selectedOpponent.nickname);
+		setOpponentId(selectedOpponent.id);
+		setOpponentSuggestions([]);
+	};
+
+	const handleSubmit = async (event: React.FormEvent) => {
+		event.preventDefault();
+
+		const newErrors = {
+			title: !title,
+			category: !category,
+			opponent: !opponent || opponentId === null,
+			authorChoice: !authorChoice,
+			startTime: !startTime,
+			duration: !duration,
+			maxParticipants: !maxParticipants,
+			details: !details,
+		};
+
+		if (Object.values(newErrors).some((error) => error)) {
+			setErrors(newErrors);
+			return;
+		}
+
+		const selectedCategory = categories.find(
+			(cat) => cat.name === category,
+		)?.id;
+
+		if (selectedCategory === undefined) {
+			console.error("Invalid category selected");
+			return;
+		}
+
+		if (opponentId === null) {
+			alert("상대방 닉네임을 찾을 수 없습니다.");
+			return;
+		}
+
+		const opinions = [authorChoice];
+
+		const minPeopleCount = 5;
+
+		const startDate = new Date(startTime);
+		const endDate = new Date(
+			startDate.getTime() + parseInt(duration, 10) * 60000,
+		);
+
+		const dataToSend = {
+			title,
+			detail: details,
+			startDate: startDate.toISOString(),
+			endDate: endDate.toISOString(),
+			time: parseInt(duration, 10),
+			category: selectedCategory,
+			oppositeUserId: opponentId,
+			opinions,
+			minPeopleCount,
+			maxPeopleCount: parseInt(maxParticipants, 10),
+			battleRule: "",
+		};
+
+		console.log("Data to be sent:", dataToSend);
+
+		try {
+			const response = await battleService.inviteBattle(dataToSend);
+			console.log("Battle invitation sent successfully:", response);
+			navigate("/fanning");
+		} catch (error) {
+			console.error("Failed to invite to battle:", error);
+		}
 	};
 
 	return (
-		<Form>
+		<Form onSubmit={handleSubmit}>
 			<FormGroup>
 				<FlexFormGroup>
 					<FormGroup style={{ flex: 2 }}>
-						<Label htmlFor="title">제목</Label>
-						<Input id="title" type="text" placeholder="제목을 입력하세요" />
+						<Label htmlFor="title">
+							제목
+							{errors.title && <ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>}
+						</Label>
+						<Input
+							id="title"
+							type="text"
+							placeholder="제목을 입력하세요"
+							value={title}
+							onChange={(e) => {
+								setTitle(e.target.value);
+								setErrors((prevErrors) => ({ ...prevErrors, title: false }));
+							}}
+						/>
 					</FormGroup>
 					<FormGroup style={{ flex: 1 }}>
-						<Label htmlFor="category">카테고리</Label>
+						<Label htmlFor="category">
+							카테고리
+							{errors.category && (
+								<ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>
+							)}
+						</Label>
 						<Dropdown
 							options={categoryNames}
 							defaultOption="카테고리 선택"
@@ -117,64 +242,141 @@ function LiveDebateRegistForm() {
 			<FlexFormGroup>
 				<FormGroup style={{ flex: 1 }}>
 					<Label htmlFor="author">작성자 닉네임</Label>
-					<Input id="author" type="text" placeholder="닉네임을 입력하세요" />
+					<Input
+						id="author"
+						type="text"
+						value={user?.nickname || ""}
+						placeholder="닉네임을 입력하세요"
+						disabled
+					/>
 				</FormGroup>
-				<FormGroup style={{ flex: 1 }}>
-					<Label htmlFor="opponent">상대방 닉네임</Label>
+				<FormGroup style={{ flex: 1, position: "relative" }}>
+					<Label htmlFor="opponent">
+						상대방 닉네임
+						{errors.opponent && <ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>}
+					</Label>
 					<Input
 						id="opponent"
 						type="text"
 						placeholder="상대방 닉네임을 입력하세요"
+						value={opponent}
+						onChange={handleOpponentInputChange}
 					/>
+					{opponentSuggestions.length > 0 && (
+						<Options>
+							{opponentSuggestions.map((suggestion) => (
+								<Option
+									key={suggestion.id}
+									onClick={() => selectOpponent(suggestion)}
+								>
+									{suggestion.nickname}
+								</Option>
+							))}
+						</Options>
+					)}
 				</FormGroup>
 			</FlexFormGroup>
 			<FlexFormGroup>
 				<FormGroup style={{ flex: 1 }}>
-					<Label htmlFor="authorChoice">작성자 선택지</Label>
+					<Label htmlFor="authorChoice">
+						작성자 선택지
+						{errors.authorChoice && (
+							<ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>
+						)}
+					</Label>
 					<Input
 						id="authorChoice"
 						type="text"
 						placeholder="작성자 선택지를 입력하세요"
+						value={authorChoice}
+						onChange={(e) => {
+							setAuthorChoice(e.target.value);
+							setErrors((prevErrors) => ({
+								...prevErrors,
+								authorChoice: false,
+							}));
+						}}
 					/>
 				</FormGroup>
 				<FormGroup style={{ flex: 1 }}>
-					<Label htmlFor="opponentChoice">상대방 선택지</Label>
+					<Label htmlFor="opponentChoice">
+						상대방 선택지
+						{/* Opponent choice doesn't need to be filled */}
+					</Label>
 					<Input
 						id="opponentChoice"
 						type="text"
-						placeholder="상대방 선택지를 입력하세요"
+						placeholder="상대방 선택지는 상대방이 작성합니다."
+						value=""
+						disabled
+						style={{ cursor: "not-allowed" }}
 					/>
 				</FormGroup>
 			</FlexFormGroup>
 			<FlexFormGroup>
 				<FormGroup style={{ flex: 2 }}>
-					<Label htmlFor="startTime">라이브 시작 시간</Label>
+					<Label htmlFor="startTime">
+						라이브 시작 시간
+						{errors.startTime && (
+							<ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>
+						)}
+					</Label>
 					<Input
 						id="startTime"
 						type="datetime-local"
+						min={getMinDateTime()}
+						value={startTime}
+						onChange={handleStartTimeChange}
 						placeholder="라이브 시작 시간을 입력하세요"
 					/>
 				</FormGroup>
 				<FormGroup style={{ flex: 1 }}>
-					<Label htmlFor="duration">분</Label>
+					<Label htmlFor="duration">
+						분
+						{errors.duration && <ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>}
+					</Label>
 					<Dropdown
-						options={["10분", "20분", "30분", "40분", "50분", "60분"]}
-						defaultOption="선택"
-						onSelect={(value) => console.log(`Selected duration: ${value}`)}
+						options={["10", "20", "30", "40", "50", "60"]}
+						defaultOption="10"
+						onSelect={handleDurationSelect}
 					/>
 				</FormGroup>
 				<FormGroup style={{ flex: 1 }}>
-					<Label htmlFor="maxParticipants">최대 인원 수</Label>
+					<Label htmlFor="maxParticipants">
+						최대 인원 수
+						{errors.maxParticipants && (
+							<ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>
+						)}
+					</Label>
 					<Input
 						id="maxParticipants"
 						type="number"
 						placeholder="최대 인원 수"
+						value={maxParticipants}
+						onChange={(e) => {
+							setMaxParticipants(e.target.value);
+							setErrors((prevErrors) => ({
+								...prevErrors,
+								maxParticipants: false,
+							}));
+						}}
 					/>
 				</FormGroup>
 			</FlexFormGroup>
 			<FormGroup>
-				<Label htmlFor="details">토론 상세 정보 작성</Label>
-				<TextArea id="details" placeholder="상세 정보를 입력하세요" />
+				<Label htmlFor="details">
+					토론 상세 정보 작성
+					{errors.details && <ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>}
+				</Label>
+				<TextArea
+					id="details"
+					placeholder="상세 정보를 입력하세요"
+					value={details}
+					onChange={(e) => {
+						setDetails(e.target.value);
+						setErrors((prevErrors) => ({ ...prevErrors, details: false }));
+					}}
+				/>
 			</FormGroup>
 			<ButtonGroup>
 				<Button type="submit">등록</Button>

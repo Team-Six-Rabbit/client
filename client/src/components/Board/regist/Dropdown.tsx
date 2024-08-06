@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
+import "@/assets/styles/scrollbar.css";
 
 interface DropdownProps {
 	options: string[];
@@ -98,7 +99,7 @@ function Dropdown(props: DropdownProps) {
 					<path d="M7 10l5 5 5-5z" />
 				</Arrow>
 			</Selected>
-			<Options isOpen={isOpen}>
+			<Options isOpen={isOpen} className="custom-scrollbar">
 				{options.map((option) => (
 					<Option key={option} onClick={() => handleSelect(option)}>
 						{option}

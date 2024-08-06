@@ -1,7 +1,8 @@
 import axiosInstance from "@/services/axiosInstance";
 import { JoinRequest, LoginRequest, ApiResponse } from "@/types/api";
-import { DetailUserInfo } from "@/types/user";
+import { BasicUserInfo, DetailUserInfo } from "@/types/user";
 import { useAuthStore } from "@/stores/userAuthStore";
+import { generateBasicUser } from "@/mocks/util";
 
 export const authService = {
 	// 로그인 함수
@@ -91,5 +92,17 @@ export const authService = {
 			console.error("Check Email Error: ", error);
 			throw error;
 		}
+	},
+
+	searchUserByNickname: async (
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		_nickname: string,
+	): Promise<ApiResponse<BasicUserInfo[]>> => {
+		const size = Math.floor(Math.random() * 10);
+		const users = Array.from({ length: size }, () => generateBasicUser());
+		return {
+			code: "success",
+			data: users,
+		};
 	},
 };
