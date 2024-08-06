@@ -48,7 +48,6 @@ dependencies {
     implementation 'io.openvidu:openvidu-java-client:2.19.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-
     // Adding Jackson dependencies explicitly
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.4'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.15.4'

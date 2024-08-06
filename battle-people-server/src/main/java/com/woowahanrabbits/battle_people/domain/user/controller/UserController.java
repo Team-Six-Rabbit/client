@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
 import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
@@ -41,15 +43,17 @@ public class UserController {
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<ApiResponseDto<User>> getLoginUserProfile(@LoginUser User loginUser) {
+	public ResponseEntity<ApiResponseDto<BasicUserDto>> getLoginUserProfile(@LoginUser User loginUser) {
 		User user = userService.getUserProfile(loginUser.getId());
-		return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile", user));
+		BasicUserDto userDto = new BasicUserDto(user);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile", userDto));
 	}
 
 	@GetMapping("/profile/{userId}")
-	public ResponseEntity<ApiResponseDto<User>> getUserProfile(@PathVariable(value = "userId") Long userId) {
+	public ResponseEntity<ApiResponseDto<BasicUserDto>> getUserProfile(@PathVariable(value = "userId") Long userId) {
 		User user = userService.getUserProfile(userId);
-		return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile", user));
+		BasicUserDto userDto = new BasicUserDto(user);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile", userDto));
 	}
 
 	@GetMapping("/interest")
@@ -65,5 +69,17 @@ public class UserController {
 		@RequestBody InterestRequest request) {
 		userService.setInterest(user.getId(), request);
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "Create User Category", null));
+	}
+
+	@GetMapping("/check/nickname")
+	public ResponseEntity<ApiResponseDto<Boolean>> checkNickname(@RequestParam String nickname) {
+		boolean isAvailable = userService.isNicknameAvailable(nickname);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "닉네임 확인", isAvailable));
+	}
+
+	@GetMapping("/check/email")
+	public ResponseEntity<ApiResponseDto<Boolean>> checkEmail(@RequestParam String email) {
+		boolean isAvailable = userService.isEmailAvailable(email);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "닉네임 확인", isAvailable));
 	}
 }
