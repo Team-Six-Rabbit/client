@@ -34,6 +34,7 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+		System.out.println("do login");
 		User user = userService.login(loginRequest);
 
 		long userId = user.getId();

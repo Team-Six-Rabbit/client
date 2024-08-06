@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
@@ -68,5 +69,17 @@ public class UserController {
 		@RequestBody InterestRequest request) {
 		userService.setInterest(user.getId(), request);
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "Create User Category", null));
+	}
+
+	@GetMapping("/check/nickname")
+	public ResponseEntity<ApiResponseDto<Boolean>> checkNickname(@RequestParam String nickname) {
+		boolean isAvailable = userService.isNicknameAvailable(nickname);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "닉네임 확인", isAvailable));
+	}
+
+	@GetMapping("/check/email")
+	public ResponseEntity<ApiResponseDto<Boolean>> checkEmail(@RequestParam String email) {
+		boolean isAvailable = userService.isEmailAvailable(email);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "닉네임 확인", isAvailable));
 	}
 }
