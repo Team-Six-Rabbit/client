@@ -48,7 +48,8 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
-			Arrays.asList("http://localhost:3000", "https://i11a706.p.ssafy.io", "http://localhost"));
+			Arrays.asList("http://localhost:3000", "https://i11a706.p.ssafy.io", "http://localhost",
+				"https://apic.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowCredentials(true);
@@ -66,13 +67,14 @@ public class SecurityConfig {
 		http.httpBasic(basic -> basic.disable());
 
 		http.authorizeHttpRequests(auth -> auth
-			.requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/", "/user",
-				"/user/check/**")
-			.permitAll()
-			.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html",
-				"/webjars/**").permitAll() // Swagger 엔드포인트 허용
-			.anyRequest()
-			.authenticated());
+			.anyRequest().permitAll());
+		// .requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/", "/user",
+		// 	"/live-chat")
+		// .permitAll()
+		// .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html",
+		// 	"/webjars/**").permitAll() // Swagger 엔드포인트 허용
+		// .anyRequest()
+		// .authenticated());
 
 		http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService),
 			UsernamePasswordAuthenticationFilter.class);
