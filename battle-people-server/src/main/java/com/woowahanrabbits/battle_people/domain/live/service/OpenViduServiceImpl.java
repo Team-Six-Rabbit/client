@@ -33,6 +33,7 @@ import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Recording;
 import io.openvidu.java.client.RecordingProperties;
 import io.openvidu.java.client.Session;
+import io.openvidu.java.client.SessionProperties;
 
 @Service
 public class OpenViduServiceImpl implements OpenViduService {
@@ -88,7 +89,15 @@ public class OpenViduServiceImpl implements OpenViduService {
 
 		Session session = null;
 		try {
-			session = openVidu.createSession();
+			RecordingProperties recordingProperties = new RecordingProperties.Builder()
+				.outputMode(Recording.OutputMode.INDIVIDUAL) // 개별 스트림 녹화 모드
+				.hasVideo(false)
+				.build();
+			SessionProperties properties = new SessionProperties.Builder()
+				.customSessionId(battleId.toString())
+				.defaultRecordingProperties(recordingProperties)
+				.build();
+			session = openVidu.createSession(properties);
 		} catch (OpenViduJavaClientException e) {
 			throw new RuntimeException(e);
 		} catch (OpenViduHttpException e) {
@@ -104,8 +113,12 @@ public class OpenViduServiceImpl implements OpenViduService {
 		battleBoard.setRoom(room);
 		battleBoardRepository.save(battleBoard);
 
+		Date endDate = battleBoard.getVoteInfo().getEndDate();
+		long diffInMillis = endDate.getTime() - System.currentTimeMillis();
+		long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis);
+
 		redisTemplate.opsForValue()
-			.set("session:" + session.getSessionId(), session.getSessionId(), 24, TimeUnit.HOURS);
+			.set("session:" + session.getSessionId(), session.getSessionId(), diffInSeconds, TimeUnit.SECONDS);
 		sessions.put(session.getSessionId(), session);
 
 		System.out.println(battleBoard);
