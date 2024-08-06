@@ -34,11 +34,7 @@ export const handlers = [
 			);
 		},
 	),
-<<<<<<< HEAD
 	http.delete("/battle-people/auth/logout", () => {
-=======
-	http.delete("/auth/logout", () => {
->>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
 		return HttpResponse.json({
 			code: "success",
 			data: "로그아웃 성공",
