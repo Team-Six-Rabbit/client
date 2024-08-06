@@ -165,12 +165,16 @@ function SignUpPage() {
 			await authService.join(formValues);
 			navigator("/");
 		} catch (err) {
+<<<<<<< HEAD
 =======
 			await join(formValues);
 			navigator("/");
 		} catch (err) {
 			console.error("회원가입 실패");
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+=======
+			// console.error("회원가입 실패");
+>>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
 			setDoShake(true);
 			setTimeout(() => {
 				setDoShake(false);

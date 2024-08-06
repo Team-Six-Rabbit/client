@@ -90,6 +90,7 @@ export const authService = {
 			throw error;
 		}
 	},
+<<<<<<< HEAD
 =======
 // 로그아웃 함수
 export const logout = async (): Promise<void> => {
@@ -131,6 +132,9 @@ export const checkEmailAvailability = async (
 		console.error("Check Email Error: ", error);
 		throw error;
 	}
+=======
+<<<<<<< HEAD
+>>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
 };
 <<<<<<< HEAD
 =======
@@ -193,5 +197,33 @@ export const checkEmailAvailability = async (
 		console.error("Check Email Error: ", error);
 		throw error;
 	}
+=======
+	// 닉네임 중복 체크 함수
+	checkNicknameAvailability: async (nickname: string): Promise<boolean> => {
+		try {
+			const response = await axiosInstance.get<ApiResponse<boolean>>(
+				`/user/check/nickname?nickname=${nickname}`,
+			);
+			return response.data.data ?? false;
+		} catch (error) {
+			console.error("Check Nickname Error: ", error);
+			throw error;
+		}
+	},
+	// 이메일 중복 체크 함수
+	checkEmailAvailability: async (
+		email: string,
+	): Promise<ApiResponse<boolean>> => {
+		try {
+			const response = await axiosInstance.get<ApiResponse<boolean>>(
+				`/user/check/email?email=${email}`,
+			);
+			return response.data;
+		} catch (error) {
+			console.error("Check Email Error: ", error);
+			throw error;
+		}
+	},
+>>>>>>> 2796077 (Chore: 로그인 회원가입 push)
 };
 >>>>>>> a53a2e1 (Feat: 회원가입 로직 구현)

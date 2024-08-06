@@ -81,6 +81,7 @@ function LoginPage() {
 			navigator("/");
 		} catch (err) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			// console.error("로그인 실패");
 			// // TODO: 로그인 실패 시 처리
@@ -89,6 +90,8 @@ function LoginPage() {
 			// 	setDoShake(false);
 			// }, 500);
 >>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
+=======
+>>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
 			setErrors({ general: "로그인에 실패했습니다." }); // 로그인 실패 메시지
 			setDoShake(true);
 			setTimeout(() => {

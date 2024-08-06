@@ -8,6 +8,7 @@ import NotificationPage from "@/pages/NotificationPage";
 import PreVotingBoardPage from "@/pages/PreVotingBoardPage";
 import LivePage from "@/pages/LivePage";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import BalanceGameBoardPage from "@/pages/BalanceGameBoardPage";
 =======
 import MyPage from "@/pages/MyPage";
@@ -16,6 +17,8 @@ import Interests from "@/components/tabs/Interests";
 import ParticipatedVotes from "@/components/tabs/ParticipatedVotes";
 import WinRate from "@/components/tabs/WinRate";
 >>>>>>> 1ccc20e (Feat: 마이페이지 구현)
+=======
+>>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
 
 const router = createBrowserRouter([
 	{
@@ -46,6 +49,7 @@ const router = createBrowserRouter([
 		path: "/live",
 		element: <LivePage />,
 	},
+<<<<<<< HEAD
 	{
 <<<<<<< HEAD
 		path: "/bonfire",
@@ -73,6 +77,8 @@ const router = createBrowserRouter([
 		],
 >>>>>>> 1ccc20e (Feat: 마이페이지 구현)
 	},
+=======
+>>>>>>> 7ec1267 (Chore: 로그인 회원가입 push)
 ]);
 
 export default router;
