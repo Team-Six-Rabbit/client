@@ -88,5 +88,7 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 	List<BattleBoard> findBattleBoardsByEndDate(@Param("startDate") LocalDateTime startDate,
 		@Param("endDate") LocalDateTime endDate);
 
+	BattleBoard findByRoomId(Long roomId);
+
 }
 
