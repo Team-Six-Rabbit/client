@@ -61,12 +61,6 @@ function LoginPage() {
 			await authService.login(formValues);
 			navigator("/");
 		} catch (err) {
-			// console.error("로그인 실패");
-			// // TODO: 로그인 실패 시 처리
-			// setDoShake(true);
-			// setTimeout(() => {
-			// 	setDoShake(false);
-			// }, 500);
 			setErrors({ general: "로그인에 실패했습니다." }); // 로그인 실패 메시지
 			setDoShake(true);
 			setTimeout(() => {
