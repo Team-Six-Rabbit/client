@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { ChangeEventHandler, MouseEventHandler } from "react";
+import { ChangeEventHandler, MouseEventHandler, KeyboardEvent } from "react";
 
 interface AuthSubmitBtnProps {
 	text: string;
@@ -16,6 +16,7 @@ interface AuthInputProps {
 	onChange: ChangeEventHandler;
 	className?: string;
 	error?: string; // 에러 메시지 추가
+	onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export function AuthInput({
@@ -27,6 +28,7 @@ export function AuthInput({
 	onChange,
 	className,
 	error, // 에러 메시지 추가
+	onKeyDown,
 }: AuthInputProps) {
 	return (
 		<div className="mb-4">
@@ -39,12 +41,13 @@ export function AuthInput({
 					placeholder={placeholder}
 					value={value}
 					onChange={onChange}
+					onKeyDown={onKeyDown}
 					className={classNames(
 						"w-full p-2 border-4 border-black rounded-xl focus:outline-none focus:border-[#F66C23] focus:shadow-[0_0_0_3px_rgba(246,108,35,0.3)]",
 						className,
 					)}
 				/>
-				{error && <p className="text-red-500 text-sm mt-1">{error}</p>}{" "}
+				{error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 				{/* 에러 메시지 표시 */}
 			</label>
 		</div>

@@ -1,6 +1,5 @@
 import React from "react";
 import "@/assets/styles/scrollbar.css";
-
 import styled from "styled-components";
 import {
 	ModalBackdrop,

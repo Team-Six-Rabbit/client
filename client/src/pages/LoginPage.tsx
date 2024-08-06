@@ -1,18 +1,10 @@
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, KeyboardEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
 import GoogleLoginButton from "@/components/auth/googleLoginBtn";
 import { LoginRequest } from "@/types/api";
 import { authService } from "@/services/userAuthService";
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
-
-interface CustomCSSProperties extends React.CSSProperties {
-	textShadow?: string;
-}
-
-const headingTagStyles: CustomCSSProperties = {
-	...createLiveStateBorder("black", 4),
-};
 
 function LoginPage() {
 	const navigator = useNavigate();
@@ -35,6 +27,13 @@ function LoginPage() {
 			[name]: value,
 		});
 		setErrors((prevErrors) => ({ ...prevErrors, [name]: "", general: "" })); // 입력 변경 시 에러 초기화
+	};
+
+	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === "Enter") {
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			doLogin();
+		}
 	};
 
 	const doLogin = async () => {
@@ -74,7 +73,7 @@ function LoginPage() {
 			<div className="bg-white p-8 rounded-3xl shadow-lg scale-100 border-4 border-solid border-black">
 				<h1
 					className="text-center text-white text-5xl mb-4"
-					style={headingTagStyles}
+					style={createLiveStateBorder("black", 4)}
 				>
 					로그인
 				</h1>
@@ -85,6 +84,7 @@ function LoginPage() {
 						name="email"
 						value={formValues.email}
 						onChange={handleInputChange}
+						onKeyDown={handleKeyDown}
 						placeholder="이메일"
 					/>
 					{errors.email && (
@@ -100,6 +100,7 @@ function LoginPage() {
 						name="password"
 						value={formValues.password}
 						onChange={handleInputChange}
+						onKeyDown={handleKeyDown}
 						placeholder="비밀번호"
 					/>
 					{errors.password && (
