@@ -211,6 +211,7 @@ function SignUpPage() {
 		} catch (err) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 			await join(formValues);
@@ -231,6 +232,8 @@ function SignUpPage() {
 			// console.error("회원가입 실패");
 >>>>>>> 0e5627c (Chore: 로그인 회원가입 push)
 >>>>>>> b795bd7 (Chore: 로그인 회원가입 push)
+=======
+>>>>>>> a063086 (Fix: base url 수정)
 			setDoShake(true);
 			setTimeout(() => {
 				setDoShake(false);
