@@ -17,9 +17,13 @@ interface AuthInputProps {
 	className?: string;
 	error?: string; // 에러 메시지 추가
 <<<<<<< HEAD
+<<<<<<< HEAD
 	onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
 =======
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+=======
+	onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+>>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 }
 
 export function AuthInput({
@@ -32,9 +36,13 @@ export function AuthInput({
 	className,
 	error, // 에러 메시지 추가
 <<<<<<< HEAD
+<<<<<<< HEAD
 	onKeyDown,
 =======
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+=======
+	onKeyDown,
+>>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 }: AuthInputProps) {
 	return (
 		<div className="mb-4">
@@ -54,10 +62,14 @@ export function AuthInput({
 					)}
 				/>
 <<<<<<< HEAD
+<<<<<<< HEAD
 				{error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 =======
 				{error && <p className="text-red-500 text-sm mt-1">{error}</p>}{" "}
 >>>>>>> 1d4af31 (Feat: 회원가입 로직 구현)
+=======
+				{error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+>>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 				{/* 에러 메시지 표시 */}
 			</label>
 		</div>

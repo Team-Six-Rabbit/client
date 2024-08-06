@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { ChangeEvent, useState, KeyboardEvent } from "react";
 =======
 import React, { ChangeEvent, useState } from "react";
 >>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
+=======
+import { ChangeEvent, useState, KeyboardEvent } from "react";
+>>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 import { Link, useNavigate } from "react-router-dom";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
 import GoogleLoginButton from "@/components/auth/googleLoginBtn";
@@ -17,6 +21,7 @@ import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
 import { login } from "@/services/userAuthService";
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
 
+<<<<<<< HEAD
 interface CustomCSSProperties extends React.CSSProperties {
 	textShadow?: string;
 }
@@ -26,6 +31,8 @@ const headingTagStyles: CustomCSSProperties = {
 };
 >>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
 
+=======
+>>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 function LoginPage() {
 	const navigator = useNavigate();
 	const [formValues, setFormValues] = useState<LoginRequest>({
@@ -57,6 +64,13 @@ function LoginPage() {
 		}
 =======
 >>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
+	};
+
+	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === "Enter") {
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			doLogin();
+		}
 	};
 
 	const doLogin = async () => {
@@ -135,9 +149,13 @@ function LoginPage() {
 						value={formValues.email}
 						onChange={handleInputChange}
 <<<<<<< HEAD
+<<<<<<< HEAD
 						onKeyDown={handleKeyDown}
 =======
 >>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
+=======
+						onKeyDown={handleKeyDown}
+>>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 						placeholder="이메일"
 					/>
 					{errors.email && (
@@ -154,9 +172,13 @@ function LoginPage() {
 						value={formValues.password}
 						onChange={handleInputChange}
 <<<<<<< HEAD
+<<<<<<< HEAD
 						onKeyDown={handleKeyDown}
 =======
 >>>>>>> ddc781d (Feat: 로그인 페이지 오류 메시지 생성)
+=======
+						onKeyDown={handleKeyDown}
+>>>>>>> c239a7e (Refactor: 로그인 엔터 기능 추가, 불필요한 구문 수정)
 						placeholder="비밀번호"
 					/>
 					{errors.password && (
