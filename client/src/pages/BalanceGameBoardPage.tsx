@@ -7,7 +7,10 @@ import BalanceGameCard from "@/components/Board/bonfire/BalanceGameCard";
 import { categories } from "@/constant/boardCategory";
 import { LiveStatus } from "@/types/Board/liveStatus";
 import { balanceGameService } from "@/services/balanceGameService";
-import { BalanceGameCardType } from "@/types/Board/balancegameCard";
+import {
+	BalanceGameCardType,
+	OpinionType,
+} from "@/types/Board/balancegameCard";
 import { ApiResponse, BalanceGameResponse } from "@/types/api";
 import bonfireIcon from "@/assets/images/bonfire.gif";
 
@@ -53,15 +56,12 @@ function BalanceGameBoardPage() {
 	};
 
 	const handleScroll = useCallback(() => {
-		// 현재 스크롤 위치와 문서 전체 높이를 계산하여 하단에 근접했는지 체크
 		if (
 			window.innerHeight + document.documentElement.scrollTop + 200 >=
 			document.documentElement.scrollHeight
 		) {
-			// 상태를 콘솔에 출력하여 확인
 			console.log(`hasMore: ${hasMore}, isLoading: ${isLoading}`);
 
-			// 더 많은 데이터를 불러올 수 있는 상태인지 확인
 			if (hasMore && !isLoading) {
 				console.log("Fetching more data...");
 				setPage((prevPage) => prevPage + 1);
@@ -72,7 +72,7 @@ function BalanceGameBoardPage() {
 	// Fetch data when category, status, or page changes
 	useEffect(() => {
 		const fetchBalanceGames = async () => {
-			if (isLoading || !hasMore) return; // 이미 로딩 중이거나 더 이상 데이터가 없으면 종료
+			if (isLoading || !hasMore) return;
 
 			setIsLoading(true);
 
@@ -111,10 +111,8 @@ function BalanceGameBoardPage() {
 						};
 					}) || [];
 
-				// 기존 카드 목록에 새로운 카드 추가
 				setFilteredCards((prevCards) => [...prevCards, ...balanceGames]);
 
-				// 요청한 것보다 적은 항목이 반환되면 더 이상 페이지가 없는 것으로 설정
 				setHasMore(balanceGames.length === 10);
 			} catch (error) {
 				console.error("Failed to fetch balance games:", error);
@@ -133,37 +131,13 @@ function BalanceGameBoardPage() {
 		};
 	}, [handleScroll]);
 
-	const handleVote = (cardId: number, option: number) => {
+	const handleVote = (cardId: number, updatedOpinions: OpinionType[]) => {
 		setFilteredCards((prevState) => {
 			const newState = prevState.map((card) => {
 				if (card.id === cardId) {
-					const updatedCard = { ...card };
+					const updatedCard = { ...card, opinions: updatedOpinions };
 
-					if (option === 0) {
-						updatedCard.opinions[0].count += 1;
-					} else {
-						updatedCard.opinions[1].count += 1;
-					}
-
-					const newTotalVotes = updatedCard.opinions.reduce(
-						(total, opinion) => total + opinion.count,
-						0,
-					);
-
-					let percentage1 = Math.round(
-						(updatedCard.opinions[0].count / newTotalVotes) * 100,
-					);
-					const percentage2 = Math.round(
-						(updatedCard.opinions[1].count / newTotalVotes) * 100,
-					);
-
-					if (percentage1 + percentage2 !== 100) {
-						percentage1 = 100 - percentage2;
-					}
-
-					updatedCard.opinions[0].percentage = percentage1;
-					updatedCard.opinions[1].percentage = percentage2;
-
+					// 서버에서 받은 opinions 데이터를 그대로 사용합니다.
 					return updatedCard;
 				}
 				return card;
@@ -188,7 +162,7 @@ function BalanceGameBoardPage() {
 				<BalanceGameBoardContainer>
 					<BoardCardContainer>
 						{filteredCards.map((card) => {
-							const isEnded = card.currentState === 7; // Check currentState to determine if the game is ended
+							const isEnded = card.currentState === 7;
 							return (
 								<BalanceGameCard
 									key={card.id}
