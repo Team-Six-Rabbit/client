@@ -10,11 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteChatRequestDto;
-import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.service.LiveChatService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
-import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,26 +27,20 @@ public class LiveChatController {
 	private final UserRepository userRepository;
 
 	@MessageMapping("/chat/{battleBoardId}")
-	public void sendMessage(@DestinationVariable Long battleBoardId, WriteChatRequestDto writeChatRequestDto,
-		@LoginUser User user) {
-		System.out.println(user.toString());
-		String key = "live:" + Long.toString(battleBoardId);
-		// PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-		// User user = principalDetails.getUser();
-		user = userRepository.findById(7L).orElseThrow();
-		// user.setId(3);
+	public void sendMessage(@DestinationVariable Long battleBoardId, WriteChatRequestDto writeChatRequestDto) {
+		String key = "live";
+
+		User user = userRepository.findById(7L).orElseThrow();
 		user.setNickname("현치비");
-		WriteChatResponseDto writeChatResponseDto = liveChatService.saveMessage(battleBoardId, writeChatRequestDto,
-			user);
-		redisTemplate.convertAndSend(key + ":chat", writeChatResponseDto);
+
+		redisTemplate.convertAndSend(key, liveChatService.saveMessage(battleBoardId, writeChatRequestDto,
+			user));
 	}
 
 	@MessageMapping("/request/{battleBoardId}")
-	public void sendRequest(@DestinationVariable Long battleBoardId, @LoginUser User user) {
-		String key = "live:" + Long.toString(battleBoardId) + ":request";
-		// User user = new User();
-		user = userRepository.findById(7L).orElseThrow();
-		// user.setId(3);
+	public void sendRequest(@DestinationVariable Long battleBoardId) {
+		String key = "live:" + battleBoardId + ":request";
+		User user = userRepository.findById(7L).orElseThrow();
 		user.setNickname("현치비");
 
 		// Redis에서 특정 키의 존재 여부 확인

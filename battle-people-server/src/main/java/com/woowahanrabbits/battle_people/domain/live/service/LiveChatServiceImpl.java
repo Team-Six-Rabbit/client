@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteChatRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
@@ -29,10 +30,11 @@ public class LiveChatServiceImpl implements LiveChatService {
 	private final BattleRepository battleRepository;
 	private final RedisMessageListenerContainer redisMessageListenerContainer;
 	private final MessageListenerAdapter messageListenerAdapter;
-	private static int index = 0;
+	private static int chatIdx = 0;
+	private static int requestIdx = 0;
 
 	@Override
-	public WriteChatResponseDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto, User user) {
+	public RedisTopicDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto, User user) {
 
 		WriteChatResponseDto writeChatResponseDto = WriteChatResponseDto.builder()
 			.user(new BasicUserDto(user))
@@ -44,19 +46,20 @@ public class LiveChatServiceImpl implements LiveChatService {
 			voteInfo.getId());
 		Integer userVote = (userVoteOpinion != null) ? userVoteOpinion.getVoteInfoIndex() : null;
 		writeChatResponseDto.setUserVote(userVote);
-		writeChatResponseDto.setIdx(index++);
+		writeChatResponseDto.setIdx(chatIdx++);
 
-		return writeChatResponseDto;
+		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
+			.battleBoardId(battleBoardId)
+			.type("chat")
+			.responseDto(writeChatResponseDto)
+			.build();
+
+		return redisTopicDto;
 
 	}
 
 	@Override
-	public WriteTalkResponseDto saveRequest(Long battleBoardId, User user) {
-
-		WriteTalkResponseDto writeTalkResponseDto = WriteTalkResponseDto.builder()
-			.userId(user.getId())
-			.userNickname(user.getNickname())
-			.build();
+	public RedisTopicDto saveRequest(Long battleBoardId, User user) {
 
 		VoteInfo voteInfo = battleRepository.findById(battleBoardId)
 			.orElseThrow()
@@ -66,17 +69,30 @@ public class LiveChatServiceImpl implements LiveChatService {
 		if (userVoteOpinion == null) {
 			throw new RuntimeException();
 		}
-		writeTalkResponseDto.setUserVote(userVoteOpinion.getVoteInfoIndex());
 
-		return writeTalkResponseDto;
+		WriteTalkResponseDto writeTalkResponseDto = WriteTalkResponseDto.builder()
+			.basicUserDto(new BasicUserDto(user))
+			.idx(requestIdx++)
+			.userVote(userVoteOpinion.getVoteInfoIndex())
+			.build();
+
+		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
+			.battleBoardId(battleBoardId)
+			.type("request")
+			.responseDto(writeTalkResponseDto)
+			.build();
+
+		return redisTopicDto;
 
 	}
 
 	@Override
 	public void addTopicListener(Long battleBoardId) {
-		ChannelTopic chatTopic = new ChannelTopic("live:" + battleBoardId + ":chat");
-		ChannelTopic requestTopic = new ChannelTopic("live:" + battleBoardId + ":request");
-		redisMessageListenerContainer.addMessageListener(messageListenerAdapter, chatTopic);
-		redisMessageListenerContainer.addMessageListener(messageListenerAdapter, requestTopic);
+		// ChannelTopic chatTopic = new ChannelTopic("live:" + battleBoardId + ":chat");
+		// ChannelTopic requestTopic = new ChannelTopic("live:" + battleBoardId + ":request");
+		// redisMessageListenerContainer.addMessageListener(messageListenerAdapter, chatTopic);
+		// redisMessageListenerContainer.addMessageListener(messageListenerAdapter, requestTopic);
+		ChannelTopic topic = new ChannelTopic("live");
+		redisMessageListenerContainer.addMessageListener(messageListenerAdapter, topic);
 	}
 }
