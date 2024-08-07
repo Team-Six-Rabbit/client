@@ -1,29 +1,33 @@
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/stores/userAuthStore";
 import { useState } from "react";
 import BalanceGameModal from "@/components/Modal/BalanceGameModal";
-import { BalanceGameCardType } from "@/types/Board/balancegameCard";
+import {
+	BalanceGameCardType,
+	OpinionType,
+} from "@/types/Board/balancegameCard";
 import ActiveBalanceGameCard from "@/components/Board/bonfire/ActiveBalanceGameCard";
 import EndedBalanceGameCard from "@/components/Board/bonfire/EndedBalanceGameCard";
 import {
 	BalanceGameCardWrapper,
 	Question,
 } from "@/assets/styles/balanceGameStyle";
-import { balanceGameService } from "@/services/balanceGameService";
 import fireExtinguisher from "@/assets/images/fireExtinguisher.gif";
 import fire from "@/assets/images/fire.gif";
 import styled from "styled-components";
+import { balanceGameService } from "@/services/balanceGameService";
 
 interface BalanceGameCardProps {
 	data: BalanceGameCardType;
-	onVote: (id: number, option: number) => void;
+	onVote: (cardId: number, updatedOpinions: OpinionType[]) => void;
 	disabled: boolean;
-	isEnded: boolean; // Add a prop to indicate if the game is ended
+	isEnded: boolean;
 }
 
-// Styled component for the like GIF
 const LikeImage = styled.img`
-	width: 50px; // Adjust size as needed
-	height: 50px; // Adjust size as needed
-	margin-right: 8px; // Space between the GIF and the title
+	width: 50px;
+	height: 50px;
+	margin-right: 8px;
 `;
 
 function BalanceGameCard({
@@ -39,11 +43,41 @@ function BalanceGameCard({
 	const [modalData, setModalData] = useState<BalanceGameCardType | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const handleVote = (option: number) => {
+	const navigate = useNavigate();
+
+	const { isLogin, user } = useAuthStore();
+
+	const handleVote = async (option: number) => {
+		if (!isLogin || !user) {
+			navigate("/login");
+			return;
+		}
+
 		if (hasVoted || disabled) return;
 
-		setHasVoted(true);
-		onVote(data.id, option);
+		setIsLoading(true);
+		try {
+			console.log(
+				`Request parameters: battleId=${data.id}, userId=${user.id}, voteOpinionIndex=${option}`,
+			);
+			const response = await balanceGameService.voteBalanceGame(
+				data.id,
+				user.id,
+				option,
+			);
+
+			if (response.data && response.data.opinions) {
+				const updatedOpinions = response.data.opinions;
+				setHasVoted(true);
+				onVote(data.id, updatedOpinions);
+			} else {
+				console.error("Unexpected response format:", response);
+			}
+		} catch (error) {
+			console.error("Failed to vote:", error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handleCardClick = async () => {

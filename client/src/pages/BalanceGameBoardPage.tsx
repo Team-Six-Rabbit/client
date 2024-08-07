@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
@@ -7,7 +7,10 @@ import BalanceGameCard from "@/components/Board/bonfire/BalanceGameCard";
 import { categories } from "@/constant/boardCategory";
 import { LiveStatus } from "@/types/Board/liveStatus";
 import { balanceGameService } from "@/services/balanceGameService";
-import { BalanceGameCardType } from "@/types/Board/balancegameCard";
+import {
+	BalanceGameCardType,
+	OpinionType,
+} from "@/types/Board/balancegameCard";
 import { ApiResponse, BalanceGameResponse } from "@/types/api";
 import bonfireIcon from "@/assets/images/bonfire.gif";
 
@@ -35,45 +38,60 @@ function BalanceGameBoardPage() {
 	const [selectedStatus, setSelectedStatus] = useState<LiveStatus>("live");
 	const [filteredCards, setFilteredCards] = useState<BalanceGameCardType[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [page, setPage] = useState<number>(0);
+	const [hasMore, setHasMore] = useState<boolean>(true);
 
 	const handleCategorySelect = (category: string) => {
 		setSelectedCategory(category);
+		setPage(0);
+		setFilteredCards([]);
+		setHasMore(true);
 	};
 
 	const handleStatusSelect = (status: LiveStatus) => {
 		setSelectedStatus(status);
+		setPage(0);
+		setFilteredCards([]);
+		setHasMore(true);
 	};
 
+	const handleScroll = useCallback(() => {
+		if (
+			window.innerHeight + document.documentElement.scrollTop + 200 >=
+			document.documentElement.scrollHeight
+		) {
+			console.log(`hasMore: ${hasMore}, isLoading: ${isLoading}`);
+
+			if (hasMore && !isLoading) {
+				console.log("Fetching more data...");
+				setPage((prevPage) => prevPage + 1);
+			}
+		}
+	}, [hasMore, isLoading]);
+
+	// Fetch data when category, status, or page changes
 	useEffect(() => {
 		const fetchBalanceGames = async () => {
+			if (isLoading || !hasMore) return;
+
+			setIsLoading(true);
+
 			try {
-				setIsLoading(true);
+				const categoryIndex =
+					selectedCategory === "전체"
+						? undefined
+						: categories.find((category) => category.name === selectedCategory)
+								?.id;
 
-				const categoryIndex = categories.findIndex(
-					(category) => category.name === selectedCategory,
-				);
+				const status = selectedStatus === "live" ? 6 : 7;
 
-				let response: ApiResponse<BalanceGameResponse[]>;
-				switch (selectedStatus) {
-					case "live":
-						response = await balanceGameService.getBalanceGames(
-							1,
-							6,
-							categoryIndex,
-							10,
-						);
-						break;
-					case "ended":
-						response = await balanceGameService.getBalanceGames(
-							1,
-							7,
-							categoryIndex,
-							10,
-						);
-						break;
-					default:
-						return;
-				}
+				const response: ApiResponse<BalanceGameResponse[]> =
+					await balanceGameService.getBalanceGames(
+						categoryIndex,
+						status,
+						page,
+						15,
+					);
 
 				const balanceGames: BalanceGameCardType[] =
 					response.data?.map((game) => {
@@ -89,11 +107,13 @@ function BalanceGameBoardPage() {
 							startDate: game.startDate,
 							endDate: game.endDate,
 							category: game.category,
-							userVote: game.userVote ?? null, // userVote가 undefined일 수 있으므로 기본값 설정
+							userVote: game.userVote ?? null,
 						};
 					}) || [];
 
-				setFilteredCards(balanceGames);
+				setFilteredCards((prevCards) => [...prevCards, ...balanceGames]);
+
+				setHasMore(balanceGames.length === 10);
 			} catch (error) {
 				console.error("Failed to fetch balance games:", error);
 			} finally {
@@ -102,39 +122,22 @@ function BalanceGameBoardPage() {
 		};
 
 		fetchBalanceGames();
-	}, [selectedCategory, selectedStatus]);
+	}, [selectedCategory, selectedStatus, page, hasMore, isLoading]);
 
-	const handleVote = (cardId: number, option: number) => {
+	useEffect(() => {
+		window.addEventListener("scroll", handleScroll);
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+		};
+	}, [handleScroll]);
+
+	const handleVote = (cardId: number, updatedOpinions: OpinionType[]) => {
 		setFilteredCards((prevState) => {
 			const newState = prevState.map((card) => {
 				if (card.id === cardId) {
-					const updatedCard = { ...card };
+					const updatedCard = { ...card, opinions: updatedOpinions };
 
-					if (option === 0) {
-						updatedCard.opinions[0].count += 1;
-					} else {
-						updatedCard.opinions[1].count += 1;
-					}
-
-					const newTotalVotes = updatedCard.opinions.reduce(
-						(total, opinion) => total + opinion.count,
-						0,
-					);
-
-					let percentage1 = Math.round(
-						(updatedCard.opinions[0].count / newTotalVotes) * 100,
-					);
-					const percentage2 = Math.round(
-						(updatedCard.opinions[1].count / newTotalVotes) * 100,
-					);
-
-					if (percentage1 + percentage2 !== 100) {
-						percentage1 = 100 - percentage2;
-					}
-
-					updatedCard.opinions[0].percentage = percentage1;
-					updatedCard.opinions[1].percentage = percentage2;
-
+					// 서버에서 받은 opinions 데이터를 그대로 사용합니다.
 					return updatedCard;
 				}
 				return card;
@@ -157,24 +160,21 @@ function BalanceGameBoardPage() {
 					boardIcon={bonfireIcon}
 				/>
 				<BalanceGameBoardContainer>
-					{isLoading ? (
-						<div>Loading...</div>
-					) : (
-						<BoardCardContainer>
-							{filteredCards.map((card) => {
-								const isEnded = card.currentState === 7; // Check currentState to determine if the game is ended
-								return (
-									<BalanceGameCard
-										key={card.id}
-										data={card}
-										onVote={handleVote}
-										disabled={selectedStatus === "ended"}
-										isEnded={isEnded}
-									/>
-								);
-							})}
-						</BoardCardContainer>
-					)}
+					<BoardCardContainer>
+						{filteredCards.map((card) => {
+							const isEnded = card.currentState === 7;
+							return (
+								<BalanceGameCard
+									key={card.id}
+									data={card}
+									onVote={handleVote}
+									disabled={selectedStatus === "ended"}
+									isEnded={isEnded}
+								/>
+							);
+						})}
+					</BoardCardContainer>
+					{isLoading && <div>Loading...</div>}
 				</BalanceGameBoardContainer>
 			</div>
 			<PlusButton strokeColor="#000000" fillColor="#F66C23" />

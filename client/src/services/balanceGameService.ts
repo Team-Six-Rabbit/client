@@ -3,12 +3,13 @@ import {
 	BalanceGameResponse,
 	CreateBalanceGameRequest,
 } from "@/types/api";
+import { OpinionWithPercentage } from "@/types/vote";
 import axiosInstance from "./axiosInstance";
 
 export const balanceGameService = {
 	getBalanceGames: async (
-		category: number,
-		status: number,
+		category?: number,
+		status: number = 6,
 		page: number = 0,
 		size: number = 10,
 	): Promise<ApiResponse<BalanceGameResponse[]>> => {
@@ -61,6 +62,26 @@ export const balanceGameService = {
 			return response.data;
 		} catch (error) {
 			console.error(`Failed to fetch balance game with id ${id}:`, error);
+			throw error;
+		}
+	},
+	voteBalanceGame: async (
+		battleId: number,
+		userId: number,
+		voteOpinionIndex: number,
+	): Promise<ApiResponse<{ opinions: OpinionWithPercentage[] }>> => {
+		try {
+			const response = await axiosInstance.post<
+				ApiResponse<{ opinions: OpinionWithPercentage[] }>
+			>(`/vote/user-vote/${battleId}`, null, {
+				params: {
+					userId,
+					voteOpinionIndex,
+				},
+			});
+			return response.data;
+		} catch (error) {
+			console.error("Failed to submit vote:", error);
 			throw error;
 		}
 	},
