@@ -7,8 +7,8 @@ import axiosInstance from "./axiosInstance";
 
 export const balanceGameService = {
 	getBalanceGames: async (
-		category: number,
-		status: number,
+		category?: number,
+		status: number = 6,
 		page: number = 0,
 		size: number = 10,
 	): Promise<ApiResponse<BalanceGameResponse[]>> => {

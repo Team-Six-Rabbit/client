@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
@@ -35,45 +35,63 @@ function BalanceGameBoardPage() {
 	const [selectedStatus, setSelectedStatus] = useState<LiveStatus>("live");
 	const [filteredCards, setFilteredCards] = useState<BalanceGameCardType[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [page, setPage] = useState<number>(0);
+	const [hasMore, setHasMore] = useState<boolean>(true);
 
 	const handleCategorySelect = (category: string) => {
 		setSelectedCategory(category);
+		setPage(0);
+		setFilteredCards([]);
+		setHasMore(true);
 	};
 
 	const handleStatusSelect = (status: LiveStatus) => {
 		setSelectedStatus(status);
+		setPage(0);
+		setFilteredCards([]);
+		setHasMore(true);
 	};
 
+	const handleScroll = useCallback(() => {
+		// 현재 스크롤 위치와 문서 전체 높이를 계산하여 하단에 근접했는지 체크
+		if (
+			window.innerHeight + document.documentElement.scrollTop + 200 >=
+			document.documentElement.scrollHeight
+		) {
+			// 상태를 콘솔에 출력하여 확인
+			console.log(`hasMore: ${hasMore}, isLoading: ${isLoading}`);
+
+			// 더 많은 데이터를 불러올 수 있는 상태인지 확인
+			if (hasMore && !isLoading) {
+				console.log("Fetching more data...");
+				setPage((prevPage) => prevPage + 1);
+			}
+		}
+	}, [hasMore, isLoading]);
+
+	// Fetch data when category, status, or page changes
 	useEffect(() => {
 		const fetchBalanceGames = async () => {
+			if (isLoading || !hasMore) return; // 이미 로딩 중이거나 더 이상 데이터가 없으면 종료
+
+			setIsLoading(true);
+
 			try {
-				setIsLoading(true);
+				const categoryIndex =
+					selectedCategory === "전체"
+						? undefined
+						: categories.find((category) => category.name === selectedCategory)
+								?.id;
 
-				const categoryIndex = categories.findIndex(
-					(category) => category.name === selectedCategory,
-				);
+				const status = selectedStatus === "live" ? 6 : 7;
 
-				let response: ApiResponse<BalanceGameResponse[]>;
-				switch (selectedStatus) {
-					case "live":
-						response = await balanceGameService.getBalanceGames(
-							1,
-							6,
-							categoryIndex,
-							10,
-						);
-						break;
-					case "ended":
-						response = await balanceGameService.getBalanceGames(
-							1,
-							7,
-							categoryIndex,
-							10,
-						);
-						break;
-					default:
-						return;
-				}
+				const response: ApiResponse<BalanceGameResponse[]> =
+					await balanceGameService.getBalanceGames(
+						categoryIndex,
+						status,
+						page,
+						15,
+					);
 
 				const balanceGames: BalanceGameCardType[] =
 					response.data?.map((game) => {
@@ -89,11 +107,15 @@ function BalanceGameBoardPage() {
 							startDate: game.startDate,
 							endDate: game.endDate,
 							category: game.category,
-							userVote: game.userVote ?? null, // userVote가 undefined일 수 있으므로 기본값 설정
+							userVote: game.userVote ?? null,
 						};
 					}) || [];
 
-				setFilteredCards(balanceGames);
+				// 기존 카드 목록에 새로운 카드 추가
+				setFilteredCards((prevCards) => [...prevCards, ...balanceGames]);
+
+				// 요청한 것보다 적은 항목이 반환되면 더 이상 페이지가 없는 것으로 설정
+				setHasMore(balanceGames.length === 10);
 			} catch (error) {
 				console.error("Failed to fetch balance games:", error);
 			} finally {
@@ -102,7 +124,14 @@ function BalanceGameBoardPage() {
 		};
 
 		fetchBalanceGames();
-	}, [selectedCategory, selectedStatus]);
+	}, [selectedCategory, selectedStatus, page, hasMore, isLoading]);
+
+	useEffect(() => {
+		window.addEventListener("scroll", handleScroll);
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+		};
+	}, [handleScroll]);
 
 	const handleVote = (cardId: number, option: number) => {
 		setFilteredCards((prevState) => {
@@ -157,24 +186,21 @@ function BalanceGameBoardPage() {
 					boardIcon={bonfireIcon}
 				/>
 				<BalanceGameBoardContainer>
-					{isLoading ? (
-						<div>Loading...</div>
-					) : (
-						<BoardCardContainer>
-							{filteredCards.map((card) => {
-								const isEnded = card.currentState === 7; // Check currentState to determine if the game is ended
-								return (
-									<BalanceGameCard
-										key={card.id}
-										data={card}
-										onVote={handleVote}
-										disabled={selectedStatus === "ended"}
-										isEnded={isEnded}
-									/>
-								);
-							})}
-						</BoardCardContainer>
-					)}
+					<BoardCardContainer>
+						{filteredCards.map((card) => {
+							const isEnded = card.currentState === 7; // Check currentState to determine if the game is ended
+							return (
+								<BalanceGameCard
+									key={card.id}
+									data={card}
+									onVote={handleVote}
+									disabled={selectedStatus === "ended"}
+									isEnded={isEnded}
+								/>
+							);
+						})}
+					</BoardCardContainer>
+					{isLoading && <div>Loading...</div>}
 				</BalanceGameBoardContainer>
 			</div>
 			<PlusButton strokeColor="#000000" fillColor="#F66C23" />
