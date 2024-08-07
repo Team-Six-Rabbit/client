@@ -1,5 +1,6 @@
 package com.woowahanrabbits.battle_people.domain.live.controller;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -19,24 +20,28 @@ import lombok.RequiredArgsConstructor;
 public class LiveChatController {
 
 	private final LiveChatService liveChatService;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	private final SimpMessagingTemplate messagingTemplate;
 
 	@MessageMapping("/chat/{battleBoardId}")
 	public void sendMessage(@DestinationVariable Long battleBoardId, WriteChatRequestDto chatDTO) {
+
+		String key = "live:" + chatDTO.getBattleBoardId();
 		User user = new User();
 		user.setId(3);
 		user.setNickname("현치비");
-		liveChatService.saveMessage(chatDTO, user);
+		redisTemplate.convertAndSend(key + ":chat", liveChatService.saveMessage(chatDTO, user));
 	}
 
 	@MessageMapping("/request/{battleBoardId}")
 	public void sendRequest(@DestinationVariable Long battleBoardId, WriteTalkRequestDto writeTalkRequestDto) {
+		String key = "live:" + writeTalkRequestDto.getBattleBoardId();
 		User user = new User();
 		user.setId(3);
 		user.setNickname("현치비");
-		liveChatService.saveRequest(writeTalkRequestDto, user);
-		// liveChatService.saveMessage(chatDTO, user);
+
+		redisTemplate.convertAndSend(key + ":request", liveChatService.saveRequest(writeTalkRequestDto, user));
 	}
 
 	@GetMapping("/addTopicListener")

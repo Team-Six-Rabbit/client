@@ -33,10 +33,10 @@ public class RedisSubscriber implements MessageListener {
 
 			if (type.equals("chat")) {
 				WriteChatResponseDto chatMessage = objectMapper.readValue(publishMessage, WriteChatResponseDto.class);
-				messagingTemplate.convertAndSend("/get/" + type + "/" + battleId, chatMessage);
+				messagingTemplate.convertAndSend("/topic/" + type + "/" + battleId, chatMessage);
 			} else if (type.equals("request")) {
 				WriteTalkResponseDto user = objectMapper.readValue(publishMessage, WriteTalkResponseDto.class);
-				messagingTemplate.convertAndSend("/get/" + type + "/" + battleId, user);
+				messagingTemplate.convertAndSend("/topic/" + type + "/" + battleId, user);
 			}
 
 			// 수신한 메시지 로깅
