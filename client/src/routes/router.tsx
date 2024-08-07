@@ -36,7 +36,7 @@ const router = createBrowserRouter([
 		element: <PreVotingBoardPage />,
 	},
 	{
-		path: "/live",
+		path: "/live/:battleId",
 		element: <LivePage />,
 	},
 	{
