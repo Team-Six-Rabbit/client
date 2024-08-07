@@ -105,4 +105,44 @@ export const authService = {
 			throw error;
 		}
 	},
+
+	// 수정된 유저 정보 저장
+	updateUserProfile: async (
+		userInfo: DetailUserInfo,
+	): Promise<ApiResponse<DetailUserInfo>> => {
+		try {
+			const response = await axiosInstance.post<ApiResponse<DetailUserInfo>>(
+				"/user/profile",
+				userInfo,
+			);
+			if (response.data.code === "success" && response.data.data) {
+				useAuthStore.getState().setUser(response.data.data);
+			}
+			return response.data;
+		} catch (error) {
+			throw error;
+		}
+	},
+
+	// 프로필 이미지 업로드 함수
+	uploadProfileImage: async (
+		formData: FormData,
+	): Promise<ApiResponse<string>> => {
+		try {
+			const response = await axiosInstance.post<ApiResponse<string>>(
+				"/user/upload",
+				formData,
+				{
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				},
+			);
+			console.log(response);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+			throw error;
+		}
+	},
 };
