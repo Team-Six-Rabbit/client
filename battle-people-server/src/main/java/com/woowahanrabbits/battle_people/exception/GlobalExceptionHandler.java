@@ -2,6 +2,7 @@ package com.woowahanrabbits.battle_people.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -27,5 +28,12 @@ public class GlobalExceptionHandler {
 		ApiResponseDto<String> response = new ApiResponseDto<>("fail", "An unexpected error occurred",
 			error.getMessage());
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ApiResponseDto<String>> handleAccessDeniedException(AccessDeniedException ex) {
+		ApiResponseDto<String> response = new ApiResponseDto<>("fail", "An error occurred: Access Denied", null);
+		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
 	}
 }
