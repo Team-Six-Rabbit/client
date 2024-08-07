@@ -7,7 +7,6 @@ import java.util.Base64;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -16,11 +15,17 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.woowahanrabbits.battle_people.domain.battle.dto.AiThumbnailRequestDto;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class AiThumbnailService {
 	@Value("${openai.api.key}")
 	private String apiKey;
+
+	private final ObjectMapper objectMapper;
 
 	private static final String OPENAI_API_URL = "https://api.openai.com/v1/images/generations";
 
@@ -36,9 +41,16 @@ public class AiThumbnailService {
 		httpPost.setHeader("Content-Type", "application/json");
 		httpPost.setHeader("Authorization", "Bearer " + apiKey);
 
-		String json = "{\"prompt\": \"" + prompt + "\", \"n\": 1, \"size\": \"1024x1024\"}";
-		StringEntity entity = new StringEntity(json);
-		httpPost.setEntity(entity);
+		AiThumbnailRequestDto aiThumbnailRequestDto = new AiThumbnailRequestDto();
+		aiThumbnailRequestDto.setNumber(1);
+		aiThumbnailRequestDto.setQuality("dall-e-3");
+		aiThumbnailRequestDto.setSize("1792x1024");
+
+		// StringEntity entity = objectMapper.convertValue();
+
+		// String json = "{\"prompt\": \"" + prompt + "\", \"n\": 1, \"size\": \"1024x1024\"}";
+		// StringEntity entity = new StringEntity(json);
+		// httpPost.setEntity(entity);
 
 		CloseableHttpResponse response = httpClient.execute(httpPost);
 		String responseString = EntityUtils.toString(response.getEntity());
