@@ -3,6 +3,7 @@ package com.woowahanrabbits.battle_people.domain.user.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -79,5 +80,20 @@ public class UserController {
 	public ResponseEntity<ApiResponseDto<Boolean>> checkEmail(@RequestParam String email) {
 		boolean isAvailable = userService.isEmailAvailable(email);
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "닉네임 확인", isAvailable));
+	}
+
+	@GetMapping
+	public ResponseEntity<ApiResponseDto<BasicUserDto>> getUserByNickname(
+		@RequestParam("nickname") String nickename) {
+
+		Optional<User> userOptional = userService.findByNickname(nickename);
+
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			BasicUserDto userDto = new BasicUserDto(user);
+			return ResponseEntity.ok(new ApiResponseDto<>("success", "user", userDto));
+		} else {
+			return ResponseEntity.ok(new ApiResponseDto<>("fail", "User not found", null));
+		}
 	}
 }
