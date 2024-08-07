@@ -106,7 +106,7 @@ public class UserService {
 		return !userRepository.existsByEmail(email);
 	}
 
-	public Optional<User> findByNickname(String nickname) {
-		return userRepository.findByNickname(nickname);
+	public List<User> findByNickname(String nickname) {
+		return userRepository.findByNicknameContaining(nickname);
 	}
 }
