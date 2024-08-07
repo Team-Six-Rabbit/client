@@ -105,4 +105,8 @@ public class UserService {
 	public boolean isEmailAvailable(String email) {
 		return !userRepository.existsByEmail(email);
 	}
+
+	public List<User> findByNickname(String nickname) {
+		return userRepository.findByNicknameContaining(nickname);
+	}
 }

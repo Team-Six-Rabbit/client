@@ -1,5 +1,6 @@
 package com.woowahanrabbits.battle_people.domain.user.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,5 +80,17 @@ public class UserController {
 	public ResponseEntity<ApiResponseDto<Boolean>> checkEmail(@RequestParam String email) {
 		boolean isAvailable = userService.isEmailAvailable(email);
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "닉네임 확인", isAvailable));
+	}
+
+	@GetMapping
+	public ResponseEntity<ApiResponseDto<List<BasicUserDto>>> getUserByNickname(
+		@RequestParam("nickname") String nickname) {
+
+		List<User> userList = userService.findByNickname(nickname);
+		List<BasicUserDto> userDtoList = new ArrayList<>();
+		for (User user : userList) {
+			userDtoList.add(new BasicUserDto(user));
+		}
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "user", userDtoList));
 	}
 }
