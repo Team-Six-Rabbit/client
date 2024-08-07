@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteChatRequestDto;
-import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteTalkRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
@@ -29,40 +29,36 @@ public class LiveChatServiceImpl implements LiveChatService {
 	private final BattleRepository battleRepository;
 	private final RedisMessageListenerContainer redisMessageListenerContainer;
 	private final MessageListenerAdapter messageListenerAdapter;
+	private static int index = 0;
 
 	@Override
-	public WriteChatResponseDto saveMessage(WriteChatRequestDto chatDTO, User user) {
+	public WriteChatResponseDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto, User user) {
 
 		WriteChatResponseDto writeChatResponseDto = WriteChatResponseDto.builder()
-			.userName(user.getNickname())
-			.message(chatDTO.getMessage())
-			// .regDate(new Date())
+			.user(new BasicUserDto(user))
+			.message(writeChatRequestDto.getMessage())
 			.build();
 
-		VoteInfo voteInfo = battleRepository.findById(chatDTO.getBattleBoardId()).orElseThrow().getVoteInfo();
+		VoteInfo voteInfo = battleRepository.findById(battleBoardId).orElseThrow().getVoteInfo();
 		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(),
 			voteInfo.getId());
 		Integer userVote = (userVoteOpinion != null) ? userVoteOpinion.getVoteInfoIndex() : null;
 		writeChatResponseDto.setUserVote(userVote);
+		writeChatResponseDto.setIdx(index++);
 
-		// String message = "";
-		// try {
-		// 	message = objectMapper.writeValueAsString(writeChatResponseDto);
-		// } catch (Exception e) {
-		// 	throw new RuntimeException(e + ", mapping error");
-		// }
 		return writeChatResponseDto;
+
 	}
 
 	@Override
-	public WriteTalkResponseDto saveRequest(WriteTalkRequestDto writeTalkRequestDto, User user) {
+	public WriteTalkResponseDto saveRequest(Long battleBoardId, User user) {
 
 		WriteTalkResponseDto writeTalkResponseDto = WriteTalkResponseDto.builder()
 			.userId(user.getId())
 			.userNickname(user.getNickname())
 			.build();
 
-		VoteInfo voteInfo = battleRepository.findById(writeTalkRequestDto.getBattleBoardId())
+		VoteInfo voteInfo = battleRepository.findById(battleBoardId)
 			.orElseThrow()
 			.getVoteInfo();
 		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(),

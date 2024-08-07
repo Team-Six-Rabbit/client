@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class WriteChatRequestDto {
-	private Long battleBoardId;
 	private String message;
 
 }
