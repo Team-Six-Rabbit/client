@@ -68,12 +68,12 @@ public class VoteServiceImpl implements VoteService {
 		}
 
 		CurrentVoteResponseDto responseDto = resultDto(voteInfoId);
-		String channel = "voteResults-" + battleBoardId;
-		try {
-			redisTemplate.convertAndSend(channel, objectMapper.writeValueAsString(responseDto));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// String channel = "voteResults-" + battleBoardId;
+		// try {
+		// 	redisTemplate.convertAndSend(channel, objectMapper.writeValueAsString(responseDto));
+		// } catch (Exception e) {
+		// 	e.printStackTrace();
+		// }
 
 		return responseDto;
 	}

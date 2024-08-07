@@ -12,4 +12,5 @@ public interface VoteService {
 	CurrentVoteResponseDto putVoteOpinion(Long userId, Long battleBoardId, int voteInfoIndex);
 
 	CurrentVoteResponseDto getVoteResult(Long battleBoardId);
+
 }
