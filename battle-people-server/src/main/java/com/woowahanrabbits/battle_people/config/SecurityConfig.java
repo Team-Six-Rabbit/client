@@ -4,12 +4,16 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -27,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableWebSocketSecurity
 public class SecurityConfig {
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final JwtUtil jwtUtil;
@@ -84,5 +89,15 @@ public class SecurityConfig {
 			.accessDeniedHandler(forbiddenExceptionHandler)
 			.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 		return http.build();
+	}
+
+	@Bean
+	public AuthorizationManager<Message<?>> messageAuthorizationManager(
+		MessageMatcherDelegatingAuthorizationManager.Builder messages) {
+		messages
+			.simpDestMatchers("/app/**").permitAll()
+			.simpSubscribeDestMatchers("/topic/**").permitAll()
+			.anyMessage().denyAll();
+		return messages.build();
 	}
 }
