@@ -22,8 +22,4 @@ public class WriteChatResponseDto {
 
 	@Setter
 	private int idx;
-
-	// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
-	// private Date regDate;
-
 }
