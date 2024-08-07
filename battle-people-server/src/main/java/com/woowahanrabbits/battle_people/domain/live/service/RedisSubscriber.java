@@ -38,7 +38,7 @@ public class RedisSubscriber implements MessageListener {
 					});
 				WriteChatResponseDto returnValue = chatTopicDto.getResponseDto();
 				messagingTemplate.convertAndSend("/topic/chat/" + battleBoardId, returnValue);
-			} else if (type.equals("response")) {
+			} else if (type.equals("request")) {
 				RedisTopicDto<WriteTalkResponseDto> responseTopicDto = objectMapper.readValue(publishMessage,
 					new TypeReference<>() {
 					});

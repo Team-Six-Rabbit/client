@@ -39,17 +39,18 @@ public class LiveChatController {
 
 	@MessageMapping("/request/{battleBoardId}")
 	public void sendRequest(@DestinationVariable Long battleBoardId) {
-		String key = "live:" + battleBoardId + ":request";
+		String key = "live";
 		User user = userRepository.findById(7L).orElseThrow();
 		user.setNickname("현치비");
 
 		// Redis에서 특정 키의 존재 여부 확인
 		ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
-		if (redisTemplate.hasKey(key)) {
+		if (valueOps.get(key + ":" + battleBoardId + ":" + user.getId()) != null) {
 			throw new RuntimeException("User with id " + user.getId() + " has already sent a request.");
 		}
+
 		// 요청 저장
-		valueOps.set(key, user.getId());
+		valueOps.set(key + ":" + battleBoardId + ":" + user.getId(), user.getId());
 
 		redisTemplate.convertAndSend(key, liveChatService.saveRequest(battleBoardId, user));
 	}
