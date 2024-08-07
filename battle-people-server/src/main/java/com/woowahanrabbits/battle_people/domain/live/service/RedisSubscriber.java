@@ -23,7 +23,9 @@ public class RedisSubscriber implements MessageListener {
 
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
+		System.out.println("7");
 		try {
+			System.out.println("8");
 			String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
 			System.out.println(publishMessage);
 			String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
@@ -31,17 +33,18 @@ public class RedisSubscriber implements MessageListener {
 			String battleId = channels[1];
 			String type = channels[2];
 
+			log.info("Received message on channel: {}", channel);
+			log.info("Published message: {}", publishMessage);
+
 			if (type.equals("chat")) {
 				WriteChatResponseDto chatMessage = objectMapper.readValue(publishMessage, WriteChatResponseDto.class);
 				messagingTemplate.convertAndSend("/topic/" + type + "/" + battleId, chatMessage);
+				log.info("Sent chat message to /topic/{}/{}", type, battleId);
 			} else if (type.equals("request")) {
 				WriteTalkResponseDto user = objectMapper.readValue(publishMessage, WriteTalkResponseDto.class);
 				messagingTemplate.convertAndSend("/topic/" + type + "/" + battleId, user);
+				log.info("Sent request message to /topic/{}/{}", type, battleId);
 			}
-
-			// 수신한 메시지 로깅
-			log.info("Redis Subscribe Channel : " + battleId);
-			// log.info("Redis SUB Message : {}", chatMessage.getMessage());
 
 		} catch (Exception e) {
 			log.error("Error processing message", e);
