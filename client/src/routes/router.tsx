@@ -73,6 +73,28 @@ const router = createBrowserRouter([
 			},
 		],
 	},
+	{
+		path: "/my-page",
+		element: <MyPage />,
+		children: [
+			{
+				path: "win-rate",
+				element: <WinRate />,
+			},
+			{
+				path: "created-lives",
+				element: <CreatedLives />,
+			},
+			{
+				path: "participated-votes",
+				element: <ParticipatedVotes />,
+			},
+			{
+				path: "interests",
+				element: <Interests />,
+			},
+		],
+	},
 ]);
 
 export default router;

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import axiosInstance from "@/services/axiosInstance";
 import { JoinRequest, LoginRequest, ApiResponse } from "@/types/api";
 import { BasicUserInfo, DetailUserInfo } from "@/types/user";
