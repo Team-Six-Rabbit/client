@@ -15,18 +15,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/live-chat")
-			.setAllowedOriginPatterns("*");
-
+		registry.addEndpoint("/ws")
+			.setAllowedOriginPatterns("*")
+			.withSockJS();
 	}
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 		// 메세지 구독 요청 url -> 메세지 받을 때
-		registry.enableSimpleBroker("/get");
+		registry.enableSimpleBroker("/topic");
 
 		// 메세지 발행 요청 url -> 메세지 보낼 때
-		registry.setApplicationDestinationPrefixes("/write");
+		registry.setApplicationDestinationPrefixes("/app");
 	}
 
 }
