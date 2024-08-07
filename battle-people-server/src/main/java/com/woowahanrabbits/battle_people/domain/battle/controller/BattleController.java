@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +20,7 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
-import com.woowahanrabbits.battle_people.domain.user.dto.PrincipalDetails;
+import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,85 +39,47 @@ public class BattleController {
 	@PostMapping("/invite")
 	@Operation(summary = "[점화] 배틀을 요청한다.")
 	public ResponseEntity<?> registBattle(@RequestBody @Valid BattleInviteRequest battleInviteRequest,
-		Authentication authentication) {
+		@LoginUser User user) {
 
-		try {
-			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-			User user = principalDetails.getUser();
-
-			battleService.registBattle(battleInviteRequest, user);
-			return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("error", "", e.getMessage()));
-		}
+		battleService.registBattle(battleInviteRequest, user);
+		return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 	}
 
 	//요청한, 요청받은 배틀 조회
 	@GetMapping("")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "요청받는 배틀을 조회한다.")
-	public ResponseEntity<?> getRequestBattleList(Authentication authentication,
+	public ResponseEntity<?> getRequestBattleList(@LoginUser User user,
 		@RequestParam(defaultValue = "0") int page, @RequestParam(required = false) Long id) {
-		try {
-			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-			User user = principalDetails.getUser();
-			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "", battleService.getReceivedBattleList(user, page, id)));
 
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("error", "", e.getMessage()));
-		}
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ApiResponseDto<>("success", "", battleService.getReceivedBattleList(user, page, id)));
 	}
 
 	@PatchMapping("/accept-or-decline")
 	@Operation(summary = "[불씨] 배틀을 수락 또는 거절한다.")
 	public ResponseEntity<?> acceptOrDeclineBattle(@RequestBody BattleRespondRequest battleRespondRequest,
-		Authentication authentication) {
+		@LoginUser User user) {
 
-		try {
-			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-			User user = principalDetails.getUser();
-			battleService.acceptOrDeclineBattle(battleRespondRequest, user);
-			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "", null));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("error", "", e.getMessage()));
-
-		}
+		battleService.acceptOrDeclineBattle(battleRespondRequest, user);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ApiResponseDto<>("success", "", null));
 	}
 
 	@GetMapping("/apply-list")
 	@Operation(summary = "[불씨] 모집중인 배틀을 조회한다.")
 	public ResponseEntity<?> getAwaitingBattleList(@RequestParam(defaultValue = "") Integer category, int page,
-		Authentication authentication) {
-		try {
-			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-			User user = principalDetails.getUser();
-			List<AwaitingBattleResponseDto> list = battleService.getAwaitingBattleList(category, page, user);
-			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "", list));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("error", "", e.getMessage()));
-		}
+		@LoginUser User user) {
+		List<AwaitingBattleResponseDto> list = battleService.getAwaitingBattleList(category, page, user);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ApiResponseDto<>("success", "", list));
 	}
 
 	@PostMapping("/apply")
 	@Operation(summary = "모집중인 특정 배틀에 참여 신청한다.")
 	public ResponseEntity<?> applyBattle(@RequestBody @Valid BattleApplyDto battleApplyDto,
-		Authentication authentication) {
-		try {
-			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
-			User user = principalDetails.getUser();
-
-			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "", battleService.applyBattle(battleApplyDto, user)));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("error", "", e.getMessage()));
-		}
-
+		@LoginUser User user) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ApiResponseDto<>("success", "", battleService.applyBattle(battleApplyDto, user)));
 	}
 }

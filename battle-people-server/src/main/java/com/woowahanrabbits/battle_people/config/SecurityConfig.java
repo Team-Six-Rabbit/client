@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -67,14 +68,12 @@ public class SecurityConfig {
 		http.httpBasic(basic -> basic.disable());
 
 		http.authorizeHttpRequests(auth -> auth
-			.anyRequest().permitAll());
-		// .requestMatchers("/user/join", "/auth/login", "/auth/logout", "/auth/refresh", "/", "/user",
-		// 	"/live-chat")
-		// .permitAll()
-		// .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html",
-		// 	"/webjars/**").permitAll() // Swagger 엔드포인트 허용
-		// .anyRequest()
-		// .authenticated());
+			.requestMatchers(HttpMethod.GET)
+			.permitAll()
+			.requestMatchers("/user/join", "/auth/*", "/ws")
+			.permitAll()
+			.anyRequest()
+			.authenticated());
 
 		http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService),
 			UsernamePasswordAuthenticationFilter.class);

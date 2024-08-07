@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,13 +37,8 @@ public class UserController {
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "User joined", user));
 	}
 
-	@GetMapping
-	public ResponseEntity<ApiResponseDto<List<User>>> getAllUsers() {
-		List<User> list = userService.findAllUsers();
-		return ResponseEntity.ok(new ApiResponseDto<>("success", "User list", list));
-	}
-
 	@GetMapping("/profile")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<ApiResponseDto<BasicUserDto>> getLoginUserProfile(@LoginUser User loginUser) {
 		User user = userService.getUserProfile(loginUser.getId());
 		BasicUserDto userDto = new BasicUserDto(user);
@@ -50,6 +46,7 @@ public class UserController {
 	}
 
 	@GetMapping("/profile/{userId}")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<ApiResponseDto<BasicUserDto>> getUserProfile(@PathVariable(value = "userId") Long userId) {
 		User user = userService.getUserProfile(userId);
 		BasicUserDto userDto = new BasicUserDto(user);
@@ -57,6 +54,7 @@ public class UserController {
 	}
 
 	@GetMapping("/interest")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<ApiResponseDto<Map<String, List<Integer>>>> getUserInterest(@LoginUser User user) {
 		List<Integer> list = userService.getInterest(user.getId());
 		Map<String, List<Integer>> response = new HashMap<>();
