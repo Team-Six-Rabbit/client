@@ -1,6 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class LiveChatServiceImpl implements LiveChatService {
 
-	private final RedisTemplate<String, Object> redisTemplate;
 	private final ObjectMapper objectMapper;
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
 	private final BattleRepository battleRepository;
@@ -33,8 +31,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 	private final MessageListenerAdapter messageListenerAdapter;
 
 	@Override
-	public void saveMessage(WriteChatRequestDto chatDTO, User user) {
-		String key = "live:" + chatDTO.getBattleBoardId();
+	public WriteChatResponseDto saveMessage(WriteChatRequestDto chatDTO, User user) {
 
 		WriteChatResponseDto writeChatResponseDto = WriteChatResponseDto.builder()
 			.userName(user.getNickname())
@@ -54,14 +51,11 @@ public class LiveChatServiceImpl implements LiveChatService {
 		// } catch (Exception e) {
 		// 	throw new RuntimeException(e + ", mapping error");
 		// }
-
-		redisTemplate.convertAndSend(key + ":chat", writeChatResponseDto);
-
+		return writeChatResponseDto;
 	}
 
 	@Override
-	public void saveRequest(WriteTalkRequestDto writeTalkRequestDto, User user) {
-		String key = "live:" + writeTalkRequestDto.getBattleBoardId();
+	public WriteTalkResponseDto saveRequest(WriteTalkRequestDto writeTalkRequestDto, User user) {
 
 		WriteTalkResponseDto writeTalkResponseDto = WriteTalkResponseDto.builder()
 			.userId(user.getId())
@@ -78,7 +72,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 		}
 		writeTalkResponseDto.setUserVote(userVoteOpinion.getVoteInfoIndex());
 
-		redisTemplate.convertAndSend(key + ":request", writeTalkResponseDto);
+		return writeTalkResponseDto;
 
 	}
 
