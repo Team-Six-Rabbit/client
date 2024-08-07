@@ -4,7 +4,7 @@ import "@/assets/styles/liveLoding.css";
 
 interface VideoStreamProps {
 	className: string;
-	streamManager: StreamManager | null;
+	streamManager?: StreamManager;
 }
 
 function VideoStream({ className, streamManager }: VideoStreamProps) {

@@ -14,7 +14,7 @@ function LivePage() {
 	const [isTimeOver, setIsTimeOver] = useState(false);
 	const [isMicMuted, setIsMicMuted] = useState(true);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(true);
-	const { joinSession, publisher, subscribers, index } = useOpenVidu();
+	const { joinSession, publisher, subscribers } = useOpenVidu();
 	const { battleId } = useParams();
 
 	const handleMicClick = useCallback(() => {
@@ -26,8 +26,15 @@ function LivePage() {
 	}, []);
 
 	useEffect(() => {
-		joinSession(battleId!);
+		if (battleId) joinSession(battleId);
 	}, [battleId, joinSession]);
+
+	useEffect(() => {
+		if (publisher) {
+			publisher.publishAudio(!isMicMuted);
+			publisher.publishVideo(!isVideoDisabled);
+		}
+	}, [isMicMuted, isVideoDisabled, publisher]);
 
 	const onVoteEnd = useCallback((winner: string) => {
 		setWinner(winner);
@@ -46,13 +53,7 @@ function LivePage() {
 							optionB="마라탕을 먹자"
 							onVoteEnd={onVoteEnd}
 						/>
-						<VideoScreen
-							publisher={publisher?.current}
-							subscribers={subscribers}
-							index={index}
-							isMicMuted={isMicMuted}
-							isVideoDisabled={isVideoDisabled}
-						/>
+						<VideoScreen subscribers={subscribers} />
 						<ItemBox
 							isMicMuted={isMicMuted}
 							isVideoDisabled={isVideoDisabled}

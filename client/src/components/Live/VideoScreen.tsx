@@ -1,15 +1,14 @@
-import { useEffect } from "react";
 import VideoStream from "@/components/WebRTC/VideoStream";
 import vsImage from "@/assets/images/LiveVS.png";
 import { createLiveStateBorder } from "@/utils/textBorder";
-import { StreamManager, Publisher } from "openvidu-browser";
+import { StreamManager } from "openvidu-browser";
 
 const borderStyles = createLiveStateBorder("black", 4);
 
 interface VideoPlayerProps {
 	userRank: string;
 	userName: string;
-	streamManager: StreamManager | null;
+	streamManager?: StreamManager;
 }
 
 function VideoPlayerLeft({
@@ -57,56 +56,29 @@ function VideoPlayerRight({
 }
 
 interface VideoScreenProps {
-	publisher: Publisher | null;
 	subscribers: StreamManager[];
-	index: number | null;
-	isMicMuted: boolean;
-	isVideoDisabled: boolean;
 }
 
-function VideoScreen({
-	publisher,
-	subscribers,
-	index,
-	isMicMuted,
-	isVideoDisabled,
-}: VideoScreenProps) {
-	useEffect(() => {
-		if (publisher) {
-			publisher.publishAudio(!isMicMuted);
-			publisher.publishVideo(!isVideoDisabled);
-		}
-	}, [isMicMuted, isVideoDisabled, publisher]);
-
+function VideoScreen({ subscribers }: VideoScreenProps) {
 	return (
 		<div className="relative h-70% w-full">
 			<div className="h-full w-full bg-[url('@/assets/images/LivePlayers.png')] bg-contain bg-center bg-no-repeat flex">
-				{index === 0 ? (
-					<VideoPlayerLeft
-						userRank="육두품"
-						userName="반반무마니"
-						streamManager={publisher}
-					/>
-				) : (
-					<VideoPlayerLeft
-						userRank="육두품"
-						userName="반반무마니"
-						streamManager={subscribers[0] || null}
-					/>
-				)}
-				{index === 1 ? (
-					<VideoPlayerRight
-						userRank="사두품"
-						userName="마라탕탕후루후루"
-						streamManager={publisher}
-					/>
-				) : (
-					<VideoPlayerRight
-						userRank="사두품"
-						userName="마라탕탕후루후루"
-						streamManager={subscribers[1] || null}
-					/>
-				)}
+				<VideoPlayerLeft
+					userRank="육두품"
+					userName="반반무마니"
+					streamManager={subscribers.find(
+						(streamManager) =>
+							streamManager.stream.connection.serverData?.index === 0,
+					)}
+				/>
+				<VideoPlayerRight
+					userRank="사두품"
+					userName="마라탕탕후루후루"
+					streamManager={subscribers.find(
+						(streamManager) =>
+							streamManager.stream.connection.serverData?.index === 1,
+					)}
+				/>
 			</div>
 			<div className="absolute z-10 w-1/3 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
 				<img src={vsImage} alt="VS" />
