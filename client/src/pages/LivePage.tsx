@@ -58,7 +58,7 @@ function LivePage() {
 							onVideoClick={handleVideoClick}
 						/>
 					</div>
-					<ChatBox battleBoardId="7" />
+					<ChatBox battleBoardId="7" role={role} />
 				</div>
 				{isTimeOver && <EndedLive winner={winner} />}
 			</div>

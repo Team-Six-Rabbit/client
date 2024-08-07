@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
 import { Client, IMessage } from "@stomp/stompjs";
-
-interface ChatMessage {
-	userName: string;
-	message: string;
-	rating: number;
-	userVote: number | null;
-}
+import { ChatMessage, SpeechRequestMessage } from "@/types/Chat";
 
 interface UseChatStompReturn {
-	messages: string[];
+	messages: ChatMessage[];
+	speechRequests: SpeechRequestMessage[];
 	sendMessage: (message: string) => void;
+	sendRequestSpeech: () => void;
 }
 
 const useChatSocket = (topic: string): UseChatStompReturn => {
-	const [messages, setMessages] = useState<string[]>([]);
+	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const [speechRequests, setSpeechRequests] = useState<SpeechRequestMessage[]>(
+		[],
+	);
 	const [stompClient, setStompClient] = useState<Client | null>(null);
 
 	useEffect(() => {
@@ -29,10 +28,17 @@ const useChatSocket = (topic: string): UseChatStompReturn => {
 			heartbeatOutgoing: 4000,
 			onConnect: () => {
 				console.log("Connected to chat server");
+
+				// 채팅 메시지 받는 곳
 				client.subscribe(`/topic/chat/${topic}`, (message: IMessage) => {
 					const parsedMessage: ChatMessage = JSON.parse(message.body);
-					const formattedMessage = `${parsedMessage.userName}[${parsedMessage.rating}]: ${parsedMessage.message}`;
-					setMessages((prevMessages) => [...prevMessages, formattedMessage]);
+					setMessages((prevMessages) => [...prevMessages, parsedMessage]);
+				});
+
+				// 발언권 신청자 받는 곳
+				client.subscribe(`/topic/request/${topic}`, (message: IMessage) => {
+					const parsedRequest: SpeechRequestMessage = JSON.parse(message.body);
+					setSpeechRequests((prevRequests) => [...prevRequests, parsedRequest]);
 				});
 			},
 			onStompError: (frame) => {
@@ -50,7 +56,7 @@ const useChatSocket = (topic: string): UseChatStompReturn => {
 
 	const sendMessage = (message: string) => {
 		if (stompClient && stompClient.connected) {
-			const chatMessage: ChatMessage = {
+			const chatMessage = {
 				message,
 			};
 			stompClient.publish({
@@ -60,9 +66,20 @@ const useChatSocket = (topic: string): UseChatStompReturn => {
 		}
 	};
 
+	const sendRequestSpeech = () => {
+		if (stompClient && stompClient.connected) {
+			stompClient.publish({
+				destination: `/app/request/${topic}`,
+				body: JSON.stringify({}),
+			});
+		}
+	};
+
 	return {
 		messages,
+		speechRequests,
 		sendMessage,
+		sendRequestSpeech,
 	};
 };
 
