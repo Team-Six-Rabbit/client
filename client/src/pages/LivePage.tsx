@@ -1,31 +1,35 @@
-import { useEffect, useState } from "react";
-import ChatBox from "@/components/Live/ChatBox";
+import { useEffect, useState, useCallback } from "react";
+import ItemBox from "@/components/Live/ItemBox";
+import useOpenVidu from "@/hooks/useOpenVidu";
 import VideoScreen from "@/components/Live/VideoScreen";
+import Header from "@/components/header";
 import Timer from "@/components/Live/Timer";
 import LiveVote from "@/components/Live/LiveVote";
-import ItemBox from "@/components/Live/ItemBox";
+import ChatBox from "@/components/Live/ChatBox";
 import EndedLive from "@/components/Live/EndLive";
-import Header from "@/components/header";
-import useWebRTC from "@/hooks/useWebRTC";
 
-function LivePage() {
+function LivePage({ battleId }: { battleId: string }) {
 	const [winner, setWinner] = useState("");
 	const [isTimeOver, setIsTimeOver] = useState(false);
+	const [isMicMuted, setIsMicMuted] = useState(true);
+	const [isVideoDisabled, setIsVideoDisabled] = useState(true);
+	const { joinSession, publisher, subscribers, index } = useOpenVidu();
 
-	// 예시로 사용할 아이디 값
-	const battleId = "1";
-	const role = "viewer";
-	const userId = "1";
+	const handleMicClick = useCallback(() => {
+		setIsMicMuted((prev) => !prev);
+	}, []);
 
-	const initWebRTC = useWebRTC(battleId, role, userId);
+	const handleVideoClick = useCallback(() => {
+		setIsVideoDisabled((prev) => !prev);
+	}, []);
 
 	useEffect(() => {
-		initWebRTC();
-	}, [initWebRTC]);
+		joinSession(battleId);
+	}, [battleId, joinSession]);
 
-	const onVoteEnd = (winner: string) => {
+	const onVoteEnd = useCallback((winner: string) => {
 		setWinner(winner);
-	};
+	}, []);
 
 	return (
 		<>
@@ -40,8 +44,19 @@ function LivePage() {
 							optionB="마라탕을 먹자"
 							onVoteEnd={onVoteEnd}
 						/>
-						<VideoScreen />
-						<ItemBox />
+						<VideoScreen
+							publisher={publisher?.current}
+							subscribers={subscribers}
+							index={index}
+							isMicMuted={isMicMuted}
+							isVideoDisabled={isVideoDisabled}
+						/>
+						<ItemBox
+							isMicMuted={isMicMuted}
+							isVideoDisabled={isVideoDisabled}
+							onMicClick={handleMicClick}
+							onVideoClick={handleVideoClick}
+						/>
 					</div>
 					<ChatBox />
 				</div>
