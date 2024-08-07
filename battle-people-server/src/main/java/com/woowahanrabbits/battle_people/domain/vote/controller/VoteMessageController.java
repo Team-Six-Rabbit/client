@@ -1,7 +1,11 @@
 package com.woowahanrabbits.battle_people.domain.vote.controller;
 
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+import com.woowahanrabbits.battle_people.domain.vote.dto.VoteRequest;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
 
 import lombok.RequiredArgsConstructor;
@@ -11,19 +15,15 @@ import lombok.RequiredArgsConstructor;
 public class VoteMessageController {
 
 	private final VoteService voteService;
+	private final RedisTemplate<String, Object> redisTemplate;
 
-	// @MessageMapping("/live-vote/{battleBoardId}")
-	// @SendTo("/topic/live-voteResults/{battleBoardId}")
-	// public CurrentVoteResponseDto handleVote(VoteRequest voteRequest) {
-	//
-	// 	System.out.println("vote");
-	// 	return voteService.putVoteOpinion(voteRequest.getUserId(), voteRequest.getBattleBoardId(),
-	// 		voteRequest.getVoteInfoIndex());
-	// }
-	//
-	// @GetMapping("/addTopicListener")
-	// public void addTopicListener(@RequestParam Long battleBoardId) {
-	// 	voteService.addTopicListener(battleBoardId);
-	// }
+	@MessageMapping("/vote/{battleBoardId}")
+	public void sendUserVoteResult(@DestinationVariable Long battleBoardId, VoteRequest voteRequest) {
+		String key = "live:" + voteRequest.getBattleBoardId() + ":vote";
+
+		redisTemplate.convertAndSend(key,
+			voteService.putVoteOpinion(voteRequest.getUserId(), voteRequest.getBattleBoardId(),
+				voteRequest.getVoteInfoIndex()));
+	}
 
 }
