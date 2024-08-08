@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class VoteRequest {
 	private Long userId;
-	private Long battleBoardId;
 	private int voteInfoIndex;
 }

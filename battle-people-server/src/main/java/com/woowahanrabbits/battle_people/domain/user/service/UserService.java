@@ -98,4 +98,15 @@ public class UserService {
 		return user.get();
 	}
 
+	public boolean isNicknameAvailable(String nickname) {
+		return !userRepository.existsByNickname(nickname);
+	}
+
+	public boolean isEmailAvailable(String email) {
+		return !userRepository.existsByEmail(email);
+	}
+
+	public List<User> findByNickname(String nickname) {
+		return userRepository.findByNicknameContaining(nickname);
+	}
 }

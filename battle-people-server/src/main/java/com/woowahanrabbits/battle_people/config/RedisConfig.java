@@ -10,15 +10,17 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.woowahanrabbits.battle_people.domain.vote.dto.VoteMessageSubscriber;
+import com.woowahanrabbits.battle_people.domain.live.service.RedisSubscriber;
 
 @Configuration
 public class RedisConfig {
 
 	@Bean
-	public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-		RedisTemplate<String, String> template = new RedisTemplate<>();
+	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory
+	) {
+		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);
+		template.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setHashKeySerializer(new StringRedisSerializer());
 		template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
@@ -27,17 +29,18 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory,
-		MessageListenerAdapter messageListenerAdapter) {
+	public RedisMessageListenerContainer container(RedisConnectionFactory redisConnectionFactory,
+		MessageListenerAdapter messageListener) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		container.setConnectionFactory(redisConnectionFactory);
-		container.addMessageListener(messageListenerAdapter, new ChannelTopic("live-voteResults"));
+		container.addMessageListener(messageListener, new ChannelTopic("chat"));
+		container.addMessageListener(messageListener, new ChannelTopic("vote"));
 		return container;
 	}
 
 	@Bean
-	public MessageListenerAdapter messageListenerAdapter(VoteMessageSubscriber voteMessageSubscriber) {
-		return new MessageListenerAdapter(voteMessageSubscriber);
+	public MessageListenerAdapter messageListener(RedisSubscriber redisSubscriber) {
+		return new MessageListenerAdapter(redisSubscriber);
 	}
 
 }

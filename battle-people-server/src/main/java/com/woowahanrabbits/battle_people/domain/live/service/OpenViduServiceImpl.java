@@ -31,6 +31,7 @@ import io.openvidu.java.client.RecordingProperties;
 import io.openvidu.java.client.Session;
 import io.openvidu.java.client.SessionProperties;
 
+@SuppressWarnings("checkstyle:LineLength")
 @Service
 public class OpenViduServiceImpl implements OpenViduService {
 	enum PublisherRole {
@@ -182,5 +183,4 @@ public class OpenViduServiceImpl implements OpenViduService {
 		liveApplyUser.setOutTime(new Date());
 		liveApplyUserRepository.save(liveApplyUser);
 	}
-
 }
