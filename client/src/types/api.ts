@@ -44,7 +44,7 @@ export interface PageableParm {
 
 export interface BattleInviteRequest extends Vote {
 	oppositeUserId: number;
-	opinions: string[];
+	opinion: string;
 	minPeopleCount: number;
 	maxPeopleCount: number;
 	battleRule: string;

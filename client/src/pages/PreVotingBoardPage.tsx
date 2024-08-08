@@ -9,7 +9,8 @@ import { TicketType } from "@/types/Board/ticket";
 import { categories } from "@/constant/boardCategory";
 import { convertToTimeZone } from "@/utils/dateUtils";
 import { battleService } from "@/services/battleService";
-import { BattleResponse } from "@/types/api";
+import { BattleWaitingParticipant } from "@/types/battle";
+import { Opinion } from "@/types/vote";
 
 const PreVotingBoardContainer = styled.div`
 	display: flex;
@@ -49,26 +50,23 @@ function PreVotingBoardPage() {
 					(category) => category.name === selectedCategory,
 				);
 
-				const response = await battleService.getBattles(categoryIndex);
-				const battles: BattleResponse[] = response.data!;
+				const response = await battleService.getApplyList(categoryIndex);
+				const battles: BattleWaitingParticipant[] = response.data!;
+				console.log(battles);
 
-				const tickets: TicketType[] = battles.map((battleResponse) => {
-					const { battle, opinions } = battleResponse;
+				const tickets: TicketType[] = battles.map((battle) => {
 					return {
 						id: battle.id,
-						title: battle.voteInfo.title,
-						opinions: opinions.map((opinion) => ({
+						title: battle.title,
+						opinions: battle.opinions.map((opinion: Opinion) => ({
 							index: opinion.index,
 							opinion: opinion.opinion,
 						})),
-						startDate: convertToTimeZone(
-							battle.voteInfo.startDate,
-							"Asia/Seoul",
-						),
-						endDate: convertToTimeZone(battle.voteInfo.endDate, "Asia/Seoul"),
+						startDate: convertToTimeZone(battle.startDate, "Asia/Seoul"),
+						endDate: convertToTimeZone(battle.endDate, "Asia/Seoul"),
 						maxPeopleCount: battle.maxPeopleCount,
-						currentPeopleCount: battle.minPeopleCount,
-						isVoted: false,
+						currentPeopleCount: battle.currentPeopleCount,
+						isVoted: battle.isVoted,
 					};
 				});
 
@@ -81,7 +79,7 @@ function PreVotingBoardPage() {
 		};
 
 		fetchBattles();
-	}, [selectedCategory]); // Add dependencies as needed
+	}, [selectedCategory]);
 
 	const getTheme = (index: number) => {
 		return index === 1 || index === 2 || (index >= 5 && (index - 1) % 4 < 2)

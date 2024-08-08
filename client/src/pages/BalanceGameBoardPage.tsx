@@ -69,7 +69,6 @@ function BalanceGameBoardPage() {
 		}
 	}, [hasMore, isLoading]);
 
-	// Fetch data when category, status, or page changes
 	useEffect(() => {
 		const fetchBalanceGames = async () => {
 			if (isLoading || !hasMore) return;
@@ -83,7 +82,7 @@ function BalanceGameBoardPage() {
 						: categories.find((category) => category.name === selectedCategory)
 								?.id;
 
-				const status = selectedStatus === "live" ? 6 : 7;
+				const status = selectedStatus === "live" ? 5 : 6;
 
 				const response: ApiResponse<BalanceGameResponse[]> =
 					await balanceGameService.getBalanceGames(
@@ -137,7 +136,6 @@ function BalanceGameBoardPage() {
 				if (card.id === cardId) {
 					const updatedCard = { ...card, opinions: updatedOpinions };
 
-					// 서버에서 받은 opinions 데이터를 그대로 사용합니다.
 					return updatedCard;
 				}
 				return card;
@@ -162,7 +160,7 @@ function BalanceGameBoardPage() {
 				<BalanceGameBoardContainer>
 					<BoardCardContainer>
 						{filteredCards.map((card) => {
-							const isEnded = card.currentState === 7;
+							const isEnded = card.currentState === 6;
 							return (
 								<BalanceGameCard
 									key={card.id}

@@ -47,11 +47,18 @@ function MainPage() {
 		const fetchLiveData = async () => {
 			try {
 				setIsLoading(true);
+				console.log("Fetching live data...");
 
 				const promises = categories
 					.filter((category) => category.id !== 7)
 					.map(async (category) => {
 						const response = await liveBattleService.getActiveList(category.id);
+						console.log(
+							"Received response for category:",
+							category.id,
+							response,
+						);
+
 						const liveBattles = response.data || [];
 
 						const cards: CardType[] = liveBattles.map((battle) => ({
@@ -90,6 +97,10 @@ function MainPage() {
 				setLargeCarouselCards(largeCarouselData);
 				setInterestedCards(interested);
 				setOtherCards(others);
+
+				console.log("Large Carousel Cards:", largeCarouselData);
+				console.log("Interested Cards:", interested);
+				console.log("Other Cards:", others);
 			} catch (error) {
 				console.error("Failed to fetch live battles:", error);
 			} finally {
@@ -122,6 +133,7 @@ function MainPage() {
 								</CategoryTitle>
 								<LiveSlickCarousel
 									cards={interestedCards[parseInt(categoryId, 10)]}
+									key={categoryId}
 								/>
 							</CategorySection>
 						))}
@@ -138,6 +150,7 @@ function MainPage() {
 								</CategoryTitle>
 								<LiveSlickCarousel
 									cards={otherCards[parseInt(categoryId, 10)]}
+									key={categoryId}
 								/>
 							</CategorySection>
 						))}
