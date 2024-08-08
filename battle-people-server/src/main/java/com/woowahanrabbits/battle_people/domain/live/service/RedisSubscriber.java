@@ -7,7 +7,9 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
 
@@ -24,24 +26,30 @@ public class RedisSubscriber implements MessageListener {
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
 		try {
-			String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
-			System.out.println(publishMessage);
 			String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
-			String[] channels = channel.split(":");
-			String battleId = channels[1];
-			String type = channels[2];
+			String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
 
-			if (type.equals("chat")) {
-				WriteChatResponseDto chatMessage = objectMapper.readValue(publishMessage, WriteChatResponseDto.class);
-				messagingTemplate.convertAndSend("/topic/" + type + "/" + battleId, chatMessage);
-			} else if (type.equals("request")) {
-				WriteTalkResponseDto user = objectMapper.readValue(publishMessage, WriteTalkResponseDto.class);
-				messagingTemplate.convertAndSend("/topic/" + type + "/" + battleId, user);
+			//topic: chat
+			if (channel.equals("chat")) {
+				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
+
+				Long battleBoardId = redisTopicDto.getBattleBoardId();
+				String type = redisTopicDto.getType();
+				if (type.equals("chat")) {
+					RedisTopicDto<WriteChatResponseDto> chatTopicDto = objectMapper.readValue(publishMessage,
+						new TypeReference<>() {
+						});
+					WriteChatResponseDto returnValue = chatTopicDto.getResponseDto();
+					messagingTemplate.convertAndSend("/topic/chat/" + battleBoardId, returnValue);
+				} else if (type.equals("request")) {
+					RedisTopicDto<WriteTalkResponseDto> responseTopicDto = objectMapper.readValue(publishMessage,
+						new TypeReference<>() {
+						});
+					WriteTalkResponseDto returnValue = responseTopicDto.getResponseDto();
+					messagingTemplate.convertAndSend("/topic" + type + "/" + battleBoardId,
+						returnValue);
+				}
 			}
-
-			// 수신한 메시지 로깅
-			log.info("Redis Subscribe Channel : " + battleId);
-			// log.info("Redis SUB Message : {}", chatMessage.getMessage());
 
 		} catch (Exception e) {
 			log.error("Error processing message", e);
