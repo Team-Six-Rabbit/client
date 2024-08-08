@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
-import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDtoWithVoteCount;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,11 +27,11 @@ public class BalanceGameResponse {
 	private Date endDate; //종료일
 	private Integer category; //카테고리
 
-	private List<VoteOpinionDto> opinions; //주장들
+	private List<VoteOpinionDtoWithVoteCount> opinions; //주장들
 	private int currentState; //현재상태
 	private Integer userVote; //유저의 선택
 
-	public BalanceGameResponse(VoteInfo voteInfo, List<VoteOpinionDto> opinions) {
+	public BalanceGameResponse(VoteInfo voteInfo, List<VoteOpinionDtoWithVoteCount> opinions) {
 		this.id = voteInfo.getId();
 		this.title = voteInfo.getTitle();
 		this.detail = voteInfo.getDetail();

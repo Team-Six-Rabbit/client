@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-public class VoteOpinionDto {
+public class VoteOpinionDtoWithVoteCount {
 	private final Integer index;
 	private final String opinion;
 	@Setter
@@ -14,7 +14,7 @@ public class VoteOpinionDto {
 	@Setter
 	private Integer percentage;
 
-	public VoteOpinionDto(VoteOpinion vote) {
+	public VoteOpinionDtoWithVoteCount(VoteOpinion vote) {
 		this.index = vote.getVoteOpinionIndex();
 		this.opinion = vote.getOpinion();
 		this.percentage = 0;
