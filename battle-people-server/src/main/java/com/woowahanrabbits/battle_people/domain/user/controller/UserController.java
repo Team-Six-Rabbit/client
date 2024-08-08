@@ -2,6 +2,8 @@ package com.woowahanrabbits.battle_people.domain.user.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -131,34 +135,23 @@ public class UserController {
 		}
 	}
 
-	// @GetMapping("/images/{fileName:.+}")
-	// public ResponseEntity<Resource> getImage(@PathVariable String fileName) {
-	// 	System.out.println(fileName);
-	// 	try {
-	// 		Path filePath = Paths.get("file:" + uploadDir).resolve(fileName).normalize();
-	// 		Resource resource = new UrlResource(filePath.toUri());
-	//
-	// 		if (!resource.exists()) {
-	// 			return ResponseEntity.notFound().build();
-	// 		}
-	//
-	// 		System.out.println("Serving file from: " + filePath.toString()); // 디버깅 로그
-	//
-	// 		String contentType = Files.probeContentType(filePath);
-	// 		if (contentType == null) {
-	// 			contentType = "application/octet-stream";
-	// 		}
-	//
-	// 		return ResponseEntity.ok()
-	// 			.contentType(MediaType.parseMediaType(contentType))
-	// 			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-	// 			.body(resource);
-	// 	} catch (MalformedURLException e) {
-	// 		e.printStackTrace();
-	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-	// 	} catch (IOException e) {
-	// 		e.printStackTrace();
-	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-	// 	}
-	// }
+	@GetMapping("/images/{filename}")
+	public ResponseEntity<ApiResponseDto<String>> getImage(@PathVariable String filename) {
+		try {
+			Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
+			Resource resource = new UrlResource(filePath.toUri());
+
+			if (resource.exists()) {
+				// return ResponseEntity.ok()
+				// 	.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+				// 	.body(resource.getFilename());
+
+				return ResponseEntity.ok(new ApiResponseDto<>("success", "파일 가져오기 성공", resource.toString()));
+			} else {
+				return ResponseEntity.notFound().build();
+			}
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().build();
+		}
+	}
 }
