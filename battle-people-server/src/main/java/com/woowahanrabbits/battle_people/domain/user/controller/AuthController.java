@@ -53,8 +53,11 @@ public class AuthController {
 	}
 
 	@DeleteMapping("/logout")
-	public ResponseEntity<?> logout(@CookieValue("access") String access, HttpServletResponse response) {
-		userTokenRepository.deleteByUserId(jwtUtil.extractUserId(access));
+	public ResponseEntity<?> logout(@CookieValue(value = "access", required = false) String access,
+		HttpServletResponse response) {
+		if (access != null) {
+			userTokenRepository.deleteByUserId(jwtUtil.extractUserId(access));
+		}
 
 		HttpUtils.deleteCookies(
 			response,
