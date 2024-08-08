@@ -1,10 +1,19 @@
 package com.woowahanrabbits.battle_people.domain.user.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
@@ -96,5 +107,51 @@ public class UserController {
 			userDtoList.add(new BasicUserDto(user));
 		}
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "user", userDtoList));
+	}
+
+	@Value("${storage.location}")
+	private String uploadDir;
+
+	@PostMapping("/upload")
+	public ResponseEntity<ApiResponseDto<String>> handleFileUpload(@LoginUser User user,
+		@RequestPart("file") MultipartFile file) {
+		if (file.isEmpty()) {
+			return ResponseEntity.badRequest().body(new ApiResponseDto<>("fail", "파일이 없습니다.", null));
+		}
+
+		try {
+			String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+			File dest = new File(uploadDir + File.separator + fileName);
+			file.transferTo(dest);
+
+			System.out.println("File saved to: " + dest.getAbsolutePath()); // 디버깅 로그
+			userService.updateUserImgUrl(user.getId(), fileName);
+
+			return ResponseEntity.ok(new ApiResponseDto<>("success", "파일 업로드 성공", fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "INTERNAL_SERVER_ERROR", null));
+		}
+	}
+
+	@GetMapping("/images/{filename}")
+	public ResponseEntity<ApiResponseDto<String>> getImage(@PathVariable String filename) {
+		try {
+			Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
+			Resource resource = new UrlResource(filePath.toUri());
+
+			if (resource.exists()) {
+				// return ResponseEntity.ok()
+				// 	.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+				// 	.body(resource.getFilename());
+
+				return ResponseEntity.ok(new ApiResponseDto<>("success", "파일 가져오기 성공", resource.toString()));
+			} else {
+				return ResponseEntity.notFound().build();
+			}
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().build();
+		}
 	}
 }
