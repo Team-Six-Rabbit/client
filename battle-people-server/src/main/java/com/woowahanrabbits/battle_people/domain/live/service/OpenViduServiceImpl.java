@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,13 +51,15 @@ public class OpenViduServiceImpl implements OpenViduService {
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
 	private static final Logger logger = LoggerFactory.getLogger(OpenViduServiceImpl.class);
 	private final ObjectMapper mapper;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	public OpenViduServiceImpl(@Value("${openvidu.url}") String openviduUrl,
 		@Value("${openvidu.secret}") String secret,
 		LiveApplyUserRepository liveApplyUserRepository,
 		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository,
-		ObjectMapper mapper) {
+		ObjectMapper mapper, RedisTemplate<String, Object> redisTemplate) {
 		this.userVoteOpinionRepository = userVoteOpinionRepository;
+		this.redisTemplate = redisTemplate;
 		this.openVidu = new OpenVidu(openviduUrl, secret);
 		this.liveApplyUserRepository = liveApplyUserRepository;
 		this.battleBoardRepository = battleBoardRepository;
@@ -113,6 +116,13 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	private void saveApplyUserRole(BattleBoard battleBoard, User user, String token, OpenViduRole role) {
+		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleBoard.getId(),
+			user.getId());
+
+		if (liveApplyUser != null) {
+			return;
+		}
+
 		liveApplyUserRepository.save(LiveApplyUser.builder()
 			.battleId(battleBoard.getId())
 			.participant(user) // 영속성 컨텍스트 내에서 관리되는 user 객체
@@ -158,8 +168,19 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	@Override
-	public OpenViduTokenResponseDto changeRole(String battleId, User user) {
-		return null;
+	public OpenViduTokenResponseDto changeRole(Long battleId, User user) {
+		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleId, user.getId());
+
+		applyUser.setRole(applyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
+		liveApplyUserRepository.save(applyUser);
+
+		if (applyUser.getRole().equals("broadcaster")) {
+			String data = getServerData(
+				getUserCurrentRole(battleBoardRepository.findById(battleId).orElseThrow(NoSuchElementException::new),
+					user));
+		}
+
+		return getToken(battleId, user);
 	}
 
 	private String getServerData(int index) {

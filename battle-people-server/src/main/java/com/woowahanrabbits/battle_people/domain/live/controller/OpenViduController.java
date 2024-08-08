@@ -43,20 +43,6 @@ public class OpenViduController {
 		return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 	}
 
-	// @PostMapping("/change-user-role")
-	// public ResponseEntity<ApiResponseDto<OpenViduTokenResponseDto>> changeUserRole(@RequestParam Long battleId,
-	// 	@RequestParam String roomId,
-	// 	@LoginUser User user) {
-	// 	try {
-	// 		return ResponseEntity.status(HttpStatus.OK)
-	// 			.body(new ApiResponseDto<>("success", "", openViduService.changeRole(roomId, user)));
-	//
-	// 	} catch (Exception e) {
-	// 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	// 			.body(new ApiResponseDto<>("fail", "", null));
-	// 	}
-	// }
-
 	@ExceptionHandler
 	public ResponseEntity<ApiResponseDto<?>> handleException(Exception exception) {
 		exception.printStackTrace();

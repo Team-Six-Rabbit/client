@@ -5,8 +5,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteChatRequestDto;
@@ -38,10 +36,9 @@ public class LiveChatController {
 	}
 
 	@MessageMapping("/request/{battleBoardId}")
-	public void sendRequest(@DestinationVariable Long battleBoardId) {
+	public void sendRequest(@DestinationVariable Long battleBoardId, Long userId) {
 		String key = "chat";
-		User user = userRepository.findById(7L).orElseThrow();
-		user.setNickname("현치비");
+		User user = userRepository.findById(userId).orElseThrow();
 
 		// Redis에서 특정 키의 존재 여부 확인
 		ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
@@ -53,11 +50,6 @@ public class LiveChatController {
 		valueOps.set(key + ":" + battleBoardId + ":" + user.getId(), user.getId());
 
 		redisTemplate.convertAndSend(key, liveChatService.saveRequest(battleBoardId, user));
-	}
-
-	@GetMapping("/addTopicListener")
-	public void addTopicListener(@RequestParam Long battleBoardId) {
-		liveChatService.addTopicListener(battleBoardId);
 	}
 
 }
