@@ -59,13 +59,13 @@ function ChatInput({ sendMessage }: ChatInputProps) {
 interface SpeechRequestListProps {
 	role: number;
 	speechRequests: SpeechRequestMessage[];
-	sendRequestSpeech: () => void;
+	sendSpeechRequest: () => void;
 }
 
 function SpeechRequestList({
 	role,
 	speechRequests,
-	sendRequestSpeech,
+	sendSpeechRequest,
 }: SpeechRequestListProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -75,7 +75,7 @@ function SpeechRequestList({
 	};
 
 	const handleRequestSpeech = () => {
-		sendRequestSpeech();
+		sendSpeechRequest();
 		setButtonDisabled(true);
 	};
 
@@ -126,20 +126,21 @@ interface ChatBoxProps {
 }
 
 function ChatBox({ battleBoardId, role }: ChatBoxProps) {
-	const { messages, sendMessage, speechRequests, sendRequestSpeech } =
+	const { messages, sendMessage, speechRequests, sendSpeechRequest } =
 		useChatSocket(battleBoardId);
 
 	return (
 		<div className="flex flex-col h-150 w-1/4 ms-6 mt-2">
 			<SpeechRequestList
-				role={role}
+				role={role} // 지금 나의 역할(0,1,null) 추후에 OpenVidu로 받을 예정
 				speechRequests={speechRequests}
-				sendRequestSpeech={sendRequestSpeech}
+				sendSpeechRequest={sendSpeechRequest}
 			/>
 			<div className="flex-1 overflow-y-auto p-2 my-2 border-solid border-4 border-black rounded-lg flex flex-col-reverse scrollbar-hide">
 				<div>
 					{messages.map((msg) => (
 						<Chat
+							key={msg.idx}
 							idx={msg.idx}
 							user={msg.user}
 							message={msg.message}
