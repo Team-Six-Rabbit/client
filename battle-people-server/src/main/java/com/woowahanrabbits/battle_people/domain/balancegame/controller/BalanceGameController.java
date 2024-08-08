@@ -20,17 +20,15 @@ import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/balance-game")
+@RequiredArgsConstructor
 @Tag(name = "BalanceGameController", description = "밸런스게임 컨트롤러")
 public class BalanceGameController {
 
 	private final BalanceGameService balanceGameService;
-
-	public BalanceGameController(BalanceGameService balanceGameService) {
-		this.balanceGameService = balanceGameService;
-	}
 
 	@PostMapping("")
 	@Operation(summary = "[점화] 밸런스 게임을 생성한다.")
