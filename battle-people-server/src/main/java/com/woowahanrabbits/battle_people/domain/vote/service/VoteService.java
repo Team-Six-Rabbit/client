@@ -1,8 +1,13 @@
 package com.woowahanrabbits.battle_people.domain.vote.service;
 
+import java.util.List;
+
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.VoteRequest;
 
 public interface VoteService {
 	void addVoteInfo(VoteInfo voteInfo);
@@ -13,4 +18,5 @@ public interface VoteService {
 
 	CurrentVoteResponseDto getVoteResult(Long battleBoardId);
 
+	RedisTopicDto<List<VoteOpinionDto>> putLiveVote(Long battleBoardId, VoteRequest voteRequest);
 }

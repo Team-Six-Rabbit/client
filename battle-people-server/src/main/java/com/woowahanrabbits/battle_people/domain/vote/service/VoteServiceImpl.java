@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
@@ -15,6 +16,7 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.VoteRequest;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
@@ -80,6 +82,22 @@ public class VoteServiceImpl implements VoteService {
 			.getId();
 
 		return resultDto(voteInfoId);
+	}
+
+	@Override
+	public RedisTopicDto<List<VoteOpinionDto>> putLiveVote(Long battleBoardId, VoteRequest voteRequest) {
+		CurrentVoteResponseDto currentVoteResponseDto = putVoteOpinion(voteRequest.getUserId(),
+			battleBoardId, voteRequest.getVoteInfoIndex());
+
+		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
+			.battleBoardId(battleBoardId)
+			.type("vote")
+			.responseDto(currentVoteResponseDto.getOpinions())
+			.build();
+
+		System.out.println(redisTopicDto);
+
+		return redisTopicDto;
 	}
 
 	private CurrentVoteResponseDto resultDto(Long voteInfoId) {

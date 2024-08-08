@@ -89,6 +89,8 @@ public class LiveChatServiceImpl implements LiveChatService {
 	@Override
 	public void addTopicListener(Long battleBoardId) {
 		ChannelTopic topic = new ChannelTopic("live");
+		ChannelTopic voteTopic = new ChannelTopic("vote");
 		redisMessageListenerContainer.addMessageListener(messageListenerAdapter, topic);
+		redisMessageListenerContainer.addMessageListener(messageListenerAdapter, voteTopic);
 	}
 }

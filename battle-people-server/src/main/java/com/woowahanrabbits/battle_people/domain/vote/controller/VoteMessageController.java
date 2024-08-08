@@ -19,11 +19,10 @@ public class VoteMessageController {
 
 	@MessageMapping("/vote/{battleBoardId}")
 	public void sendUserVoteResult(@DestinationVariable Long battleBoardId, VoteRequest voteRequest) {
-		String key = "live:" + voteRequest.getBattleBoardId() + ":vote";
+		String key = "vote";
 
 		redisTemplate.convertAndSend(key,
-			voteService.putVoteOpinion(voteRequest.getUserId(), voteRequest.getBattleBoardId(),
-				voteRequest.getVoteInfoIndex()));
+			voteService.putLiveVote(battleBoardId, voteRequest));
 	}
 
 }
