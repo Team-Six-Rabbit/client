@@ -34,10 +34,10 @@ public class LiveChatServiceImpl implements LiveChatService {
 	private static int requestIdx = 0;
 
 	@Override
-	public RedisTopicDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto, User user) {
+	public RedisTopicDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto, BasicUserDto user) {
 
 		WriteChatResponseDto writeChatResponseDto = WriteChatResponseDto.builder()
-			.user(new BasicUserDto(user))
+			.user(user)
 			.message(writeChatRequestDto.getMessage())
 			.build();
 

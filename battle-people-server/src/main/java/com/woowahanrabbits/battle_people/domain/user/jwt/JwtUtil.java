@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtUtil {
 	private final UserTokenRepository userTokenRepository;
+	// @Lazy
+	// private final PrincipalDetailsService principalDetailsService;
 
 	@Value("${jwt.secret}")
 	private String secretKey;
@@ -97,4 +99,9 @@ public class JwtUtil {
 			throw new JwtAuthenticationException("Token validation error: " + e.getMessage());
 		}
 	}
+
+	// public Authentication getAuthentication(String token) {
+	// 	UserDetails userDetails = principalDetailsService.loadUserByUsername(token);
+	// 	return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+	// }
 }
