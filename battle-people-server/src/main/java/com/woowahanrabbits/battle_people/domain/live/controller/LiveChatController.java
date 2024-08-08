@@ -28,7 +28,7 @@ public class LiveChatController {
 
 	@MessageMapping("/chat/{battleBoardId}")
 	public void sendMessage(@DestinationVariable Long battleBoardId, WriteChatRequestDto writeChatRequestDto) {
-		String key = "live";
+		String key = "chat";
 
 		User user = userRepository.findById(7L).orElseThrow();
 		user.setNickname("현치비");
@@ -39,7 +39,7 @@ public class LiveChatController {
 
 	@MessageMapping("/request/{battleBoardId}")
 	public void sendRequest(@DestinationVariable Long battleBoardId) {
-		String key = "live";
+		String key = "chat";
 		User user = userRepository.findById(7L).orElseThrow();
 		user.setNickname("현치비");
 

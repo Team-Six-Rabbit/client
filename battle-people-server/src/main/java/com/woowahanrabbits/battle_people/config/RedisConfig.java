@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -26,9 +27,11 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public RedisMessageListenerContainer container(RedisConnectionFactory redisConnectionFactory) {
+	public RedisMessageListenerContainer container(RedisConnectionFactory redisConnectionFactory,
+		MessageListenerAdapter messageListener) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		container.setConnectionFactory(redisConnectionFactory);
+		container.addMessageListener(messageListener, new ChannelTopic("chat"));
 		return container;
 	}
 
