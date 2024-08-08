@@ -12,7 +12,7 @@ import lombok.Setter;
 @Embeddable
 public class LiveApplyUserId implements Serializable {
 
-	private Long roomId;
+	private Long battleId;
 	private Long participantId;
 
 	@Override
@@ -24,12 +24,12 @@ public class LiveApplyUserId implements Serializable {
 			return false;
 		}
 		LiveApplyUserId that = (LiveApplyUserId)object;
-		return Objects.equals(roomId, that.roomId)
+		return Objects.equals(battleId, that.battleId)
 			&& Objects.equals(participantId, that.participantId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(roomId, participantId);
+		return Objects.hash(battleId, participantId);
 	}
 }

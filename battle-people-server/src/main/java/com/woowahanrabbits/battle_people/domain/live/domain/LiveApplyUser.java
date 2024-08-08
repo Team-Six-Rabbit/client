@@ -30,17 +30,12 @@ import lombok.ToString;
 public class LiveApplyUser {
 
 	@Id
-	@Column(name = "room_id", insertable = false, updatable = false)
-	private Long roomId;
+	@Column(name = "battle_id", insertable = false, updatable = false)
+	private Long battleId;
 
 	@Id
 	@Column(name = "participant_id", insertable = false, updatable = false)
 	private Long participantId;
-
-	@ManyToOne
-	@JoinColumn(name = "room_id", nullable = false)
-	@MapsId("roomId")
-	private Room room;
 
 	@ManyToOne
 	@JoinColumn(name = "participant_id", nullable = false)

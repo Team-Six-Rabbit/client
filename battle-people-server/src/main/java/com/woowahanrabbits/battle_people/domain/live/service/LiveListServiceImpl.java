@@ -134,7 +134,6 @@ public class LiveListServiceImpl implements LiveListService {
 
 		return new LiveListResponseDto(
 			battleBoard.getId(),
-			battleBoard.getRoom().getRoomId(),
 			battleBoard.getVoteInfo().getTitle(),
 			new LiveListResponseDto.BroadcastUser(registUser.getId(), registUser.getNickname(), registUser.getImgUrl(),
 				registUser.getRating(), voteOpinions.get(0).getOpinion()),
@@ -142,7 +141,7 @@ public class LiveListServiceImpl implements LiveListService {
 				oppositeUser.getImgUrl(), oppositeUser.getRating(), voteOpinions.get(1).getOpinion()),
 			battleBoard.getVoteInfo().getStartDate(),
 			battleBoard.getVoteInfo().getEndDate(),
-			liveApplyUserRepository.findAllByRoom_Id(battleBoard.getRoom().getId()).size(),
+			liveApplyUserRepository.findAllByBattleId(battleBoard.getId()).size(),
 			battleBoard.getVoteInfo().getCategory(),
 			battleBoard.getImageUrl(),
 			battleBoard.getBattleRule(),
