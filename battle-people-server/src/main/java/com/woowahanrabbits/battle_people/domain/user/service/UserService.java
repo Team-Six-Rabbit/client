@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -108,5 +109,14 @@ public class UserService {
 
 	public List<User> findByNickname(String nickname) {
 		return userRepository.findByNicknameContaining(nickname);
+	}
+
+	@Value("${storage.location}")
+	private String uploadDir;
+
+	public void updateUserImgUrl(long userId, String imgUrl) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
+		user.setImgUrl(imgUrl);
+		userRepository.save(user);
 	}
 }
