@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class RedisSubscriber implements MessageListener {
 			String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
 			String[] channels = channel.split(":");
 			String battleId = channels[1];
-			String type = channels[2];
+			String type = channels[3];
 
 			if (type.equals("chat")) {
 				WriteChatResponseDto chatMessage = objectMapper.readValue(publishMessage, WriteChatResponseDto.class);
@@ -37,6 +38,10 @@ public class RedisSubscriber implements MessageListener {
 			} else if (type.equals("request")) {
 				WriteTalkResponseDto user = objectMapper.readValue(publishMessage, WriteTalkResponseDto.class);
 				messagingTemplate.convertAndSend("/topic/" + type + "/" + battleId, user);
+			} else if (type.equals("vote")) {
+				System.out.println("vote");
+				CurrentVoteResponseDto result = objectMapper.readValue(publishMessage, CurrentVoteResponseDto.class);
+				messagingTemplate.convertAndSend("/topic/" + type + "/" + battleId, result);
 			}
 
 			// 수신한 메시지 로깅
