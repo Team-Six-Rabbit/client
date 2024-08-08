@@ -84,11 +84,15 @@ public class UserController {
 
 	@GetMapping
 	public ResponseEntity<ApiResponseDto<List<BasicUserDto>>> getUserByNickname(
+		@LoginUser User loginuser,
 		@RequestParam("nickname") String nickname) {
 
 		List<User> userList = userService.findByNickname(nickname);
 		List<BasicUserDto> userDtoList = new ArrayList<>();
 		for (User user : userList) {
+			if (user.getNickname().equals(loginuser.getNickname())) {
+				continue;
+			}
 			userDtoList.add(new BasicUserDto(user));
 		}
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "user", userDtoList));
