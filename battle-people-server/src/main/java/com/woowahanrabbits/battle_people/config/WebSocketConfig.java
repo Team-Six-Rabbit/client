@@ -6,8 +6,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import com.woowahanrabbits.battle_people.exception.ChatPreHandler;
-
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -15,12 +13,14 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	private final ChatPreHandler chatPreHandler;
+	// private final CustomHandshakeInterceptor customHandshakeInterceptor;
+	// private final ChatPreHandler chatPreHandler;
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws")
 			.setAllowedOriginPatterns("*");
+		// .addInterceptors(customHandshakeInterceptor);
 		// .withSockJS();
 	}
 
