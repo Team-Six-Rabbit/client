@@ -1,13 +1,13 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,9 +17,8 @@ import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoar
 import com.woowahanrabbits.battle_people.domain.live.domain.LiveApplyUser;
 import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.infrastructure.LiveApplyUserRepository;
-import com.woowahanrabbits.battle_people.domain.live.infrastructure.LiveVoiceRecordRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
-import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
+import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 
 import io.openvidu.java.client.ConnectionProperties;
@@ -46,28 +45,19 @@ public class OpenViduServiceImpl implements OpenViduService {
 
 	private final OpenVidu openVidu;
 	private final LiveApplyUserRepository liveApplyUserRepository;
-	private final UserRepository userRepository;
-	private final LiveVoiceRecordRepository liveVoiceRecordRepository;
 	private final BattleBoardRepository battleBoardRepository;
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
-	private final RedisTemplate<String, String> redisTemplate;
 	private static final Logger logger = LoggerFactory.getLogger(OpenViduServiceImpl.class);
 	private final ObjectMapper mapper;
 
 	public OpenViduServiceImpl(@Value("${openvidu.url}") String openviduUrl,
 		@Value("${openvidu.secret}") String secret,
 		LiveApplyUserRepository liveApplyUserRepository,
-		UserRepository userRepository,
-		LiveVoiceRecordRepository liveVoiceRecordRepository,
 		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository,
-		RedisTemplate<String, String> redisTemplate,
 		ObjectMapper mapper) {
 		this.userVoteOpinionRepository = userVoteOpinionRepository;
-		this.redisTemplate = redisTemplate;
 		this.openVidu = new OpenVidu(openviduUrl, secret);
 		this.liveApplyUserRepository = liveApplyUserRepository;
-		this.userRepository = userRepository;
-		this.liveVoiceRecordRepository = liveVoiceRecordRepository;
 		this.battleBoardRepository = battleBoardRepository;
 		this.mapper = mapper;
 	}
@@ -94,14 +84,40 @@ public class OpenViduServiceImpl implements OpenViduService {
 		long diffInMillis = endDate.getTime() - System.currentTimeMillis();
 		long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis);
 
-		// redisTemplate.opsForHash()
-		// 	.put("battle", battleBoard.getId(),
-		// 		new RedisBattleDto(battleBoard.getId(), battleBoard.getRegistUser().getId(),
-		// 			battleBoard.getOppositeUser().getId(), battleBoard.getVoteInfo().getEndDate()));
-		// redisTemplate.opsForValue()
-		// 	.set("session:", session.getSessionId(), diffInSeconds, TimeUnit.SECONDS);
-
 		return session;
+	}
+
+	private int getUserCurrentRole(BattleBoard battleBoard, User user) {
+		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleBoard.getId(),
+			user.getId());
+
+		if (applyUser == null) {
+			return -2;
+		}
+		if (applyUser.getRole().equals("viewer")) {
+			return -1;
+		}
+
+		List<UserVoteOpinion> userVoteOpinion = userVoteOpinionRepository.findByUserId(user.getId());
+		if (!userVoteOpinion.isEmpty()) {
+			return userVoteOpinion.get(0).getVoteInfoIndex();
+		}
+		if (battleBoard.getRegistUser().getId() == user.getId()) {
+			return 0;
+		}
+		if (battleBoard.getOppositeUser().getId() == user.getId()) {
+			return 1;
+		}
+		return -2;
+	}
+
+	private void saveApplyUserRole(BattleBoard battleBoard, User user, String token, OpenViduRole role) {
+		liveApplyUserRepository.save(LiveApplyUser.builder()
+			.battleId(battleBoard.getId())
+			.participant(user) // 영속성 컨텍스트 내에서 관리되는 user 객체
+			.role(role == OpenViduRole.PUBLISHER ? "broadcaster" : "viewer")
+			.token(token)
+			.build());
 	}
 
 	@Override
@@ -111,14 +127,14 @@ public class OpenViduServiceImpl implements OpenViduService {
 		Session session = createSession(battleBoard);
 
 		OpenViduRole role = OpenViduRole.SUBSCRIBER;
-		int index = -1;
+		int index = getUserCurrentRole(battleBoard, user);
 
-		if (battleBoard.getRegistUser().getId() == user.getId()) {
+		if (index == -2) {
+			return null;
+		}
+
+		if (index == 0 || index == 1) {
 			role = OpenViduRole.PUBLISHER;
-			index = 0;
-		} else if (battleBoard.getOppositeUser().getId() == user.getId()) {
-			role = OpenViduRole.PUBLISHER;
-			index = 1;
 		}
 
 		ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
@@ -134,16 +150,15 @@ public class OpenViduServiceImpl implements OpenViduService {
 			throw new RuntimeException("Failed to create token", exception);
 		}
 
-		// Save LiveApplyUser
-		// liveApplyUserRepository.save(LiveApplyUser.builder()
-		// 	.battleId(battleId)
-		// 	.participant(userRepository.getReferenceById(user.getId())) // 영속성 컨텍스트 내에서 관리되는 user 객체
-		// 	.role(role == OpenViduRole.PUBLISHER ? "broadcaster" : "viewer")
-		// 	.token(token)
-		// 	.build());
+		saveApplyUserRole(battleBoard, user, token, role);
 
 		logger.info("[User Token] :" + token + ", userid: " + user.getId());
 		return new OpenViduTokenResponseDto(token, index);
+	}
+
+	@Override
+	public OpenViduTokenResponseDto changeRole(String battleId, User user) {
+		return null;
 	}
 
 	private String getServerData(int index) {

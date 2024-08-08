@@ -58,8 +58,8 @@ public class OpenViduController {
 	// }
 
 	@ExceptionHandler
-	public ResponseEntity<ApiResponseDto<?>> handleException(Exception e) {
-		e.printStackTrace();
+	public ResponseEntity<ApiResponseDto<?>> handleException(Exception exception) {
+		exception.printStackTrace();
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponseDto<>("fail", "", null));
 	}
 }

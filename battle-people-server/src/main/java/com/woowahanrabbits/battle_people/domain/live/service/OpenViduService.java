@@ -16,6 +16,6 @@ public interface OpenViduService {
 	OpenViduTokenResponseDto getToken(Long battleId, User user) throws
 		OpenViduJavaClientException, OpenViduHttpException;
 
-	// OpenViduTokenResponseDto changeRole(String battleId, User user);
+	OpenViduTokenResponseDto changeRole(String battleId, User user);
 }
 
