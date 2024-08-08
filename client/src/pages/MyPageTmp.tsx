@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
-/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/button-has-type */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import "@/assets/styles/mypage.css";
@@ -17,12 +16,13 @@ import MyPageContent from "@/components/MyPageContent";
 function MyPage() {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const [userInfo, setUserInfo] = useState<DetailUserInfo | null>(null);
+	const [originalUserInfo, setOriginalUserInfo] =
+		useState<DetailUserInfo | null>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [errors, setErrors] = useState({ nickname: "" });
 	const [doShake, setDoShake] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const formDataRef = useRef<FormData>(new FormData());
-	const userInfoRef = useRef<DetailUserInfo | null>(null);
 	const [profileImage, setProfileImage] = useState<string>(
 		profileImagePlaceholder,
 	);
@@ -37,57 +37,67 @@ function MyPage() {
 
 	useEffect(() => {
 		const fetchProfile = async () => {
-			const response = await authService.getUserInfo();
-			if (response.code === "success" && response.data) {
-				userInfoRef.current = response.data;
-				const imageUrl = await authService.getProfileImage(
-					response.data.imgUrl || "",
-				);
+			if (user) {
+				console.log(user);
+				setUserInfo(user);
+				const imageUrl = await authService.getProfileImage(user.imgUrl || "");
 				setProfileImage(imageUrl || profileImagePlaceholder);
+				setOriginalUserInfo(user);
 			}
 		};
-
-		if (!userInfoRef.current) {
-			fetchProfile();
-		}
-	}, []);
+		fetchProfile();
+	}, [user]);
 
 	const handleEditClick = () => {
 		if (isEditing) {
 			// Cancel을 눌렀을 때 원래 상태로 복원
-			const originalUserInfo = userInfoRef.current;
-			if (originalUserInfo) {
-				const resetImage = async () => {
-					const imageUrl = await authService.getProfileImage(
-						originalUserInfo.imgUrl || "",
-					);
-					setProfileImage(imageUrl || profileImagePlaceholder);
-				};
-				resetImage();
-			}
+			setUserInfo(originalUserInfo);
+			setProfileImage(originalUserInfo?.imgUrl || profileImagePlaceholder);
 			setErrors({ nickname: "" });
 		}
 		setIsEditing(!isEditing);
 	};
 
 	const handleSaveClick = async () => {
+		if (errors.nickname) {
+			setDoShake(true);
+			setTimeout(() => setDoShake(false), 500);
+			return;
+		}
+
 		try {
-			const uploadResponse = await authService.uploadProfileImage(
-				formDataRef.current,
+			const formData = new FormData();
+			formData.append("nickname", userInfo!.nickname);
+
+			if (fileInputRef.current && fileInputRef.current.files?.length) {
+				formData.append("profileImage", fileInputRef.current.files[0]);
+			}
+
+			const isNicknameAvailable = await authService.checkNicknameAvailability(
+				userInfo!.nickname,
 			);
+			if (!isNicknameAvailable) {
+				setErrors({ nickname: "이미 사용 중인 닉네임입니다." });
+				setDoShake(true);
+				setTimeout(() => setDoShake(false), 500);
+				return;
+			}
+
+			const uploadResponse = await authService.uploadProfileImage(formData);
 			if (uploadResponse.code === "success" && uploadResponse.data) {
 				const imageUrl = await authService.getProfileImage(uploadResponse.data);
 				setProfileImage(imageUrl || profileImagePlaceholder);
-				if (userInfoRef.current) {
-					userInfoRef.current.imgUrl = uploadResponse.data;
-				}
+				setUserInfo((prevState) => ({
+					...prevState!,
+					imgUrl: uploadResponse.data || "",
+				}));
 			}
 
-			if (userInfoRef.current) {
-				await authService.updateUserProfile(userInfoRef.current);
-			}
+			await authService.updateUserProfile(userInfo!);
 			setIsEditing(false);
+			setOriginalUserInfo(userInfo);
 		} catch (error) {
+			setErrors({ nickname: "닉네임 중복 확인 중 오류가 발생했습니다." });
 			setDoShake(true);
 			setTimeout(() => setDoShake(false), 500);
 		}
@@ -102,7 +112,6 @@ function MyPage() {
 	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
 		if (file) {
-			formDataRef.current.set("file", file); // formData에 파일 설정
 			const reader = new FileReader();
 			reader.onload = () => {
 				if (reader.result) {
@@ -117,11 +126,37 @@ function MyPage() {
 		}
 	};
 
-	if (!userInfoRef.current) {
+	const handleInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = event.target;
+
+		setUserInfo((prevState) => ({
+			...prevState!,
+			[name]: value,
+		}));
+
+		if (name === "nickname") {
+			if (value === originalUserInfo?.nickname) {
+				setErrors({ nickname: "" });
+				return;
+			}
+
+			try {
+				const isNicknameAvailable =
+					await authService.checkNicknameAvailability(value);
+				if (!isNicknameAvailable) {
+					setErrors({ nickname: "이미 사용 중인 닉네임입니다." });
+				} else {
+					setErrors({ nickname: "" });
+				}
+			} catch (error) {
+				setErrors({ nickname: "닉네임 중복 확인 중 오류가 발생했습니다." });
+			}
+		}
+	};
+
+	if (!userInfo) {
 		return <div>Loading...</div>;
 	}
-
-	const { email, nickname, rating } = userInfoRef.current;
 
 	return (
 		<div>
@@ -133,7 +168,7 @@ function MyPage() {
 							<div className="profile-img-container">
 								<img
 									className={`profile-img ${isEditing ? "darken" : ""}`}
-									src={profileImage}
+									src={profileImage || profileImagePlaceholder}
 									alt="프로필 이미지"
 									onClick={handleIconClick}
 									onKeyDown={(e) => {
@@ -172,7 +207,7 @@ function MyPage() {
 								<div className="tier-bar">
 									<div
 										className="tier-progress"
-										style={{ width: `${rating}%` }}
+										style={{ width: `${userInfo.rating}%` }}
 									/>
 								</div>
 							</div>
@@ -181,16 +216,15 @@ function MyPage() {
 					<div className="right-section">
 						<div className="profile-info">
 							<label>Email:</label>
-							<input type="text" value={email} readOnly />
+							<input type="text" value={userInfo.email} readOnly />
 							<label>Nickname:</label>
 							<div className="input-with-error">
 								<input
 									type="text"
 									name="nickname"
-									value={nickname}
+									value={userInfo.nickname}
 									readOnly={!isEditing}
-									// 주석 처리된 handleInputChange 부분
-									// onChange={handleInputChange}
+									onChange={handleInputChange}
 								/>
 								{errors.nickname && (
 									<div className="error-message">{errors.nickname}</div>

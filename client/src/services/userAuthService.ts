@@ -145,4 +145,18 @@ export const authService = {
 			throw error;
 		}
 	},
+
+	// 프로필 이미지 가져오기 함수
+	getProfileImage: async (filename: string): Promise<string | null> => {
+		try {
+			const response = await axiosInstance.get(`/user/images/${filename}`, {
+				responseType: "blob",
+			});
+			const url = URL.createObjectURL(new Blob([response.data]));
+			return url;
+		} catch (error) {
+			console.error("Error fetching image:", error);
+			return null;
+		}
+	},
 };
