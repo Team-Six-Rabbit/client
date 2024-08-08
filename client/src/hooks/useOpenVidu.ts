@@ -13,6 +13,7 @@ const useOpenVidu = () => {
 	const OV = useRef<OpenVidu>();
 	const session = useRef<Session>();
 	const [publisher, setPublisher] = useState<Publisher>();
+	const [isPublisher, setIsPublisher] = useState<boolean>(false);
 	const [subscribers, setSubscribers] = useState<StreamManager[]>([]);
 	const [index, setIndex] = useState<number>(-1);
 
@@ -91,29 +92,43 @@ const useOpenVidu = () => {
 			session.current.on("streamDestroyed", onStreamDestroyed);
 
 			await session.current.connect(token);
-
-			// 자신의 스트림을 방송
-			if (session.current.capabilities.publish) {
-				const pub = OV.current.initPublisher(undefined, {
-					audioSource: undefined,
-					videoSource: undefined,
-					publishAudio: true,
-					publishVideo: true,
-					resolution: "640x480",
-					frameRate: 30,
-					insertMode: "APPEND",
-				});
-
-				pub.on("streamCreated", (event) => onStreamCreated(event, pub));
-				pub.on("streamDestroyed", onStreamDestroyed);
-				await session.current.publish(pub);
-				setPublisher(pub);
-			}
+			setIsPublisher(session.current.capabilities.publish);
 		},
 		[onStreamCreated],
 	);
 
-	return { joinSession, session, publisher, subscribers, index };
+	const publishMedia = async (
+		videoSource?: MediaStreamTrack,
+		audioSource?: MediaStreamTrack,
+		publishAudio: boolean = true,
+		publishVideo: boolean = true,
+	) => {
+		if (session.current?.capabilities.publish) {
+			const pub = OV.current!.initPublisher(undefined, {
+				audioSource,
+				videoSource,
+				publishAudio,
+				publishVideo,
+				resolution: "640x480",
+				frameRate: 30,
+				insertMode: "APPEND",
+			});
+			pub.on("streamCreated", (event) => onStreamCreated(event, pub));
+			pub.on("streamDestroyed", onStreamDestroyed);
+			setPublisher(pub);
+			session.current.publish(pub);
+		}
+	};
+
+	return {
+		joinSession,
+		publishMedia,
+		session,
+		publisher,
+		subscribers,
+		index,
+		isPublisher,
+	};
 };
 
 export default useOpenVidu;

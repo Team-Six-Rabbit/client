@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ItemBox from "@/components/Live/ItemBox";
 import useOpenVidu from "@/hooks/useOpenVidu";
@@ -8,13 +8,18 @@ import Timer from "@/components/Live/Timer";
 import LiveVote from "@/components/Live/LiveVote";
 import ChatBox from "@/components/Live/ChatBox";
 import EndedLive from "@/components/Live/EndLive";
+import useFaceApi from "@/hooks/useFaceApi";
 
 function LivePage() {
 	const [winner, setWinner] = useState("");
 	const [isTimeOver, setIsTimeOver] = useState(false);
 	const [isMicMuted, setIsMicMuted] = useState(true);
+	const videoElement = useRef<HTMLVideoElement>(null);
+	const canvasElement = useRef<HTMLCanvasElement>(null);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(true);
-	const { joinSession, publisher, subscribers } = useOpenVidu();
+	const { joinSession, publishMedia, publisher, subscribers, isPublisher } =
+		useOpenVidu();
+	const { isReady } = useFaceApi(isPublisher, videoElement, canvasElement);
 	const { battleId } = useParams();
 
 	const handleMicClick = useCallback(() => {
@@ -26,15 +31,30 @@ function LivePage() {
 	}, []);
 
 	useEffect(() => {
-		if (battleId) joinSession(battleId);
+		joinSession(battleId!);
 	}, [battleId, joinSession]);
 
 	useEffect(() => {
-		if (publisher) {
+		if (!isReady) return;
+
+		const mediaStreamTrack = canvasElement
+			.current!.captureStream(30)
+			.getVideoTracks()
+			.at(0)!;
+		if (!mediaStreamTrack) throw new Error("NOMEDIA");
+		mediaStreamTrack.contentHint = "motion";
+		console.log(mediaStreamTrack);
+
+		publishMedia(mediaStreamTrack, undefined, !isMicMuted, !isVideoDisabled);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isReady]);
+
+	useEffect(() => {
+		if (publisher && isReady) {
 			publisher.publishAudio(!isMicMuted);
 			publisher.publishVideo(!isVideoDisabled);
 		}
-	}, [isMicMuted, isVideoDisabled, publisher]);
+	}, [isMicMuted, isReady, isVideoDisabled, publisher]);
 
 	const onVoteEnd = useCallback((winner: string) => {
 		setWinner(winner);
@@ -43,6 +63,8 @@ function LivePage() {
 	return (
 		<>
 			<Header />
+			<video ref={videoElement} autoPlay muted className="w-[0px] h-[0px]" />
+			<canvas ref={canvasElement} className="w-[0px] h-[0px]" />
 			<div className="flex flex-col h-screen">
 				<div className="flex-1 flex mt-24 px-8">
 					<Timer duration={5220} onTimeOver={() => setIsTimeOver(true)} />
