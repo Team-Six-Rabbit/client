@@ -26,25 +26,29 @@ public class RedisSubscriber implements MessageListener {
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
 		try {
+			String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
 			String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
 
-			RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
+			//topic: chat
+			if (channel.equals("chat")) {
+				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
 
-			Long battleBoardId = redisTopicDto.getBattleBoardId();
-			String type = redisTopicDto.getType();
-			if (type.equals("chat")) {
-				RedisTopicDto<WriteChatResponseDto> chatTopicDto = objectMapper.readValue(publishMessage,
-					new TypeReference<>() {
-					});
-				WriteChatResponseDto returnValue = chatTopicDto.getResponseDto();
-				messagingTemplate.convertAndSend("/topic/chat/" + battleBoardId, returnValue);
-			} else if (type.equals("request")) {
-				RedisTopicDto<WriteTalkResponseDto> responseTopicDto = objectMapper.readValue(publishMessage,
-					new TypeReference<>() {
-					});
-				WriteTalkResponseDto returnValue = responseTopicDto.getResponseDto();
-				messagingTemplate.convertAndSend("/topic" + type + "/" + battleBoardId,
-					returnValue);
+				Long battleBoardId = redisTopicDto.getBattleBoardId();
+				String type = redisTopicDto.getType();
+				if (type.equals("chat")) {
+					RedisTopicDto<WriteChatResponseDto> chatTopicDto = objectMapper.readValue(publishMessage,
+						new TypeReference<>() {
+						});
+					WriteChatResponseDto returnValue = chatTopicDto.getResponseDto();
+					messagingTemplate.convertAndSend("/topic/chat/" + battleBoardId, returnValue);
+				} else if (type.equals("request")) {
+					RedisTopicDto<WriteTalkResponseDto> responseTopicDto = objectMapper.readValue(publishMessage,
+						new TypeReference<>() {
+						});
+					WriteTalkResponseDto returnValue = responseTopicDto.getResponseDto();
+					messagingTemplate.convertAndSend("/topic" + type + "/" + battleBoardId,
+						returnValue);
+				}
 			}
 
 		} catch (Exception e) {
