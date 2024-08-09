@@ -7,17 +7,19 @@ import org.springframework.stereotype.Service;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.dto.PrincipalDetails;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class SecurityServiceImpl implements SecurityService {
 
 	@Override
 	public User getAuthentication() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println(
-			"((PrincipalDetails)authentication.getPrincipal()).getUser() = "
-				+ ((PrincipalDetails)authentication.getPrincipal()).getUser());
 		if (authentication != null && authentication.getPrincipal() instanceof PrincipalDetails) {
-			return ((PrincipalDetails)authentication.getPrincipal()).getUser();
+			User user = ((PrincipalDetails)authentication.getPrincipal()).getUser();
+			log.debug("Authenticated user: {}", user);
+			return user;
 		}
 		return null;
 	}

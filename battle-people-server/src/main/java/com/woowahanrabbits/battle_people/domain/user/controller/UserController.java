@@ -36,9 +36,9 @@ public class UserController {
 	private final VoteService voteService;
 
 	@PostMapping("/join")
-	public ResponseEntity<ApiResponseDto<User>> join(@RequestBody JoinRequest request) {
+	public ResponseEntity<ApiResponseDto<BasicUserDto>> join(@RequestBody JoinRequest request) {
 		User user = userService.join(request);
-		return ResponseEntity.ok(new ApiResponseDto<>("success", "User joined", user));
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User joined", new BasicUserDto(user)));
 	}
 
 	@GetMapping("/profile")
