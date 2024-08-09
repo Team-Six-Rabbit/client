@@ -16,9 +16,11 @@ import com.woowahanrabbits.battle_people.domain.live.service.RedisSubscriber;
 public class RedisConfig {
 
 	@Bean
-	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory
+	) {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);
+		template.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setHashKeySerializer(new StringRedisSerializer());
 		template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
@@ -32,6 +34,7 @@ public class RedisConfig {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		container.setConnectionFactory(redisConnectionFactory);
 		container.addMessageListener(messageListener, new ChannelTopic("chat"));
+		container.addMessageListener(messageListener, new ChannelTopic("vote"));
 		return container;
 	}
 

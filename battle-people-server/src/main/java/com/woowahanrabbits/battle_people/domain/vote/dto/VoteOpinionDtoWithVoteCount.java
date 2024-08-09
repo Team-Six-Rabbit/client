@@ -4,13 +4,16 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class VoteOpinionDtoWithVoteCount {
-	private final Integer index;
-	private final String opinion;
+	private Integer index;
+	private String opinion;
 	@Setter
 	private Integer count;
 	@Setter
