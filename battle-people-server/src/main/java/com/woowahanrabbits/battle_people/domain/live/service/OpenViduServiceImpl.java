@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.live.domain.LiveApplyUser;
@@ -42,9 +43,9 @@ public class OpenViduServiceImpl implements OpenViduService {
 	private final LiveVoiceRecordRepository liveVoiceRecordRepository;
 	private final BattleBoardRepository battleBoardRepository;
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 	private final HashMap<String, Session> sessions = new HashMap<>();
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private static final Logger logger = LoggerFactory.getLogger(OpenViduServiceImpl.class);
 
 	public OpenViduServiceImpl(@Value("${openvidu.url}") String openviduUrl,
 		@Value("${openvidu.secret}") String secret,
@@ -53,7 +54,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 		UserRepository userRepository,
 		LiveVoiceRecordRepository liveVoiceRecordRepository,
 		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository,
-		RedisTemplate<String, Object> redisTemplate) {
+		RedisTemplate<String, String> redisTemplate) {
 		this.userVoteOpinionRepository = userVoteOpinionRepository;
 		this.redisTemplate = redisTemplate;
 		this.openVidu = new OpenVidu(openviduUrl, secret);
@@ -67,9 +68,11 @@ public class OpenViduServiceImpl implements OpenViduService {
 	@Override
 	public String createSession(Long battleId) throws OpenViduJavaClientException, OpenViduHttpException {
 		Room room;
+		logger.info("[Session] battleId: " + battleId);
 		if ((room = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null)).getRoom()) != null
 			&& Boolean.TRUE.equals(redisTemplate.hasKey("session:" + room.getRoomId()))
 			&& sessions.containsKey(room.getRoomId())) {
+			logger.info("[exist Session] room: " + room.getRoomId());
 			return room.getRoomId();
 		}
 		BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
@@ -78,6 +81,8 @@ public class OpenViduServiceImpl implements OpenViduService {
 		room = new Room();
 		room.setRoomId(session.getSessionId());
 		roomRepository.save(room);
+
+		logger.info("[create Session] room: " + room.getRoomId());
 
 		battleBoard.setRoom(room);
 		battleBoardRepository.save(battleBoard);
@@ -96,6 +101,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 		Room room = roomRepository.findByRoomId(roomId);
 		Session session = sessions.get(roomId);
 
+		logger.info("[GetToken] room: " + roomId + ", userId: " + userId + ", role:" + role);
 		if (session == null) {
 			return null;
 		}
@@ -115,10 +121,12 @@ public class OpenViduServiceImpl implements OpenViduService {
 			connectionPropertiesBuilder.record(true); // 발언자 스트림만 녹화 설정
 			try {
 				Recording recording = startRecording(session.getSessionId());
+				logger.info("[Recording Success] room: " + session.getSessionId() + "userId: " + userId);
 				if (recording != null) {
 					redisTemplate.opsForValue().set("recording:" + userId, recording.getId(), 24, TimeUnit.HOURS);
 				}
 			} catch (Exception e) {
+				logger.info("[Recording Fail] room: " + session.getSessionId() + "userId: " + userId);
 				e.printStackTrace();
 			}
 
