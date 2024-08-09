@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import {
 	FaVideo,
 	FaVideoSlash,
@@ -9,18 +8,19 @@ import {
 	FaTicketAlt,
 } from "react-icons/fa";
 
-function VideoAudioIcons() {
-	const [isMicMuted, setIsMicMuted] = useState(true);
-	const [isVideoDisabled, setIsVideoDisabled] = useState(true);
+interface VideoAudioIconsProps {
+	isMicMuted: boolean;
+	isVideoDisabled: boolean;
+	onMicClick: () => void;
+	onVideoClick: () => void;
+}
 
-	const handleMicClick = () => {
-		setIsMicMuted((prev) => !prev);
-	};
-
-	const handleVideoClick = () => {
-		setIsVideoDisabled((prev) => !prev);
-	};
-
+function VideoAudioIcons({
+	isMicMuted,
+	isVideoDisabled,
+	onMicClick,
+	onVideoClick,
+}: VideoAudioIconsProps) {
 	return (
 		<div className="flex items-center space-x-4 ms-6">
 			<div
@@ -32,13 +32,13 @@ function VideoAudioIcons() {
 					<FaVideoSlash
 						size={36}
 						className="text-white cursor-pointer transform hover:scale-110"
-						onClick={handleVideoClick}
+						onClick={onVideoClick}
 					/>
 				) : (
 					<FaVideo
 						size={36}
 						className="text-white cursor-pointer transform hover:scale-110"
-						onClick={handleVideoClick}
+						onClick={onVideoClick}
 					/>
 				)}
 			</div>
@@ -51,13 +51,13 @@ function VideoAudioIcons() {
 					<FaMicrophoneSlash
 						size={36}
 						className="text-white cursor-pointer transform hover:scale-110"
-						onClick={handleMicClick}
+						onClick={onMicClick}
 					/>
 				) : (
 					<FaMicrophone
 						size={34}
 						className="text-white cursor-pointer transform hover:scale-110"
-						onClick={handleMicClick}
+						onClick={onMicClick}
 					/>
 				)}
 			</div>
@@ -103,10 +103,27 @@ function BombTicketIcons() {
 	);
 }
 
-function ItemBox() {
+interface ItemBoxProps {
+	isMicMuted: boolean;
+	isVideoDisabled: boolean;
+	onMicClick: () => void;
+	onVideoClick: () => void;
+}
+
+function ItemBox({
+	isMicMuted,
+	isVideoDisabled,
+	onMicClick,
+	onVideoClick,
+}: ItemBoxProps) {
 	return (
 		<div className="flex justify-between w-full p-2 mt-6 bg-black rounded-lg">
-			<VideoAudioIcons />
+			<VideoAudioIcons
+				isMicMuted={isMicMuted}
+				isVideoDisabled={isVideoDisabled}
+				onMicClick={onMicClick}
+				onVideoClick={onVideoClick}
+			/>
 			<BombTicketIcons />
 		</div>
 	);

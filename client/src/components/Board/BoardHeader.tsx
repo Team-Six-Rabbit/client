@@ -62,7 +62,7 @@ function BoardHeader({
 	onCategorySelect,
 	selectedStatus,
 	onStatusSelect,
-	boardIcon,
+	boardIcon = fireIcon,
 }: BoardHeaderProps) {
 	const getStatuses = (boardName: string): LiveStatus[] => {
 		if (boardName === "불구경") {
