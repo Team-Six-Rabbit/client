@@ -69,6 +69,27 @@ public class OpenViduServiceImpl implements OpenViduService {
 		this.battleBoardRepository = battleBoardRepository;
 	}
 
+	public Session getExistsValidRoom(Long battleId) {
+		if (!battleBoardRepository.existsById(battleId)) {
+			return null;
+		}
+		BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
+		Room room = battleBoard.getRoom();
+		if (room == null) {
+			return null;
+		}
+
+		for (Session session : openVidu.getActiveSessions()) {
+			System.out.println(
+				"session id= " + session.getSessionId() + ", size= " + session.getActiveConnections().size());
+			if (session.getSessionId().equals(room.getRoomId()) && !session.getActiveConnections().isEmpty()) {
+				System.out.println("createSession method: [Exists Room] : " + room.getRoomId());
+				return session;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public Session createSession(Long battleId) {
 		System.out.println("------------------------------------------------------------------------");
