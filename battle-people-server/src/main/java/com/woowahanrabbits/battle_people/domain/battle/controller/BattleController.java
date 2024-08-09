@@ -68,9 +68,10 @@ public class BattleController {
 
 	@GetMapping("/apply-list")
 	@Operation(summary = "[불씨] 모집중인 배틀을 조회한다.")
-	public ResponseEntity<?> getAwaitingBattleList(@RequestParam(defaultValue = "") Integer category, int page,
-		@LoginUser User user) {
-		List<AwaitingBattleResponseDto> list = battleService.getAwaitingBattleList(category, page, user);
+	public ResponseEntity<?> getAwaitingBattleList(@RequestParam(defaultValue = "") Integer category,
+		@RequestParam int page,
+		@LoginUser User user, @RequestParam int size) {
+		List<AwaitingBattleResponseDto> list = battleService.getAwaitingBattleList(category, page, user, size);
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(new ApiResponseDto<>("success", "", list));
 	}

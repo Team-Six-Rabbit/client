@@ -16,7 +16,7 @@ public interface BattleService {
 
 	void acceptOrDeclineBattle(BattleRespondRequest battleRespondRequest, User user);
 
-	List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user);
+	List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user, int size);
 
 	int applyBattle(BattleApplyDto battleApplyDto, User user);
 

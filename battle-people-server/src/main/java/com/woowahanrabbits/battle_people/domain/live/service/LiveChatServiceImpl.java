@@ -1,6 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.stereotype.Service;
@@ -13,6 +12,7 @@ import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatRespo
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
+import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
@@ -32,9 +32,12 @@ public class LiveChatServiceImpl implements LiveChatService {
 	private final MessageListenerAdapter messageListenerAdapter;
 	private static int chatIdx = 0;
 	private static int requestIdx = 0;
+	private final UserRepository userRepository;
 
 	@Override
-	public RedisTopicDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto, BasicUserDto user) {
+	public RedisTopicDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto) {
+
+		BasicUserDto user = new BasicUserDto(userRepository.findById(writeChatRequestDto.getUserId()).orElseThrow());
 
 		WriteChatResponseDto writeChatResponseDto = WriteChatResponseDto.builder()
 			.user(user)
@@ -86,9 +89,4 @@ public class LiveChatServiceImpl implements LiveChatService {
 
 	}
 
-	@Override
-	public void addTopicListener(Long battleBoardId) {
-		ChannelTopic topic = new ChannelTopic("live");
-		redisMessageListenerContainer.addMessageListener(messageListenerAdapter, topic);
-	}
 }
