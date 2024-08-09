@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { RiCornerDownLeftLine } from "react-icons/ri";
-import useChatSocket from "@/hooks/useChatSocket";
 import { ChatMessage, SpeechRequestMessage } from "@/types/Chat";
 import "@/assets/styles/scrollbar.css";
 
@@ -121,14 +120,19 @@ function SpeechRequestList({
 }
 
 interface ChatBoxProps {
-	battleBoardId: string;
+	messages: ChatMessage[];
+	speechRequests: SpeechRequestMessage[];
+	sendMessage: (userId: number, message: string) => void;
+	sendSpeechRequest: () => void;
 	role: number;
 }
-
-function ChatBox({ battleBoardId, role }: ChatBoxProps) {
-	const { messages, sendMessage, speechRequests, sendSpeechRequest } =
-		useChatSocket(battleBoardId);
-
+function ChatBox({
+	messages,
+	speechRequests,
+	sendMessage,
+	sendSpeechRequest,
+	role,
+}: ChatBoxProps) {
 	return (
 		<div className="flex flex-col h-150 w-1/4 ms-6 mt-2">
 			<SpeechRequestList
@@ -149,7 +153,7 @@ function ChatBox({ battleBoardId, role }: ChatBoxProps) {
 					))}
 				</div>
 			</div>
-			<ChatInput sendMessage={(message) => sendMessage(message)} />
+			<ChatInput sendMessage={(message) => sendMessage(7, message)} />
 		</div>
 	);
 }
