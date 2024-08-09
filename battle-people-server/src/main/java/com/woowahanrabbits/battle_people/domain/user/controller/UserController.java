@@ -22,6 +22,8 @@ import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
+import com.woowahanrabbits.battle_people.domain.vote.dto.UserWinHistory;
+import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
+	private final VoteService voteService;
 
 	@PostMapping("/join")
 	public ResponseEntity<ApiResponseDto<User>> join(@RequestBody JoinRequest request) {
@@ -44,6 +47,15 @@ public class UserController {
 		User user = userService.getUserProfile(loginUser.getId());
 		BasicUserDto userDto = new BasicUserDto(user);
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile", userDto));
+	}
+
+	@GetMapping("/profile/win_rate")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<ApiResponseDto<UserWinHistory>> getLoginUserWinHistory(@LoginUser User loginUser) {
+		User user = userService.getUserProfile(loginUser.getId());
+
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User win history", voteService.getUserWinHistory(
+			user.getId())));
 	}
 
 	@GetMapping("/profile/{userId}")
