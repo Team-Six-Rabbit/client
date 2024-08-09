@@ -7,8 +7,11 @@ const useFaceApi = (
 	canvas: RefObject<HTMLCanvasElement>,
 ) => {
 	const [isReady, setIsReady] = useState<boolean>(false);
-	const interval = useRef<unknown>();
+	const shouldRenderVideo = useRef<boolean>(false);
+	const timeout = useRef<unknown>();
 	const stream = useRef<MediaStream>();
+
+	const timeoutInterval = 200;
 
 	const SSD_MOBILENETV1 = "ssd_mobilenetv1";
 	const TINY_FACE_DETECTOR = "tiny_face_detector";
@@ -17,15 +20,15 @@ const useFaceApi = (
 	const minConfidence = 0.5;
 
 	// tiny_face_detector options
-	const inputSize = 512;
-	const scoreThreshold = 0.5;
+	const inputSize = 224;
+	const scoreThreshold = 0.4;
 
 	let selectedFaceDetector = TINY_FACE_DETECTOR;
 	selectedFaceDetector = TINY_FACE_DETECTOR;
 
 	const clear = () => {
-		if (interval.current) clearInterval(interval.current as number);
-		interval.current = undefined;
+		if (timeout.current) clearTimeout(timeout.current as number);
+		timeout.current = undefined;
 		if (stream.current) {
 			stream.current.getTracks().forEach((track) => {
 				track.stop();
@@ -163,39 +166,60 @@ const useFaceApi = (
 		}
 	};
 
-	const onPlay = () => {
-		interval.current = setInterval(async () => {
-			if (
-				!video.current ||
-				// video.current?.paused ||
-				// video.current?.ended ||
-				!isFaceDetectionModelLoaded()
-			)
-				return;
+	const renderVideoToCanvas = () => {
+		const ctx = canvas.current!.getContext("2d")!;
+		if (!video.current!.paused && !video.current!.ended) {
+			ctx.drawImage(
+				video.current!,
+				0,
+				0,
+				canvas.current!.width,
+				canvas.current!.height,
+			);
+		}
+	};
 
-			const options = getFaceDetectorOptions();
-			const result = await faceapi
-				.detectSingleFace(video.current!, options)
-				.withFaceLandmarks();
+	const onPlay = async () => {
+		// console.time("onPlay Execution Time");
 
-			if (result) {
-				const dims = faceapi.matchDimensions(
-					canvas.current!,
-					{ width: 940, height: 650 },
-					true,
-				);
-				const resizedResult = faceapi.resizeResults(result, dims);
-				render2DCharacter(resizedResult);
-			}
-		}, 100);
+		if (
+			!video.current ||
+			video.current?.paused ||
+			video.current?.ended ||
+			!isFaceDetectionModelLoaded()
+		) {
+			timeout.current = setTimeout(() => onPlay(), timeoutInterval);
+			console.timeEnd("onPlay Execution Time"); // 종료 시점에서 시간 측정 종료
+			return timeout.current;
+		}
+
+		const options = getFaceDetectorOptions();
+		const result = await faceapi
+			.detectSingleFace(video.current!, options)
+			.withFaceLandmarks(true);
+
+		if (result) {
+			const dims = faceapi.matchDimensions(
+				canvas.current!,
+				{ width: 640, height: 480 },
+				true,
+			);
+			const resizedResult = faceapi.resizeResults(result, dims);
+
+			if (shouldRenderVideo.current) renderVideoToCanvas();
+			render2DCharacter(resizedResult);
+		}
+
+		// console.timeEnd("onPlay Execution Time");
+
+		timeout.current = setTimeout(() => onPlay(), timeoutInterval);
+		return timeout.current;
 	};
 
 	const loadModel = () => {
 		return Promise.all([
 			faceapi.nets.tinyFaceDetector.loadFromUri("/weights"),
-			faceapi.nets.faceLandmark68Net.loadFromUri("/weights"),
-			faceapi.nets.faceRecognitionNet.loadFromUri("/weights"),
-			faceapi.nets.faceExpressionNet.loadFromUri("/weights"),
+			faceapi.nets.faceLandmark68TinyNet.loadFromUri("/weights"),
 		]).then(() => {
 			setIsReady(true);
 		});
@@ -204,7 +228,6 @@ const useFaceApi = (
 	const startVideo = async () => {
 		stream.current = await navigator.mediaDevices.getUserMedia({
 			video: true,
-			audio: true,
 		});
 		// eslint-disable-next-line no-param-reassign
 		video.current!.srcObject = stream.current;
@@ -214,13 +237,11 @@ const useFaceApi = (
 	useEffect(() => {
 		if (!isPublisher || isFaceDetectionModelLoaded()) return;
 
-		startVideo()
-			.then(() => loadModel())
-			.then(() => onPlay());
+		startVideo().then(() => loadModel().then(onPlay));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isPublisher]);
 
-	return { isReady };
+	return { isReady, shouldRenderVideo };
 };
 
 export default useFaceApi;

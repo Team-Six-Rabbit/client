@@ -102,6 +102,7 @@ const useOpenVidu = () => {
 		audioSource?: MediaStreamTrack,
 		publishAudio: boolean = true,
 		publishVideo: boolean = true,
+		frameRate: number = 30,
 	) => {
 		if (session.current?.capabilities.publish) {
 			const pub = OV.current!.initPublisher(undefined, {
@@ -110,7 +111,7 @@ const useOpenVidu = () => {
 				publishAudio,
 				publishVideo,
 				resolution: "640x480",
-				frameRate: 30,
+				frameRate,
 				insertMode: "APPEND",
 			});
 			pub.on("streamCreated", (event) => onStreamCreated(event, pub));

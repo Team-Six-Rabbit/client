@@ -19,8 +19,13 @@ function LivePage() {
 	const [isVideoDisabled, setIsVideoDisabled] = useState(true);
 	const { joinSession, publishMedia, publisher, subscribers, isPublisher } =
 		useOpenVidu();
-	const { isReady } = useFaceApi(isPublisher, videoElement, canvasElement);
+	const { isReady, shouldRenderVideo } = useFaceApi(
+		isPublisher,
+		videoElement,
+		canvasElement,
+	);
 	const { battleId } = useParams();
+	const publishFrameRate = 30;
 
 	const handleMicClick = useCallback(() => {
 		setIsMicMuted((prev) => !prev);
@@ -38,14 +43,20 @@ function LivePage() {
 		if (!isReady) return;
 
 		const mediaStreamTrack = canvasElement
-			.current!.captureStream(30)
+			.current!.captureStream(publishFrameRate)
 			.getVideoTracks()
 			.at(0)!;
 		if (!mediaStreamTrack) throw new Error("NOMEDIA");
 		mediaStreamTrack.contentHint = "motion";
-		console.log(mediaStreamTrack);
+		shouldRenderVideo.current = true;
 
-		publishMedia(mediaStreamTrack, undefined, !isMicMuted, !isVideoDisabled);
+		publishMedia(
+			mediaStreamTrack,
+			undefined,
+			!isMicMuted,
+			!isVideoDisabled,
+			publishFrameRate,
+		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isReady]);
 
