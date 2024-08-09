@@ -42,11 +42,11 @@ public class BalanceGameController {
 	@Operation(summary = "[점화] 카테고리 별, 진행 상태 별 밸런스 게임 조회 ")
 	public ResponseEntity<ApiResponseDto<?>> getBalanceGameByConditions(
 		@RequestParam(defaultValue = "") Integer category,
-		@RequestParam(defaultValue = "5") int status, @RequestParam int page,
+		@RequestParam(defaultValue = "5") int status, @RequestParam int page, @RequestParam int size,
 		@LoginUser User user) {
 
 		return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "",
-			balanceGameService.getBalanceGameByConditions(category, status, page, user)));
+			balanceGameService.getBalanceGameByConditions(category, status, page, user, size)));
 	}
 
 	@GetMapping("/{id}")

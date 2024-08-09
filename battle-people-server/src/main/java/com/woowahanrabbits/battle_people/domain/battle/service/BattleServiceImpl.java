@@ -167,8 +167,8 @@ public class BattleServiceImpl implements BattleService {
 	}
 
 	@Override
-	public List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user) {
-		Pageable pageable = PageRequest.of(page, 12);
+	public List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user, int size) {
+		Pageable pageable = PageRequest.of(page, size);
 
 		List<VoteInfo> voteInfos = category == null
 			? voteInfoRepository.findAllByCurrentState(2, pageable).getContent()
