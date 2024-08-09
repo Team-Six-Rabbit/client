@@ -13,9 +13,6 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	// private final CustomHandshakeInterceptor customHandshakeInterceptor;
-	// private final ChatPreHandler chatPreHandler;
-
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws")
