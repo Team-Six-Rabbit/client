@@ -103,11 +103,14 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 		int voteCountOpt1 = userVoteOpinionsOpt1.size();
 		int voteCountOpt2 = userVoteOpinionsOpt2.size();
+		int votePerOpt1 = 0;
+		int votePerOpt2 = 0;
 
 		int totalCount = voteCountOpt1 + voteCountOpt2;
 
-		if (totalCount == 0) {
-			totalCount = 100;
+		if (totalCount != 0) {
+			votePerOpt1 = 100 * voteCountOpt1 / totalCount;
+			votePerOpt2 = 100 - votePerOpt1;
 		}
 
 		List<VoteOpinionDtoWithVoteCount> voteOpinionDtoWithVoteCounts = new ArrayList<>();
@@ -117,10 +120,10 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 		VoteOpinionDtoWithVoteCount voteOpinionDtoWithVoteCountOpp = new VoteOpinionDtoWithVoteCount(
 			voteOpinions.get(1));
 
-		voteOpinionDtoWithVoteCountRegist.setPercentage(100 * voteCountOpt1 / totalCount);
+		voteOpinionDtoWithVoteCountRegist.setPercentage(votePerOpt1);
 		voteOpinionDtoWithVoteCountRegist.setCount(voteCountOpt1);
 
-		voteOpinionDtoWithVoteCountOpp.setPercentage(100 - (100 * voteCountOpt1 / totalCount));
+		voteOpinionDtoWithVoteCountOpp.setPercentage(votePerOpt2);
 		voteOpinionDtoWithVoteCountOpp.setCount(voteCountOpt2);
 
 		voteOpinionDtoWithVoteCounts.add(voteOpinionDtoWithVoteCountRegist);
