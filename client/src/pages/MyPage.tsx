@@ -3,7 +3,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/button-has-type */
 import { useState, useEffect, ChangeEvent, useRef } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "@/assets/styles/mypage.css";
 import Header from "@/components/header";
 import { authService } from "@/services/userAuthService";
@@ -11,7 +11,6 @@ import { DetailUserInfo } from "@/types/user";
 import editIcon from "@/assets/images/edit.png";
 import profileImagePlaceholder from "@/assets/images/test.png";
 import "@/assets/styles/shake.css";
-import { useAuthStore } from "@/stores/userAuthStore";
 import MyPageContent from "@/components/MyPageContent";
 
 function MyPage() {
@@ -26,8 +25,6 @@ function MyPage() {
 	const [profileImage, setProfileImage] = useState<string>(
 		profileImagePlaceholder,
 	);
-
-	const { user } = useAuthStore();
 
 	useEffect(() => {
 		if (location.pathname === "/my-page") {
@@ -213,9 +210,6 @@ function MyPage() {
 					</div>
 				</div>
 				<MyPageContent />
-				{/* <div className="mypage-content">
-					<Outlet />
-				</div> */}
 			</div>
 		</div>
 	);

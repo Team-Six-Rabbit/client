@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { CircularProgressBar } from "@tomickigrzegorz/react-circular-progress-bar";
 import { authService, UserWinHistory } from "@/services/userAuthService"; // authService에서 getLoginUserWinHistory 가져오기
 
