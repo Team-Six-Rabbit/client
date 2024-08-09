@@ -20,14 +20,14 @@ public interface OpenViduService {
 	 * @deprecated Replaced by automatic recording during session creation.
 	 * Use {@link #createSession(Long)} with default recording properties.
 	 */
-	@Deprecated(forRemoval = true)
+	@Deprecated(forRemoval = false)
 	Recording startRecording(String roomId) throws OpenViduJavaClientException, OpenViduHttpException;
 
 	/**
 	 * @deprecated Replaced by automatic recording during session creation.
 	 * Use {@link #createSession(Long)} with default recording properties.
 	 */
-	@Deprecated(forRemoval = true)
+	@Deprecated(forRemoval = false)
 	boolean stopRecording(Long battleId, Long userId, String recordingId);
 
 	// OpenViduTokenResponseDto changeRole(String roomId, User user);
