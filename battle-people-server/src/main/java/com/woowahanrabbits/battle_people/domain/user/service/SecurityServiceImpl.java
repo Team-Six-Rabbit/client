@@ -1,0 +1,24 @@
+package com.woowahanrabbits.battle_people.domain.user.service;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.dto.PrincipalDetails;
+
+@Service
+public class SecurityServiceImpl implements SecurityService {
+
+	@Override
+	public User getAuthentication() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println(
+			"((PrincipalDetails)authentication.getPrincipal()).getUser() = "
+				+ ((PrincipalDetails)authentication.getPrincipal()).getUser());
+		if (authentication != null && authentication.getPrincipal() instanceof PrincipalDetails) {
+			return ((PrincipalDetails)authentication.getPrincipal()).getUser();
+		}
+		return null;
+	}
+}

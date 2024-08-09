@@ -37,6 +37,13 @@ out/
 ### secret key ###
 *.properties
 
+/ssl/
 
+logs/spring.log
+
+B
 ### VS Code ###
 .vscode/
+
+.env
+*.sql
