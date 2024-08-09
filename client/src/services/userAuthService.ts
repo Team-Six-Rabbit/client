@@ -2,7 +2,7 @@ import axiosInstance from "@/services/axiosInstance";
 import { JoinRequest, LoginRequest, ApiResponse } from "@/types/api";
 import { BasicUserInfo, DetailUserInfo } from "@/types/user";
 import { useAuthStore } from "@/stores/userAuthStore";
-import { generateBasicUser } from "@/mocks/util";
+// import { generateBasicUser } from "@/mocks/util";
 
 export const authService = {
 	// 로그인 함수
@@ -94,15 +94,18 @@ export const authService = {
 		}
 	},
 
+	// 닉네임으로 사용자 검색 함수
 	searchUserByNickname: async (
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		_nickname: string,
+		nickname: string,
 	): Promise<ApiResponse<BasicUserInfo[]>> => {
-		const size = Math.floor(Math.random() * 10);
-		const users = Array.from({ length: size }, () => generateBasicUser());
-		return {
-			code: "success",
-			data: users,
-		};
+		try {
+			const response = await axiosInstance.get<ApiResponse<BasicUserInfo[]>>(
+				`/user?nickname=${encodeURIComponent(nickname)}`,
+			);
+			return response.data;
+		} catch (error) {
+			console.error("Search User By Nickname Error: ", error);
+			throw error;
+		}
 	},
 };

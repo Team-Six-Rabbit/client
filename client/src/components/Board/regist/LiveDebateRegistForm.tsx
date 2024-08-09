@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate } from "react-router-dom";
 import Dropdown from "@/components/Board/regist/Dropdown";
@@ -17,6 +17,7 @@ import {
 } from "@/assets/styles/battleRegist";
 import { battleService } from "@/services/battleService";
 import { authService } from "@/services/userAuthService";
+import debounce from "lodash.debounce";
 
 const Options = styled.div`
 	position: absolute;
@@ -40,9 +41,16 @@ const Option = styled.div`
 	}
 `;
 
-const fetchUserSuggestions = async (nickname: string) => {
-	const users = await authService.searchUserByNickname(nickname);
-	return users.data || [];
+const fetchUserSuggestions = async (
+	nickname: string,
+): Promise<BasicUserInfo[]> => {
+	try {
+		const response = await authService.searchUserByNickname(nickname);
+		return response.data || [];
+	} catch (error) {
+		console.error("Error fetching user suggestions: ", error);
+		return [];
+	}
 };
 
 function LiveDebateRegistForm() {
@@ -115,20 +123,32 @@ function LiveDebateRegistForm() {
 		}
 	};
 
-	const handleOpponentInputChange = async (
+	// Debounce function setup using useMemo
+	const debouncedFetchSuggestions = useMemo(
+		() =>
+			debounce(async (nickname: string) => {
+				const suggestions = await fetchUserSuggestions(nickname);
+				setOpponentSuggestions(suggestions);
+			}, 300), // 300 milliseconds delay
+		[],
+	);
+
+	// Wrapping the debounced function with useCallback
+	const debounceFetchUserSuggestions = useCallback(
+		(nickname: string) => debouncedFetchSuggestions(nickname),
+		[debouncedFetchSuggestions],
+	);
+
+	const handleOpponentInputChange = (
 		event: React.ChangeEvent<HTMLInputElement>,
 	) => {
 		const nickname = event.target.value;
 		setOpponent(nickname);
 		setErrors((prevErrors) => ({ ...prevErrors, opponent: false }));
-
-		if (nickname.length > 0) {
-			const suggestions = await fetchUserSuggestions(nickname);
-			setOpponentSuggestions(suggestions);
-		} else {
-			setOpponentSuggestions([]);
-		}
 		setOpponentId(null);
+
+		// Use debounced function to fetch suggestions
+		debounceFetchUserSuggestions(nickname);
 	};
 
 	const selectOpponent = (selectedOpponent: BasicUserInfo) => {
@@ -170,8 +190,6 @@ function LiveDebateRegistForm() {
 			return;
 		}
 
-		const opinions = [authorChoice];
-
 		const minPeopleCount = 5;
 
 		const startDate = new Date(startTime);
@@ -187,7 +205,7 @@ function LiveDebateRegistForm() {
 			time: parseInt(duration, 10),
 			category: selectedCategory,
 			oppositeUserId: opponentId,
-			opinions,
+			opinion: authorChoice,
 			minPeopleCount,
 			maxPeopleCount: parseInt(maxParticipants, 10),
 			battleRule: "",
@@ -220,7 +238,10 @@ function LiveDebateRegistForm() {
 							value={title}
 							onChange={(e) => {
 								setTitle(e.target.value);
-								setErrors((prevErrors) => ({ ...prevErrors, title: false }));
+								setErrors((prevErrors) => ({
+									...prevErrors,
+									title: false,
+								}));
 							}}
 						/>
 					</FormGroup>
@@ -374,7 +395,10 @@ function LiveDebateRegistForm() {
 					value={details}
 					onChange={(e) => {
 						setDetails(e.target.value);
-						setErrors((prevErrors) => ({ ...prevErrors, details: false }));
+						setErrors((prevErrors) => ({
+							...prevErrors,
+							details: false,
+						}));
 					}}
 				/>
 			</FormGroup>

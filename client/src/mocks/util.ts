@@ -138,11 +138,13 @@ export const generateBattleWaitingParticipant =
 	(): BattleWaitingParticipant => {
 		const maxPeopleCount = generateInteger(100) + 5;
 		const currentPeopleCount = generateInteger(maxPeopleCount - 1);
+		const count1 = generateInteger(100);
+		const count2 = generateInteger(100);
 
 		return {
 			id: generateInteger(),
 			title: generateSentences(),
-			opinions: [],
+			opinions: generateOpinions(count1, count2),
 			startDate: generateDate(),
 			endDate: generateDate(86400000),
 			maxPeopleCount,

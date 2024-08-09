@@ -67,15 +67,13 @@ export const balanceGameService = {
 	},
 	voteBalanceGame: async (
 		battleId: number,
-		userId: number,
 		voteOpinionIndex: number,
 	): Promise<ApiResponse<{ opinions: OpinionWithPercentage[] }>> => {
 		try {
 			const response = await axiosInstance.post<
 				ApiResponse<{ opinions: OpinionWithPercentage[] }>
-			>(`/vote/user-vote/${battleId}`, null, {
+			>(`/vote/user-vote-balance-game/${battleId}`, null, {
 				params: {
-					userId,
 					voteOpinionIndex,
 				},
 			});

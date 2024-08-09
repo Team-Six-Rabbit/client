@@ -63,7 +63,7 @@ export const battleService = {
 
 	// 배틀 신청 목록 가져오기
 	getApplyList: async (
-		category: number,
+		category?: number,
 		page: number = 0,
 		size: number = 10,
 	): Promise<ApiResponse<BattleWaitingParticipant[]>> => {
