@@ -14,15 +14,22 @@ import TicketBarcode from "@/components/Board/fanning/TicketBarcode";
 interface TicketProps {
 	ticket: TicketType;
 	theme: "navy" | "yellow";
+	onVote: (ticketId: number, opinionIndex: number) => Promise<void>; // onVote 속성 추가
 }
 
-function Ticket({ ticket, theme = "navy" }: TicketProps) {
+function Ticket({ ticket, theme = "navy", onVote }: TicketProps) {
 	const themeData = themes[theme] || themes.navy;
 	const [showModal, setShowModal] = useState(false);
 
-	const handleVote = (opinion: string) => {
-		console.log(`Voted for: ${opinion}`);
-		setShowModal(false);
+	const handleVote = async (opinion: string) => {
+		const selectedOpinionIndex = ticket.opinions.find(
+			(o) => o.opinion === opinion,
+		)?.index;
+
+		if (selectedOpinionIndex !== undefined) {
+			await onVote(ticket.id, selectedOpinionIndex); // 투표 요청을 상위 컴포넌트에 전달
+			setShowModal(false);
+		}
 	};
 
 	return (

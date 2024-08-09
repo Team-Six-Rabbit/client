@@ -41,14 +41,33 @@ function PreVotingBoardPage() {
 		setSelectedCategory(category);
 	};
 
+	const handleVote = async (ticketId: number, opinionIndex: number) => {
+		try {
+			const requestData = {
+				battleId: ticketId,
+				selectedOpinion: opinionIndex,
+			};
+			console.log("requestData", requestData);
+
+			const response = await battleService.preVoteToBattle(requestData);
+			console.log(response);
+
+			// 필요한 경우 투표 후 상태 업데이트 로직 추가
+		} catch (error) {
+			console.error("Failed to submit vote:", error);
+		}
+	};
+
 	useEffect(() => {
 		const fetchBattles = async () => {
 			try {
 				setIsLoading(true);
 
-				const categoryIndex = categories.findIndex(
-					(category) => category.name === selectedCategory,
-				);
+				const categoryIndex =
+					selectedCategory === "전체"
+						? undefined
+						: categories.find((category) => category.name === selectedCategory)
+								?.id;
 
 				const response = await battleService.getApplyList(categoryIndex);
 				const battles: BattleWaitingParticipant[] = response.data!;
@@ -108,6 +127,7 @@ function PreVotingBoardPage() {
 									key={ticket.id}
 									ticket={ticket}
 									theme={getTheme(index)}
+									onVote={handleVote} // 투표 처리 함수 전달
 								/>
 							))}
 						</BoardTicketContainer>

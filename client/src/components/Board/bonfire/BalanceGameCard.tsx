@@ -44,41 +44,7 @@ function BalanceGameCard({
 	const [isLoading, setIsLoading] = useState(false);
 
 	const navigate = useNavigate();
-
 	const { isLogin, user } = useAuthStore();
-
-	const handleVote = async (option: number) => {
-		if (!isLogin || !user) {
-			navigate("/login");
-			return;
-		}
-
-		if (hasVoted || disabled) return;
-
-		setIsLoading(true);
-		try {
-			console.log(
-				`Request parameters: battleId=${data.id}, userId=${user.id}, voteOpinionIndex=${option}`,
-			);
-			const response = await balanceGameService.voteBalanceGame(
-				data.id,
-				user.id,
-				option,
-			);
-
-			if (response.data && response.data.opinions) {
-				const updatedOpinions = response.data.opinions;
-				setHasVoted(true);
-				onVote(data.id, updatedOpinions);
-			} else {
-				console.error("Unexpected response format:", response);
-			}
-		} catch (error) {
-			console.error("Failed to vote:", error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
 
 	const handleCardClick = async () => {
 		setIsLoading(true);
@@ -93,6 +59,28 @@ function BalanceGameCard({
 		} finally {
 			setIsLoading(false);
 		}
+	};
+
+	const handleVoteClick = (option: number) => {
+		if (!isLogin || !user) {
+			navigate("/login");
+			return;
+		}
+
+		if (hasVoted || disabled) return;
+
+		const selectedOpinion = data.opinions.find(
+			(opinion) => opinion.index === option,
+		);
+
+		if (!selectedOpinion) {
+			console.error("Selected opinion not found");
+			return;
+		}
+
+		setHasVoted(true);
+		// selectedOpinion을 배열로 감싸서 전달합니다.
+		onVote(data.id, [selectedOpinion]);
 	};
 
 	const handleCloseModal = () => {
@@ -114,7 +102,10 @@ function BalanceGameCard({
 						userVote={data.userVote}
 					/>
 				) : (
-					<ActiveBalanceGameCard opinions={data.opinions} onVote={handleVote} />
+					<ActiveBalanceGameCard
+						opinions={data.opinions}
+						onVote={handleVoteClick}
+					/>
 				)}
 			</BalanceGameCardWrapper>
 			{isLoading && <div>Loading...</div>}

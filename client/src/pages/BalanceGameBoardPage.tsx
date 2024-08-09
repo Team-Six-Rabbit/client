@@ -13,6 +13,8 @@ import {
 } from "@/types/Board/balancegameCard";
 import { ApiResponse, BalanceGameResponse } from "@/types/api";
 import bonfireIcon from "@/assets/images/bonfire.gif";
+import { useAuthStore } from "@/stores/userAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const BalanceGameBoardContainer = styled.div`
 	display: flex;
@@ -27,6 +29,7 @@ const BoardCardContainer = styled.div`
 	gap: 10px;
 	width: 100%;
 	max-width: 1050px;
+	padding: 0 10px;
 
 	@media (min-width: 640px) {
 		grid-template-columns: repeat(2, 1fr);
@@ -40,6 +43,8 @@ function BalanceGameBoardPage() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [page, setPage] = useState<number>(0);
 	const [hasMore, setHasMore] = useState<boolean>(true);
+	const navigate = useNavigate();
+	const { isLogin, user } = useAuthStore();
 
 	const handleCategorySelect = (category: string) => {
 		setSelectedCategory(category);
@@ -60,10 +65,7 @@ function BalanceGameBoardPage() {
 			window.innerHeight + document.documentElement.scrollTop + 200 >=
 			document.documentElement.scrollHeight
 		) {
-			console.log(`hasMore: ${hasMore}, isLoading: ${isLoading}`);
-
-			if (hasMore && !isLoading) {
-				console.log("Fetching more data...");
+			if (!isLoading && hasMore) {
 				setPage((prevPage) => prevPage + 1);
 			}
 		}
@@ -89,7 +91,7 @@ function BalanceGameBoardPage() {
 						categoryIndex,
 						status,
 						page,
-						15,
+						7,
 					);
 
 				const balanceGames: BalanceGameCardType[] =
@@ -110,9 +112,11 @@ function BalanceGameBoardPage() {
 						};
 					}) || [];
 
-				setFilteredCards((prevCards) => [...prevCards, ...balanceGames]);
-
-				setHasMore(balanceGames.length === 10);
+				if (balanceGames.length > 0) {
+					setFilteredCards((prevCards) => [...prevCards, ...balanceGames]);
+				} else {
+					setHasMore(false);
+				}
 			} catch (error) {
 				console.error("Failed to fetch balance games:", error);
 			} finally {
@@ -121,7 +125,8 @@ function BalanceGameBoardPage() {
 		};
 
 		fetchBalanceGames();
-	}, [selectedCategory, selectedStatus, page, hasMore, isLoading]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [selectedCategory, selectedStatus, page]);
 
 	useEffect(() => {
 		window.addEventListener("scroll", handleScroll);
@@ -130,18 +135,51 @@ function BalanceGameBoardPage() {
 		};
 	}, [handleScroll]);
 
-	const handleVote = (cardId: number, updatedOpinions: OpinionType[]) => {
-		setFilteredCards((prevState) => {
-			const newState = prevState.map((card) => {
-				if (card.id === cardId) {
-					const updatedCard = { ...card, opinions: updatedOpinions };
+	const handleVote = async (cardId: number, updatedOpinions: OpinionType[]) => {
+		if (!isLogin) {
+			navigate("/login");
+			return;
+		}
+		console.log("유저 아이디", user);
 
-					return updatedCard;
-				}
-				return card;
-			});
-			return newState;
-		});
+		try {
+			const selectedOption = updatedOpinions[0]?.index; // 첫 번째 선택된 옵션의 인덱스를 가져옴
+
+			if (selectedOption === undefined) {
+				console.error("Invalid opinion selection");
+				return;
+			}
+
+			// 여기서 실제로 서버에 의견을 제출하는 로직이 들어갑니다.
+			const response = await balanceGameService.voteBalanceGame(
+				cardId,
+				selectedOption,
+			);
+			console.log("응답 데이터:", response);
+
+			if (response.data && response.data.opinions) {
+				const updatedOpinions = response.data.opinions;
+
+				// 응답으로 받은 opinions 데이터를 이용해 상태를 업데이트합니다.
+				setFilteredCards((prevState) =>
+					prevState.map((card) => {
+						if (card.id === cardId) {
+							return {
+								...card,
+								opinions: updatedOpinions,
+								userVote: selectedOption,
+							};
+						}
+						return card;
+					}),
+				);
+			} else {
+				console.error("Unexpected response format:", response);
+			}
+		} catch (error) {
+			console.error("Failed to submit vote:", error);
+			// 오류 처리를 필요에 따라 여기에 추가할 수 있습니다.
+		}
 	};
 
 	return (
@@ -172,7 +210,6 @@ function BalanceGameBoardPage() {
 							);
 						})}
 					</BoardCardContainer>
-					{isLoading && <div>Loading...</div>}
 				</BalanceGameBoardContainer>
 			</div>
 			<PlusButton strokeColor="#000000" fillColor="#F66C23" />
