@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
 
@@ -25,12 +27,12 @@ public class VoteController {
 	@PostMapping("/user-vote/{battleId}")
 	@Operation(summary = "[]")
 	public ResponseEntity<ApiResponseDto<CurrentVoteResponseDto>> putUserVote(@PathVariable Long battleId,
-		@RequestParam Long userId,
-		@RequestParam Integer voteOpinionIndex) {
+		@RequestParam Integer voteOpinionIndex,
+		@LoginUser User user) {
 		try {
 			return ResponseEntity.status(HttpStatus.OK)
 				.body(new ApiResponseDto<>("success", "",
-					voteService.putVoteOpinion(userId, battleId, voteOpinionIndex)));
+					voteService.putVoteOpinion(user.getId(), battleId, voteOpinionIndex)));
 		} catch (Exception e) {
 			System.out.println(e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
