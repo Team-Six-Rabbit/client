@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate } from "react-router-dom";
+import debounce from "lodash.debounce";
 import Dropdown from "@/components/Board/regist/Dropdown";
 import { categories } from "@/constant/boardCategory";
 import { BasicUserInfo } from "@/types/user";
@@ -17,7 +18,6 @@ import {
 } from "@/assets/styles/battleRegist";
 import { battleService } from "@/services/battleService";
 import { authService } from "@/services/userAuthService";
-import debounce from "lodash.debounce";
 
 const Options = styled.div`
 	position: absolute;
