@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import axiosInstance from "@/services/axiosInstance";
 import { JoinRequest, LoginRequest, ApiResponse } from "@/types/api";
 import { BasicUserInfo, DetailUserInfo } from "@/types/user";
@@ -20,7 +21,6 @@ export const authService = {
 			return response.data;
 		} catch (error) {
 			console.error("Login Error: ", error);
-			console.error("Login Error: ", error);
 			throw error;
 		}
 	},
@@ -34,7 +34,6 @@ export const authService = {
 			);
 			return response.data;
 		} catch (error) {
-			console.error("Join Error: ", error);
 			console.error("Join Error: ", error);
 			throw error;
 		}
@@ -54,7 +53,6 @@ export const authService = {
 			return response.data;
 		} catch (error) {
 			console.error("Get User Info Error: ", error);
-			console.error("Get User Info Error: ", error);
 			throw error;
 		}
 	},
@@ -69,6 +67,7 @@ export const authService = {
 			throw error;
 		}
 	},
+
 	// 닉네임 중복 체크 함수
 	checkNicknameAvailability: async (nickname: string): Promise<boolean> => {
 		try {
@@ -81,6 +80,7 @@ export const authService = {
 			throw error;
 		}
 	},
+
 	// 이메일 중복 체크 함수
 	checkEmailAvailability: async (email: string): Promise<boolean> => {
 		try {
@@ -108,4 +108,76 @@ export const authService = {
 			throw error;
 		}
 	},
+
+	// 수정된 유저 정보 저장
+	updateUserProfile: async (
+		userInfo: DetailUserInfo,
+	): Promise<ApiResponse<DetailUserInfo>> => {
+		try {
+			const response = await axiosInstance.post<ApiResponse<DetailUserInfo>>(
+				"/user/profile",
+				userInfo,
+			);
+			if (response.data.code === "success" && response.data.data) {
+				useAuthStore.getState().setUser(response.data.data);
+			}
+			return response.data;
+		} catch (error) {
+			throw error;
+		}
+	},
+
+	// 프로필 이미지 업로드 함수
+	uploadProfileImage: async (
+		formData: FormData,
+	): Promise<ApiResponse<string>> => {
+		try {
+			const response = await axiosInstance.post<ApiResponse<string>>(
+				"/user/upload",
+				formData,
+				{
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				},
+			);
+			console.log(response);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+			throw error;
+		}
+	},
+
+	// 프로필 이미지 가져오기 함수
+	getProfileImage: async (filename: string): Promise<string | null> => {
+		try {
+			const response = await axiosInstance.get(`/user/images/${filename}`, {
+				responseType: "blob",
+			});
+			const url = URL.createObjectURL(new Blob([response.data]));
+			return url;
+		} catch (error) {
+			console.error("Error fetching image:", error);
+			return null;
+		}
+	},
+
+	getLoginUserWinHistory: async (): Promise<UserWinHistory> => {
+		try {
+			const response = await axiosInstance.get(`/user/profile/win_rate`);
+			console.log(response.data);
+			return response.data.data;
+		} catch (error) {
+			console.error("Failed to fetch user win history:", error);
+			throw error;
+		}
+	},
 };
+
+export interface UserWinHistory {
+	debateCnt: number;
+	winCnt: number;
+	loseCnt: number;
+	winRate: number;
+}
