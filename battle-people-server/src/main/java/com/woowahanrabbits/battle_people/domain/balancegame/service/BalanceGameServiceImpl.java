@@ -55,8 +55,10 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 	}
 
 	@Override
-	public List<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user) {
-		Pageable pageable = PageRequest.of(page, 12);
+	public List<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page,
+		User user, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		System.out.println(size);
 		List<VoteInfo> list = (category == null)
 			? voteInfoRepository.findAllByCurrentState(status, pageable).getContent()
 			: voteInfoRepository.findAllByCategoryAndCurrentState(category, status, pageable).getContent();
