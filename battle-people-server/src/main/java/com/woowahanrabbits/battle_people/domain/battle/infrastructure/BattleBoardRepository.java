@@ -1,6 +1,8 @@
 package com.woowahanrabbits.battle_people.domain.battle.infrastructure;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -73,5 +75,20 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 		@Param("keyword") String keyword,
 		Pageable pageable
 	);
+
+	@Query("SELECT b FROM BattleBoard b WHERE b.voteInfo.startDate "
+		+ "BETWEEN :startDate AND :endDate AND "
+		+ "(SELECT COUNT(ba) FROM BattleApplyUser ba WHERE ba.battleBoard = b) >= 5")
+	List<BattleBoard> findEligibleBattleBoards(@Param("startDate") LocalDateTime startDate,
+		@Param("endDate") LocalDateTime endDate);
+
+	@Query("SELECT b FROM BattleBoard b WHERE b.voteInfo.endDate "
+		+ "BETWEEN :startDate AND :endDate AND "
+		+ "(SELECT COUNT(ba) FROM BattleApplyUser ba WHERE ba.battleBoard = b) >= 5")
+	List<BattleBoard> findBattleBoardsByEndDate(@Param("startDate") LocalDateTime startDate,
+		@Param("endDate") LocalDateTime endDate);
+
+	BattleBoard findByRoomId(Long roomId);
+
 }
 

@@ -16,9 +16,9 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class User {
 
 	public User(long id, String email, String role) {
