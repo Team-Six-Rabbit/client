@@ -178,7 +178,7 @@ public class BattleServiceImpl implements BattleService {
 		Pageable pageable = PageRequest.of(page, size);
 
 		List<VoteInfo> voteInfos = category == null
-			? voteInfoRepository.findAllByCurrentState(2, pageable).getContent()
+			? voteInfoRepository.findAllByCurrentStateOrderByStartDateDesc(2, pageable).getContent()
 			: voteInfoRepository.findAllByCategoryAndCurrentState(category, 2, pageable).getContent();
 		List<AwaitingBattleResponseDto> returnList = new ArrayList<>();
 
@@ -192,13 +192,18 @@ public class BattleServiceImpl implements BattleService {
 			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
 			int userCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
 			int maxPeopleCount = battleBoard.getMaxPeopleCount();
-			boolean isVoted = battleApplyUserRepository.existsByBattleBoardIdAndUserId(battleBoard.getId(),
-				user.getId());
 
-			AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(voteInfo, opinions,
-				userCount, maxPeopleCount, isVoted);
-
-			returnList.add(awaitingBattleResponseDto);
+			if (user != null) {
+				boolean isVoted = battleApplyUserRepository.existsByBattleBoardIdAndUserId(battleBoard.getId(),
+					user.getId());
+				AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(voteInfo, opinions,
+					userCount, maxPeopleCount, isVoted);
+				returnList.add(awaitingBattleResponseDto);
+			} else {
+				AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(voteInfo, opinions,
+					userCount, maxPeopleCount);
+				returnList.add(awaitingBattleResponseDto);
+			}
 		}
 		return returnList;
 	}

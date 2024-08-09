@@ -1,35 +1,32 @@
 package com.woowahanrabbits.battle_people.domain.vote.service;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.data.redis.core.RedisTemplate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.woowahanrabbits.battle_people.config.AppProperties;
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
+import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
+import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
-import com.woowahanrabbits.battle_people.config.AppProperties;
-import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
-import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
-import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
-import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
 import com.woowahanrabbits.battle_people.domain.vote.dto.UserWinHistory;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDtoWithVoteCount;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteRequest;
-import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
@@ -47,7 +44,6 @@ public class VoteServiceImpl implements VoteService {
 	private final UserRepository userRepository;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ObjectMapper objectMapper;
-	private final UserVoteOpinionRepository userVoteOpinionRepository;
 
 	private final BattleRepository battleRepository;
 	private final BattleApplyUserRepository battleApplyUserRepository;

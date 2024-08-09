@@ -44,4 +44,16 @@ public class AwaitingBattleResponseDto {
 	public boolean getVoted() {
 		return isVoted;
 	}
+
+	public AwaitingBattleResponseDto(VoteInfo voteInfo,
+		List<BattleOpinionDto> battleOpinionDtos, int userCount, int maxPeopleCount) {
+		this.id = voteInfo.getId();
+		this.title = voteInfo.getTitle();
+		this.opinions = battleOpinionDtos;
+		this.maxPeopleCount = maxPeopleCount;
+		this.startDate = voteInfo.getStartDate();
+		this.endDate = voteInfo.getEndDate();
+		this.category = voteInfo.getCategory();
+
+	}
 }
