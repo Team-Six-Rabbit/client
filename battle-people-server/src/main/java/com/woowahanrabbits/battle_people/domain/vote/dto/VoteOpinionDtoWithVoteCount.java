@@ -2,10 +2,12 @@ package com.woowahanrabbits.battle_people.domain.vote.dto;
 
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
+@AllArgsConstructor
 public class VoteOpinionDtoWithVoteCount {
 	private final Integer index;
 	private final String opinion;

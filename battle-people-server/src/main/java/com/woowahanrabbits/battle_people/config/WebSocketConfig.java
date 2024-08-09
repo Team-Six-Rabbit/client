@@ -27,5 +27,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		// 메세지 발행 요청 url -> 메세지 보낼 때
 		registry.setApplicationDestinationPrefixes("/app");
 	}
-
 }
