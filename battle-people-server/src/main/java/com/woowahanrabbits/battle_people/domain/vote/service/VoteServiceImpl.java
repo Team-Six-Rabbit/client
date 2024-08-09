@@ -15,6 +15,7 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.UserWinHistory;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDtoWithVoteCount;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteRequest;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
@@ -93,6 +94,39 @@ public class VoteServiceImpl implements VoteService {
 		System.out.println(redisTopicDto);
 
 		return redisTopicDto;
+	}
+
+	@Override
+	public UserWinHistory getUserWinHistory(Long userId) {
+		List<UserVoteOpinion> userVoteHistory = userVoteOpinionRepository.findByUserId(userId);
+		int totalUserVoteCount = 0;
+		int winCount = 0;
+
+		for (UserVoteOpinion userVoteOpinion : userVoteHistory) {
+			List<VoteOpinion> opinions = voteOpinionRepository.findByVoteInfoId(userVoteOpinion.getVoteInfoId());
+			int selectIndex = userVoteOpinion.getVoteInfoIndex();
+
+			if (opinions.size() < 2 || opinions.get(selectIndex).getFinalCount() == null
+				|| opinions.get(1 - selectIndex).getFinalCount() == null) {
+				continue;
+			}
+
+			if (opinions.get(selectIndex).getFinalCount() > opinions.get(1 - selectIndex).getFinalCount()) {
+				winCount++;
+			}
+			totalUserVoteCount++;
+		}
+
+		if (totalUserVoteCount == 0) {
+			return new UserWinHistory(0, 0, 0, 0);
+		}
+
+		return UserWinHistory.builder()
+			.debateCnt(totalUserVoteCount)
+			.winCnt(winCount)
+			.loseCnt(totalUserVoteCount - winCount)
+			.winRate(100 * winCount / totalUserVoteCount)
+			.build();
 	}
 
 	private CurrentVoteResponseDto resultDto(Long voteInfoId) {
