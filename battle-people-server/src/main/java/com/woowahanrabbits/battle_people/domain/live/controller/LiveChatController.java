@@ -3,13 +3,10 @@ package com.woowahanrabbits.battle_people.domain.live.controller;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteChatRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.service.LiveChatService;
-import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
-import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,10 +16,6 @@ public class LiveChatController {
 
 	private final LiveChatService liveChatService;
 	private final RedisTemplate<String, Object> redisTemplate;
-	private final JwtUtil jwtUtil;
-
-	private final SimpMessagingTemplate messagingTemplate;
-	private final UserRepository userRepository;
 
 	@MessageMapping("/chat/{battleBoardId}")
 	public void sendMessage(@DestinationVariable Long battleBoardId, WriteChatRequestDto writeChatRequestDto) {

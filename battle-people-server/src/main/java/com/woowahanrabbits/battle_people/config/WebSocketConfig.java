@@ -20,8 +20,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws")
 			.setAllowedOriginPatterns("*");
-		// .addInterceptors(customHandshakeInterceptor);
-		// .withSockJS();
 	}
 
 	@Override
@@ -32,10 +30,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		// 메세지 발행 요청 url -> 메세지 보낼 때
 		registry.setApplicationDestinationPrefixes("/app");
 	}
-
-	// @Override
-	// public void configureClientInboundChannel(ChannelRegistration registration) {
-	// 	registration.interceptors(chatPreHandler);
-	// }
 
 }
