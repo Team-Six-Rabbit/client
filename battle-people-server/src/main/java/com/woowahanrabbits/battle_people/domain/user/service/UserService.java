@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.interest.domain.Interest;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
 import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
@@ -117,6 +118,13 @@ public class UserService {
 	public void updateUserImgUrl(long userId, String imgUrl) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
 		user.setImgUrl(imgUrl);
+		userRepository.save(user);
+	}
+
+	public void updateUser(BasicUserDto userDto) {
+		User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new UserException("User not found"));
+		user.setNickname(userDto.getNickname());
+		user.setImgUrl(userDto.getImgUrl());
 		userRepository.save(user);
 	}
 }

@@ -13,6 +13,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -147,23 +148,27 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/images/{filename}")
-	public ResponseEntity<ApiResponseDto<String>> getImage(@PathVariable String filename) {
+	@GetMapping("/user/images/{filename}")
+	public ResponseEntity<Resource> getImage(@PathVariable String filename) {
 		try {
 			Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
 			Resource resource = new UrlResource(filePath.toUri());
 
 			if (resource.exists()) {
-				// return ResponseEntity.ok()
-				// 	.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-				// 	.body(resource.getFilename());
-
-				return ResponseEntity.ok(new ApiResponseDto<>("success", "파일 가져오기 성공", resource.toString()));
+				return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+					.body(resource);
 			} else {
 				return ResponseEntity.notFound().build();
 			}
 		} catch (Exception e) {
 			return ResponseEntity.internalServerError().build();
 		}
+	}
+
+	@PostMapping("/profile")
+	public ResponseEntity<ApiResponseDto<BasicUserDto>> updateUserProfile(@RequestBody BasicUserDto userDto) {
+		userService.updateUser(userDto);
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "User profile updated", userDto));
 	}
 }
