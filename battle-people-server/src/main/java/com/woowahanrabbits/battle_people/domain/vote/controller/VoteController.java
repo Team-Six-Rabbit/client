@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class VoteController {
 	private final VoteService voteService;
 
-	@PostMapping("/user-vote/{battleId}")
+	@PostMapping("/user-vote-battle/{battleId}")
 	@Operation(summary = "[]")
 	public ResponseEntity<ApiResponseDto<CurrentVoteResponseDto>> putUserVote(@PathVariable Long battleId,
 		@RequestParam Integer voteOpinionIndex,
@@ -33,6 +33,22 @@ public class VoteController {
 			return ResponseEntity.status(HttpStatus.OK)
 				.body(new ApiResponseDto<>("success", "",
 					voteService.putVoteOpinion(user.getId(), battleId, voteOpinionIndex)));
+		} catch (Exception e) {
+			System.out.println(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "", null));
+		}
+	}
+
+	@PostMapping("/user-vote-balance-game/{voteInfoId}")
+	@Operation(summary = "[]")
+	public ResponseEntity<ApiResponseDto<CurrentVoteResponseDto>> putUserVoteBalanceGame(@PathVariable Long voteInfoId,
+		@RequestParam Integer voteOpinionIndex,
+		@LoginUser User user) {
+		try {
+			return ResponseEntity.status(HttpStatus.OK)
+				.body(new ApiResponseDto<>("success", "",
+					voteService.putVoteOpinion(user.getId(), voteInfoId, voteOpinionIndex)));
 		} catch (Exception e) {
 			System.out.println(e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

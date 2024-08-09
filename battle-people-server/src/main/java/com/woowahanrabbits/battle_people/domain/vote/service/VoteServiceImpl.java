@@ -46,12 +46,7 @@ public class VoteServiceImpl implements VoteService {
 	}
 
 	@Override
-	public CurrentVoteResponseDto putVoteOpinion(Long userId, Long battleBoardId, int voteInfoIndex) {
-		Long voteInfoId = battleBoardRepository.findById(battleBoardId)
-			.orElseThrow(() -> new RuntimeException("BattleBoard not found"))
-			.getVoteInfo()
-			.getId();
-
+	public CurrentVoteResponseDto putVoteOpinion(Long userId, Long voteInfoId, int voteInfoIndex) {
 		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(userId, voteInfoId);
 		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 		VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId)
