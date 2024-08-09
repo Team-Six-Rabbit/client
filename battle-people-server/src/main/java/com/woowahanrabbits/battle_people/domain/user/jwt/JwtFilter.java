@@ -46,7 +46,6 @@ public class JwtFilter extends OncePerRequestFilter {
 		try {
 			if (access != null) {
 				if (jwtUtil.validateToken(access, "access")) {
-					System.out.println("Valid access token found: " + access);
 					setAuthentication(access);
 				} else {
 					throw new JwtAuthenticationException("Invalid access token");
