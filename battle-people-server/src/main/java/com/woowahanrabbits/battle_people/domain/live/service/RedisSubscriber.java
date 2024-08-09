@@ -1,6 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.data.redis.connection.Message;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 
@@ -50,7 +52,11 @@ public class RedisSubscriber implements MessageListener {
 
 				if (redisTopicDto != null) {
 					Long channelId = redisTopicDto.getChannelId();
-					messagingTemplate.convertAndSend("/topic/request/" + channelId, redisTopicDto.getResponseDto());
+					LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
+					OpenViduTokenResponseDto dto = objectMapper.convertValue(map, OpenViduTokenResponseDto.class);
+					System.out.println(channelId);
+					System.out.println(dto);
+					messagingTemplate.convertAndSend("/topic/request/" + channelId + "-" + dto.getUserId(), dto);
 				}
 
 			} else if (channel.equals("vote")) {

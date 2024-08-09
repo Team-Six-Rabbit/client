@@ -169,7 +169,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 		saveApplyUserRole(battleBoard, user, token, role);
 
 		logger.info("[User Token] :" + token + ", userid: " + user.getId());
-		return new OpenViduTokenResponseDto(token, index);
+		return new OpenViduTokenResponseDto(user.getId(), token, index);
 	}
 
 	@Override
@@ -195,7 +195,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 			.channelId(battleId)
 			.type("request")
 			// .responseDto(getToken(battleId, user))
-			.responseDto(new OpenViduTokenResponseDto("abcde", 1))
+			.responseDto(new OpenViduTokenResponseDto(userId, "abcde", 1))
 			.build();
 
 		return redisTopicDto;
