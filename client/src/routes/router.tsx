@@ -9,6 +9,11 @@ import PreVotingBoardPage from "@/pages/PreVotingBoardPage";
 import LivePage from "@/pages/LivePage";
 import BalanceGameBoardPage from "@/pages/BalanceGameBoardPage";
 import BattleRegistPage from "@/pages/BattleRegistPage";
+import MyPage from "@/pages/MyPage";
+import WinRate from "@/components/Tabs/WinRate";
+import CreatedLives from "@/components/Tabs/CreatedLives";
+import ParticipatedVotes from "@/components/Tabs/ParticipatedVotes";
+import Interests from "@/components/Tabs/Interests";
 
 const router = createBrowserRouter([
 	{
@@ -46,6 +51,28 @@ const router = createBrowserRouter([
 	{
 		path: "/ignition",
 		element: <BattleRegistPage />,
+	},
+	{
+		path: "/my-page",
+		element: <MyPage />,
+		children: [
+			{
+				path: "win-rate",
+				element: <WinRate />,
+			},
+			{
+				path: "created-lives",
+				element: <CreatedLives />,
+			},
+			{
+				path: "participated-votes",
+				element: <ParticipatedVotes />,
+			},
+			{
+				path: "interests",
+				element: <Interests />,
+			},
+		],
 	},
 ]);
 
