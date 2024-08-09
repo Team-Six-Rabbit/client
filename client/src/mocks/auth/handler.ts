@@ -34,7 +34,7 @@ export const handlers = [
 			);
 		},
 	),
-	http.delete("battle-people/auth/logout", () => {
+	http.delete("/battle-people/auth/logout", () => {
 		return HttpResponse.json({
 			code: "success",
 			data: "로그아웃 성공",
