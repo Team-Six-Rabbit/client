@@ -16,8 +16,8 @@ public class VoteMessageController {
 
 	private final VoteService voteService;
 
-	@MessageMapping("/vote")
-	@SendTo("/topic/voteResults")
+	@MessageMapping("/live-vote/{battleBoardId}")
+	@SendTo("/topic/live-voteResults/{battleBoardId}")
 	public CurrentVoteResponseDto handleVote(VoteRequest voteRequest) {
 		return voteService.putVoteOpinion(voteRequest.getUserId(), voteRequest.getBattleBoardId(),
 			voteRequest.getVoteInfoIndex());
