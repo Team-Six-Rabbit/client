@@ -167,14 +167,18 @@ function MyPage() {
 								onChange={handleFileChange}
 								accept="image/*"
 							/>
-							<div className="tier-section">
-								<span className="tier-label">Tier</span>
-								<div className="tier-bar">
-									<div
-										className="tier-progress"
-										style={{ width: `${rating}%` }}
-									/>
-								</div>
+							<div className="button-group">
+								<button className="edit-btn" onClick={handleEditClick}>
+									{isEditing ? "Cancel" : "Edit"}
+								</button>
+								{isEditing && (
+									<button
+										className={`save-btn ${doShake ? "shake" : ""}`}
+										onClick={handleSaveClick}
+									>
+										Save
+									</button>
+								)}
 							</div>
 						</div>
 					</div>
@@ -196,26 +200,22 @@ function MyPage() {
 									<div className="error-message">{errors.nickname}</div>
 								)}
 							</div>
-						</div>
-						<div className="button-group">
-							<button className="edit-btn" onClick={handleEditClick}>
-								{isEditing ? "Cancel" : "Edit"}
-							</button>
-							{isEditing && (
-								<button
-									className={`save-btn ${doShake ? "shake" : ""}`}
-									onClick={handleSaveClick}
-								>
-									Save
-								</button>
-							)}
+							<div className="tier-section">
+								<span className="tier-label">Tier</span>
+								<div className="tier-bar">
+									<div
+										className="tier-progress"
+										style={{ width: `${rating}%` }}
+									/>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 				<MyPageContent />
-				<div className="mypage-content">
+				{/* <div className="mypage-content">
 					<Outlet />
-				</div>
+				</div> */}
 			</div>
 		</div>
 	);

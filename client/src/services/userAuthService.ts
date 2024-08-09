@@ -66,6 +66,7 @@ export const authService = {
 			throw error;
 		}
 	},
+
 	// 닉네임 중복 체크 함수
 	checkNicknameAvailability: async (nickname: string): Promise<boolean> => {
 		try {
@@ -78,6 +79,7 @@ export const authService = {
 			throw error;
 		}
 	},
+
 	// 이메일 중복 체크 함수
 	checkEmailAvailability: async (email: string): Promise<boolean> => {
 		try {
@@ -159,4 +161,22 @@ export const authService = {
 			return null;
 		}
 	},
+
+	getLoginUserWinHistory: async (): Promise<UserWinHistory> => {
+		try {
+			const response = await axiosInstance.get(`/user/profile/win_rate`);
+			console.log(response.data);
+			return response.data.data;
+		} catch (error) {
+			console.error("Failed to fetch user win history:", error);
+			throw error;
+		}
+	},
 };
+
+export interface UserWinHistory {
+	debateCnt: number;
+	winCnt: number;
+	loseCnt: number;
+	winRate: number;
+}
