@@ -11,7 +11,7 @@ export const notificationsData: Notification[] = [
 	{
 		code: "L2",
 		message:
-			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다.",
+			"마라탕후루후훗’님의 라이브 ‘오늘 싸피10시팟 구함’이 방송 5분 전입니다.",
 		category: "Live",
 		url: "https://ssafyssafy.com/",
 	},
@@ -71,6 +71,6 @@ export const notificationsData: Notification[] = [
 		message:
 			"사용자A님이 귀하와 '하루아침에싸피가무너진다면?' 한판승부를 신청합니다.",
 		category: "Invite",
-		opposite: "이럴 순 없어 좌절한다",
+		opposite: "이럴 순 없어 좌절하다가 결국 싸탈하고 만다",
 	},
 ];

@@ -13,6 +13,7 @@ function NotificationPage() {
 
 	const onDelete = (code: string) => {
 		// 삭제 요청 api
+		//
 		setNotifications(notifications.filter((n) => n.code !== code));
 	};
 

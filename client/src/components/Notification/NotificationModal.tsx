@@ -18,7 +18,7 @@ function NotificationModal({
 	notification,
 }: NotificationModalProps) {
 	const [inputValue, setInputValue] = useState("");
-	const [placeholderText, setPlaceholderText] = useState("Your feedback...");
+	const [isAccepted, setIsAccepted] = useState(true);
 
 	if (!isModalOpen) return null;
 
@@ -29,19 +29,18 @@ function NotificationModal({
 	};
 
 	const handleParticipateClick = () => {
-		setPlaceholderText("본인의 선택지를 적어주세요.");
+		setIsAccepted(true);
 		setInputValue("");
 	};
 
 	const handleRejectClick = () => {
-		setPlaceholderText("거절 사유를 적어주세요.");
+		setIsAccepted(false);
 		setInputValue("");
 	};
 
 	const handleSendClick = () => {
+		// 추후에 소켓 연결 처리 추가
 		handleDelete();
-		setInputValue("");
-		setPlaceholderText("Your feedback...");
 	};
 
 	return (
@@ -55,18 +54,27 @@ function NotificationModal({
 				</h1>
 				{notification.category === "Invite" && (
 					<>
-						<h2 className="col-span-6">
+						<h2 className="col-span-6 break-all w-full pre-wrap">
 							상대방의 선택지: {notification.opposite}
 						</h2>
 						<textarea
-							placeholder={placeholderText}
+							placeholder={
+								isAccepted
+									? "본인의 선택지를 16글자 안으로 적어주세요."
+									: "거절 사유를 적어주세요."
+							}
+							maxLength={isAccepted ? 16 : undefined}
 							value={inputValue}
 							onChange={(e) => setInputValue(e.target.value)}
 							className="bg-slate-100 text-slate-600 h-28 placeholder:text-slate-600 placeholder:opacity-50 border border-slate-200 col-span-6 resize-none outline-none rounded-lg p-2 duration-300 focus:border-slate-600"
 						/>
 						<button
 							type="button"
-							className="fill-slate-600 col-span-1 flex justify-center items-center rounded-lg p-2 duration-300 bg-slate-100 hover:border-slate-600 focus:fill-blue-200 focus:bg-blue-400 border border-slate-200"
+							className={`fill-slate-600 col-span-1 flex justify-center items-center rounded-lg p-2 duration-300 bg-slate-100 ${
+								isAccepted
+									? "border border-royalBlue"
+									: "border border-slate-200"
+							} hover:border-slate-600 focus:fill-blue-200 focus:bg-blue-400`}
 							onClick={handleParticipateClick}
 						>
 							<svg
@@ -79,7 +87,11 @@ function NotificationModal({
 						</button>
 						<button
 							type="button"
-							className="fill-slate-600 col-span-1 flex justify-center items-center rounded-lg p-2 duration-300 bg-slate-100 hover:border-slate-600 focus:fill-blue-200 focus:bg-blue-400 border border-slate-200"
+							className={`fill-slate-600 col-span-1 flex justify-center items-center rounded-lg p-2 duration-300 bg-slate-100 ${
+								!isAccepted
+									? "border border-royalBlue"
+									: "border border-slate-200"
+							} hover:border-slate-600 focus:fill-blue-200 focus:bg-blue-400`}
 							onClick={handleRejectClick}
 						>
 							<svg
@@ -93,23 +105,24 @@ function NotificationModal({
 					</>
 				)}
 				{notification.category === "Punishment" && (
-					<div className="col-span-6">
-						<p>{notification.message}</p>
+					<div className="bg-slate-100 text-slate-600 h-28 placeholder:text-slate-600 placeholder:opacity-50 border border-slate-200 col-span-6 resize-none outline-none rounded-lg p-2 duration-300 focus:border-slate-600">
+						{notification.message}
 					</div>
 				)}
 				{notification.category === "Live" && (
-					<div className="col-span-6">
-						<p>{notification.message}</p>
+					<div className="bg-slate-100 text-slate-600 h-28 placeholder:text-slate-600 placeholder:opacity-50 border border-slate-200 col-span-6 resize-none outline-none rounded-lg p-2 duration-300 focus:border-slate-600">
+						{/* 'nickname'님의 라이브\n 'title'이 방송 5분전입니다. */}
+						{notification.message}
 						<p>
 							바로가기:{" "}
-							<a href={notification.url} className="text-blue-500">
+							<a href={notification.url} className="text-blue">
 								{notification.url}
 							</a>
 						</p>
 					</div>
 				)}
 				<span className="col-span-2" />
-				{notification.category !== "Punishment" && (
+				{notification.category === "Invite" && (
 					<button
 						type="button"
 						className="bg-slate-100 stroke-slate-600 border border-slate-200 col-span-2 flex justify-center rounded-lg p-2 duration-300 hover:border-slate-600 hover:text-white focus:stroke-blue-200 focus:bg-blue-400"
