@@ -35,6 +35,7 @@ import io.openvidu.java.client.RecordingProperties;
 import io.openvidu.java.client.Session;
 import io.openvidu.java.client.SessionProperties;
 
+@SuppressWarnings("checkstyle:LineLength")
 @Service
 public class OpenViduServiceImpl implements OpenViduService {
 
@@ -75,8 +76,10 @@ public class OpenViduServiceImpl implements OpenViduService {
 		if (battleBoard == null) {
 			return null;
 		}
-		Room room = roomRepository.findByRoomId(battleBoard.getRoom().getRoomId());
-		if (room != null) {
+		Room room;
+		if (battleBoard.getRoom() != null
+			&& (room = roomRepository.findByRoomId(battleBoard.getRoom().getRoomId())) != null) {
+
 			for (Session session : openVidu.getActiveSessions()) {
 				System.out.println(
 					"session id= " + session.getSessionId() + ", size= " + session.getActiveConnections().size());
@@ -260,28 +263,29 @@ public class OpenViduServiceImpl implements OpenViduService {
 	// 대공사 예정
 	// @Override
 	// public OpenViduTokenResponseDto changeRole(String roomId, User user) {
-	// 	try {
-	// 		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByRoomIdAndParticipantId(
-	// 			roomRepository.findByRoomId(roomId).getId(), user.getId());
+	//     try {
+	//         LiveApplyUser liveApplyUser = liveApplyUserRepository.findByRoomIdAndParticipantId(
+	//             roomRepository.findByRoomId(roomId).getId(), user.getId());
 	//
-	// 		liveApplyUser.setRole(liveApplyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
-	// 		liveApplyUserRepository.save(liveApplyUser);
+	//         liveApplyUser.setRole(liveApplyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
+	//         liveApplyUserRepository.save(liveApplyUser);
 	//
-	// 		if (liveApplyUser.getRole().equals("publisher")) {
-	// 			String recordingId = (String)redisTemplate.opsForValue().get("recording:" + user.getId());
-	// 			stopRecording(battleBoardRepository.findByRoomId(roomRepository.findByRoomId(roomId).getId()).getId(),
-	// 				user.getId(), recordingId);
-	// 			redisTemplate.delete("recording:" + user.getId());
-	// 		} else {
-	// 			Recording recording = startRecording(roomId);
-	// 			redisTemplate.opsForValue().set("recording:" + user.getId(), recording.getId(), 24, TimeUnit.HOURS);
-	// 		}
+	//         if (liveApplyUser.getRole().equals("publisher")) {
+	//             String recordingId = (String)redisTemplate.opsForValue().get("recording:" + user.getId());
+	//             stopRecording(battleBoardRepository.findByRoomId(
+	//             roomRepository.findByRoomId(roomId).getId()).getId(),
+	//                 user.getId(), recordingId);
+	//             redisTemplate.delete("recording:" + user.getId());
+	//         } else {
+	//             Recording recording = startRecording(roomId);
+	//             redisTemplate.opsForValue().set("recording:" + user.getId(), recording.getId(), 24, TimeUnit.HOURS);
+	//         }
 	//
-	// 		return getToken(roomId, user);
+	//         return getToken(roomId, user);
 	//
-	// 	} catch (Exception e) {
-	// 		return null;
-	// 	}
+	//     } catch (Exception e) {
+	//         return null;
+	//     }
 	// }
 
 }
