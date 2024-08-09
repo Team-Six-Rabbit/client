@@ -1,5 +1,8 @@
 package com.woowahanrabbits.battle_people.domain.user.controller;
 
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -28,12 +31,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
+	@Value("${jwt.accessToken.expiration}")
+	private long accessTokenExpiration;
+
 	private final UserService userService;
 	private final UserTokenRepository userTokenRepository;
 	private final JwtUtil jwtUtil;
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+	public ResponseEntity<ApiResponseDto<LoginResponse>> login(@RequestBody LoginRequest loginRequest,
+		HttpServletResponse response) {
 		User user = userService.login(loginRequest);
 
 		long userId = user.getId();
@@ -47,8 +54,8 @@ public class AuthController {
 		response.addCookie(HttpUtils.createCookie("access", access, "/"));
 		response.addCookie(
 			HttpUtils.createCookie("refresh", refresh, "/battle-people/auth/refresh"));
-		LoginResponse loginResponse = new LoginResponse(email, user.getNickname(), user.getRating(),
-			user.getImgUrl());
+		LoginResponse loginResponse = new LoginResponse(user,
+			new Date(System.currentTimeMillis() + accessTokenExpiration));
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "login success", loginResponse));
 	}
 
