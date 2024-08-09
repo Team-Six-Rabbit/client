@@ -18,6 +18,6 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RedisTopicDto<T> {
 	private String type;
-	private Long battleBoardId;
+	private Long channelId;
 	private T responseDto;
 }

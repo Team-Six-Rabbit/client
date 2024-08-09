@@ -90,7 +90,7 @@ public class VoteServiceImpl implements VoteService {
 			battleBoardId, voteRequest.getVoteInfoIndex());
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
-			.battleBoardId(battleBoardId)
+			.channelId(battleBoardId)
 			.type("vote")
 			.responseDto(currentVoteResponseDto.getOpinions())
 			.build();

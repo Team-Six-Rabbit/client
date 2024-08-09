@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
-import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ public class RedisSubscriber implements MessageListener {
 			if (channel.equals("chat")) {
 				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
 
-				Long battleBoardId = redisTopicDto.getBattleBoardId();
+				Long battleBoardId = redisTopicDto.getChannelId();
 				String type = redisTopicDto.getType();
 				if (type.equals("chat")) {
 					RedisTopicDto<WriteChatResponseDto> chatTopicDto = objectMapper.readValue(publishMessage,
@@ -43,17 +42,20 @@ public class RedisSubscriber implements MessageListener {
 						});
 					WriteChatResponseDto returnValue = chatTopicDto.getResponseDto();
 					messagingTemplate.convertAndSend("/topic/chat/" + battleBoardId, returnValue);
-				} else if (type.equals("request")) {
-					RedisTopicDto<WriteTalkResponseDto> responseTopicDto = objectMapper.readValue(publishMessage,
-						new TypeReference<>() {
-						});
-					WriteTalkResponseDto returnValue = responseTopicDto.getResponseDto();
-					messagingTemplate.convertAndSend("/topic" + type + "/" + battleBoardId,
-						returnValue);
 				}
+			} else if (channel.equals("request")) {
+				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
+
+				System.out.println(redisTopicDto);
+
+				if (redisTopicDto != null) {
+					Long channelId = redisTopicDto.getChannelId();
+					messagingTemplate.convertAndSend("/topic/request/" + channelId, redisTopicDto.getResponseDto());
+				}
+
 			} else if (channel.equals("vote")) {
 				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
-				Long battleBoardId = redisTopicDto.getBattleBoardId();
+				Long battleBoardId = redisTopicDto.getChannelId();
 				String type = redisTopicDto.getType();
 
 				System.out.println(redisTopicDto.getResponseDto());

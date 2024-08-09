@@ -2,6 +2,7 @@ package com.woowahanrabbits.battle_people.domain.live.service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
 import io.openvidu.java.client.OpenViduHttpException;
@@ -16,6 +17,6 @@ public interface OpenViduService {
 	OpenViduTokenResponseDto getToken(Long battleId, User user) throws
 		OpenViduJavaClientException, OpenViduHttpException;
 
-	OpenViduTokenResponseDto changeRole(Long battleId, User user);
-}
+	RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId);
 
+}

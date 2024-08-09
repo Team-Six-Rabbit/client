@@ -17,8 +17,10 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.live.domain.LiveApplyUser;
 import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.infrastructure.LiveApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 
@@ -49,6 +51,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 	private final LiveApplyUserRepository liveApplyUserRepository;
 	private final BattleBoardRepository battleBoardRepository;
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
+	private final UserRepository userRepository;
 	private static final Logger logger = LoggerFactory.getLogger(OpenViduServiceImpl.class);
 	private final ObjectMapper mapper;
 	private final RedisTemplate<String, Object> redisTemplate;
@@ -57,8 +60,10 @@ public class OpenViduServiceImpl implements OpenViduService {
 		@Value("${openvidu.secret}") String secret,
 		LiveApplyUserRepository liveApplyUserRepository,
 		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository,
+		UserRepository userRepository,
 		ObjectMapper mapper, RedisTemplate<String, Object> redisTemplate) {
 		this.userVoteOpinionRepository = userVoteOpinionRepository;
+		this.userRepository = userRepository;
 		this.redisTemplate = redisTemplate;
 		this.openVidu = new OpenVidu(openviduUrl, secret);
 		this.liveApplyUserRepository = liveApplyUserRepository;
@@ -168,19 +173,32 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	@Override
-	public OpenViduTokenResponseDto changeRole(Long battleId, User user) {
-		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleId, user.getId());
-
-		applyUser.setRole(applyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
-		liveApplyUserRepository.save(applyUser);
-
-		if (applyUser.getRole().equals("broadcaster")) {
-			String data = getServerData(
-				getUserCurrentRole(battleBoardRepository.findById(battleId).orElseThrow(NoSuchElementException::new),
-					user));
+	public RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId) {
+		User user = userRepository.findById(userId).orElse(null);
+		if (user == null) {
+			return null;
 		}
 
-		return getToken(battleId, user);
+		// LiveApplyUser applyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleId, user.getId());
+		//
+		// applyUser.setRole(applyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
+		// liveApplyUserRepository.save(applyUser);
+
+		// if (applyUser.getRole().equals("broadcaster")) {
+		// 	String data = getServerData(
+		// 		getUserCurrentRole(battleBoardRepository.findById(battleId).orElseThrow(NoSuchElementException::new),
+		// 			user));
+		//
+		// }
+
+		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
+			.channelId(battleId)
+			.type("request")
+			// .responseDto(getToken(battleId, user))
+			.responseDto(new OpenViduTokenResponseDto("abcde", 1))
+			.build();
+
+		return redisTopicDto;
 	}
 
 	private String getServerData(int index) {

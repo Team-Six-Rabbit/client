@@ -35,6 +35,7 @@ public class RedisConfig {
 		container.setConnectionFactory(redisConnectionFactory);
 		container.addMessageListener(messageListener, new ChannelTopic("chat"));
 		container.addMessageListener(messageListener, new ChannelTopic("vote"));
+		container.addMessageListener(messageListener, new ChannelTopic("request"));
 		return container;
 	}
 

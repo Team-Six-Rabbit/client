@@ -49,7 +49,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 		writeChatResponseDto.setIdx(chatIdx++);
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
-			.battleBoardId(battleBoardId)
+			.channelId(battleBoardId)
 			.type("chat")
 			.responseDto(writeChatResponseDto)
 			.build();
@@ -77,7 +77,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 			.build();
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
-			.battleBoardId(battleBoardId)
+			.channelId(battleBoardId)
 			.type("request")
 			.responseDto(writeTalkResponseDto)
 			.build();
