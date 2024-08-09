@@ -91,28 +91,40 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 	private List<VoteOpinionDtoWithVoteCount> convertToVoteOpinionDtos(Long voteInfoId,
 		List<VoteOpinion> voteOpinions) {
+
+		if (voteOpinions.size() < 2) {
+			return null;
+		}
+
+		List<UserVoteOpinion> userVoteOpinionsOpt1 = userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(
+			voteInfoId, 0);
+		List<UserVoteOpinion> userVoteOpinionsOpt2 = userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(
+			voteInfoId, 1);
+
+		int voteCountOpt1 = userVoteOpinionsOpt1.size();
+		int voteCountOpt2 = userVoteOpinionsOpt2.size();
+
+		int totalCount = voteCountOpt1 + voteCountOpt2;
+
+		if (totalCount == 0) {
+			totalCount = 100;
+		}
+
 		List<VoteOpinionDtoWithVoteCount> voteOpinionDtoWithVoteCounts = new ArrayList<>();
-		int totalVotes = 0;
-		int[] cnt = new int[voteOpinions.size()];
 
-		for (int i = 0; i < voteOpinions.size(); i++) {
-			VoteOpinion vote = voteOpinions.get(i);
-			VoteOpinionDtoWithVoteCount voteOpinionDtoWithVoteCount = new VoteOpinionDtoWithVoteCount(vote);
-			cnt[i] = userVoteOpinionRepository.findByVoteInfoIdAndVoteInfoIndex(voteInfoId, vote.getVoteOpinionIndex())
-				.size();
-			voteOpinionDtoWithVoteCount.setCount(cnt[i]);
-			voteOpinionDtoWithVoteCounts.add(voteOpinionDtoWithVoteCount);
-			totalVotes += cnt[i];
-		}
+		VoteOpinionDtoWithVoteCount voteOpinionDtoWithVoteCountRegist = new VoteOpinionDtoWithVoteCount(
+			voteOpinions.get(0));
+		VoteOpinionDtoWithVoteCount voteOpinionDtoWithVoteCountOpp = new VoteOpinionDtoWithVoteCount(
+			voteOpinions.get(1));
 
-		if (totalVotes > 0) {
-			for (int i = 0; i < voteOpinions.size(); i++) {
-				int percentage = (cnt[i] * 100) / totalVotes;
-				voteOpinionDtoWithVoteCounts.get(i).setPercentage(percentage);
-			}
-		} else {
-			voteOpinionDtoWithVoteCounts.forEach(dto -> dto.setPercentage(0));
-		}
+		voteOpinionDtoWithVoteCountRegist.setPercentage(100 * voteCountOpt1 / totalCount);
+		voteOpinionDtoWithVoteCountRegist.setCount(voteCountOpt1);
+
+		voteOpinionDtoWithVoteCountOpp.setPercentage(100 - (100 * voteCountOpt1 / totalCount));
+		voteOpinionDtoWithVoteCountOpp.setCount(voteCountOpt2);
+
+		voteOpinionDtoWithVoteCounts.add(voteOpinionDtoWithVoteCountRegist);
+		voteOpinionDtoWithVoteCounts.add(voteOpinionDtoWithVoteCountOpp);
 
 		return voteOpinionDtoWithVoteCounts;
 	}
