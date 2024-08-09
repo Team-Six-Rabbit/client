@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
+import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationResponseDto;
+import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,8 @@ public class RedisSubscriber implements MessageListener {
 	private final ObjectMapper objectMapper;
 	private final SimpMessagingTemplate messagingTemplate;
 	private final MessageConverter messageConverter;
+
+	private final NotifyRepository notifyRepository;
 
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
@@ -66,6 +70,10 @@ public class RedisSubscriber implements MessageListener {
 					messagingTemplate.convertAndSend("/topic/vote/" + battleBoardId,
 						responseTopicDto.getResponseDto().get(1));
 				}
+			} else if (channel.equals("notify")) {
+				NotificationResponseDto notify = objectMapper.readValue(publishMessage, NotificationResponseDto.class);
+				Long userId = notifyRepository.findById(notify.getId()).get().getUser().getId();
+				messagingTemplate.convertAndSend("/topic/notify/" + userId, notify);
 			}
 
 		} catch (Exception e) {

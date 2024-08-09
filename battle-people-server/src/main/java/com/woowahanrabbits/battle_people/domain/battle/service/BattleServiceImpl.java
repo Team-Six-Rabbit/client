@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
@@ -19,6 +20,9 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
+import com.woowahanrabbits.battle_people.domain.notify.domain.Notify;
+import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationResponseDto;
+import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
@@ -38,6 +42,8 @@ public class BattleServiceImpl implements BattleService {
 	private final BattleApplyUserRepository battleApplyUserRepository;
 	private final VoteInfoRepository voteInfoRepository;
 	private final UserRepository userRepository;
+	private final NotifyRepository notifyRepository;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
@@ -102,27 +108,28 @@ public class BattleServiceImpl implements BattleService {
 			.battleRule(battleInviteRequest.getBattleRule())
 			.build();
 		battleRepository.save(battleBoard);
+
+		Notify notify = new Notify();
+		notify.setNotifyCode(0);
+		notify.setTitle(battleBoard.getRegistUser().getNickname() + "님이 배틀을 신청했어요! 지금 바로 확인해보세요.");
+		notify.setUser(battleBoard.getOppositeUser());
+		notify.setRegistDate(new Date());
+		notify.setBattleBoard(battleBoard);
+		notify.setRead(false);
+
+		notifyRepository.save(notify);
+		redisTemplate.convertAndSend("notify", new NotificationResponseDto(notify));
 	}
 
 	@Override
-	public List<BattleResponse> getReceivedBattleList(User user, int page, Long id) {
-		Pageable pageable = PageRequest.of(page, 12);
+	public BattleResponse getReceivedBattle(Long id) {
 
-		List<BattleBoard> list = id == null
-			? battleRepository.findByOppositeUserIdAndVoteInfoCurrentState(user.getId(), 0, pageable)
-			.getContent()
-			: battleRepository.findById(id, pageable).getContent();
+		BattleBoard battleBoard = battleRepository.findById(id).orElseThrow();
 
-		List<BattleResponse> returnList = new ArrayList<>();
+		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(
+			battleBoard.getVoteInfo().getId());
 
-		for (BattleBoard battleBoard : list) {
-			List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(
-				battleBoard.getVoteInfo().getId());
-
-			returnList.add(new BattleResponse(battleBoard, voteOpinions));
-		}
-
-		return returnList;
+		return new BattleResponse(battleBoard, voteOpinions.get(0));
 	}
 
 	@Override
@@ -198,8 +205,7 @@ public class BattleServiceImpl implements BattleService {
 
 	@Override
 	public int applyBattle(BattleApplyDto battleApplyDto, User user) {
-		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId())
-			.orElseThrow();
+		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId()).orElseThrow();
 		if (battleBoard.getOppositeUser().getId() == user.getId()
 			|| battleBoard.getRegistUser().getId() == user.getId()) {
 			//주최자는 참여 신청 X
@@ -216,6 +222,7 @@ public class BattleServiceImpl implements BattleService {
 		BattleApplyUser battleApplyUser = BattleApplyUser.builder()
 			.battleBoard(battleBoard)
 			.user(user)
+			.applyDate(new Date())
 			.selectedOpinion(battleApplyDto.getSelectedOpinion())
 			.build();
 		battleApplyUserRepository.save(battleApplyUser);
