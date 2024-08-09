@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
 import PlusButton from "@/components/Board/fanning/PlusButton";
@@ -14,7 +15,6 @@ import {
 import { ApiResponse, BalanceGameResponse } from "@/types/api";
 import bonfireIcon from "@/assets/images/bonfire.gif";
 import { useAuthStore } from "@/stores/userAuthStore";
-import { useNavigate } from "react-router-dom";
 
 const BalanceGameBoardContainer = styled.div`
 	display: flex;
