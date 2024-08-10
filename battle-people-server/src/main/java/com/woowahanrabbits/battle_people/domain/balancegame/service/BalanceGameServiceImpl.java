@@ -95,7 +95,6 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 				voteInfo.getId());
 			balanceGameResponse.setUserVote(uvo == null ? null : uvo.getVoteInfoIndex());
 		}
-
 		return balanceGameResponse;
 	}
 
