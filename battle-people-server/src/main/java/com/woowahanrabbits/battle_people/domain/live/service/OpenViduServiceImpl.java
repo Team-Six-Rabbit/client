@@ -176,26 +176,29 @@ public class OpenViduServiceImpl implements OpenViduService {
 	public RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId) {
 		User user = userRepository.findById(userId).orElse(null);
 		if (user == null) {
-			return null;
+			return new RedisTopicDto<>("accept", battleId, new OpenViduTokenResponseDto(userId, null, -2));
 		}
 
-		// LiveApplyUser applyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleId, user.getId());
-		//
-		// applyUser.setRole(applyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
-		// liveApplyUserRepository.save(applyUser);
+		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleId, user.getId());
 
-		// if (applyUser.getRole().equals("broadcaster")) {
-		// 	String data = getServerData(
-		// 		getUserCurrentRole(battleBoardRepository.findById(battleId).orElseThrow(NoSuchElementException::new),
-		// 			user));
-		//
-		// }
+		if (applyUser == null) {
+			return new RedisTopicDto<>("accept", battleId, new OpenViduTokenResponseDto(userId, null, -2));
+		}
+
+		applyUser.setRole(applyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
+		liveApplyUserRepository.save(applyUser);
+
+		if (applyUser.getRole().equals("broadcaster")) {
+			String data = getServerData(
+				getUserCurrentRole(battleBoardRepository.findById(battleId).orElseThrow(NoSuchElementException::new),
+					user));
+
+		}
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
 			.channelId(battleId)
-			.type("request")
-			// .responseDto(getToken(battleId, user))
-			.responseDto(new OpenViduTokenResponseDto(userId, "abcde", 1))
+			.type("accept")
+			.responseDto(getToken(battleId, user))
 			.build();
 
 		return redisTopicDto;

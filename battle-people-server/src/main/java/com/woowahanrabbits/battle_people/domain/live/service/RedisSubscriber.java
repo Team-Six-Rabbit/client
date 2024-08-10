@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +31,16 @@ public class RedisSubscriber implements MessageListener {
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
 		try {
+			System.out.println("Redis");
 			String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
 			String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
+			RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
+			System.out.println(channel);
+			System.out.println("topic: " + redisTopicDto);
+			System.out.println(channel);
+			System.out.println(redisTopicDto.getType());
 
 			if (channel.equals("chat")) {
-				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
-
 				Long battleBoardId = redisTopicDto.getChannelId();
 				String type = redisTopicDto.getType();
 				if (type.equals("chat")) {
@@ -45,35 +50,34 @@ public class RedisSubscriber implements MessageListener {
 					WriteChatResponseDto returnValue = chatTopicDto.getResponseDto();
 					messagingTemplate.convertAndSend("/topic/chat/" + battleBoardId, returnValue);
 				}
-			} else if (channel.equals("request")) {
-				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
-
+			} else if (channel.equals("live")) {
 				System.out.println(redisTopicDto);
+				Long channelId = redisTopicDto.getChannelId();
 
-				if (redisTopicDto != null) {
-					Long channelId = redisTopicDto.getChannelId();
+				if (redisTopicDto.getType().equals("accept")) {
 					LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
 					OpenViduTokenResponseDto dto = objectMapper.convertValue(map, OpenViduTokenResponseDto.class);
-					System.out.println(channelId);
-					System.out.println(dto);
+					System.out.println("accept: " + dto);
 					messagingTemplate.convertAndSend("/topic/request/" + channelId + "-" + dto.getUserId(), dto);
 				}
+				if (redisTopicDto.getType().equals("request")) {
+					LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
+					WriteTalkResponseDto returnValue = objectMapper.convertValue(map, WriteTalkResponseDto.class);
+					System.out.println("request: " + returnValue);
+					messagingTemplate.convertAndSend(
+						"/topic/request/" + channelId + "-" + returnValue.getHostUserId(), returnValue);
 
-			} else if (channel.equals("vote")) {
-				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
-				Long battleBoardId = redisTopicDto.getChannelId();
-				String type = redisTopicDto.getType();
-
-				System.out.println(redisTopicDto.getResponseDto());
-
-				if (type.equals("vote")) {
+				}
+				if (redisTopicDto.getType().equals("vote")) {
+					System.out.println(redisTopicDto.getResponseDto());
 					RedisTopicDto<List<?>> responseTopicDto = objectMapper.readValue(publishMessage,
 						new TypeReference<>() {
 						});
 					System.out.println(responseTopicDto.getResponseDto());
-					messagingTemplate.convertAndSend("/topic/vote/" + battleBoardId,
+					messagingTemplate.convertAndSend("/topic/live/" + channelId,
 						responseTopicDto.getResponseDto().get(1));
 				}
+
 			}
 
 		} catch (Exception e) {

@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
+import java.util.List;
+
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
@@ -15,7 +17,9 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +34,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 	private final BattleRepository battleRepository;
 	private final RedisMessageListenerContainer redisMessageListenerContainer;
 	private final MessageListenerAdapter messageListenerAdapter;
+	private final VoteOpinionRepository voteOpinionRepository;
 	private static int chatIdx = 0;
 	private static int requestIdx = 0;
 
@@ -70,8 +75,11 @@ public class LiveChatServiceImpl implements LiveChatService {
 			throw new RuntimeException();
 		}
 
+		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfo.getId());
+
 		WriteTalkResponseDto writeTalkResponseDto = WriteTalkResponseDto.builder()
-			.basicUserDto(new BasicUserDto(user))
+			.hostUserId(voteOpinions.get(userVoteOpinion.getVoteInfoIndex()).getUser().getId())
+			.requestUserId(user.getId())
 			.idx(requestIdx++)
 			.userVote(userVoteOpinion.getVoteInfoIndex())
 			.build();
