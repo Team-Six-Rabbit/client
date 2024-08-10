@@ -2,6 +2,7 @@ package com.woowahanrabbits.battle_people.domain.notify.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.notify.service.NotifyService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
-import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,12 +20,12 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 @RequestMapping("/notify")
 @Tag(name = "NotifyController", description = "알림 컨트롤러")
 public class NotifyController {
 
 	private final NotifyService notifyService;
-	private final UserRepository userRepository;
 
 	@GetMapping("/unread")
 	@Operation(summary = "안읽은 알림 여부 조회")

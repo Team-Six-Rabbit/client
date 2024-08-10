@@ -39,6 +39,7 @@ public class BattleController {
 
 	//배틀 등록
 	@PostMapping("/invite")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "[점화] 배틀을 요청한다.")
 	public ResponseEntity<?> registBattle(@RequestBody @Valid BattleInviteRequest battleInviteRequest,
 		@LoginUser User user) {
@@ -57,6 +58,7 @@ public class BattleController {
 	}
 
 	@PatchMapping("/accept-or-decline")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "[불씨] 배틀을 수락 또는 거절한다.")
 	public ResponseEntity<?> acceptOrDeclineBattle(@RequestBody BattleRespondRequest battleRespondRequest,
 		@LoginUser User user) {
@@ -77,6 +79,7 @@ public class BattleController {
 	}
 
 	@PostMapping("/apply")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "모집중인 특정 배틀에 참여 신청한다.")
 	public ResponseEntity<?> applyBattle(@RequestBody @Valid BattleApplyDto battleApplyDto,
 		@LoginUser User user) {

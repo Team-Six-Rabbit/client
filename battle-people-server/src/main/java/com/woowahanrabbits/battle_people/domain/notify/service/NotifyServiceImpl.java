@@ -8,8 +8,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
-import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
-import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 import com.woowahanrabbits.battle_people.domain.notify.domain.Notify;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationDetailResponseDto;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationResponseDto;
@@ -24,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class NotifyServiceImpl implements NotifyService {
 
 	private final NotifyRepository notifyRepository;
-	private final BattleService battleService;
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	public void sendNotification(User user, BattleBoard battleBoard, NotificationType type) {
@@ -81,13 +78,13 @@ public class NotifyServiceImpl implements NotifyService {
 
 		Long battleBoardId = notify.getBattleBoard().getId();
 
-		if (notifyCode == 0) {
-			//배틀정보
-			BattleResponse battleResponse = battleService.getReceivedBattle(battleBoardId);
-			notificationDetailResponseDto.setSpecificData((BattleResponse)battleResponse);
-		} else if (notifyCode == 1) {
-			notificationDetailResponseDto.setSpecificData((Long)battleBoardId);
-		}
+		// if (notifyCode == 0) {
+		// 	//배틀정보
+		// 	BattleResponse battleResponse = battleService.getReceivedBattle(battleBoardId);
+		// 	notificationDetailResponseDto.setSpecificData((BattleResponse)battleResponse);
+		// } else if (notifyCode == 1) {
+		// 	notificationDetailResponseDto.setSpecificData((Long)battleBoardId);
+		// }
 
 		notify.setRead(true);
 		notifyRepository.save(notify);
