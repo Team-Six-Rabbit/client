@@ -1,14 +1,13 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ItemBox from "@/components/Live/ItemBox";
-import useOpenVidu from "@/hooks/useOpenVidu";
 import VideoScreen from "@/components/Live/VideoScreen";
 import Header from "@/components/header";
 import Timer from "@/components/Live/Timer";
 import LiveVote from "@/components/Live/LiveVote";
 import ChatBox from "@/components/Live/ChatBox";
 import EndedLive from "@/components/Live/EndLive";
-import useFaceApi from "@/hooks/useFaceApi";
+import useWebRTC from "@/hooks/useWebRTC";
 
 function LivePage() {
 	const [winner, setWinner] = useState("");
@@ -17,55 +16,20 @@ function LivePage() {
 	const videoElement = useRef<HTMLVideoElement>(null);
 	const canvasElement = useRef<HTMLCanvasElement>(null);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(true);
-	const { joinSession, publishMedia, publisher, subscribers, isPublisher } =
-		useOpenVidu();
-	const { isReady, shouldRenderVideo } = useFaceApi(
-		isPublisher,
+	const { joinSession, subscribers } = useWebRTC(
+		isMicMuted,
+		isVideoDisabled,
 		videoElement,
 		canvasElement,
 	);
 	const { battleId } = useParams();
-	const publishFrameRate = 30;
 
-	const handleMicClick = useCallback(() => {
-		setIsMicMuted((prev) => !prev);
-	}, []);
-
-	const handleVideoClick = useCallback(() => {
-		setIsVideoDisabled((prev) => !prev);
-	}, []);
+	const handleMicClick = () => setIsMicMuted((prev) => !prev);
+	const handleVideoClick = () => setIsVideoDisabled((prev) => !prev);
 
 	useEffect(() => {
 		joinSession(battleId!);
 	}, [battleId, joinSession]);
-
-	useEffect(() => {
-		if (!isReady) return;
-
-		const mediaStreamTrack = canvasElement
-			.current!.captureStream(publishFrameRate)
-			.getVideoTracks()
-			.at(0)!;
-		if (!mediaStreamTrack) throw new Error("NOMEDIA");
-		mediaStreamTrack.contentHint = "motion";
-		shouldRenderVideo.current = true;
-
-		publishMedia(
-			mediaStreamTrack,
-			undefined,
-			!isMicMuted,
-			!isVideoDisabled,
-			publishFrameRate,
-		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isReady]);
-
-	useEffect(() => {
-		if (publisher && isReady) {
-			publisher.publishAudio(!isMicMuted);
-			publisher.publishVideo(!isVideoDisabled);
-		}
-	}, [isMicMuted, isReady, isVideoDisabled, publisher]);
 
 	const onVoteEnd = useCallback((winner: string) => {
 		setWinner(winner);
