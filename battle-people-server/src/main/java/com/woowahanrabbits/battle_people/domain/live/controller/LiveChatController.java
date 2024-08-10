@@ -47,17 +47,6 @@ public class LiveChatController {
 	}
 
 	/*
-		토론 방 전체 알림, key:live  app/live/{battleBoardId}, topic/live/{battleBoardId}
-		1. 발언권 신청
-			요청 메시지: {
-				"type": "speak",
-				"data": {
-					@class = WriteTalkRequestDto
-					"userId": 1
-				}
-			}
-			발행: key: private /request/{channelId}, data: OpenViduTokenResponseDto
-
 		2. 아이템 사용
 			요청 메시지: {
 				"type": "item",
@@ -68,16 +57,6 @@ public class LiveChatController {
 				}
 			}
 			발행: key: live /live/{battleBoard}, data: UsedItemResponseDto
-
-		3. 투표
-			요청 메시지: {
-				"type": "vote",
-				"data": {
-					"userId": 1,
-					"voteInfoIndex": 0
-				}
-			}
-			발행: key: live /live/{battleBoardId}, data: Live<VoteOpinionDto>
 	*/
 	@MessageMapping("/live/{battleBoardId}")
 	public void sendLiveBattleAction(@DestinationVariable Long battleBoardId,
@@ -94,13 +73,8 @@ public class LiveChatController {
 			sendRequestToRegisterOrOpposite(battleBoardId, valueOps, liveBattleActionRequestDto.getData());
 		}
 		if (type.equals("vote")) {
-			System.out.println("vote");
-			System.out.println(liveBattleActionRequestDto.getData());
-
 			LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)liveBattleActionRequestDto.getData();
 			VoteRequest voteRequest = objectMapper.convertValue(map, VoteRequest.class);
-			System.out.println(voteRequest);
-			System.out.println(voteService.putLiveVote(battleBoardId, voteRequest));
 			redisTemplate.convertAndSend("live",
 				voteService.putLiveVote(battleBoardId, voteRequest));
 		}
@@ -109,19 +83,18 @@ public class LiveChatController {
 
 	private void sendRequestToRegisterOrOpposite(Long battleBoardId, ValueOperations<String, Object> valueOps,
 		Object data) {
-		if (!data.getClass().equals(WriteTalkRequestDto.class)) {
-			return;
-		}
 		String key = "private-request";
-		Long userId = ((WriteTalkRequestDto)data).getUserId();
+
+		LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)data;
+		Long userId = objectMapper.convertValue(map, WriteTalkRequestDto.class).getUserId();
 
 		if (valueOps.get(key + ":" + battleBoardId + ":" + userId) != null) {
 			throw new RuntimeException("User with id " + userId + " has already sent a request.");
 		}
 		// 요청 저장
-		valueOps.set(key + ":" + battleBoardId + ":" + userId, userId);
 		User user = userRepository.findById(userId).orElse(null);
 		redisTemplate.convertAndSend("live", liveChatService.saveRequest(battleBoardId, user));
+		valueOps.set(key + ":" + battleBoardId + ":" + userId, userId);
 	}
 
 	// @MessageMapping("/request/{channel}")

@@ -58,14 +58,15 @@ public class RedisSubscriber implements MessageListener {
 					LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
 					OpenViduTokenResponseDto dto = objectMapper.convertValue(map, OpenViduTokenResponseDto.class);
 					System.out.println("accept: " + dto);
-					messagingTemplate.convertAndSend("/topic/request/" + channelId + "-" + dto.getUserId(), dto);
+					messagingTemplate.convertAndSend("/topic/live/" + channelId + "-" + dto.getUserId(), dto);
 				}
 				if (redisTopicDto.getType().equals("request")) {
 					LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
 					WriteTalkResponseDto returnValue = objectMapper.convertValue(map, WriteTalkResponseDto.class);
 					System.out.println("request: " + returnValue);
+					System.out.println("/topic/live/" + channelId);
 					messagingTemplate.convertAndSend(
-						"/topic/request/" + channelId + "-" + returnValue.getHostUserId(), returnValue);
+						"/topic/live/" + channelId, returnValue);
 
 				}
 				if (redisTopicDto.getType().equals("vote")) {
