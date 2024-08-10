@@ -13,9 +13,6 @@ public class SecurityServiceImpl implements SecurityService {
 	@Override
 	public User getAuthentication() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println(
-			"((PrincipalDetails)authentication.getPrincipal()).getUser() = "
-				+ ((PrincipalDetails)authentication.getPrincipal()).getUser());
 		if (authentication != null && authentication.getPrincipal() instanceof PrincipalDetails) {
 			return ((PrincipalDetails)authentication.getPrincipal()).getUser();
 		}

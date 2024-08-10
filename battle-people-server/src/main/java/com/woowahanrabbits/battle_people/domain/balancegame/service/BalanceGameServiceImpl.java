@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -68,13 +67,14 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 		Pageable pageable = PageRequest.of(page, size);
 		System.out.println(size);
 		List<VoteInfo> list = (category == null)
-			? voteInfoRepository.findAllByCurrentState(status, pageable).getContent()
-			: voteInfoRepository.findAllByCategoryAndCurrentState(category, status, pageable).getContent();
+			? voteInfoRepository.findAllByCurrentStateOrderByIdDesc(status, pageable).getContent()
+			: voteInfoRepository.findAllByCategoryAndCurrentStateOrderByIdDesc(category, status, pageable).getContent();
 
 		List<BalanceGameResponse> returnList = new ArrayList<>();
 
 		for (VoteInfo voteInfo : list) {
-			returnList.add(convertToBalanceGameResponse(voteInfo, user));
+			BalanceGameResponse balanceGameResponse = getBalanceGameById(voteInfo.getId(), user);
+			returnList.add(balanceGameResponse);
 		}
 
 		return returnList;
@@ -82,19 +82,21 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 
 	@Override
 	public BalanceGameResponse getBalanceGameById(Long id, User user) {
-		VoteInfo voteInfo = voteInfoRepository.findById(id).orElseThrow(NoSuchElementException::new);
+		VoteInfo voteInfo = voteInfoRepository.findById(id).get();
+		BalanceGameResponse balanceGameResponse = new BalanceGameResponse(voteInfo);
 
-		return convertToBalanceGameResponse(voteInfo, user);
-	}
-
-	public BalanceGameResponse convertToBalanceGameResponse(VoteInfo voteInfo, User user) {
 		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfo.getId());
 		List<VoteOpinionDtoWithVoteCount> voteOpinionDtoWithVoteCounts = convertToVoteOpinionDtos(voteInfo.getId(),
 			voteOpinions);
-		BalanceGameResponse bgr = new BalanceGameResponse(voteInfo, voteOpinionDtoWithVoteCounts);
-		UserVoteOpinion uvo = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(), voteInfo.getId());
-		bgr.setUserVote(uvo == null ? null : uvo.getVoteInfoIndex());
-		return bgr;
+
+		balanceGameResponse.setOpinions(voteOpinionDtoWithVoteCounts);
+		if (user != null) {
+			UserVoteOpinion uvo = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(),
+				voteInfo.getId());
+			balanceGameResponse.setUserVote(uvo == null ? null : uvo.getVoteInfoIndex());
+		}
+
+		return balanceGameResponse;
 	}
 
 	private List<VoteOpinionDtoWithVoteCount> convertToVoteOpinionDtos(Long voteInfoId,

@@ -179,7 +179,8 @@ public class BattleServiceImpl implements BattleService {
 
 		List<VoteInfo> voteInfos = category == null
 			? voteInfoRepository.findAllByCurrentStateOrderByStartDateDesc(2, pageable).getContent()
-			: voteInfoRepository.findAllByCategoryAndCurrentState(category, 2, pageable).getContent();
+			:
+			voteInfoRepository.findAllByCategoryAndCurrentStateOrderByStartDateDesc(category, 2, pageable).getContent();
 		List<AwaitingBattleResponseDto> returnList = new ArrayList<>();
 
 		for (VoteInfo voteInfo : voteInfos) {
@@ -196,11 +197,13 @@ public class BattleServiceImpl implements BattleService {
 			if (user != null) {
 				boolean isVoted = battleApplyUserRepository.existsByBattleBoardIdAndUserId(battleBoard.getId(),
 					user.getId());
-				AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(voteInfo, opinions,
+				AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(battleBoard,
+					voteInfo, opinions,
 					userCount, maxPeopleCount, isVoted);
 				returnList.add(awaitingBattleResponseDto);
 			} else {
-				AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(voteInfo, opinions,
+				AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(battleBoard,
+					voteInfo, opinions,
 					userCount, maxPeopleCount);
 				returnList.add(awaitingBattleResponseDto);
 			}
@@ -214,14 +217,19 @@ public class BattleServiceImpl implements BattleService {
 		if (battleBoard.getOppositeUser().getId() == user.getId()
 			|| battleBoard.getRegistUser().getId() == user.getId()) {
 			//주최자는 참여 신청 X
-			throw new RuntimeException("Can't apply my battle");
+			return -1;
 		}
 
 		int currentPeopleCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
 
+		if (battleApplyUserRepository.existsByBattleBoardIdAndUserId(battleBoard.getId(), user.getId())) {
+			//이미 참여신청한 유저라면
+			return -2;
+		}
+
 		//최대 인원
 		if (currentPeopleCount >= battleBoard.getMaxPeopleCount()) {
-			throw new RuntimeException("Apply fully charged");
+			return -3;
 		}
 
 		BattleApplyUser battleApplyUser = BattleApplyUser.builder()
@@ -237,6 +245,8 @@ public class BattleServiceImpl implements BattleService {
 			VoteInfo voteInfo = battleBoard.getVoteInfo();
 			voteInfo.setCurrentState(3);
 			voteInfoRepository.save(voteInfo);
+
+			//todo voteOpinion 내 preCount 업데이트하기
 		}
 
 		//참여 신청한 인원 수 return
