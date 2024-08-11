@@ -6,6 +6,8 @@ import { CardType } from "@/types/Board/liveBoardCard";
 import { categories } from "@/constant/boardCategory";
 import { liveBattleService } from "@/services/liveBattleService";
 import LargeCarousel from "@/components/Main/LargeCarousel";
+import { useAuthStore } from "@/stores/userAuthStore";
+import { authService } from "@/services/userAuthService";
 
 const PageContainer = styled.div`
 	padding: 40px;
@@ -33,6 +35,12 @@ const LoadingMessage = styled.div`
 	padding: 20px;
 `;
 
+const InterestPrompt = styled.div`
+	font-size: 1.5em;
+	text-align: center;
+	margin-top: 50px;
+`;
+
 function MainPage() {
 	const [largeCarouselCards, setLargeCarouselCards] = useState<CardType[]>([]);
 	const [interestedCards, setInterestedCards] = useState<
@@ -40,8 +48,23 @@ function MainPage() {
 	>({});
 	const [otherCards, setOtherCards] = useState<Record<number, CardType[]>>({});
 	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const { isLogin } = useAuthStore();
+	const [selectedInterests, setSelectedInterests] = useState<number[]>([]);
 
-	const [userInterestedCategories] = useState<number[]>([1, 2, 6]);
+	useEffect(() => {
+		const fetchSelectedInterests = async () => {
+			try {
+				if (isLogin) {
+					const interests = await authService.getUserInterests(); // Fetch user's interests
+					setSelectedInterests(interests);
+				}
+			} catch (error) {
+				console.error("Failed to fetch user interests:", error);
+			}
+		};
+
+		fetchSelectedInterests();
+	}, [isLogin]);
 
 	useEffect(() => {
 		const fetchLiveData = async () => {
@@ -64,12 +87,12 @@ function MainPage() {
 						const cards: CardType[] = liveBattles.map((battle) => ({
 							id: battle.id,
 							title: battle.title,
-							regist_user_id: battle.registerUser.id.toString(),
+							regist_user_id: battle.registerUser.nickname.toString(),
 							opposite_user_id: battle.oppositeUser.id.toString(),
 							start_date: battle.startDate,
 							end_date: battle.endDate,
 							max_people_count: battle.currentPeopleCount || 0,
-							live_apply_user_count: 0,
+							currentPeopleCount: battle.currentPeopleCount || 0,
 							category: battle.category,
 							image_uri: battle.imageUri || "",
 							live_uri: battle.roomId,
@@ -86,7 +109,7 @@ function MainPage() {
 				const largeCarouselData: CardType[] = [];
 
 				results.forEach(({ categoryId, cards }) => {
-					if (userInterestedCategories.includes(categoryId)) {
+					if (selectedInterests.includes(categoryId)) {
 						largeCarouselData.push(...cards.slice(0, 3));
 						interested[categoryId] = cards;
 					} else {
@@ -108,17 +131,65 @@ function MainPage() {
 			}
 		};
 
-		fetchLiveData();
-	}, [userInterestedCategories]);
+		fetchLiveData(); // Fetch data for all scenarios
+	}, [selectedInterests, isLogin]);
+
+	if (isLoading) {
+		return <LoadingMessage>Loading...</LoadingMessage>;
+	}
 
 	return (
-		<>
+		<div>
 			<Header />
 			<LargeCarousel cards={largeCarouselCards} />
 			<PageContainer>
-				{isLoading ? (
-					<LoadingMessage>Loading...</LoadingMessage>
-				) : (
+				{!isLogin && (
+					<>
+						<SectionHeader>🔍 전체 카테고리 탐색하기</SectionHeader>
+						{Object.keys(otherCards).map((categoryId) => (
+							<CategorySection key={categoryId}>
+								<CategoryTitle>
+									#
+									{
+										categories.find(
+											(cat) => cat.id === parseInt(categoryId, 10),
+										)?.name
+									}
+								</CategoryTitle>
+								<LiveSlickCarousel
+									cards={otherCards[parseInt(categoryId, 10)]}
+									key={categoryId}
+								/>
+							</CategorySection>
+						))}
+					</>
+				)}
+				{isLogin && selectedInterests.length === 0 && (
+					<>
+						<InterestPrompt>
+							🔥 마이페이지에서 관심사를 등록해보세요! 관심사에 맞는 라이브
+							방송을 먼저 보여드릴게요.
+						</InterestPrompt>
+						<SectionHeader>🔍 전체 카테고리 탐색하기</SectionHeader>
+						{Object.keys(otherCards).map((categoryId) => (
+							<CategorySection key={categoryId}>
+								<CategoryTitle>
+									#
+									{
+										categories.find(
+											(cat) => cat.id === parseInt(categoryId, 10),
+										)?.name
+									}
+								</CategoryTitle>
+								<LiveSlickCarousel
+									cards={otherCards[parseInt(categoryId, 10)]}
+									key={categoryId}
+								/>
+							</CategorySection>
+						))}
+					</>
+				)}
+				{isLogin && selectedInterests.length > 0 && (
 					<>
 						<SectionHeader>💘 회원님의 관심사에 맞춘 라이브 방송</SectionHeader>
 						{Object.keys(interestedCards).map((categoryId) => (
@@ -157,7 +228,7 @@ function MainPage() {
 					</>
 				)}
 			</PageContainer>
-		</>
+		</div>
 	);
 }
 

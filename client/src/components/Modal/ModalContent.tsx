@@ -19,21 +19,24 @@ interface OpponentsProps {
 	opinions?: Opinion[];
 }
 
-function Opponents({
+function ModalContent({
 	registerUser,
 	oppositeUser,
 	speechBubbleColor,
 	status,
 	preResult,
 	finalResult,
-	opinions,
+	opinions = [],
 }: OpponentsProps) {
+	const firstOpinion = registerUser.opinion || "";
+	const secondOpinion = oppositeUser.opinion || "";
+
 	return (
 		<StyledOpponents>
 			<Opponent
 				nickname={registerUser.nickname}
 				imgUrl={registerUser.imgUrl}
-				opinion={opinions?.at(0)?.opinion || ""}
+				opinion={firstOpinion}
 				speechBubbleColor={speechBubbleColor}
 			/>
 			{status === "upcoming" && <VS>VS</VS>}
@@ -55,7 +58,7 @@ function Opponents({
 					/>
 				</div>
 			)}
-			{status === "balance" && opinions && (
+			{status === "balance" && opinions.length >= 2 && (
 				<div style={{ width: "100%" }}>
 					<VoteResultBar
 						title="투표 결과"
@@ -69,14 +72,14 @@ function Opponents({
 			<Opponent
 				nickname={oppositeUser.nickname}
 				imgUrl={oppositeUser.imgUrl}
-				opinion={opinions?.at(1)?.opinion || ""}
+				opinion={secondOpinion}
 				speechBubbleColor={speechBubbleColor}
 			/>
 		</StyledOpponents>
 	);
 }
 
-Opponents.defaultProps = {
+ModalContent.defaultProps = {
 	preResult: {
 		percentageRegisterOpinion: 50,
 		percentageOppositeOpinion: 50,
@@ -85,10 +88,6 @@ Opponents.defaultProps = {
 		percentageRegisterOpinion: 50,
 		percentageOppositeOpinion: 50,
 	},
-	opinions: [
-		{ index: 0, opinion: "Option 1", count: 0, percentage: 50 },
-		{ index: 1, opinion: "Option 2", count: 0, percentage: 50 },
-	],
 };
 
-export default Opponents;
+export default ModalContent;

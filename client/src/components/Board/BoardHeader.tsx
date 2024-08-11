@@ -91,7 +91,7 @@ function BoardHeader({
 			</HeaderTop>
 			{boardName === "불구경" && selectedStatus === "live" && (
 				<CarouselContainer>
-					<NintendoCarousel />
+					<NintendoCarousel selectedCategory={selectedCategory} />
 				</CarouselContainer>
 			)}
 			<div className="flex items-center justify-between mt-4">

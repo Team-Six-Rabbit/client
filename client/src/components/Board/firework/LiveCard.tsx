@@ -6,10 +6,7 @@ import UpcomingLivePreviewModal from "@/components/Modal/UpcomingLivePreviewModa
 import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import { createLiveStateBorder } from "@/utils/textBorder";
 import { convertToTimeZone } from "@/utils/dateUtils";
-import {
-	endedLivePreviewModalData,
-	upcomingLivePreviewModalData,
-} from "@/constant/modalSampleData";
+import noImage from "@/assets/images/noImage.png"; // Make sure this path is correct
 
 const getLiveStatusBackgroundColor = (status: LiveStatus, index: number) => {
 	if (status === "live") return "bg-transparent";
@@ -36,12 +33,9 @@ function LiveCard({
 	image_uri,
 	title,
 	regist_user_id,
-	opposite_user_id,
 	status,
-	live_apply_user_count,
 	start_date,
-	end_date,
-	category,
+	currentPeopleCount,
 }: CardType) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const navigate = useNavigate();
@@ -91,39 +85,6 @@ function LiveCard({
 		);
 	};
 
-	const endedModalData = {
-		...endedLivePreviewModalData,
-		title,
-		registerUser: {
-			...endedLivePreviewModalData.registerUser,
-			nickname: regist_user_id,
-		},
-		oppositeUser: {
-			...endedLivePreviewModalData.oppositeUser,
-			nickname: opposite_user_id,
-		},
-		imageUri: image_uri,
-		category: category.toString(),
-	};
-
-	const upcomingModalData = {
-		...upcomingLivePreviewModalData,
-		title,
-		registerUser: {
-			...upcomingLivePreviewModalData.registerUser,
-			nickname: regist_user_id,
-		},
-		oppositeUser: {
-			...upcomingLivePreviewModalData.oppositeUser,
-			nickname: opposite_user_id,
-		},
-		imageUri: image_uri,
-		startDate: start_date,
-		endDate: end_date,
-		currentPeopleCount: live_apply_user_count,
-		category: category.toString(),
-	};
-
 	return (
 		<>
 			<div
@@ -136,7 +97,7 @@ function LiveCard({
 			>
 				<div className="live-card-image h-44 relative overflow-hidden">
 					<img
-						src={image_uri}
+						src={image_uri || noImage} // Use noImage if image_uri is null or undefined
 						alt={title}
 						className="w-full h-full object-cover"
 					/>
@@ -153,23 +114,17 @@ function LiveCard({
 						)}
 						{status === "live" && (
 							<div className="text-sm text-black">
-								{live_apply_user_count}명 시청중
+								{currentPeopleCount}명 시청중
 							</div>
 						)}
 					</div>
 				</div>
 			</div>
 			{isModalOpen && status === "upcoming" && (
-				<UpcomingLivePreviewModal
-					data={upcomingModalData}
-					onClose={handleCloseModal}
-				/>
+				<UpcomingLivePreviewModal battleId={id} onClose={handleCloseModal} />
 			)}
 			{isModalOpen && status === "ended" && (
-				<EndedLivePreviewModal
-					data={endedModalData}
-					onClose={handleCloseModal}
-				/>
+				<EndedLivePreviewModal battleId={id} onClose={handleCloseModal} />
 			)}
 		</>
 	);
