@@ -74,14 +74,13 @@ public class BattleScheduler {
 				voteInfo.setEndDate(endDate.getTime());
 				voteInfo.setCurrentState(5);
 				voteInfoRepository.save(voteInfo);
-				// notifyService.sendNotification(battleBoard.getRegistUser(), battleBoard, NotificationType.BATTLE_UNSATISFIED);
+
 			} else {
 
 				//todo 썸네일 출력
 				voteInfo.setCurrentState(3);
 				voteScheduler.updatePreVoteCount(battleBoard);
 				voteInfoRepository.save(voteInfo);
-				// notifyService.sendNotification(battleBoard.getRegistUser(), battleBoard, NotificationType.BATTLE_SATISFIED);
 			}
 
 		}
