@@ -1,6 +1,8 @@
+import NotifyCode from "@/constant/notifyCode";
+
 interface NotificationMenuProps {
-	selectedMenu: string;
-	onSelectMenu: (menu: string) => void;
+	selectedMenu: number;
+	onSelectMenu: (menu: number) => void;
 }
 
 function NotificationMenu({
@@ -11,25 +13,32 @@ function NotificationMenu({
 		<div className="border-solid border-royalBlue border-4 rounded-md text-white">
 			<button
 				type="button"
-				className={`block w-full text-left py-2 px-4 pr-12 ${selectedMenu === "Notify" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
-				onClick={() => onSelectMenu("Notify")}
+				className={`block w-full text-left py-2 px-4 pr-12 ${NotifyCode.get(selectedMenu) === "Notify" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
+				onClick={() => onSelectMenu(2)}
 			>
 				Notify
 			</button>
 			<button
 				type="button"
-				className={`block w-full text-left py-2 px-4 pr-12 ${selectedMenu === "Live" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
-				onClick={() => onSelectMenu("Live")}
+				className={`block w-full text-left py-2 px-4 pr-12 ${NotifyCode.get(selectedMenu) === "Live" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
+				onClick={() => onSelectMenu(1)}
 			>
 				Live
 			</button>
 			<button
 				type="button"
-				className={`block w-full text-left py-2 px-4 pr-12 ${selectedMenu === "Punishment" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
-				onClick={() => onSelectMenu("Punishment")}
+				className={`block w-full text-left py-2 px-4 pr-12 ${NotifyCode.get(selectedMenu) === "Invite" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
+				onClick={() => onSelectMenu(0)}
+			>
+				Invite
+			</button>
+			{/* <button
+				type="button"
+				className={`block w-full text-left py-2 px-4 pr-12 ${NotifyCode.get(selectedMenu) === "Punishment" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
+				onClick={() => onSelectMenu(3)}
 			>
 				Punishment
-			</button>
+			</button> */}
 		</div>
 	);
 }

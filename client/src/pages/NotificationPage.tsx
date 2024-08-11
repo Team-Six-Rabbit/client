@@ -1,86 +1,84 @@
-// src/pages/NotificationPage.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import NotificationItem from "@/components/Notification/NotificationItem";
 import NotificationMenu from "@/components/Notification/NotificationMenu";
+import { notificationService } from "@/services/notificationService";
+import NotifyCode from "@/constant/notifyCode";
+import {
+	Notification,
+	NotificationInviteDetail,
+	NotificationLiveDetail,
+} from "@/types/notification";
+
 import "@/assets/styles/scrollbar.css";
 
-const notificationsData = [
-	{
-		code: "A1",
-		message:
-			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
-		category: "Live",
-	},
-	{
-		code: "A2",
-		message:
-			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
-		category: "Live",
-	},
-	{
-		code: "A3",
-		message:
-			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
-		category: "Live",
-	},
-	{
-		code: "A4",
-		message:
-			"마라탕후루후훗’님의 라이브 ‘오늘저녁메뉴추천’이 방송 5분 전입니다. url(https://ssafyssafy.com/)",
-		category: "Live",
-	},
-	{
-		code: "B1",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B2",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B3",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B4",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B5",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B6",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-	{
-		code: "B7",
-		message: "사용자A님이 규칙을 위반하여 징계를 받았습니다.",
-		category: "Punishment",
-	},
-];
-
 function NotificationPage() {
-	const [selectedMenu, setSelectedMenu] = useState("Notify");
-	const [notifications, setNotifications] = useState(notificationsData);
+	const [selectedMenu, setSelectedMenu] = useState(2); // 0:invite, 1:live, 2:notify => notifyCode
+	const [notifications, setNotifications] = useState<Notification[]>([]);
 
-	const onDelete = (code: string) => {
-		setNotifications(notifications.filter((n) => n.code !== code));
-	};
+	useEffect(() => {
+		const fetchNotifications = async () => {
+			try {
+				const response = await notificationService.getNotificationList();
+				setNotifications(response.data!);
+			} catch (error) {
+				console.error("Failed to load notifications:", error);
+			}
+		};
 
-	const filteredNotifications =
-		selectedMenu === "Notify"
+		fetchNotifications();
+	}, []);
+
+	const data =
+		NotifyCode.get(selectedMenu) === "Notify"
 			? notifications
 			: notifications.filter(
-					(notification) => notification.category === selectedMenu,
+					(notification) => notification.notifyCode === selectedMenu,
 				);
+
+	const onDelete = async (id: number) => {
+		try {
+			await notificationService.deleteNotification(id);
+			setNotifications((prevNotifications) =>
+				prevNotifications.filter((notification) => notification.id !== id),
+			);
+		} catch (error) {
+			console.error("Failed to delete notification", error);
+		}
+	};
+
+	const onSendAcceptOrDecline = async (
+		battleId: number,
+		respond: string,
+		content: string,
+	): Promise<boolean> => {
+		try {
+			const success = await notificationService.sendAcceptOrDecline(
+				battleId,
+				respond,
+				content,
+			);
+			return success;
+		} catch (error) {
+			console.error("Failed to send accept or decline response", error);
+			return false;
+		}
+	};
+
+	const onViewDetail = async (
+		id: number,
+	): Promise<NotificationLiveDetail | NotificationInviteDetail | null> => {
+		try {
+			const response = await notificationService.getNotificationDetail(id);
+			const detail = response.data!;
+			return detail.notifyCode === 0 // Code에는 2(전체보기)가 있지만 detail에서는 0과 1만 존재
+				? (detail as NotificationInviteDetail)
+				: (detail as NotificationLiveDetail);
+		} catch (error) {
+			console.error("Failed to fetch notification detail:", error);
+			return null;
+		}
+	};
 
 	return (
 		<>
@@ -96,14 +94,16 @@ function NotificationPage() {
 						/>
 					</div>
 					<div className="ml-16 h-128 flex-1 border-solid border-royalBlue border-4 rounded-lg overflow-hidden overflow-y-auto custom-scrollbar">
-						{filteredNotifications.map((notification) => (
-							<NotificationItem
-								key={notification.code}
-								message={notification.message}
-								category={notification.category}
-								onDelete={() => onDelete(notification.code)}
-							/>
-						))}
+						{data.length > 0 &&
+							data.map((notification) => (
+								<NotificationItem
+									key={notification.id}
+									notification={notification}
+									onDelete={() => onDelete(notification.id)}
+									onViewDetail={() => onViewDetail(notification.id)}
+									onSendAcceptOrDecline={onSendAcceptOrDecline}
+								/>
+							))}
 					</div>
 				</div>
 			</div>
