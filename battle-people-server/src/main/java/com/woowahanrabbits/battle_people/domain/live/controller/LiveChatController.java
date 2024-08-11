@@ -42,9 +42,6 @@ public class LiveChatController {
 	public void sendMessage(@DestinationVariable Long battleBoardId, WriteChatRequestDto writeChatRequestDto) {
 		String key = "chat";
 
-		User user = userRepository.findById(1L).orElseThrow();
-		user.setNickname("현치비");
-
 		redisTemplate.convertAndSend(key, liveChatService.saveMessage(battleBoardId, writeChatRequestDto));
 	}
 

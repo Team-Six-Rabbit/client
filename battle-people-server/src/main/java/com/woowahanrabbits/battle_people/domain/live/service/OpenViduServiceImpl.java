@@ -115,12 +115,20 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	private int getUserCurrentRole(BattleBoard battleBoard, User user) {
+
 		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleBoardIdAndParticipantId(battleBoard.getId(),
 			user.getId());
 
 		if (applyUser == null) {
+			if (battleBoard.getRegistUser().getId() == user.getId()) {
+				return 0;
+			}
+			if (battleBoard.getOppositeUser().getId() == user.getId()) {
+				return 1;
+			}
 			return -1;
 		}
+
 		if (applyUser.getRole().equals("viewer")) {
 			return -1;
 		}
