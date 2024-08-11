@@ -71,6 +71,7 @@ public class RedisSubscriber implements MessageListener {
 					RedisTopicDto<List<?>> responseTopicDto = objectMapper.readValue(publishMessage,
 						new TypeReference<>() {
 						});
+
 					messagingTemplate.convertAndSend("/topic/live/" + channelId,
 						responseTopicDto.getResponseDto().get(1));
 				}
