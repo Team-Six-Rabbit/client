@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import "@/assets/styles/scrollbar.css";
+import { authService } from "@/services/userAuthService";
+import { convertToTimeZone } from "@/utils/dateUtils";
 
 const CreatedLivesContainer = styled.div`
 	width: 100%;
@@ -37,6 +40,18 @@ const StatusCircle = styled.span<{ statusColor: string }>`
 	background-color: ${({ statusColor }) => statusColor};
 `;
 
+const TitleContainer = styled.div`
+	flex-grow: 1;
+	text-align: left;
+`;
+
+const DateStatusContainer = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 10px; /* 날짜와 상태 아이콘 사이의 간격 */
+`;
+
 interface CreatedLive {
 	id: string;
 	title: string;
@@ -45,65 +60,59 @@ interface CreatedLive {
 }
 
 function CreatedLives() {
-	const sampleLives: CreatedLive[] = [
-		{
-			id: "1",
-			title: "내가 개최한 토론의 제목 1",
-			date: "2024.07.12",
-			statusColor: "#BDE3FF",
-		},
-		{
-			id: "2",
-			title: "내가 개최한 토론의 제목 2",
-			date: "2024.07.13",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "3",
-			title: "내가 개최한 토론의 제목 3",
-			date: "2024.07.14",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "4",
-			title: "내가 개최한 토론의 제목 4",
-			date: "2024.07.15",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "5",
-			title: "내가 개최한 토론의 제목 5",
-			date: "2024.07.16",
-			statusColor: "#BDE3FF",
-		},
-		{
-			id: "6",
-			title: "내가 개최한 토론의 제목 6",
-			date: "2024.07.17",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "7",
-			title: "내가 개최한 토론의 제목 7",
-			date: "2024.07.18",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "8",
-			title: "내가 개최한 토론의 제목 8",
-			date: "2024.07.19",
-			statusColor: "#BDE3FF",
-		},
-	];
+	const [lives, setLives] = useState<CreatedLive[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		const fetchLives = async () => {
+			try {
+				const data = await authService.getUserCreatedLives();
+				const formattedLives = data.map((live, index) => {
+					// 특정 시간대로 변환 (예: 'Asia/Seoul')
+					const formattedDate = convertToTimeZone(
+						live.registDate,
+						"Asia/Seoul",
+					);
+
+					const dateOnly = formattedDate.split(" ")[0]; // 'YYYY-MM-DD'
+
+					return {
+						id: String(index + 1),
+						title: live.title,
+						date: `${dateOnly}`, // 'YYYY-MM-DD HH:MM'
+						statusColor: live.isWin ? "#BDE3FF" : "#FFC7C2",
+					};
+				});
+				setLives(formattedLives);
+			} catch (err) {
+				setError("Failed to fetch created lives");
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchLives();
+	}, []);
+
+	if (loading) {
+		return <div>Loading...</div>;
+	}
+
+	if (error) {
+		return <div>{error}</div>;
+	}
 
 	return (
 		<CreatedLivesContainer className="custom-scrollbar">
 			<CreatedLivesList>
-				{sampleLives.map((live) => (
+				{lives.map((live) => (
 					<CreatedLivesListItem key={live.id}>
-						<span>{live.title}</span>
-						<Date>{live.date}</Date>
-						<StatusCircle statusColor={live.statusColor} />
+						<TitleContainer>{live.title}</TitleContainer>
+						<DateStatusContainer>
+							<Date>{live.date}</Date>
+							<StatusCircle statusColor={live.statusColor} />
+						</DateStatusContainer>
 					</CreatedLivesListItem>
 				))}
 			</CreatedLivesList>
