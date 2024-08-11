@@ -1,6 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -43,16 +42,13 @@ public class LiveListServiceImpl implements LiveListService {
 	@Override
 	public Page<LiveListResponseDto> getWaitLiveList(String keyword, Integer category, Pageable pageable) {
 		Date currentTime = new Date();
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(currentTime);
-		calendar.add(Calendar.MINUTE, 20);
 
 		if (category == null) {
-			return battleBoardRepository.findAllWaitBattleBoards(currentTime, calendar.getTime(), keyword, pageable)
+			return battleBoardRepository.findAllWaitBattleBoards(currentTime, keyword, pageable)
 				.map(this::convertToDto);
 		}
 
-		return battleBoardRepository.findAllWaitBattleBoardsByCategory(currentTime, calendar.getTime(), keyword,
+		return battleBoardRepository.findAllWaitBattleBoardsByCategory(currentTime, keyword,
 			category, pageable).map(this::convertToDto);
 	}
 
@@ -80,14 +76,11 @@ public class LiveListServiceImpl implements LiveListService {
 
 	@Override
 	public LiveEndDetailDto getEndLiveSummary(Long battleId) {
-		Optional<BattleBoard> optionalBattleBoard = battleBoardRepository.findById(battleId);
-		if (optionalBattleBoard.isPresent()) {
-			BattleBoard battleBoard = optionalBattleBoard.get();
-
+		BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElse(null);
+		if (battleBoard != null) {
 			return convertToEndDetailDto(battleBoard);
-		} else {
-			throw new EntityNotFoundException("BattleBoard not found with id " + battleId);
 		}
+		return null;
 	}
 
 	private LiveEndDetailDto convertToEndDetailDto(BattleBoard battleBoard) {
@@ -97,15 +90,24 @@ public class LiveListServiceImpl implements LiveListService {
 		if (voteOpinions.size() < 2) {
 			return null;
 		}
+
 		User registUser = battleBoard.getRegistUser();
 		User oppositeUser = battleBoard.getOppositeUser();
 
-		int registPrePercent =
-			100 * voteOpinions.get(0).getPreCount() / (voteOpinions.get(0).getPreCount() + voteOpinions.get(1)
-				.getPreCount());
-		int registFinalPercent =
-			100 * voteOpinions.get(0).getFinalCount() / (voteOpinions.get(0).getFinalCount() + voteOpinions.get(1)
-				.getFinalCount());
+		int registPreCount = voteOpinions.get(0).getPreCount();
+		int oppositePreCount = voteOpinions.get(1).getPreCount();
+		int registFinalCount = voteOpinions.get(0).getFinalCount();
+		int oppositeFinalCount = voteOpinions.get(1).getFinalCount();
+
+		int registPrePercent = 0;
+		int registFinalPercent = 0;
+
+		if (registPreCount + oppositePreCount > 0) {
+			registPrePercent = 100 * registPreCount / (registPreCount + oppositePreCount);
+		}
+		if (registFinalCount + oppositeFinalCount > 0) {
+			registFinalPercent = 100 * registFinalCount / (registFinalCount + oppositeFinalCount);
+		}
 
 		return new LiveEndDetailDto(
 			battleBoard.getId(),
