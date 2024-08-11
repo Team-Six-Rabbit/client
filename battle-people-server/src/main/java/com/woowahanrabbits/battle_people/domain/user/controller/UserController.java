@@ -174,7 +174,7 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/user/images/{filename}")
+	@GetMapping("/images/{filename}")
 	public ResponseEntity<Resource> getImage(@PathVariable String filename) {
 		try {
 			Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
