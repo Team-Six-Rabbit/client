@@ -10,7 +10,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.woowahanrabbits.battle_people.domain.live.dto.ItemRequestDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.LiveBattleActionRequestDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.request.RoleAcceptRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteChatRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteTalkRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.service.LiveChatService;
@@ -46,18 +49,6 @@ public class LiveChatController {
 			user));
 	}
 
-	/*
-		2. 아이템 사용
-			요청 메시지: {
-				"type": "item",
-				"data": {
-					@class = ItemRequestDto
-					"userId": 1,
-					"itemCode": 1
-				}
-			}
-			발행: key: live /live/{battleBoard}, data: UsedItemResponseDto
-	*/
 	@MessageMapping("/live/{battleBoardId}")
 	public void sendLiveBattleAction(@DestinationVariable Long battleBoardId,
 		LiveBattleActionRequestDto<?> liveBattleActionRequestDto) {
@@ -68,6 +59,12 @@ public class LiveChatController {
 
 		if (type == null) {
 			return;
+		}
+		if (type.equals("item")) {
+			LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)liveBattleActionRequestDto.getData();
+			ItemRequestDto itemRequestDto = objectMapper.convertValue(map, ItemRequestDto.class);
+			redisTemplate.convertAndSend("live",
+				RedisTopicDto.builder().channelId(battleBoardId).type("item").responseDto(itemRequestDto).build());
 		}
 		if (type.equals("speak")) {
 			sendRequestToRegisterOrOpposite(battleBoardId, valueOps, liveBattleActionRequestDto.getData());
@@ -97,35 +94,20 @@ public class LiveChatController {
 		valueOps.set(key + ":" + battleBoardId + ":" + userId, userId);
 	}
 
-	// @MessageMapping("/request/{channel}")
-	// public void sendRequest(@DestinationVariable String channel, WriteTalkRequestDto writeTalkRequestDto) {
-	// 	Long battleBoardId = Long.parseLong(channel.split("-")[0]);
-	// 	Long userId = Long.parseLong(channel.split("-")[1]);
-	//
-	// 	String key = "request";
-	// 	ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
-	//
-	// 	// 요청이 들어왔을 때
-	// 	if (Objects.equals(writeTalkRequestDto.getUserId(), userId)) {
-	// 		// Redis에서 특정 키의 존재 여부 확인
-	//
-	// 		if (valueOps.get(key + ":" + battleBoardId + ":" + userId) != null) {
-	// 			throw new RuntimeException("User with id " + userId + " has already sent a request.");
-	// 		}
-	// 		// 요청 저장
-	// 		valueOps.set(key + ":" + battleBoardId + ":" + userId, userId);
-	// 		User user = userRepository.findById(userId).orElse(null);
-	// 		redisTemplate.convertAndSend(key, liveChatService.saveRequest(battleBoardId, user));
-	// 		return;
-	// 	}
-	//
-	// 	//token 발급 받은 거 보내기
-	// 	if (valueOps.get(key + ":" + battleBoardId + ":" + userId) != null) {
-	// 		valueOps.getOperations().delete(key + ":" + battleBoardId + ":" + userId);
-	// 	}
-	//
-	// 	redisTemplate.convertAndSend(key, openViduService.changeRole(battleBoardId, userId));
-	//
-	// }
+	@MessageMapping("/request/{channel}")
+	public void sendRequest(@DestinationVariable String channel, RoleAcceptRequestDto roleAcceptRequestDto) {
+		Long battleBoardId = Long.parseLong(channel.split("-")[0]);
+		Long userId = Long.parseLong(channel.split("-")[1]);
+
+		String key = "request";
+		ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
+
+		if (valueOps.get(key + ":" + battleBoardId + ":" + userId) != null) {
+			valueOps.getOperations().delete(key + ":" + battleBoardId + ":" + userId);
+			redisTemplate.convertAndSend(key, openViduService.changeRole(battleBoardId, userId,
+				roleAcceptRequestDto.getConnectionId()));
+		}
+
+	}
 
 }

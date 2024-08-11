@@ -1,5 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
+import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -9,9 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
@@ -34,14 +42,13 @@ import io.openvidu.java.client.RecordingProperties;
 import io.openvidu.java.client.Session;
 import io.openvidu.java.client.SessionProperties;
 
-@SuppressWarnings("checkstyle:LineLength")
 @Service
 public class OpenViduServiceImpl implements OpenViduService {
 	enum PublisherRole {
 		SPEAKER, SUPPORTER
 	}
 
-	record ServerData(int index, PublisherRole role) {
+	record ServerData(int index, PublisherRole role, Date tokenEndDate) {
 	}
 
 	public static record RedisBattleDto(long battleId, long registerUserId, long oppositeUserId, Date endDate) {
@@ -55,16 +62,24 @@ public class OpenViduServiceImpl implements OpenViduService {
 	private static final Logger logger = LoggerFactory.getLogger(OpenViduServiceImpl.class);
 	private final ObjectMapper mapper;
 	private final RedisTemplate<String, Object> redisTemplate;
+	private final RestTemplate restTemplate;
+
+	@Value("${openvidu.url}")
+	private String openviduUrl;
+
+	@Value("${openvidu.secret}")
+	private String openviduSecret;
 
 	public OpenViduServiceImpl(@Value("${openvidu.url}") String openviduUrl,
 		@Value("${openvidu.secret}") String secret,
 		LiveApplyUserRepository liveApplyUserRepository,
 		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository,
 		UserRepository userRepository,
-		ObjectMapper mapper, RedisTemplate<String, Object> redisTemplate) {
+		ObjectMapper mapper, RedisTemplate<String, Object> redisTemplate, RestTemplate restTemplate) {
 		this.userVoteOpinionRepository = userVoteOpinionRepository;
 		this.userRepository = userRepository;
 		this.redisTemplate = redisTemplate;
+		this.restTemplate = restTemplate;
 		this.openVidu = new OpenVidu(openviduUrl, secret);
 		this.liveApplyUserRepository = liveApplyUserRepository;
 		this.battleBoardRepository = battleBoardRepository;
@@ -144,6 +159,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 
 		OpenViduRole role = OpenViduRole.SUBSCRIBER;
 		int index = getUserCurrentRole(battleBoard, user);
+		Date tokenEndDate = new Date();
 
 		if (index == -2) {
 			return null;
@@ -155,7 +171,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 
 		ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
 			.type(ConnectionType.WEBRTC)
-			.data(getServerData(index))
+			.data(getServerData(index, getUserTokenEndedDate(battleBoard, user.getId(), role)))
 			.role(role)
 			.build();
 
@@ -173,7 +189,17 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	@Override
-	public RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId) {
+	public RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId, String connectionId) {
+		if (isValidConnection(Long.toString(battleId), connectionId)) {
+			RedisTopicDto redisTopicDto = RedisTopicDto.builder()
+				.channelId(battleId)
+				.type("accept")
+				.responseDto(new OpenViduTokenResponseDto(userId, null, -2))
+				.build();
+
+			return redisTopicDto;
+		}
+
 		User user = userRepository.findById(userId).orElse(null);
 		if (user == null) {
 			return new RedisTopicDto<>("accept", battleId, new OpenViduTokenResponseDto(userId, null, -2));
@@ -187,11 +213,13 @@ public class OpenViduServiceImpl implements OpenViduService {
 
 		applyUser.setRole(applyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
 		liveApplyUserRepository.save(applyUser);
+		BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElseThrow(NoSuchElementException::new);
 
 		if (applyUser.getRole().equals("broadcaster")) {
 			String data = getServerData(
-				getUserCurrentRole(battleBoardRepository.findById(battleId).orElseThrow(NoSuchElementException::new),
-					user));
+				getUserCurrentRole(battleBoard,
+					user), getUserTokenEndedDate(battleBoard, userId,
+					applyUser.getRole().equals("broadcaster") ? OpenViduRole.PUBLISHER : OpenViduRole.SUBSCRIBER));
 
 		}
 
@@ -204,15 +232,65 @@ public class OpenViduServiceImpl implements OpenViduService {
 		return redisTopicDto;
 	}
 
-	private String getServerData(int index) {
+	private HttpHeaders createHeaders(String username, String password) {
+		return new HttpHeaders() {
+			{
+				String auth = username + ":" + password;
+				byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes());
+				String authHeader = "Basic " + new String(encodedAuth);
+				set("Authorization", authHeader);
+			}
+		};
+	}
+
+	private boolean isValidConnection(String sessionId, String connectionId) {
+		String url = openviduUrl + "/" + sessionId + "/connection/" + connectionId;
+
+		HttpHeaders headers = createHeaders("OPENVIDUAPP", openviduSecret);
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+		System.out.println(url);
+
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		System.out.println(response.getStatusCode());
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			JsonNode root = objectMapper.readTree(response.getBody());
+			if (root.path("status").asText().equals("active")) {
+				return true;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
+
+	private String getServerData(int index, Date date) {
 		String data = null;
 		if (index >= 0) {
 			try {
-				data = mapper.writeValueAsString(new ServerData(index, PublisherRole.SPEAKER));
+				data = mapper.writeValueAsString(new ServerData(index, PublisherRole.SPEAKER, date));
 			} catch (JsonProcessingException ignored) {
 			}
 		}
 		return data;
+	}
+
+	private Date getUserTokenEndedDate(BattleBoard battleBoard, Long userId, OpenViduRole role) {
+		long register = battleBoard.getRegistUser().getId();
+		long opposite = battleBoard.getOppositeUser().getId();
+
+		if ((role == OpenViduRole.PUBLISHER && (register == userId || opposite == userId))
+			|| (role == OpenViduRole.SUBSCRIBER && (register != userId || opposite != userId))) {
+			return battleBoard.getVoteInfo().getEndDate();
+		}
+
+		Date date = new Date(); // 현재 날짜와 시간
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.MINUTE, 1);
+
+		return calendar.getTime();
 	}
 
 	@Override

@@ -14,9 +14,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WriteTalkResponseDto {
-	// private BasicUserDto basicUserDto;
 	private int userVote;
 	private Long requestUserId;
 	private Long hostUserId;
+	private String connectionId;
 	private int idx;
 }

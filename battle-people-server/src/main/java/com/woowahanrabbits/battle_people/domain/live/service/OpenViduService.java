@@ -17,6 +17,6 @@ public interface OpenViduService {
 	OpenViduTokenResponseDto getToken(Long battleId, User user) throws
 		OpenViduJavaClientException, OpenViduHttpException;
 
-	RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId);
+	RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId, String connectionId);
 
 }
