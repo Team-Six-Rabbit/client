@@ -30,10 +30,15 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ApiResponseDto<String>> handleAccessDeniedException(AccessDeniedException ex) {
 		ApiResponseDto<String> response = new ApiResponseDto<>("fail", "An error occurred: Access Denied", null);
 		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+	}
+
+	@ExceptionHandler(CustomException.class)
+	public ResponseEntity<ApiResponseDto<String>> handleCustomException(CustomException error) {
+		ApiResponseDto<String> response = new ApiResponseDto<>("fail", error.getErrorCode().getMessage(), null);
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 }
