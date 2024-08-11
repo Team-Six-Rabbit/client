@@ -223,4 +223,9 @@ public class BattleServiceImpl implements BattleService {
 		//참여 신청한 인원 수 return
 		return battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
 	}
+
+	@Override // 개최한 라이브 목록 조회
+	public List<BattleBoard> getBattleBoardsByUserId(Long userId) {
+		return battleRepository.findByRegistUserId(userId);
+	}
 }

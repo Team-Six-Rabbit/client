@@ -33,4 +33,5 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
 	boolean checkMyBattles(@Param("userId") long userId,
 		@Param("startDate") Date startDate,
 		@Param("endDate") Date endDate);
+	List<BattleBoard> findByRegistUserId(Long userId);
 }

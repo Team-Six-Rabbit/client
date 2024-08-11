@@ -28,13 +28,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
+import com.woowahanrabbits.battle_people.domain.user.dto.CreateLives;
 import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
+import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
+import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
 import com.woowahanrabbits.battle_people.domain.vote.dto.UserWinHistory;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
 
 import lombok.RequiredArgsConstructor;
@@ -46,6 +52,8 @@ public class UserController {
 
 	private final UserService userService;
 	private final VoteService voteService;
+	private final BattleService battleService;
+	private final UserVoteOpinionRepository voteOpinionRepository;
 
 	@PostMapping("/join")
 	public ResponseEntity<ApiResponseDto<BasicUserDto>> join(@RequestBody JoinRequest request) {
@@ -68,6 +76,24 @@ public class UserController {
 
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "User win history", voteService.getUserWinHistory(
 			user.getId())));
+	}
+
+	@GetMapping("/profile/create_lives")
+	public ResponseEntity<ApiResponseDto<List<CreateLives>>> getUserBattleBoards(@LoginUser User loginUser) {
+		List<BattleBoard> list = battleService.getBattleBoardsByUserId(loginUser.getId());
+		List<CreateLives> response = new ArrayList<>();
+
+		for (BattleBoard battleBoard : list) {
+			CurrentVoteResponseDto currentVoteResponseDto = voteService.getVoteResult(battleBoard.getId());
+			UserVoteOpinion userVoteOpinion = voteOpinionRepository.findByUserIdAndVoteInfoId(loginUser.getId(),
+				battleBoard.getVoteInfo().getId());
+			boolean isWin = false;
+			if (currentVoteResponseDto.getOpinions().get(userVoteOpinion.getVoteInfoIndex()).getPercentage() > 50) {
+				isWin = true;
+			}
+			response.add(new CreateLives(battleBoard, isWin));
+		}
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "Created Lives", response));
 	}
 
 	@GetMapping("/profile/{userId}")
