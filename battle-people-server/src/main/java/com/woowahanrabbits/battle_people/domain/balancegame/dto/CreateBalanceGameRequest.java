@@ -18,7 +18,7 @@ public class CreateBalanceGameRequest {
 	private String detail;
 	@NotNull
 	private Date startDate;
-	@NotNull
+
 	private Date endDate;
 	@Range(min = 0, max = 7)
 	private Integer category;

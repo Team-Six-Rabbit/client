@@ -41,4 +41,14 @@ public class BalanceGameResponse {
 		this.opinions = opinions;
 		this.currentState = voteInfo.getCurrentState();
 	}
+
+	public BalanceGameResponse(VoteInfo voteInfo) {
+		this.id = voteInfo.getId();
+		this.title = voteInfo.getTitle();
+		this.detail = voteInfo.getDetail();
+		this.startDate = voteInfo.getStartDate();
+		this.endDate = voteInfo.getEndDate();
+		this.category = voteInfo.getCategory();
+		this.currentState = voteInfo.getCurrentState();
+	}
 }
