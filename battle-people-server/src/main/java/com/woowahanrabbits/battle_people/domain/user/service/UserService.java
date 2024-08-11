@@ -5,11 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.interest.domain.Interest;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
 import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
@@ -26,6 +28,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class UserService {
+
+	@Value("${storage.location}")
+	private String uploadDir;
+
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final UserRepository userRepository;
 	private final UserTokenRepository userTokenRepository;
@@ -57,7 +63,7 @@ public class UserService {
 			throw new UserException("Nickname already in use");
 		}
 
-		User user = new User(email, password, nickname, nickname, "ROLE_USER");
+		User user = new User(email, password, nickname, uploadDir + "/default.png", "ROLE_USER");
 
 		userRepository.save(user);
 
@@ -108,5 +114,18 @@ public class UserService {
 
 	public List<User> findByNickname(String nickname) {
 		return userRepository.findByNicknameContaining(nickname);
+	}
+
+	public void updateUserImgUrl(long userId, String imgUrl) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
+		user.setImgUrl(uploadDir + "/" + imgUrl);
+		userRepository.save(user);
+	}
+
+	public void updateUser(BasicUserDto userDto) {
+		User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new UserException("User not found"));
+		user.setNickname(userDto.getNickname());
+		user.setImgUrl(userDto.getImgUrl());
+		userRepository.save(user);
 	}
 }
