@@ -34,24 +34,22 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 		Pageable pageable
 	);
 
-	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE vi.startDate BETWEEN :currentTime AND :endTime "
+	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE vi.startDate > :currentTime "
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.category = :category "
 		+ "AND vi.currentState = 3")
 	Page<BattleBoard> findAllWaitBattleBoardsByCategory(
 		@Param("currentTime") Date currentTime,
-		@Param("endTime") Date endTime,
 		@Param("keyword") String keyword,
 		@Param("category") int category,
 		Pageable pageable
 	);
 
-	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE vi.startDate BETWEEN :currentTime AND :endTime "
+	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE vi.startDate > :currentTime "
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.currentState = 3")
 	Page<BattleBoard> findAllWaitBattleBoards(
 		@Param("currentTime") Date currentTime,
-		@Param("endTime") Date endTime,
 		@Param("keyword") String keyword,
 		Pageable pageable
 	);
