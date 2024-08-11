@@ -5,6 +5,7 @@ import { liveBattleService } from "@/services/liveBattleService";
 import { LiveBattleCardInfo } from "@/types/live";
 import { createLiveStateBorder, CustomCSSProperties } from "@/utils/textBorder";
 import { categories } from "@/constant/boardCategory";
+import noImage from "@/assets/images/noImage.png";
 
 const CarouselContainer = styled.div`
 	display: flex;
@@ -235,7 +236,7 @@ function Carousel({ selectedCategory }: { selectedCategory: string }) {
 					{images.length > 0 ? (
 						<>
 							<img
-								src={images[currentIndex]}
+								src={images[currentIndex] || noImage}
 								alt={`Slide ${currentIndex + 1}`}
 								style={{ width: "600px", height: "300px", objectFit: "cover" }}
 							/>

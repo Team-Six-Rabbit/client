@@ -6,6 +6,7 @@ import UpcomingLivePreviewModal from "@/components/Modal/UpcomingLivePreviewModa
 import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import { createLiveStateBorder } from "@/utils/textBorder";
 import { convertToTimeZone } from "@/utils/dateUtils";
+import noImage from "@/assets/images/noImage.png"; // Make sure this path is correct
 
 const getLiveStatusBackgroundColor = (status: LiveStatus, index: number) => {
 	if (status === "live") return "bg-transparent";
@@ -96,7 +97,7 @@ function LiveCard({
 			>
 				<div className="live-card-image h-44 relative overflow-hidden">
 					<img
-						src={image_uri}
+						src={image_uri || noImage} // Use noImage if image_uri is null or undefined
 						alt={title}
 						className="w-full h-full object-cover"
 					/>

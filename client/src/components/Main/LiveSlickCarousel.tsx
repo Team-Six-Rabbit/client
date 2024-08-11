@@ -68,7 +68,7 @@ function LiveSlickCarousel({ cards }: LiveSlickCarouselProps) {
 							start_date={cardData.start_date}
 							end_date={cardData.end_date}
 							max_people_count={cardData.max_people_count}
-							live_apply_user_count={cardData.live_apply_user_count}
+							currentPeopleCount={cardData.currentPeopleCount}
 							category={cardData.category}
 							image_uri={cardData.image_uri}
 							live_uri={cardData.live_uri}
