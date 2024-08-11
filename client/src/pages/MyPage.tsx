@@ -180,9 +180,9 @@ function MyPage() {
 					</div>
 					<div className="right-section">
 						<div className="profile-info">
-							<label>Email:</label>
+							<label>이메일</label>
 							<input type="text" value={email} readOnly />
-							<label>Nickname:</label>
+							<label>닉네임</label>
 							<div className="input-with-error">
 								<input
 									type="text"

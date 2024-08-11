@@ -173,6 +173,36 @@ export const authService = {
 			throw error;
 		}
 	},
+
+	getUserInterests: async (): Promise<number[]> => {
+		try {
+			const response =
+				await axiosInstance.get<ApiResponse<{ category: number[] }>>(
+					"/user/interest",
+				);
+			return response.data.data!.category;
+		} catch (error) {
+			console.error("Failed to fetch user interests:", error);
+			throw error;
+		}
+	},
+
+	postUserInterests: async (
+		selectedCategories: number[],
+	): Promise<ApiResponse<null>> => {
+		try {
+			const response = await axiosInstance.post<ApiResponse<null>>(
+				"/user/interest",
+				{
+					category: selectedCategories,
+				},
+			);
+			return response.data;
+		} catch (error) {
+			console.error("Failed to post user interests:", error);
+			throw error;
+		}
+	},
 };
 
 export interface UserWinHistory {

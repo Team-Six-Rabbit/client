@@ -30,7 +30,7 @@
 
 /* 왼쪽 섹션 (프로필 + 티어) */
 .left-section {
-	border: 2px solid red;
+	/* border: 2px solid red; */
 	width: 70%;
 	justify-content: center;
 	display: flex;
@@ -40,7 +40,7 @@
 
 /* 오른쪽 섹션 (인적사항) */
 .right-section {
-	border: 2px solid red;
+	/* border: 2px solid red; */
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -124,7 +124,6 @@
 
 .profile-info label {
 	margin-top: 10px;
-	font-weight: bold;
 	color: #1D3D6B;
 }
 
