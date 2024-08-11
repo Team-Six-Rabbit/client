@@ -16,7 +16,9 @@ export interface LiveBattleCardInfo extends LiveBattle {
 	currentPeopleCount?: number;
 }
 
-export interface WaitingLiveBattleDetail extends LiveBattleCardInfo {}
+export interface WaitingLiveBattleDetail extends LiveBattleCardInfo {
+	summary?: string;
+}
 
 export interface FinishedLiveBattleDetail extends LiveBattle {
 	preResult: LiveVoteResult;

@@ -6,8 +6,8 @@ export interface CardType {
 	start_date: string;
 	end_date: string;
 	max_people_count: number;
-	live_apply_user_count: number;
 	category: number;
+	currentPeopleCount: number;
 	image_uri: string;
 	live_uri: string;
 	status: "live" | "upcoming" | "ended";
