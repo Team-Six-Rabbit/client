@@ -11,8 +11,6 @@ const useFaceApi = (
 	const timeout = useRef<unknown>();
 	const stream = useRef<MediaStream>();
 
-	const timeoutInterval = 200;
-
 	const SSD_MOBILENETV1 = "ssd_mobilenetv1";
 	const TINY_FACE_DETECTOR = "tiny_face_detector";
 
@@ -119,51 +117,6 @@ const useFaceApi = (
 			mouthRight.x - mouthLeft.x,
 			(mouthBottom.y - mouthTop.y) / 2,
 		);
-
-		// Simulate eye blink
-		if (Math.random() > 0.95) {
-			ctx.fillStyle = "blue";
-			ctx.fillRect(
-				leftEye.x - faceWidth * 0.1,
-				leftEye.y - faceWidth * 0.1,
-				faceWidth * 0.2,
-				faceWidth * 0.2,
-			);
-			ctx.fillRect(
-				rightEye.x - faceWidth * 0.1,
-				rightEye.y - faceWidth * 0.1,
-				faceWidth * 0.2,
-				faceWidth * 0.2,
-			);
-		}
-
-		// Simulate mouth movement
-		if (Math.random() > 0.95) {
-			ctx.clearRect(
-				mouthLeft.x,
-				mouthTop.y,
-				mouthRight.x - mouthLeft.x,
-				mouthBottom.y - mouthTop.y,
-			);
-
-			// Upper lip movement
-			ctx.fillStyle = "red";
-			ctx.fillRect(
-				mouthLeft.x,
-				mouthTop.y - faceHeight * 0.03,
-				mouthRight.x - mouthLeft.x,
-				(mouthBottom.y - mouthTop.y) / 2,
-			);
-
-			// Lower lip movement
-			ctx.fillStyle = "white";
-			ctx.fillRect(
-				mouthLeft.x,
-				mouthTop.y + (mouthBottom.y - mouthTop.y) / 2 - faceHeight * 0.03,
-				mouthRight.x - mouthLeft.x,
-				(mouthBottom.y - mouthTop.y) / 2,
-			);
-		}
 	};
 
 	const renderVideoToCanvas = () => {
@@ -180,23 +133,22 @@ const useFaceApi = (
 	};
 
 	const onPlay = async () => {
-		// console.time("onPlay Execution Time");
-
 		if (
 			!video.current ||
 			video.current?.paused ||
 			video.current?.ended ||
 			!isFaceDetectionModelLoaded()
 		) {
-			timeout.current = setTimeout(() => onPlay(), timeoutInterval);
-			console.timeEnd("onPlay Execution Time"); // 종료 시점에서 시간 측정 종료
+			timeout.current = setTimeout(() => onPlay(), 100);
 			return timeout.current;
 		}
 
 		const options = getFaceDetectorOptions();
+		console.time("onPlay Execution Time");
 		const result = await faceapi
 			.detectSingleFace(video.current!, options)
 			.withFaceLandmarks(true);
+		console.timeEnd("onPlay Execution Time");
 
 		if (result) {
 			const dims = faceapi.matchDimensions(
@@ -210,19 +162,14 @@ const useFaceApi = (
 			render2DCharacter(resizedResult);
 		}
 
-		// console.timeEnd("onPlay Execution Time");
-
-		timeout.current = setTimeout(() => onPlay(), timeoutInterval);
-		return timeout.current;
+		return onPlay();
 	};
 
 	const loadModel = () => {
 		return Promise.all([
 			faceapi.nets.tinyFaceDetector.loadFromUri("/weights"),
 			faceapi.nets.faceLandmark68TinyNet.loadFromUri("/weights"),
-		]).then(() => {
-			setIsReady(true);
-		});
+		]);
 	};
 
 	const startVideo = async () => {
@@ -235,9 +182,17 @@ const useFaceApi = (
 	};
 
 	useEffect(() => {
-		if (!isPublisher || isFaceDetectionModelLoaded()) return;
+		if (!isPublisher) return;
 
-		startVideo().then(() => loadModel().then(onPlay));
+		startVideo()
+			.then(() => {
+				if (!isFaceDetectionModelLoaded()) return loadModel();
+				return Promise.resolve<[void, void]>([undefined, undefined]);
+			})
+			.then(() => {
+				setIsReady(true);
+			})
+			.then(onPlay);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isPublisher]);
 

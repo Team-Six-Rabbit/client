@@ -1,5 +1,6 @@
 import { useRef, useCallback, useState, useEffect } from "react";
 import {
+	Connection,
 	OpenVidu,
 	Publisher,
 	Session,
@@ -14,19 +15,29 @@ const useOpenVidu = () => {
 	const session = useRef<Session>();
 	const [publisher, setPublisher] = useState<Publisher>();
 	const [isPublisher, setIsPublisher] = useState<boolean>(false);
+	const [shouldPublish, setShoudPublish] = useState<boolean>(false);
 	const [subscribers, setSubscribers] = useState<StreamManager[]>([]);
 	const [index, setIndex] = useState<number>(-1);
+	const publisherRole = useRef<"SUPPORTER" | "SPEAKER">();
+	const reconnectBattleId = useRef<string>();
+	const connectionId = useRef<string>();
+	let joinSession: (battleId: string) => Promise<void>;
 
 	const leaveSession = useCallback(() => {
-		if (session) {
+		if (session.current) {
 			session.current?.disconnect();
 			session.current = undefined;
 		}
+		publisherRole.current = undefined;
+		connectionId.current = undefined;
 		setPublisher(undefined);
 		setIndex(-1);
 		setSubscribers([]);
+		setIsPublisher(false);
+		setShoudPublish(false);
 		OV.current = undefined;
-	}, [session]);
+		reconnectBattleId.current = undefined;
+	}, []);
 
 	useEffect(() => {
 		return () => leaveSession();
@@ -42,33 +53,51 @@ const useOpenVidu = () => {
 		return tokenResponse.data;
 	};
 
-	const parseServerData = (event: StreamEvent) => {
+	const parseServerData = (connection: Connection) => {
 		const serverData: ServerData = JSON.parse(
-			event.stream.connection.data.split("%/%").at(-1)!,
+			connection.data.split("%/%").at(-1)!,
 		);
 		// eslint-disable-next-line no-param-reassign
-		event.stream.connection.serverData = serverData;
+		connection.serverData = serverData;
 		return serverData;
 	};
 
+	const onSupporterPublish = useCallback((serverData: ServerData) => {
+		const diffMs = new Date(serverData.publishUntil!).getTime() - Date.now();
+
+		if (publisher) {
+			setTimeout(() => {
+				leaveSession();
+				joinSession(reconnectBattleId.current!);
+			}, diffMs + 100);
+			return;
+		}
+
+		const shouldUnpublish =
+			publisherRole.current === "SPEAKER" && serverData.index === index;
+		if (shouldUnpublish) {
+			setShoudPublish(false);
+			setTimeout(() => setShoudPublish(true), diffMs + 100);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	const onStreamCreated = useCallback(
 		(event: StreamEvent, publisher?: Publisher) => {
-			parseServerData(event);
+			console.log("STREAM CREATED");
+			const serverData = parseServerData(event.stream.connection);
 
 			const streamManager =
 				publisher ?? session.current!.subscribe(event.stream, undefined);
+			setSubscribers((prevSubscribers) => [...prevSubscribers, streamManager]);
 
-			if (streamManager) {
-				setSubscribers((prevSubscribers) => [
-					...prevSubscribers,
-					streamManager,
-				]);
-			}
+			if (serverData.role === "SUPPORTER") onSupporterPublish(serverData);
 		},
-		[],
+		[onSupporterPublish],
 	);
 
 	const onStreamDestroyed = (event: StreamEvent) => {
+		console.log("STREAM DESTROYED");
 		setSubscribers((prevSubscribers) =>
 			prevSubscribers.filter(
 				(subscriber) => subscriber.stream !== event.stream,
@@ -76,8 +105,9 @@ const useOpenVidu = () => {
 		);
 	};
 
-	const joinSession = useCallback(
+	joinSession = useCallback(
 		async (battleId: string) => {
+			reconnectBattleId.current = battleId;
 			OV.current = new OpenVidu();
 
 			const { token, index } = await initializeSession(battleId);
@@ -92,7 +122,14 @@ const useOpenVidu = () => {
 			session.current.on("streamDestroyed", onStreamDestroyed);
 
 			await session.current.connect(token);
-			setIsPublisher(session.current.capabilities.publish);
+			const isPublisher = session.current.capabilities.publish;
+			connectionId.current = session.current.connection.connectionId;
+			setIsPublisher(isPublisher);
+			setShoudPublish(isPublisher);
+			if (isPublisher) {
+				parseServerData(session.current.connection);
+				publisherRole.current = session.current.connection.serverData?.role;
+			}
 		},
 		[onStreamCreated],
 	);
@@ -121,14 +158,21 @@ const useOpenVidu = () => {
 		}
 	};
 
+	const unpublishMedia = () => {
+		return publisher ? session.current?.unpublish(publisher) : undefined;
+	};
+
 	return {
 		joinSession,
 		publishMedia,
+		unpublishMedia,
 		session,
+		connectionId,
 		publisher,
 		subscribers,
 		index,
 		isPublisher,
+		shouldPublish,
 	};
 };
 

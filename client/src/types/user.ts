@@ -7,5 +7,5 @@ export interface BasicUserInfo {
 
 export interface DetailUserInfo extends BasicUserInfo {
 	email: string;
-	regDate?: Date;
+	accessExpiration?: string;
 }
