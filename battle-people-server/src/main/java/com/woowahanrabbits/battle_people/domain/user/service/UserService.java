@@ -116,10 +116,10 @@ public class UserService {
 		return userRepository.findByNicknameContaining(nickname);
 	}
 
-	public void updateUserImgUrl(long userId, String imgUrl) {
+	public User updateUserImgUrl(long userId, String imgUrl) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
 		user.setImgUrl(uploadDir + "/" + imgUrl);
-		userRepository.save(user);
+		return userRepository.save(user);
 	}
 
 	public void updateUser(BasicUserDto userDto) {
