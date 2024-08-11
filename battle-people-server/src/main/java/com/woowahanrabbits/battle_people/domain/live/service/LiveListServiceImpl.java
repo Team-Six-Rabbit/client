@@ -141,7 +141,7 @@ public class LiveListServiceImpl implements LiveListService {
 				oppositeUser.getImgUrl(), oppositeUser.getRating(), voteOpinions.get(1).getOpinion()),
 			battleBoard.getVoteInfo().getStartDate(),
 			battleBoard.getVoteInfo().getEndDate(),
-			liveApplyUserRepository.findAllByBattleId(battleBoard.getId()).size(),
+			liveApplyUserRepository.findAllByBattleBoardId(battleBoard.getId()).size(),
 			battleBoard.getVoteInfo().getCategory(),
 			battleBoard.getImageUrl(),
 			battleBoard.getBattleRule(),

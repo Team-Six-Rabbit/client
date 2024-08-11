@@ -30,8 +30,8 @@ import lombok.ToString;
 public class LiveApplyUser {
 
 	@Id
-	@Column(name = "battle_id", insertable = false, updatable = false)
-	private Long battleId;
+	@Column(name = "battle_board_id", insertable = false, updatable = false)
+	private Long battleBoardId;
 
 	@Id
 	@Column(name = "participant_id", insertable = false, updatable = false)

@@ -115,7 +115,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	private int getUserCurrentRole(BattleBoard battleBoard, User user) {
-		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleBoard.getId(),
+		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleBoardIdAndParticipantId(battleBoard.getId(),
 			user.getId());
 
 		if (applyUser == null) {
@@ -139,7 +139,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 	}
 
 	private void saveApplyUserRole(BattleBoard battleBoard, User user, String token, OpenViduRole role) {
-		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleBoard.getId(),
+		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByBattleBoardIdAndParticipantId(battleBoard.getId(),
 			user.getId());
 
 		if (liveApplyUser != null) {
@@ -147,7 +147,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 		}
 
 		liveApplyUserRepository.save(LiveApplyUser.builder()
-			.battleId(battleBoard.getId())
+			.battleBoardId(battleBoard.getId())
 			.participant(user) // 영속성 컨텍스트 내에서 관리되는 user 객체
 			.role(role == OpenViduRole.PUBLISHER ? "broadcaster" : "viewer")
 			.build());
@@ -208,7 +208,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 			return new RedisTopicDto<>("accept", battleId, new OpenViduTokenResponseDto(userId, null, -2));
 		}
 
-		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleId, user.getId());
+		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleBoardIdAndParticipantId(battleId, user.getId());
 
 		if (applyUser == null) {
 			return new RedisTopicDto<>("accept", battleId, new OpenViduTokenResponseDto(userId, null, -2));
@@ -298,7 +298,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 
 	@Override
 	public void userLeft(Long battleId, Long userId) {
-		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByBattleIdAndParticipantId(battleId, userId);
+		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByBattleBoardIdAndParticipantId(battleId, userId);
 		if (liveApplyUser == null) {
 			throw new RuntimeException("User not found in room");
 		}

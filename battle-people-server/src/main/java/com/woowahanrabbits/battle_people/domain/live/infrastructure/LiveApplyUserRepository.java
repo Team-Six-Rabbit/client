@@ -9,7 +9,7 @@ import com.woowahanrabbits.battle_people.domain.live.domain.LiveApplyUserId;
 
 public interface LiveApplyUserRepository extends JpaRepository<LiveApplyUser, LiveApplyUserId> {
 
-	List<LiveApplyUser> findAllByBattleId(Long id);
+	List<LiveApplyUser> findAllByBattleBoardId(Long id);
 
-	LiveApplyUser findByBattleIdAndParticipantId(Long battleId, Long participantId);
+	LiveApplyUser findByBattleBoardIdAndParticipantId(Long battleBoardId, Long participantId);
 }
