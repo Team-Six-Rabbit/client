@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import "@/assets/styles/scrollbar.css";
+import { authService } from "@/services/userAuthService";
+import { convertToTimeZone } from "@/utils/dateUtils";
 
 const VotesContainer = styled.div`
 	width: 100%;
@@ -37,6 +40,18 @@ const VoteStatusIndicator = styled.span<{ statusColor: string }>`
 	background-color: ${({ statusColor }) => statusColor};
 `;
 
+const TitleContainer = styled.div`
+	flex-grow: 1;
+	text-align: left;
+`;
+
+const DateStatusContainer = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 10px; /* 날짜와 상태 아이콘 사이의 간격 */
+`;
+
 interface Vote {
 	id: string;
 	title: string;
@@ -45,65 +60,50 @@ interface Vote {
 }
 
 function ParticipatedVotesList() {
-	const sampleVotes: Vote[] = [
-		{
-			id: "1",
-			title: "참여한 토론 제목 1",
-			date: "2024.07.12",
-			statusColor: "#BDE3FF",
-		},
-		{
-			id: "2",
-			title: "참여한 토론 제목 2",
-			date: "2024.07.13",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "3",
-			title: "참여한 토론 제목 3",
-			date: "2024.07.14",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "4",
-			title: "참여한 토론 제목 4",
-			date: "2024.07.15",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "5",
-			title: "참여한 토론 제목 5",
-			date: "2024.07.16",
-			statusColor: "#BDE3FF",
-		},
-		{
-			id: "6",
-			title: "참여한 토론 제목 6",
-			date: "2024.07.17",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "7",
-			title: "참여한 토론 제목 7",
-			date: "2024.07.18",
-			statusColor: "#FFC7C2",
-		},
-		{
-			id: "8",
-			title: "참여한 토론 제목 8",
-			date: "2024.07.19",
-			statusColor: "#BDE3FF",
-		},
-	];
+	const [votes, setVotes] = useState<Vote[]>([]);
+	const [, setLoading] = useState(true);
+	const [, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		const fetchVotes = async () => {
+			try {
+				const data = await authService.getUserVotes(); // API 호출
+				const formattedVotes = data.map((vote, index) => {
+					const formattedDate = convertToTimeZone(
+						vote.registDate,
+						"Asia/Seoul",
+					);
+
+					const dateOnly = formattedDate.split(" ")[0]; // 'YYYY-MM-DD'
+
+					return {
+						id: String(index + 1),
+						title: vote.title,
+						date: `${dateOnly}`, // 날짜를 로컬 형식으로 변환
+						statusColor: vote.isWin ? "#BDE3FF" : "#FFC7C2", // 승리 여부에 따른 색상 설정
+					};
+				});
+				setVotes(formattedVotes);
+			} catch (err) {
+				setError("Failed to fetch user votes.");
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchVotes();
+	}, []);
 
 	return (
 		<VotesContainer className="custom-scrollbar">
 			<VotesList>
-				{sampleVotes.map((vote) => (
+				{votes.map((vote) => (
 					<VotesListItem key={vote.id}>
-						<span>{vote.title}</span>
-						<VoteDate>{vote.date}</VoteDate>
-						<VoteStatusIndicator statusColor={vote.statusColor} />
+						<TitleContainer>{vote.title}</TitleContainer>
+						<DateStatusContainer>
+							<VoteDate>{vote.date}</VoteDate>
+							<VoteStatusIndicator statusColor={vote.statusColor} />
+						</DateStatusContainer>
 					</VotesListItem>
 				))}
 			</VotesList>

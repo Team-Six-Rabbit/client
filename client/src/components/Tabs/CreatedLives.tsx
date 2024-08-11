@@ -69,7 +69,6 @@ function CreatedLives() {
 			try {
 				const data = await authService.getUserCreatedLives();
 				const formattedLives = data.map((live, index) => {
-					// 특정 시간대로 변환 (예: 'Asia/Seoul')
 					const formattedDate = convertToTimeZone(
 						live.registDate,
 						"Asia/Seoul",
