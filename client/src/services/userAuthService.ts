@@ -221,6 +221,23 @@ export const authService = {
 			throw error;
 		}
 	},
+
+	// 사용자가 참여한 투표 정보 가져오기
+	getUserVotes: async (): Promise<VoteInfo[]> => {
+		try {
+			const response = await axiosInstance.get<ApiResponse<VoteInfo[]>>(
+				"/user/profile/votes",
+			);
+
+			if (response.data.code === "success" && response.data.data) {
+				return response.data.data;
+			}
+			throw new Error(response.data.msg || "Failed to fetch vote infos");
+		} catch (error) {
+			console.error("Error fetching user votes: ", error);
+			throw error;
+		}
+	},
 };
 
 export interface UserWinHistory {
@@ -233,5 +250,11 @@ export interface UserWinHistory {
 export interface ApiCreatedLive {
 	title: string;
 	registDate: string; // 여기서 `string`으로 정의
+	isWin: boolean;
+}
+
+export interface VoteInfo {
+	title: string;
+	registDate: string;
 	isWin: boolean;
 }
