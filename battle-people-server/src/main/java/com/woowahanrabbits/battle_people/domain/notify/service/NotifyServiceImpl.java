@@ -36,7 +36,7 @@ public class NotifyServiceImpl implements NotifyService {
 		);
 
 		Notify notify = new Notify();
-		notify.setNotifyCode(NotificationType.BATTLE_REQUEST.getCode());
+		notify.setNotifyCode(type.getCode());
 		notify.setTitle(title); // 완성된 제목을 설정
 		notify.setUser(user);
 		notify.setRegistDate(new Date());

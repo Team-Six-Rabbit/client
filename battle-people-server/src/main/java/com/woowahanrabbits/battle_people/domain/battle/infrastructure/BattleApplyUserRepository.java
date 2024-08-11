@@ -24,4 +24,6 @@ public interface BattleApplyUserRepository
 	@Query("SELECT COUNT(ba) FROM BattleApplyUser ba WHERE ba.battleBoard.id = :id "
 		+ "AND ba.selectedOpinion = :voteOpinionIndex")
 	int countByBattleBoardIdAndSelectedOpinion(Long id, Integer voteOpinionIndex);
+
+	List<BattleApplyUser> findByBattleBoardId(Long id);
 }
