@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/header";
@@ -13,6 +13,7 @@ import { battleService } from "@/services/battleService";
 import { BattleWaitingParticipant } from "@/types/battle";
 import { Opinion } from "@/types/vote";
 import { useAuthStore } from "@/stores/userAuthStore";
+import AlertModal from "@/components/Modal/PrevotingFailModal";
 
 const PreVotingBoardContainer = styled.div`
 	display: flex;
@@ -40,6 +41,8 @@ function PreVotingBoardPage() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [page, setPage] = useState<number>(0);
 	const [hasMore, setHasMore] = useState<boolean>(true);
+	const [showAlert, setShowAlert] = useState<boolean>(false);
+	const [alertMessage, setAlertMessage] = useState<string>("");
 	const navigate = useNavigate();
 	const { isLogin } = useAuthStore();
 
@@ -65,18 +68,22 @@ function PreVotingBoardPage() {
 			const response = await battleService.preVoteToBattle(requestData);
 			console.log("사전투표 결과", response);
 
-			// 응답에서 받은 데이터 처리
+			if (response.data === -1) {
+				setAlertMessage(
+					"본인이 참여하는 라이브에는 사전투표를 할 수 없습니다.",
+				);
+				setShowAlert(true);
+				return; // 투표를 중단
+			}
+
+			if (response.data === -3) {
+				setAlertMessage("모집인원이 마감되어 사전 투표를 실패하였습니다.");
+				setShowAlert(true);
+				return; // 투표를 중단
+			}
+
 			const updatedTickets = filteredTickets.map((ticket) => {
 				if (ticket.id === ticketId) {
-					if (response.data === -1) {
-						// 본인이 개최한 경우, 참석 불가능 처리
-						return {
-							...ticket,
-							isVoted: true, // 투표 불가능하게 설정
-						};
-					}
-
-					// 참석 인원 업데이트 및 투표 완료 설정
 					return {
 						...ticket,
 						currentPeopleCount: response.data ?? 0,
@@ -191,6 +198,11 @@ function PreVotingBoardPage() {
 				</PreVotingBoardContainer>
 			</div>
 			<PlusButton />
+			<AlertModal
+				show={showAlert}
+				onClose={() => setShowAlert(false)}
+				message={alertMessage}
+			/>
 		</div>
 	);
 }
