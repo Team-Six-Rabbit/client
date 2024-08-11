@@ -1,5 +1,6 @@
 package com.woowahanrabbits.battle_people.domain.battle.infrastructure;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -24,4 +25,12 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
 
 	BattleBoard findByVoteInfoId(Long id);
 
+	@Query("SELECT COUNT(v) > 0 FROM BattleBoard b JOIN b.voteInfo v "
+		+ "WHERE (b.registUser.id = :userId OR b.oppositeUser.id = :userId) AND"
+		+ "(v.currentState = 2 or v.currentState = 3) AND "
+		+ "((v.startDate BETWEEN :startDate AND :endDate) OR "
+		+ "(v.endDate BETWEEN :startDate AND :endDate))")
+	boolean checkMyBattles(@Param("userId") long userId,
+		@Param("startDate") Date startDate,
+		@Param("endDate") Date endDate);
 }

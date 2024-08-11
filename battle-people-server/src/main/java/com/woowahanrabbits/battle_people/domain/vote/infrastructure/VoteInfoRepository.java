@@ -1,5 +1,8 @@
 package com.woowahanrabbits.battle_people.domain.vote.infrastructure;
 
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,8 +13,18 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 @Repository
 public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 
-	Page<VoteInfo> findAllByCurrentState(int currentState, Pageable pageable);
+	List<VoteInfo> findByEndDateBeforeAndCurrentState(Date now, int currentState);
 
-	Page<VoteInfo> findAllByCategoryAndCurrentState(Integer category, int currentState, Pageable pageable);
+	List<VoteInfo> findByStartDateBeforeAndCurrentState(Date time, int currentState);
+
+	Page<VoteInfo> findAllByCurrentStateOrderByStartDateDesc(int id, Pageable pageable);
+
+	Page<VoteInfo> findAllByCurrentStateOrderByIdDesc(int status, Pageable pageable);
+
+	Page<VoteInfo> findAllByCategoryAndCurrentStateOrderByIdDesc(Integer category, int status,
+		Pageable pageable);
+
+	Page<VoteInfo> findAllByCategoryAndCurrentStateOrderByStartDateDesc(Integer category, int currentState,
+		Pageable pageable);
 }
 
