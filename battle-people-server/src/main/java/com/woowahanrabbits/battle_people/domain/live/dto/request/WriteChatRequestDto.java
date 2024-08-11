@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class WriteChatRequestDto {
+	private Long userId;
 	private String message;
-
 }
 

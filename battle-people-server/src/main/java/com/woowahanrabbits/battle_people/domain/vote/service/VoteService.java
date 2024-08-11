@@ -6,7 +6,8 @@ import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
-import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.UserWinHistory;
+import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDtoWithVoteCount;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteRequest;
 
 public interface VoteService {
@@ -18,5 +19,9 @@ public interface VoteService {
 
 	CurrentVoteResponseDto getVoteResult(Long battleBoardId);
 
-	RedisTopicDto<List<VoteOpinionDto>> putLiveVote(Long battleBoardId, VoteRequest voteRequest);
+	RedisTopicDto<List<VoteOpinionDtoWithVoteCount>> putLiveVote(Long battleBoardId, VoteRequest voteRequest);
+
+	UserWinHistory getUserWinHistory(Long userId);
+
+	void updateCurrentState();
 }

@@ -20,6 +20,7 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,13 +35,14 @@ import lombok.RequiredArgsConstructor;
 public class BattleController {
 
 	private final BattleService battleService;
+	private final UserRepository userRepository;
 
 	//배틀 등록
 	@PostMapping("/invite")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "[점화] 배틀을 요청한다.")
 	public ResponseEntity<?> registBattle(@RequestBody @Valid BattleInviteRequest battleInviteRequest,
 		@LoginUser User user) {
-
 		battleService.registBattle(battleInviteRequest, user);
 		return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 	}
@@ -49,14 +51,14 @@ public class BattleController {
 	@GetMapping("")
 	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "요청받는 배틀을 조회한다.")
-	public ResponseEntity<?> getRequestBattleList(@LoginUser User user,
-		@RequestParam(defaultValue = "0") int page, @RequestParam(required = false) Long id) {
+	public ResponseEntity<?> getRequestBattle(@LoginUser User user, @RequestParam(required = false) Long id) {
 
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ApiResponseDto<>("success", "", battleService.getReceivedBattleList(user, page, id)));
+			.body(new ApiResponseDto<>("success", "", battleService.getReceivedBattle(id)));
 	}
 
 	@PatchMapping("/accept-or-decline")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "[불씨] 배틀을 수락 또는 거절한다.")
 	public ResponseEntity<?> acceptOrDeclineBattle(@RequestBody BattleRespondRequest battleRespondRequest,
 		@LoginUser User user) {
@@ -68,14 +70,16 @@ public class BattleController {
 
 	@GetMapping("/apply-list")
 	@Operation(summary = "[불씨] 모집중인 배틀을 조회한다.")
-	public ResponseEntity<?> getAwaitingBattleList(@RequestParam(defaultValue = "") Integer category, int page,
-		@LoginUser User user) {
-		List<AwaitingBattleResponseDto> list = battleService.getAwaitingBattleList(category, page, user);
+	public ResponseEntity<?> getAwaitingBattleList(@RequestParam(defaultValue = "") Integer category,
+		@RequestParam int page,
+		@LoginUser User user, @RequestParam int size) {
+		List<AwaitingBattleResponseDto> list = battleService.getAwaitingBattleList(category, page, user, size);
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(new ApiResponseDto<>("success", "", list));
 	}
 
 	@PostMapping("/apply")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "모집중인 특정 배틀에 참여 신청한다.")
 	public ResponseEntity<?> applyBattle(@RequestBody @Valid BattleApplyDto battleApplyDto,
 		@LoginUser User user) {

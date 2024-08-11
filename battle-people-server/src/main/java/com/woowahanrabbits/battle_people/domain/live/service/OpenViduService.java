@@ -20,3 +20,4 @@ public interface OpenViduService {
 	RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId, String connectionId);
 
 }
+

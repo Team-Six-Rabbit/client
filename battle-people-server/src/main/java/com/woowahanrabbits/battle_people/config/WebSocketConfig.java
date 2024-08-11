@@ -6,8 +6,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import com.woowahanrabbits.battle_people.exception.ChatPreHandler;
-
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -15,13 +13,10 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	private final ChatPreHandler chatPreHandler;
-
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws")
 			.setAllowedOriginPatterns("*");
-		// .withSockJS();
 	}
 
 	@Override
@@ -32,10 +27,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		// 메세지 발행 요청 url -> 메세지 보낼 때
 		registry.setApplicationDestinationPrefixes("/app");
 	}
-
-	// @Override
-	// public void configureClientInboundChannel(ChannelRegistration registration) {
-	// 	registration.interceptors(chatPreHandler);
-	// }
-
 }

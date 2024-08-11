@@ -42,6 +42,7 @@ import io.openvidu.java.client.RecordingProperties;
 import io.openvidu.java.client.Session;
 import io.openvidu.java.client.SessionProperties;
 
+@SuppressWarnings("checkstyle:LineLength")
 @Service
 public class OpenViduServiceImpl implements OpenViduService {
 	enum PublisherRole {
@@ -74,8 +75,10 @@ public class OpenViduServiceImpl implements OpenViduService {
 		@Value("${openvidu.secret}") String secret,
 		LiveApplyUserRepository liveApplyUserRepository,
 		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository,
+
 		UserRepository userRepository,
 		ObjectMapper mapper, RedisTemplate<String, Object> redisTemplate, RestTemplate restTemplate) {
+
 		this.userVoteOpinionRepository = userVoteOpinionRepository;
 		this.userRepository = userRepository;
 		this.redisTemplate = redisTemplate;
@@ -173,6 +176,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 			.type(ConnectionType.WEBRTC)
 			.data(getServerData(index, getUserTokenEndedDate(battleBoard, user.getId(), role)))
 			.role(role)
+
 			.build();
 
 		String token;

@@ -1,6 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.vote.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 
 import lombok.AllArgsConstructor;
@@ -12,8 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class VoteOpinionDto {
+public class VoteOpinionDtoWithVoteCount {
 	private Integer index;
 	private String opinion;
 	@Setter
@@ -21,7 +19,7 @@ public class VoteOpinionDto {
 	@Setter
 	private Integer percentage;
 
-	public VoteOpinionDto(VoteOpinion vote) {
+	public VoteOpinionDtoWithVoteCount(VoteOpinion vote) {
 		this.index = vote.getVoteOpinionIndex();
 		this.opinion = vote.getOpinion();
 		this.percentage = 0;

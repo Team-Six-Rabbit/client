@@ -45,8 +45,7 @@ public class LiveChatController {
 		User user = userRepository.findById(1L).orElseThrow();
 		user.setNickname("현치비");
 
-		redisTemplate.convertAndSend(key, liveChatService.saveMessage(battleBoardId, writeChatRequestDto,
-			user));
+		redisTemplate.convertAndSend(key, liveChatService.saveMessage(battleBoardId, writeChatRequestDto));
 	}
 
 	@MessageMapping("/live/{battleBoardId}")

@@ -14,5 +14,5 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurrentVoteResponseDto {
 	private Integer totalCount;
-	private List<VoteOpinionDto> opinions;
+	private List<VoteOpinionDtoWithVoteCount> opinions;
 }

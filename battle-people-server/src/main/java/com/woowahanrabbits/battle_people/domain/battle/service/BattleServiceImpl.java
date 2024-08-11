@@ -1,7 +1,8 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
@@ -19,6 +21,8 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
+import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
+import com.woowahanrabbits.battle_people.domain.notify.service.NotifyService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
@@ -26,6 +30,7 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.BattleOpinionDto;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
+import com.woowahanrabbits.battle_people.validation.BattleValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,38 +43,27 @@ public class BattleServiceImpl implements BattleService {
 	private final BattleApplyUserRepository battleApplyUserRepository;
 	private final VoteInfoRepository voteInfoRepository;
 	private final UserRepository userRepository;
+	private final BattleValidator battleValidator;
+	private final NotifyService notifyService;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
 
+	@Transactional
 	@Override
 	public void registBattle(BattleInviteRequest battleInviteRequest, User user) {
 
-		Date startDate = battleInviteRequest.getStartDate();
+		//endDate 설정
+		LocalDateTime startDateTime = battleInviteRequest.getStartDate().toInstant()
+			.atZone(ZoneId.systemDefault())
+			.toLocalDateTime();
+		LocalDateTime endDateTime = startDateTime.plusMinutes(battleInviteRequest.getTime());
+		Date endDate = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(startDate);
-		calendar.add(Calendar.MINUTE, battleInviteRequest.getTime());
-		Date endDate = calendar.getTime();
-
-		if (battleInviteRequest.getOppositeUserId() == user.getId()) {
-			throw new IllegalArgumentException("Not valid user");
-		}
-		if (battleInviteRequest.getTime() <= 0) {
-			throw new RuntimeException("Wrong time setting");
-		}
-
-		// 현재 시간
-		Date now = new Date();
-		calendar = Calendar.getInstance();
-		calendar.setTime(now);
-
-		calendar.add(Calendar.MINUTE, 5);
-		Date fiveMinutesLater = calendar.getTime();
-
-		if (startDate.before(fiveMinutesLater)) {
-			throw new IllegalArgumentException("Invalid start time: must be after at least 5 minutes");
-		}
+		battleValidator.validateOppositeUser(battleInviteRequest, user);
+		battleValidator.validateTime(battleInviteRequest.getTime());
+		battleValidator.validateStartTime(battleInviteRequest.getStartDate());
+		battleValidator.checkOtherBattles(user, battleInviteRequest.getStartDate(), endDate);
 
 		//VoteInfo 만들기
 		VoteInfo voteInfo = VoteInfo.builder()
@@ -102,52 +96,40 @@ public class BattleServiceImpl implements BattleService {
 			.battleRule(battleInviteRequest.getBattleRule())
 			.build();
 		battleRepository.save(battleBoard);
+
+		notifyService.sendNotification(user, battleBoard, NotificationType.BATTLE_REQUEST);
 	}
 
 	@Override
-	public List<BattleResponse> getReceivedBattleList(User user, int page, Long id) {
-		Pageable pageable = PageRequest.of(page, 12);
+	public BattleResponse getReceivedBattle(Long id) {
 
-		List<BattleBoard> list = id == null
-			? battleRepository.findByOppositeUserIdAndVoteInfoCurrentState(user.getId(), 0, pageable)
-			.getContent()
-			: battleRepository.findById(id, pageable).getContent();
+		BattleBoard battleBoard = battleRepository.findById(id).orElseThrow();
 
-		List<BattleResponse> returnList = new ArrayList<>();
+		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(
+			battleBoard.getVoteInfo().getId());
 
-		for (BattleBoard battleBoard : list) {
-			List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(
-				battleBoard.getVoteInfo().getId());
-
-			returnList.add(new BattleResponse(battleBoard, voteOpinions));
-		}
-
-		return returnList;
+		return new BattleResponse(battleBoard, voteOpinions.get(0));
 	}
 
+	@Transactional
 	@Override
 	public void acceptOrDeclineBattle(BattleRespondRequest battleRespondRequest, User user) {
 		BattleBoard battleBoard = battleRepository.findById(battleRespondRequest.getBattleId()).orElseThrow();
 		VoteInfo requestVote = battleBoard.getVoteInfo();
 
-		if (battleBoard.getOppositeUser().getId() != user.getId() || battleBoard.getVoteInfo().getCurrentState() != 0) {
-			throw new RuntimeException("No such elements");
-		}
+		battleValidator.validateBattleDate(battleBoard.getVoteInfo().getStartDate(), 30);
 
 		if (battleRespondRequest.getRespond().equals("decline")) {
 			requestVote.setCurrentState(1);
 			voteInfoRepository.save(requestVote);
 			battleBoard.setRejectionReason(battleRespondRequest.getContent());
 			battleRepository.save(battleBoard);
+			notifyService.sendNotification(battleBoard.getRegistUser(), battleBoard, NotificationType.BATTLE_DECLINE);
 		} else if (battleRespondRequest.getRespond().equals("accept")) {
 
 			//일정이 겹치는 라이브가 있는지 확인
-			List<VoteInfo> list = battleRepository.findVoteInfosByUserIds(user.getId(), user.getId());
-			for (VoteInfo voteInfo : list) {
-				if (!isTimeValid(voteInfo, requestVote)) {
-					throw new RuntimeException("Scheduled battle exists");
-				}
-			}
+			battleValidator.checkOtherBattles(user, battleBoard.getVoteInfo().getStartDate(),
+				battleBoard.getVoteInfo().getEndDate());
 
 			requestVote.setCurrentState(2);
 			voteInfoRepository.save(requestVote);
@@ -158,21 +140,18 @@ public class BattleServiceImpl implements BattleService {
 				.opinion(battleRespondRequest.getContent())
 				.build();
 			voteOpinionRepository.save(voteOpinion);
+			notifyService.sendNotification(battleBoard.getRegistUser(), battleBoard, NotificationType.BATTLE_ACCEPT);
 		}
 	}
 
-	boolean isTimeValid(VoteInfo voteInfo, VoteInfo requestVote) {
-		return voteInfo.getEndDate().after(requestVote.getStartDate()) && voteInfo.getStartDate()
-			.before(requestVote.getEndDate());
-	}
-
 	@Override
-	public List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user) {
-		Pageable pageable = PageRequest.of(page, 12);
+	public List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user, int size) {
+		Pageable pageable = PageRequest.of(page, size);
 
 		List<VoteInfo> voteInfos = category == null
-			? voteInfoRepository.findAllByCurrentState(2, pageable).getContent()
-			: voteInfoRepository.findAllByCategoryAndCurrentState(category, 2, pageable).getContent();
+			? voteInfoRepository.findAllByCurrentStateOrderByStartDateDesc(2, pageable).getContent()
+			:
+			voteInfoRepository.findAllByCategoryAndCurrentStateOrderByStartDateDesc(category, 2, pageable).getContent();
 		List<AwaitingBattleResponseDto> returnList = new ArrayList<>();
 
 		for (VoteInfo voteInfo : voteInfos) {
@@ -185,37 +164,49 @@ public class BattleServiceImpl implements BattleService {
 			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
 			int userCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
 			int maxPeopleCount = battleBoard.getMaxPeopleCount();
-			boolean isVoted = battleApplyUserRepository.existsByBattleBoardIdAndUserId(battleBoard.getId(),
-				user.getId());
 
-			AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(voteInfo, opinions,
-				userCount, maxPeopleCount, isVoted);
-
-			returnList.add(awaitingBattleResponseDto);
+			if (user != null) {
+				boolean isVoted = battleApplyUserRepository.existsByBattleBoardIdAndUserId(battleBoard.getId(),
+					user.getId());
+				AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(battleBoard,
+					voteInfo, opinions,
+					userCount, maxPeopleCount, isVoted);
+				returnList.add(awaitingBattleResponseDto);
+			} else {
+				AwaitingBattleResponseDto awaitingBattleResponseDto = new AwaitingBattleResponseDto(battleBoard,
+					voteInfo, opinions,
+					userCount, maxPeopleCount);
+				returnList.add(awaitingBattleResponseDto);
+			}
 		}
 		return returnList;
 	}
 
 	@Override
 	public int applyBattle(BattleApplyDto battleApplyDto, User user) {
-		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId())
-			.orElseThrow();
+		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId()).orElseThrow();
 		if (battleBoard.getOppositeUser().getId() == user.getId()
 			|| battleBoard.getRegistUser().getId() == user.getId()) {
 			//주최자는 참여 신청 X
-			throw new RuntimeException("Can't apply my battle");
+			return -1;
 		}
 
 		int currentPeopleCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
 
+		if (battleApplyUserRepository.existsByBattleBoardIdAndUserId(battleBoard.getId(), user.getId())) {
+			//이미 참여신청한 유저라면
+			return -2;
+		}
+
 		//최대 인원
 		if (currentPeopleCount >= battleBoard.getMaxPeopleCount()) {
-			throw new RuntimeException("Apply fully charged");
+			return -3;
 		}
 
 		BattleApplyUser battleApplyUser = BattleApplyUser.builder()
 			.battleBoard(battleBoard)
 			.user(user)
+			.applyDate(new Date())
 			.selectedOpinion(battleApplyDto.getSelectedOpinion())
 			.build();
 		battleApplyUserRepository.save(battleApplyUser);
@@ -225,9 +216,16 @@ public class BattleServiceImpl implements BattleService {
 			VoteInfo voteInfo = battleBoard.getVoteInfo();
 			voteInfo.setCurrentState(3);
 			voteInfoRepository.save(voteInfo);
+
+			//todo voteOpinion 내 preCount 업데이트하기
 		}
 
 		//참여 신청한 인원 수 return
 		return battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
+	}
+
+	@Override // 개최한 라이브 목록 조회
+	public List<BattleBoard> getBattleBoardsByUserId(Long userId) {
+		return battleRepository.findByRegistUserId(userId);
 	}
 }

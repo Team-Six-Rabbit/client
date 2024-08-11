@@ -1,5 +1,8 @@
 package com.woowahanrabbits.battle_people.domain.user.controller;
 
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -28,33 +31,41 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
+	@Value("${jwt.accessToken.expiration}")
+	private long accessTokenExpiration;
+
 	private final UserService userService;
 	private final UserTokenRepository userTokenRepository;
 	private final JwtUtil jwtUtil;
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+	public ResponseEntity<ApiResponseDto<LoginResponse>> login(@RequestBody LoginRequest loginRequest,
+		HttpServletResponse response) {
 		User user = userService.login(loginRequest);
 
 		long userId = user.getId();
 		String email = user.getEmail();
 		String role = user.getRole();
-		String access = jwtUtil.generateAccessToken(userId, email, role);
-		String refresh = jwtUtil.generateRefreshToken(userId, email, role);
+		String nickname = user.getNickname();
+		String access = jwtUtil.generateAccessToken(userId, email, nickname, role);
+		String refresh = jwtUtil.generateRefreshToken(userId, email, nickname, role);
 		UserToken userToken = new UserToken(user, access, refresh);
 		userTokenRepository.save(userToken);
 
 		response.addCookie(HttpUtils.createCookie("access", access, "/"));
 		response.addCookie(
 			HttpUtils.createCookie("refresh", refresh, "/battle-people/auth/refresh"));
-		LoginResponse loginResponse = new LoginResponse(email, user.getNickname(), user.getRating(),
-			user.getImgUrl());
+		LoginResponse loginResponse = new LoginResponse(user,
+			new Date(System.currentTimeMillis() + accessTokenExpiration));
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "login success", loginResponse));
 	}
 
 	@DeleteMapping("/logout")
-	public ResponseEntity<?> logout(@CookieValue("access") String access, HttpServletResponse response) {
-		userTokenRepository.deleteByUserId(jwtUtil.extractUserId(access));
+	public ResponseEntity<?> logout(@CookieValue(value = "access", required = false) String access,
+		HttpServletResponse response) {
+		if (access != null) {
+			userTokenRepository.deleteByUserId(jwtUtil.extractUserId(access));
+		}
 
 		HttpUtils.deleteCookies(
 			response,
@@ -76,8 +87,9 @@ public class AuthController {
 
 		long userId = jwtUtil.extractUserId(refresh);
 		String username = jwtUtil.extractUsername(refresh);
+		String nickname = jwtUtil.extractNickname(refresh);
 		String userRole = jwtUtil.extractUserRole(refresh);
-		String newAccess = jwtUtil.generateAccessToken(userId, username, userRole);
+		String newAccess = jwtUtil.generateAccessToken(userId, username, nickname, userRole);
 
 		userTokenRepository.updateAccessTokenByUserId(userId, newAccess);
 		response.addCookie(HttpUtils.createCookie("access", newAccess, "/"));

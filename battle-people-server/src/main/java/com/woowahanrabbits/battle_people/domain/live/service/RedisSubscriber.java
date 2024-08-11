@@ -17,6 +17,7 @@ import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDt
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
+import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,8 @@ public class RedisSubscriber implements MessageListener {
 	private final ObjectMapper objectMapper;
 	private final SimpMessagingTemplate messagingTemplate;
 	private final MessageConverter messageConverter;
+
+	private final NotifyRepository notifyRepository;
 
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
@@ -75,7 +78,6 @@ public class RedisSubscriber implements MessageListener {
 					messagingTemplate.convertAndSend("/topic/live/" + channelId,
 						responseTopicDto.getResponseDto().get(1));
 				}
-
 			}
 
 		} catch (Exception e) {

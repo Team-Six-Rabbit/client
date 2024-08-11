@@ -2,12 +2,10 @@ package com.woowahanrabbits.battle_people.domain.live.service;
 
 import java.util.List;
 
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteChatRequestDto;
@@ -15,6 +13,7 @@ import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatRespo
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
+import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
@@ -29,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class LiveChatServiceImpl implements LiveChatService {
 
-	private final ObjectMapper objectMapper;
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
 	private final BattleRepository battleRepository;
 	private final RedisMessageListenerContainer redisMessageListenerContainer;
@@ -37,12 +35,15 @@ public class LiveChatServiceImpl implements LiveChatService {
 	private final VoteOpinionRepository voteOpinionRepository;
 	private static int chatIdx = 0;
 	private static int requestIdx = 0;
+	private final UserRepository userRepository;
 
 	@Override
-	public RedisTopicDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto, User user) {
+	public RedisTopicDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto) {
+
+		BasicUserDto user = new BasicUserDto(userRepository.findById(writeChatRequestDto.getUserId()).orElseThrow());
 
 		WriteChatResponseDto writeChatResponseDto = WriteChatResponseDto.builder()
-			.user(new BasicUserDto(user))
+			.user(user)
 			.message(writeChatRequestDto.getMessage())
 			.build();
 
@@ -94,11 +95,4 @@ public class LiveChatServiceImpl implements LiveChatService {
 
 	}
 
-	@Override
-	public void addTopicListener(Long battleBoardId) {
-		ChannelTopic topic = new ChannelTopic("live");
-		ChannelTopic voteTopic = new ChannelTopic("vote");
-		redisMessageListenerContainer.addMessageListener(messageListenerAdapter, topic);
-		redisMessageListenerContainer.addMessageListener(messageListenerAdapter, voteTopic);
-	}
 }

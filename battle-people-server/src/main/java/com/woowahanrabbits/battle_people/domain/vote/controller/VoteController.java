@@ -31,6 +31,7 @@ public class VoteController {
 			return ResponseEntity.status(HttpStatus.OK)
 				.body(new ApiResponseDto<>("success", "",
 					voteService.putVoteOpinion(userId, battleId, voteOpinionIndex)));
+
 		} catch (Exception e) {
 			System.out.println(e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

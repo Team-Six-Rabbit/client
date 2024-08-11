@@ -15,12 +15,14 @@ import lombok.ToString;
 @NoArgsConstructor
 public class BasicUserDto {
 	private Long id;
+	private String email;
 	private String nickname;
 	private String imgUrl;
 	private Integer rating;
 
 	public BasicUserDto(User user) {
 		this.id = user.getId();
+		this.email = user.getEmail();
 		this.nickname = user.getNickname();
 		this.imgUrl = user.getImgUrl();
 		this.rating = user.getRating();

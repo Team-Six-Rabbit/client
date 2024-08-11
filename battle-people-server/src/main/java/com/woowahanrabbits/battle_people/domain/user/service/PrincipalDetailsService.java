@@ -26,9 +26,10 @@ public class PrincipalDetailsService implements UserDetailsService {
 		if (jwtUtil.validateToken(access, "access")) {
 			String email = jwtUtil.extractUsername(access);
 			String role = jwtUtil.extractUserRole(access);
+			String nickname = jwtUtil.extractNickname(access);
 			Long userId = jwtUtil.extractUserId(access);
 
-			userEntity = new User(userId, email, role);
+			userEntity = new User(userId, email, nickname, role);
 		} else {
 			throw new JwtAuthenticationException("Invalid access token");
 		}

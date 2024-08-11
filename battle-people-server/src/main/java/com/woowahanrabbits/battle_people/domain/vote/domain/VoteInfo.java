@@ -25,7 +25,9 @@ public class VoteInfo {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String title;
+	@Setter
 	private Date startDate;
+	@Setter
 	private Date endDate;
 	private int category;
 	@Setter

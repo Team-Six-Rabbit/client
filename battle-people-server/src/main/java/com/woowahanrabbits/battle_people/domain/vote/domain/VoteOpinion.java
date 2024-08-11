@@ -33,8 +33,10 @@ public class VoteOpinion {
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
+
 	private String opinion;
 	private Integer preCount;
+	@Setter
 	private Integer finalCount;
 
 }

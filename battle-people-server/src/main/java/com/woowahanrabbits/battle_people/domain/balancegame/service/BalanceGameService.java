@@ -9,7 +9,9 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 public interface BalanceGameService {
 	void addBalanceGame(CreateBalanceGameRequest createBalanceGameRequest, User user);
 
-	List<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user);
+	List<BalanceGameResponse> getBalanceGameByConditions(Integer category, int status, int page, User user, int size);
 
 	BalanceGameResponse getBalanceGameById(Long id, User user);
+
+	// void checkBalanceGameEndDate();
 }
