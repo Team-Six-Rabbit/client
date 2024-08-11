@@ -46,7 +46,7 @@ export function ProfileBtn() {
 		<Menu as="div" className="relative inline-block text-left">
 			<MenuButton className="inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105">
 				<img
-					className="w-8 h-8"
+					className="w-8 h-8 rounded-full"
 					src={user?.imgUrl || profileIcon}
 					alt="프로필 이미지"
 				/>
