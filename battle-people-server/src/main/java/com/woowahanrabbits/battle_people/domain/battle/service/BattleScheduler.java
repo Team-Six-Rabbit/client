@@ -7,18 +7,18 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
-import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
-import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteScheduler;
 
 import lombok.RequiredArgsConstructor;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class BattleScheduler {
@@ -26,8 +26,6 @@ public class BattleScheduler {
 	private final VoteInfoRepository voteInfoRepository;
 	private final BattleRepository battleRepository;
 	private final BattleApplyUserRepository battleApplyUserRepository;
-	private final VoteOpinionRepository voteOpinionRepository;
-	private final UserVoteOpinionRepository userVoteOpinionRepository;
 	private final VoteScheduler voteScheduler;
 
 	@Value("${min.people.count.value}")
@@ -76,17 +74,7 @@ public class BattleScheduler {
 
 				//todo 썸네일 출력
 				voteInfo.setCurrentState(3);
-
-				// preCount 업데이트
 				voteScheduler.updatePreVoteCount(battleBoard);
-				// List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
-				// for (VoteOpinion voteOpinion : voteOpinions) {
-				// 	int preCount = battleApplyUserRepository.countByBattleBoardIdAndSelectedOpinion(battleBoard.getId(),
-				// 		voteOpinion.getVoteOpinionIndex());
-				// 	voteOpinion.setPreCount(preCount);
-				// 	voteOpinionRepository.save(voteOpinion);
-				// }
-
 				voteInfoRepository.save(voteInfo);
 			}
 
@@ -98,6 +86,7 @@ public class BattleScheduler {
 		List<VoteInfo> endLives = voteInfoRepository.findAllByEndDateAfterAndCurrentState(date, 4);
 		for (VoteInfo voteInfo : endLives) {
 			voteInfo.setCurrentState(8);
+			voteScheduler.updateFinalVoteCount(voteInfo);
 			voteInfoRepository.save(voteInfo);
 		}
 
