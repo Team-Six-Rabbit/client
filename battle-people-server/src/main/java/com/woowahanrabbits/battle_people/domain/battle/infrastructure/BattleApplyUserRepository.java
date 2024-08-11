@@ -20,4 +20,8 @@ public interface BattleApplyUserRepository
 	List<BattleApplyUser> findByBattleBoard_IdAndSelectedOpinion(Long battleBoardId, int selectedOpinion);
 
 	boolean existsByBattleBoardIdAndUserId(Long id, long id1);
+
+	@Query("SELECT COUNT(ba) FROM BattleApplyUser ba WHERE ba.battleBoard.id = :id "
+		+ "AND ba.selectedOpinion = :voteOpinionIndex")
+	int countByBattleBoardIdAndSelectedOpinion(Long id, Integer voteOpinionIndex);
 }

@@ -36,6 +36,7 @@ public class RedisConfig {
 		container.addMessageListener(messageListener, new ChannelTopic("chat"));
 		container.addMessageListener(messageListener, new ChannelTopic("live"));
 		container.addMessageListener(messageListener, new ChannelTopic("request"));
+		container.addMessageListener(messageListener, new ChannelTopic("notify"));
 		return container;
 	}
 

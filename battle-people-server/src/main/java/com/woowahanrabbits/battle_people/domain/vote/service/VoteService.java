@@ -23,7 +23,5 @@ public interface VoteService {
 
 	UserWinHistory getUserWinHistory(Long userId);
 
-	void updateCurrentState();
-
 	CurrentVoteResponseDto getVoteResultByVoteInfoId(Long voteInfoId);
 }

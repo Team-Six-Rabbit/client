@@ -8,6 +8,7 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
+import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationDetailResponseDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
 public interface BattleService {
@@ -22,4 +23,6 @@ public interface BattleService {
 	int applyBattle(BattleApplyDto battleApplyDto, User user);
 
 	List<BattleBoard> getBattleBoardsByUserId(Long userId);
+
+	NotificationDetailResponseDto getNotificationDetail(Long notifyId);
 }

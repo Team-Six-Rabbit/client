@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.notify.domain.Notify;
-import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationDetailResponseDto;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationResponseDto;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
 import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
@@ -25,7 +24,7 @@ public class NotifyServiceImpl implements NotifyService {
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	public void sendNotification(User user, BattleBoard battleBoard, NotificationType type) {
-
+		System.out.println(battleBoard.getRegistUser());
 		String title = String.format(type.getMessageTemplate(),
 			switch (type.getCode()) {
 				case 0 -> battleBoard.getRegistUser().getNickname();
@@ -45,13 +44,14 @@ public class NotifyServiceImpl implements NotifyService {
 		notify.setRead(false);
 
 		notifyRepository.save(notify);
-		redisTemplate.convertAndSend("notify", new NotificationResponseDto(notify));
+		redisTemplate.convertAndSend("notify", user.getId());
 	}
 
 	@Override
 	public List<NotificationResponseDto> getNotifications(Long userId) {
-		List<Notify> list = notifyRepository.findAllByUserIdAndIsReadFalseOrderByIsReadAscRegistDateDesc(userId);
+		List<Notify> list = notifyRepository.findAllByUserIdOrderByIsReadAscRegistDateDesc(userId);
 		List<NotificationResponseDto> returnList = new ArrayList<>();
+		System.out.println(list.size());
 		for (Notify notify : list) {
 			NotificationResponseDto notificationResponseDto = new NotificationResponseDto(notify);
 			returnList.add(notificationResponseDto);
@@ -63,33 +63,6 @@ public class NotifyServiceImpl implements NotifyService {
 	public boolean hasUnreadNotifications(Long userId) {
 		int size = notifyRepository.findAllByUserIdAndIsReadFalse(userId).size();
 		return size > 0 ? true : false;
-	}
-
-	@Override
-	public NotificationDetailResponseDto getNotificationDetail(Long notifyId) {
-		Notify notify = notifyRepository.findById(notifyId).get();
-		NotificationDetailResponseDto notificationDetailResponseDto = new NotificationDetailResponseDto();
-
-		int notifyCode = notify.getNotifyCode();
-
-		notificationDetailResponseDto.setId(notifyId);
-		notificationDetailResponseDto.setNotifyCode(notifyCode);
-		notificationDetailResponseDto.setTitle(notify.getTitle());
-
-		Long battleBoardId = notify.getBattleBoard().getId();
-
-		// if (notifyCode == 0) {
-		// 	//배틀정보
-		// 	BattleResponse battleResponse = battleService.getReceivedBattle(battleBoardId);
-		// 	notificationDetailResponseDto.setSpecificData((BattleResponse)battleResponse);
-		// } else if (notifyCode == 1) {
-		// 	notificationDetailResponseDto.setSpecificData((Long)battleBoardId);
-		// }
-
-		notify.setRead(true);
-		notifyRepository.save(notify);
-
-		return notificationDetailResponseDto;
 	}
 
 	@Override
