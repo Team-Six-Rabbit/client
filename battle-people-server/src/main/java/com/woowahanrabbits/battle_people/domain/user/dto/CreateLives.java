@@ -10,11 +10,13 @@ import lombok.ToString;
 @ToString
 @Getter
 public class CreateLives {
-	private String title;
-	private Date registDate;
-	private Boolean isWin;
+	private final Long battleBoardId;
+	private final String title;
+	private final Date registDate;
+	private final Boolean isWin;
 
 	public CreateLives(BattleBoard battleBoard, Boolean isWin) {
+		this.battleBoardId = battleBoard.getId();
 		this.title = battleBoard.getVoteInfo().getTitle();
 		this.registDate = battleBoard.getRegistDate();
 		this.isWin = isWin;

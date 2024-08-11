@@ -227,4 +227,10 @@ public class VoteServiceImpl implements VoteService {
 		}
 
 	}
+
+	@Override
+	public CurrentVoteResponseDto getVoteResultByVoteInfoId(Long voteInfoId) {
+		return resultDto(voteInfoId);
+	}
+
 }
