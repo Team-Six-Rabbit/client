@@ -15,6 +15,7 @@ const useWebRTC = (
 		publishMedia,
 		unpublishMedia,
 		index,
+		connectionId,
 		publisher,
 		subscribers,
 		isPublisher,
@@ -54,7 +55,7 @@ const useWebRTC = (
 		}
 	}, [isMicMuted, isReady, isVideoDisabled, publisher]);
 
-	return { joinSession, index, subscribers };
+	return { joinSession, index, subscribers, connectionId };
 };
 
 export default useWebRTC;

@@ -20,6 +20,7 @@ const useOpenVidu = () => {
 	const [index, setIndex] = useState<number>(-1);
 	const publisherRole = useRef<"SUPPORTER" | "SPEAKER">();
 	const reconnectBattleId = useRef<string>();
+	const connectionId = useRef<string>();
 	let joinSession: (battleId: string) => Promise<void>;
 
 	const leaveSession = useCallback(() => {
@@ -28,6 +29,7 @@ const useOpenVidu = () => {
 			session.current = undefined;
 		}
 		publisherRole.current = undefined;
+		connectionId.current = undefined;
 		setPublisher(undefined);
 		setIndex(-1);
 		setSubscribers([]);
@@ -121,6 +123,7 @@ const useOpenVidu = () => {
 
 			await session.current.connect(token);
 			const isPublisher = session.current.capabilities.publish;
+			connectionId.current = session.current.connection.connectionId;
 			setIsPublisher(isPublisher);
 			setShoudPublish(isPublisher);
 			if (isPublisher) {
@@ -164,6 +167,7 @@ const useOpenVidu = () => {
 		publishMedia,
 		unpublishMedia,
 		session,
+		connectionId,
 		publisher,
 		subscribers,
 		index,
