@@ -15,7 +15,7 @@ interface DropDownMenuItem {
 }
 
 export function ProfileBtn() {
-	const { isLogin } = useAuthStore();
+	const { isLogin, user } = useAuthStore();
 	const navigator = useNavigate();
 
 	const doLogout = async (event: MouseEvent) => {
@@ -45,7 +45,11 @@ export function ProfileBtn() {
 	return (
 		<Menu as="div" className="relative inline-block text-left">
 			<MenuButton className="inline-flex justify-center text-sm font-semibold text-gray-900 shadow-sm hover:scale-105">
-				<img className="w-8 h-8" src={profileIcon} alt="프로필 이미지" />
+				<img
+					className="w-8 h-8"
+					src={user?.imgUrl || profileIcon}
+					alt="프로필 이미지"
+				/>
 			</MenuButton>
 
 			<MenuItems
@@ -87,7 +91,7 @@ function LeftHeader() {
 	return (
 		<>
 			<Logo />
-			<div className="flex space-x-4 lg:space-x-8 text-white text-lg whitespace-nowrap ml-4 sm:ml-8">
+			<div className="flex space-x-4 lg:space-x-8 text-white text-lg whitespace-nowrap ml-4">
 				<Link className="text-white hover:text-gray-400" to="/firework">
 					불구경
 				</Link>
