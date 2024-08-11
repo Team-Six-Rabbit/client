@@ -23,7 +23,6 @@ import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRep
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 
 import jakarta.transaction.Transactional;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Service
