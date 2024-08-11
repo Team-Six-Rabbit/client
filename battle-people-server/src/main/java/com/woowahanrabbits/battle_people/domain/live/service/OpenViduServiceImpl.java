@@ -3,7 +3,6 @@ package com.woowahanrabbits.battle_people.domain.live.service;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
@@ -133,15 +132,16 @@ public class OpenViduServiceImpl implements OpenViduService {
 			return -1;
 		}
 
-		List<UserVoteOpinion> userVoteOpinion = userVoteOpinionRepository.findByUserId(user.getId());
-		if (!userVoteOpinion.isEmpty()) {
-			return userVoteOpinion.get(0).getVoteInfoIndex();
-		}
 		if (battleBoard.getRegistUser().getId() == user.getId()) {
 			return 0;
 		}
 		if (battleBoard.getOppositeUser().getId() == user.getId()) {
 			return 1;
+		}
+		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(),
+			battleBoard.getVoteInfo().getId());
+		if (userVoteOpinion != null) {
+			return userVoteOpinion.getVoteInfoIndex();
 		}
 		return -2;
 	}
