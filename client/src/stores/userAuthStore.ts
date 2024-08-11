@@ -28,7 +28,15 @@ export const useAuthStore = create<AuthState & AuthAction>()(
 				set({ isLogin: false, user: null });
 				sessionStorage.removeItem("user");
 			},
-			setUser: (user: DetailUserInfo | null) => set({ user }),
+			setUser: (user: DetailUserInfo | null) => {
+				set({ user });
+				const storedUser = sessionStorage.getItem("user");
+				let expireAt = new Date(Date.now() + 3600).toISOString();
+				if (storedUser) {
+					expireAt = JSON.parse(storedUser).expireAt;
+				}
+				sessionStorage.setItem("user", JSON.stringify({ user, expireAt }));
+			},
 		}),
 		{
 			name: "auth",

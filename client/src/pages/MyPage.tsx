@@ -6,11 +6,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "@/assets/styles/mypage.css";
 import Header from "@/components/header";
 import { authService } from "@/services/userAuthService";
-import { DetailUserInfo } from "@/types/user";
 import editIcon from "@/assets/images/edit.png";
 import profileImagePlaceholder from "@/assets/images/test.png";
 import "@/assets/styles/shake.css";
 import MyPageContent from "@/components/MyPageContent";
+import { useAuthStore } from "@/stores/userAuthStore";
 
 function MyPage() {
 	const navigate = useNavigate();
@@ -20,10 +20,14 @@ function MyPage() {
 	const [doShake, setDoShake] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const formDataRef = useRef<FormData>(new FormData());
-	const userInfoRef = useRef<DetailUserInfo | null>(null);
-	const [profileImage, setProfileImage] = useState<string>(
-		profileImagePlaceholder,
-	);
+	const { user, setUser } = useAuthStore();
+
+	if (!user) {
+		alert("로그인이 필요합니다.");
+		navigate("/login");
+	}
+
+	const [profileImage, setProfileImage] = useState<string>(user!.imgUrl);
 
 	useEffect(() => {
 		if (location.pathname === "/my-page") {
@@ -31,36 +35,14 @@ function MyPage() {
 		}
 	}, [location.pathname, navigate]);
 
-	useEffect(() => {
-		const fetchProfile = async () => {
-			const response = await authService.getUserInfo();
-			if (response.code === "success" && response.data) {
-				userInfoRef.current = response.data;
-				const imageUrl = await authService.getProfileImage(
-					response.data.imgUrl || "",
-				);
-				setProfileImage(imageUrl || profileImagePlaceholder);
-			}
-		};
-
-		if (!userInfoRef.current) {
-			fetchProfile();
-		}
-	}, []);
-
 	const handleEditClick = () => {
 		if (isEditing) {
 			// Cancel을 눌렀을 때 원래 상태로 복원
-			const originalUserInfo = userInfoRef.current;
-			if (originalUserInfo) {
-				const resetImage = async () => {
-					const imageUrl = await authService.getProfileImage(
-						originalUserInfo.imgUrl || "",
-					);
-					setProfileImage(imageUrl || profileImagePlaceholder);
-				};
-				resetImage();
-			}
+			const resetImage = async () => {
+				const imageUrl = user!.imgUrl;
+				setProfileImage(imageUrl || profileImagePlaceholder);
+			};
+			resetImage();
 			setErrors({ nickname: "" });
 		}
 		setIsEditing(!isEditing);
@@ -72,16 +54,13 @@ function MyPage() {
 				formDataRef.current,
 			);
 			if (uploadResponse.code === "success" && uploadResponse.data) {
-				const imageUrl = await authService.getProfileImage(uploadResponse.data);
+				const imageUrl = uploadResponse.data!;
 				setProfileImage(imageUrl || profileImagePlaceholder);
-				if (userInfoRef.current) {
-					userInfoRef.current.imgUrl = uploadResponse.data;
-				}
+				user!.imgUrl = imageUrl;
+				setUser(user);
 			}
 
-			if (userInfoRef.current) {
-				await authService.updateUserProfile(userInfoRef.current);
-			}
+			await authService.updateUserProfile(user!);
 			setIsEditing(false);
 		} catch (error) {
 			setDoShake(true);
@@ -113,11 +92,7 @@ function MyPage() {
 		}
 	};
 
-	if (!userInfoRef.current) {
-		return <div>Loading...</div>;
-	}
-
-	const { email, nickname, rating } = userInfoRef.current;
+	const { email, nickname, rating } = user!;
 
 	return (
 		<div>
