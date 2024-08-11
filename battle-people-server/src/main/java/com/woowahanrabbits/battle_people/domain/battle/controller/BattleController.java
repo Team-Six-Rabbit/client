@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,10 +55,10 @@ public class BattleController {
 	public ResponseEntity<?> getRequestBattle(@LoginUser User user, @RequestParam(required = false) Long id) {
 
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ApiResponseDto<>("success", "", battleService.getReceivedBattle(id)));
+			.body(new ApiResponseDto<>("success", "", battleService.getNotificationDetail(id)));
 	}
 
-	@PatchMapping("/accept-or-decline")
+	@PutMapping("/accept-or-decline")
 	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "[불씨] 배틀을 수락 또는 거절한다.")
 	public ResponseEntity<?> acceptOrDeclineBattle(@RequestBody BattleRespondRequest battleRespondRequest,

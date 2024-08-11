@@ -37,10 +37,11 @@ public class RedisSubscriber implements MessageListener {
 		try {
 			String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
 			String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
-			RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
-			Long channelId = redisTopicDto.getChannelId();
+
 
 			if (channel.equals("chat")) {
+				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
+				Long channelId = redisTopicDto.getChannelId();
 				Long battleBoardId = redisTopicDto.getChannelId();
 				String type = redisTopicDto.getType();
 				if (type.equals("chat")) {
@@ -51,12 +52,16 @@ public class RedisSubscriber implements MessageListener {
 					messagingTemplate.convertAndSend("/topic/chat/" + battleBoardId, returnValue);
 				}
 			} else if (channel.equals("request")) {
+				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
+				Long channelId = redisTopicDto.getChannelId();
 				LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
 				OpenViduTokenResponseDto dto = objectMapper.convertValue(map, OpenViduTokenResponseDto.class);
 				System.out.println("accept: " + dto);
 				messagingTemplate.convertAndSend("/topic/request/" + channelId + "-" + dto.getUserId(), dto);
 
 			} else if (channel.equals("live")) {
+				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
+				Long channelId = redisTopicDto.getChannelId();
 				if (redisTopicDto.getType().equals("item")) {
 					LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
 					ItemRequestDto dto = objectMapper.convertValue(map, ItemRequestDto.class);
@@ -78,6 +83,9 @@ public class RedisSubscriber implements MessageListener {
 					messagingTemplate.convertAndSend("/topic/live/" + channelId,
 						responseTopicDto.getResponseDto().get(1));
 				}
+			} else if (channel.equals("notify")) {
+				Long userId = objectMapper.readValue(publishMessage, Long.class);
+				messagingTemplate.convertAndSend("/topic/" + userId, "왔어요~~~");
 			}
 
 		} catch (Exception e) {

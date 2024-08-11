@@ -26,5 +26,11 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 
 	Page<VoteInfo> findAllByCategoryAndCurrentStateOrderByStartDateDesc(Integer category, int currentState,
 		Pageable pageable);
+
+	List<VoteInfo> findAllByStartDateBeforeAndCurrentState(Date deadLineTimeCheck, int currentState);
+
+	List<VoteInfo> findAllByStartDateAfterAndCurrentState(Date date, int currentState);
+
+	List<VoteInfo> findAllByEndDateAfterAndCurrentState(Date date, int currentState);
 }
 

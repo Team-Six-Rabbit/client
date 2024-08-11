@@ -3,6 +3,7 @@ package com.woowahanrabbits.battle_people.domain.vote.infrastructure;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,4 +22,8 @@ public interface UserVoteOpinionRepository extends JpaRepository<UserVoteOpinion
 
 	@Transactional
 	void deleteByVoteInfoId(Long voteInfoId);
+
+	@Query("SELECT COUNT(uvo) FROM UserVoteOpinion uvo WHERE uvo.voteInfo.id = :id "
+		+ "AND uvo.voteInfoIndex = :voteOpinionIndex")
+	int countByVoteInfoIdAndVoteInfoIndex(Long id, Integer voteOpinionIndex);
 }
