@@ -13,9 +13,8 @@ function LiveBoardPage() {
 	const [selectedStatus, setSelectedStatus] = useState<LiveStatus>("live");
 	const [filteredCards, setFilteredCards] = useState<CardType[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [page, setPage] = useState<number>(0); // Page state for pagination
-	const [hasMore, setHasMore] = useState<boolean>(true); // State to track if more data is available
-
+	const [page, setPage] = useState<number>(0);
+	const [hasMore, setHasMore] = useState<boolean>(true);
 	const handleCategorySelect = (category: string) => {
 		setSelectedCategory(category);
 		setPage(0);
@@ -34,9 +33,11 @@ function LiveBoardPage() {
 		try {
 			setIsLoading(true);
 
-			const categoryIndex = categories.findIndex(
-				(category) => category.name === selectedCategory,
-			);
+			const categoryIndex =
+				selectedCategory === "전체"
+					? undefined
+					: categories.find((category) => category.name === selectedCategory)
+							?.id;
 
 			let response;
 			switch (selectedStatus) {

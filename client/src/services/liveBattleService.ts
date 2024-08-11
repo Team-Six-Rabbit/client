@@ -9,15 +9,15 @@ import axiosInstance from "./axiosInstance";
 export const liveBattleService = {
 	// 대기 중인 라이브 배틀 목록 가져오기
 	getWaitList: async (
-		category: number,
-		page: number,
+		category?: number,
+		page: number = 0,
 		size: number = 10,
 	): Promise<ApiResponse<LiveBattleCardInfo[]>> => {
 		try {
 			const response = await axiosInstance.get<
 				ApiResponse<LiveBattleCardInfo[]>
 			>("/live/wait/list", {
-				params: { category, page, size },
+				params: { page, size, category },
 			});
 			return response.data;
 		} catch (error) {
@@ -28,15 +28,15 @@ export const liveBattleService = {
 
 	// 진행 중인 라이브 배틀 목록 가져오기
 	getActiveList: async (
-		category: number,
-		page: number,
+		category?: number,
+		page: number = 0,
 		size: number = 10,
 	): Promise<ApiResponse<LiveBattleCardInfo[]>> => {
 		try {
 			const response = await axiosInstance.get<
 				ApiResponse<LiveBattleCardInfo[]>
 			>("/live/active/list", {
-				params: { category, page, size },
+				params: { page, size, category },
 			});
 			return response.data;
 		} catch (error) {
@@ -47,15 +47,15 @@ export const liveBattleService = {
 
 	// 종료된 라이브 배틀 목록 가져오기
 	getEndList: async (
-		category: number,
-		page: number,
+		category?: number,
+		page: number = 0,
 		size: number = 10,
 	): Promise<ApiResponse<LiveBattleCardInfo[]>> => {
 		try {
 			const response = await axiosInstance.get<
 				ApiResponse<LiveBattleCardInfo[]>
 			>("/live/end/list", {
-				params: { category, page, size },
+				params: { page, size, category },
 			});
 			return response.data;
 		} catch (error) {

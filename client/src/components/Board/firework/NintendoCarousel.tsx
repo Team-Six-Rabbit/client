@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { liveBattleService } from "@/services/liveBattleService";
 import { LiveBattleCardInfo } from "@/types/live";
 import { createLiveStateBorder, CustomCSSProperties } from "@/utils/textBorder";
+import { categories } from "@/constant/boardCategory";
 
 const CarouselContainer = styled.div`
 	display: flex;
@@ -153,7 +154,7 @@ const ImageTitle = styled.div<CustomCSSProperties>`
 	margin-left: 5px;
 `;
 
-function Carousel() {
+function Carousel({ selectedCategory }: { selectedCategory: string }) {
 	const [images, setImages] = useState<string[]>([]);
 	const [titles, setTitles] = useState<string[]>([]);
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -163,7 +164,17 @@ function Carousel() {
 	useEffect(() => {
 		const fetchImages = async () => {
 			try {
-				const response = await liveBattleService.getActiveList(0);
+				const categoryIndex =
+					selectedCategory === "전체"
+						? undefined
+						: categories.find((category) => category.name === selectedCategory)
+								?.id;
+
+				const response = await liveBattleService.getActiveList(
+					categoryIndex,
+					0,
+					5,
+				);
 				const liveBattles: LiveBattleCardInfo[] = response.data || [];
 
 				const imageList = liveBattles
@@ -179,7 +190,7 @@ function Carousel() {
 		};
 
 		fetchImages();
-	}, []);
+	}, [selectedCategory]); // Fetch images whenever the selected category changes
 
 	const nextSlide = () => {
 		setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
