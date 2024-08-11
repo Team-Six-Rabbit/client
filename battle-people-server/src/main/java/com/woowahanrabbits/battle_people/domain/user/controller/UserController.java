@@ -35,6 +35,7 @@ import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
 import com.woowahanrabbits.battle_people.domain.user.dto.CreateLives;
 import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.JoinRequest;
+import com.woowahanrabbits.battle_people.domain.user.dto.ParticipatedVotes;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
@@ -74,8 +75,8 @@ public class UserController {
 	public ResponseEntity<ApiResponseDto<UserWinHistory>> getLoginUserWinHistory(@LoginUser User loginUser) {
 		User user = userService.getUserProfile(loginUser.getId());
 
-		return ResponseEntity.ok(new ApiResponseDto<>("success", "User win history", voteService.getUserWinHistory(
-			user.getId())));
+		return ResponseEntity.ok(
+			new ApiResponseDto<>("success", "User win history", voteService.getUserWinHistory(user.getId())));
 	}
 
 	@GetMapping("/profile/create_lives")
@@ -94,6 +95,24 @@ public class UserController {
 			response.add(new CreateLives(battleBoard, isWin));
 		}
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "Created Lives", response));
+	}
+
+	@GetMapping("/profile/votes")
+	public ResponseEntity<ApiResponseDto<List<ParticipatedVotes>>> getVoteInfos(@LoginUser User loginUser) {
+		List<UserVoteOpinion> list = voteOpinionRepository.findByUserId(loginUser.getId());
+		List<ParticipatedVotes> response = new ArrayList<>();
+
+		for (UserVoteOpinion userVoteOpinion : list) {
+			CurrentVoteResponseDto currentVoteResponseDto = voteService.getVoteResultByVoteInfoId(
+				userVoteOpinion.getVoteInfoId());
+
+			boolean isWin = false;
+			if (currentVoteResponseDto.getOpinions().get(userVoteOpinion.getVoteInfoIndex()).getPercentage() > 50) {
+				isWin = true;
+			}
+			response.add(new ParticipatedVotes(userVoteOpinion, isWin));
+		}
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "Vote Infos", response));
 	}
 
 	@GetMapping("/profile/{userId}")
@@ -133,8 +152,7 @@ public class UserController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponseDto<List<BasicUserDto>>> getUserByNickname(
-		@LoginUser User loginuser,
+	public ResponseEntity<ApiResponseDto<List<BasicUserDto>>> getUserByNickname(@LoginUser User loginuser,
 		@RequestParam("nickname") String nickname) {
 
 		List<User> userList = userService.findByNickname(nickname);

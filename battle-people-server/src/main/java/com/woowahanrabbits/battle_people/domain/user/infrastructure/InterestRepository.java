@@ -8,4 +8,6 @@ import com.woowahanrabbits.battle_people.domain.interest.domain.Interest;
 
 public interface InterestRepository extends JpaRepository<Interest, Long> {
 	List<Interest> findAllByUserId(long userId);
+
+	void deleteAllByUserId(long userId);
 }

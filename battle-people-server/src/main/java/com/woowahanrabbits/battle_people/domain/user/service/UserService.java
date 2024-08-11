@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +22,7 @@ import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserReposito
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -86,12 +88,14 @@ public class UserService {
 		return response;
 	}
 
+	@Transactional
 	public void setInterest(long userId, InterestRequest request) {
-		List<Integer> list = request.getCategory();
-		for (int category : list) {
-			Interest interest = new Interest(userId, category, 1);
-			interestRepository.save(interest);
-		}
+		interestRepository.deleteAllByUserId(userId);
+		List<Interest> interests = request.getCategory().stream()
+			.map(category -> new Interest(userId, category, 1))
+			.collect(Collectors.toList());
+
+		interestRepository.saveAll(interests);
 	}
 
 	public User getUserProfile(long id) {
