@@ -71,7 +71,6 @@ public class BalanceGameServiceImpl implements BalanceGameService {
 			: voteInfoRepository.findAllByCategoryAndCurrentStateOrderByIdDesc(category, status, pageable).getContent();
 
 		List<BalanceGameResponse> returnList = new ArrayList<>();
-		System.out.println(user.toString());
 		for (VoteInfo voteInfo : list) {
 			BalanceGameResponse balanceGameResponse = getBalanceGameById(voteInfo.getId(), user);
 			returnList.add(balanceGameResponse);

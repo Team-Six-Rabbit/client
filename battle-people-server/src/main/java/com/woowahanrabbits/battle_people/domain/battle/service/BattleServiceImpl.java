@@ -33,6 +33,7 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.BattleOpinionDto;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
+import com.woowahanrabbits.battle_people.domain.vote.service.VoteScheduler;
 import com.woowahanrabbits.battle_people.validation.BattleValidator;
 
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,7 @@ public class BattleServiceImpl implements BattleService {
 	private final BattleValidator battleValidator;
 	private final NotifyService notifyService;
 	private final NotifyRepository notifyRepository;
+	private final VoteScheduler voteScheduler;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
@@ -178,7 +180,6 @@ public class BattleServiceImpl implements BattleService {
 	@Override
 	public List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user, int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		System.out.println(user.toString());
 		List<VoteInfo> voteInfos = category == null
 			? voteInfoRepository.findAllByCurrentStateOrderByStartDateDesc(2, pageable).getContent()
 			:
@@ -213,6 +214,7 @@ public class BattleServiceImpl implements BattleService {
 		return returnList;
 	}
 
+	@Transactional
 	@Override
 	public int applyBattle(BattleApplyDto battleApplyDto, User user) {
 		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId()).orElseThrow();
@@ -244,11 +246,10 @@ public class BattleServiceImpl implements BattleService {
 
 		//최소 인원 충족 체크
 		if (currentPeopleCount > minPeopleCount) {
+			voteScheduler.updatePreVoteCount(battleBoard);
 			VoteInfo voteInfo = battleBoard.getVoteInfo();
 			voteInfo.setCurrentState(3);
 			voteInfoRepository.save(voteInfo);
-
-			//todo voteOpinion 내 preCount 업데이트하기
 		}
 
 		//참여 신청한 인원 수 return

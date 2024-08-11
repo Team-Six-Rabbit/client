@@ -9,9 +9,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
+import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
+import com.woowahanrabbits.battle_people.domain.notify.service.NotifyService;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteScheduler;
@@ -27,6 +30,7 @@ public class BattleScheduler {
 	private final BattleRepository battleRepository;
 	private final BattleApplyUserRepository battleApplyUserRepository;
 	private final VoteScheduler voteScheduler;
+	private final NotifyService notifyService;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
@@ -70,6 +74,7 @@ public class BattleScheduler {
 				voteInfo.setEndDate(endDate.getTime());
 				voteInfo.setCurrentState(5);
 				voteInfoRepository.save(voteInfo);
+
 			} else {
 
 				//todo 썸네일 출력
@@ -94,6 +99,29 @@ public class BattleScheduler {
 		for (VoteInfo voteInfo : startLives) {
 			voteInfo.setCurrentState(4);
 			voteInfoRepository.save(voteInfo);
+		}
+	}
+
+	@Scheduled(cron = "0 * * * * *")
+	public void liveNotice() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.MINUTE, 5);
+
+		Date after5Mins = calendar.getTime();
+		List<VoteInfo> list = voteInfoRepository.findAllByStartDateBeforeAndCurrentState(after5Mins, 3);
+		for (VoteInfo voteInfo : list) {
+			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
+			notifyService.sendNotification(battleBoard.getOppositeUser(), battleBoard,
+				NotificationType.LIVE_NOTICE);
+			notifyService.sendNotification(battleBoard.getRegistUser(), battleBoard,
+				NotificationType.LIVE_NOTICE);
+
+			List<BattleApplyUser> participants = battleApplyUserRepository.findByBattleBoardId(battleBoard.getId());
+			for (BattleApplyUser battleApplyUser : participants) {
+				notifyService.sendNotification(battleApplyUser.getUser(), battleBoard, NotificationType.LIVE_NOTICE);
+			}
+
 		}
 	}
 
