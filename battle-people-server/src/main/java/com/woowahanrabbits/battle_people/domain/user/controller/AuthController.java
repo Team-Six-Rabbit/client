@@ -46,8 +46,9 @@ public class AuthController {
 		long userId = user.getId();
 		String email = user.getEmail();
 		String role = user.getRole();
-		String access = jwtUtil.generateAccessToken(userId, email, role);
-		String refresh = jwtUtil.generateRefreshToken(userId, email, role);
+		String nickname = user.getNickname();
+		String access = jwtUtil.generateAccessToken(userId, email, nickname, role);
+		String refresh = jwtUtil.generateRefreshToken(userId, email, nickname, role);
 		UserToken userToken = new UserToken(user, access, refresh);
 		userTokenRepository.save(userToken);
 
@@ -86,8 +87,9 @@ public class AuthController {
 
 		long userId = jwtUtil.extractUserId(refresh);
 		String username = jwtUtil.extractUsername(refresh);
+		String nickname = jwtUtil.extractNickname(refresh);
 		String userRole = jwtUtil.extractUserRole(refresh);
-		String newAccess = jwtUtil.generateAccessToken(userId, username, userRole);
+		String newAccess = jwtUtil.generateAccessToken(userId, username, nickname, userRole);
 
 		userTokenRepository.updateAccessTokenByUserId(userId, newAccess);
 		response.addCookie(HttpUtils.createCookie("access", newAccess, "/"));

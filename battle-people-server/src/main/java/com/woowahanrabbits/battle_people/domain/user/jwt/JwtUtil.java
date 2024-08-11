@@ -28,7 +28,7 @@ public class JwtUtil {
 	@Value("${jwt.refreshToken.expiration}")
 	private long refreshTokenExpiration;
 
-	public String generateAccessToken(long userId, String email, String role) {
+	public String generateAccessToken(long userId, String email, String nickname, String role) {
 
 		return Jwts.builder()
 			.subject(email)
@@ -36,16 +36,18 @@ public class JwtUtil {
 			.expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
 			.signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
 			.claim("userId", userId)
+			.claim("nickname", nickname)
 			.claim("role", role)
 			.compact();
 	}
 
-	public String generateRefreshToken(long userId, String email, String role) {
+	public String generateRefreshToken(long userId, String email, String nickname, String role) {
 		return Jwts.builder()
 			.subject(email)
 			.issuedAt(new Date())
 			.expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
 			.claim("userId", userId)
+			.claim("nickname", nickname)
 			.signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
 			.compact();
 	}
@@ -64,6 +66,10 @@ public class JwtUtil {
 
 	public String extractUserRole(String token) {
 		return extractClaims(token).get("role", String.class);
+	}
+
+	public String extractNickname(String token) {
+		return extractClaims(token).get("nickname", String.class);
 	}
 
 	public boolean isTokenExpired(String token) {
