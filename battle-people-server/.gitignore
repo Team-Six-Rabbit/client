@@ -39,7 +39,7 @@ out/
 
 /ssl/
 
-logs/spring.log
+/logs/
 
 B
 ### VS Code ###

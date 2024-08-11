@@ -44,7 +44,6 @@ public class VoteServiceImpl implements VoteService {
 	private final UserRepository userRepository;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ObjectMapper objectMapper;
-
 	private final BattleRepository battleRepository;
 	private final BattleApplyUserRepository battleApplyUserRepository;
 	private final BattleService battleService;
@@ -61,7 +60,12 @@ public class VoteServiceImpl implements VoteService {
 	}
 
 	@Override
-	public CurrentVoteResponseDto putVoteOpinion(Long userId, Long voteInfoId, int voteInfoIndex) {
+	public CurrentVoteResponseDto putVoteOpinion(Long userId, Long battleBoardId, int voteInfoIndex) {
+		Long voteInfoId = battleBoardRepository.findById(battleBoardId)
+			.orElseThrow(() -> new RuntimeException("BattleBoard not found"))
+			.getVoteInfo()
+			.getId();
+
 		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(userId, voteInfoId);
 		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 		VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId)
@@ -100,7 +104,7 @@ public class VoteServiceImpl implements VoteService {
 			battleBoardId, voteRequest.getVoteInfoIndex());
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
-			.battleBoardId(battleBoardId)
+			.channelId(battleBoardId)
 			.type("vote")
 			.responseDto(currentVoteResponseDto.getOpinions())
 			.build();
@@ -159,11 +163,13 @@ public class VoteServiceImpl implements VoteService {
 		}
 
 		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
+
 		List<VoteOpinionDtoWithVoteCount> opinions = new ArrayList<>();
 		opinions.add(new VoteOpinionDtoWithVoteCount(0, voteOpinions.get(0).getOpinion(), voteCountOpt1,
 			100 * voteCountOpt1 / totalCount));
 
 		opinions.add(new VoteOpinionDtoWithVoteCount(1, voteOpinions.get(1).getOpinion(), voteCountOpt2,
+
 			100 - (100 * voteCountOpt1 / totalCount)));
 
 		return new CurrentVoteResponseDto(voteCountOpt1 + voteCountOpt2, opinions);
@@ -221,5 +227,4 @@ public class VoteServiceImpl implements VoteService {
 		}
 
 	}
-
 }

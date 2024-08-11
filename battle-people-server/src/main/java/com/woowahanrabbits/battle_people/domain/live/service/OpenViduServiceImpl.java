@@ -1,34 +1,40 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
+import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.live.domain.LiveApplyUser;
-import com.woowahanrabbits.battle_people.domain.live.domain.LiveVoiceRecord;
-import com.woowahanrabbits.battle_people.domain.live.domain.Room;
 import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.infrastructure.LiveApplyUserRepository;
-import com.woowahanrabbits.battle_people.domain.live.infrastructure.LiveVoiceRecordRepository;
-import com.woowahanrabbits.battle_people.domain.live.infrastructure.RoomRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
+import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 
 import io.openvidu.java.client.ConnectionProperties;
 import io.openvidu.java.client.ConnectionType;
 import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
+import io.openvidu.java.client.OpenViduException;
 import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Recording;
 import io.openvidu.java.client.RecordingProperties;
@@ -38,275 +44,274 @@ import io.openvidu.java.client.SessionProperties;
 @SuppressWarnings("checkstyle:LineLength")
 @Service
 public class OpenViduServiceImpl implements OpenViduService {
+	enum PublisherRole {
+		SPEAKER, SUPPORTER
+	}
+
+	record ServerData(int index, PublisherRole role, Date tokenEndDate) {
+	}
+
+	public static record RedisBattleDto(long battleId, long registerUserId, long oppositeUserId, Date endDate) {
+	}
 
 	private final OpenVidu openVidu;
-	private final RoomRepository roomRepository;
 	private final LiveApplyUserRepository liveApplyUserRepository;
-	private final UserRepository userRepository;
-	private final LiveVoiceRecordRepository liveVoiceRecordRepository;
 	private final BattleBoardRepository battleBoardRepository;
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
-	private final RedisTemplate<String, String> redisTemplate;
-	private final HashMap<String, Session> sessions = new HashMap<>();
+	private final UserRepository userRepository;
 	private static final Logger logger = LoggerFactory.getLogger(OpenViduServiceImpl.class);
-	private static int count = 0;
+	private final ObjectMapper mapper;
+	private final RedisTemplate<String, Object> redisTemplate;
+	private final RestTemplate restTemplate;
+
+	@Value("${openvidu.url}")
+	private String openviduUrl;
+
+	@Value("${openvidu.secret}")
+	private String openviduSecret;
 
 	public OpenViduServiceImpl(@Value("${openvidu.url}") String openviduUrl,
 		@Value("${openvidu.secret}") String secret,
-		RoomRepository roomRepository,
 		LiveApplyUserRepository liveApplyUserRepository,
-		UserRepository userRepository,
-		LiveVoiceRecordRepository liveVoiceRecordRepository,
 		BattleBoardRepository battleBoardRepository, UserVoteOpinionRepository userVoteOpinionRepository,
-		RedisTemplate<String, String> redisTemplate) {
+
+		UserRepository userRepository,
+		ObjectMapper mapper, RedisTemplate<String, Object> redisTemplate, RestTemplate restTemplate) {
+
 		this.userVoteOpinionRepository = userVoteOpinionRepository;
-		this.redisTemplate = redisTemplate;
-		this.openVidu = new OpenVidu(openviduUrl, secret);
-		this.roomRepository = roomRepository;
-		this.liveApplyUserRepository = liveApplyUserRepository;
 		this.userRepository = userRepository;
-		this.liveVoiceRecordRepository = liveVoiceRecordRepository;
+		this.redisTemplate = redisTemplate;
+		this.restTemplate = restTemplate;
+		this.openVidu = new OpenVidu(openviduUrl, secret);
+		this.liveApplyUserRepository = liveApplyUserRepository;
 		this.battleBoardRepository = battleBoardRepository;
-	}
-
-	public Session getExistsValidRoom(Long battleId) {
-		if (!battleBoardRepository.existsById(battleId)) {
-			return null;
-		}
-		BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
-		Room room = battleBoard.getRoom();
-		if (room == null) {
-			return null;
-		}
-
-		for (Session session : openVidu.getActiveSessions()) {
-			System.out.println(
-				"session id= " + session.getSessionId() + ", size= " + session.getActiveConnections().size());
-			if (session.getSessionId().equals(room.getRoomId()) && !session.getActiveConnections().isEmpty()) {
-				System.out.println("createSession method: [Exists Room] : " + room.getRoomId());
-				return session;
-			}
-		}
-		return null;
+		this.mapper = mapper;
 	}
 
 	@Override
-	public Session createSession(Long battleId) {
-		System.out.println("------------------------------------------------------------------------");
-		BattleBoard battleBoard = Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null));
-		if (battleBoard == null) {
-			return null;
-		}
-		Room room;
-		if (battleBoard.getRoom() != null
-			&& (room = roomRepository.findByRoomId(battleBoard.getRoom().getRoomId())) != null) {
-
-			for (Session session : openVidu.getActiveSessions()) {
-				System.out.println(
-					"session id= " + session.getSessionId() + ", size= " + session.getActiveConnections().size());
-				if (session.getSessionId().equals(room.getRoomId()) && !session.getActiveConnections().isEmpty()) {
-					System.out.println("createSession method: [Exists Room] : " + room.getRoomId());
-					return session;
-				}
-			}
-		}
+	public Session createSession(BattleBoard battleBoard) {
+		RecordingProperties recordingProperties = new RecordingProperties.Builder()
+			.outputMode(Recording.OutputMode.INDIVIDUAL) // 개별 스트림 녹화 모드
+			.hasVideo(false)
+			.build();
+		SessionProperties properties = new SessionProperties.Builder()
+			.customSessionId(battleBoard.getId().toString())
+			.defaultRecordingProperties(recordingProperties)
+			.build();
 
 		Session session = null;
 		try {
-			RecordingProperties recordingProperties = new RecordingProperties.Builder()
-				.outputMode(Recording.OutputMode.INDIVIDUAL) // 개별 스트림 녹화 모드
-				.hasVideo(false)
-				.build();
-			SessionProperties properties = new SessionProperties.Builder()
-				.customSessionId(battleId.toString())
-				.defaultRecordingProperties(recordingProperties)
-				.build();
 			session = openVidu.createSession(properties);
-		} catch (OpenViduJavaClientException e) {
-			throw new RuntimeException(e);
-		} catch (OpenViduHttpException e) {
+		} catch (OpenViduException e) {
 			throw new RuntimeException(e);
 		}
-
-		room = new Room();
-		room.setRoomId(session.getSessionId());
-		roomRepository.save(room);
-
-		logger.info("[create Session] room: " + room.getRoomId());
-
-		battleBoard.setRoom(room);
-		battleBoardRepository.save(battleBoard);
 
 		Date endDate = battleBoard.getVoteInfo().getEndDate();
 		long diffInMillis = endDate.getTime() - System.currentTimeMillis();
 		long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis);
 
-		redisTemplate.opsForValue()
-			.set("session:" + session.getSessionId(), session.getSessionId(), diffInSeconds, TimeUnit.SECONDS);
-		sessions.put(session.getSessionId(), session);
-
-		System.out.println(battleBoard);
 		return session;
 	}
 
-	@Override
-	public OpenViduTokenResponseDto getToken(Long battleId, User user) throws
-		OpenViduJavaClientException, OpenViduHttpException {
-		BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElse(null);
+	private int getUserCurrentRole(BattleBoard battleBoard, User user) {
 
-		if (battleBoard == null) {
+		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleBoardIdAndParticipantId(battleBoard.getId(),
+			user.getId());
+
+		if (applyUser == null) {
+			if (battleBoard.getRegistUser().getId() == user.getId()) {
+				return 0;
+			}
+			if (battleBoard.getOppositeUser().getId() == user.getId()) {
+				return 1;
+			}
+			return -1;
+		}
+
+		if (applyUser.getRole().equals("viewer")) {
+			return -1;
+		}
+
+		if (battleBoard.getRegistUser().getId() == user.getId()) {
+			return 0;
+		}
+		if (battleBoard.getOppositeUser().getId() == user.getId()) {
+			return 1;
+		}
+		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(user.getId(),
+			battleBoard.getVoteInfo().getId());
+		if (userVoteOpinion != null) {
+			return userVoteOpinion.getVoteInfoIndex();
+		}
+		return -2;
+	}
+
+	private void saveApplyUserRole(BattleBoard battleBoard, User user, String token, OpenViduRole role) {
+		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByBattleBoardIdAndParticipantId(battleBoard.getId(),
+			user.getId());
+
+		if (liveApplyUser != null) {
+			return;
+		}
+
+		liveApplyUserRepository.save(LiveApplyUser.builder()
+			.battleBoardId(battleBoard.getId())
+			.participant(user) // 영속성 컨텍스트 내에서 관리되는 user 객체
+			.role(role == OpenViduRole.PUBLISHER ? "broadcaster" : "viewer")
+			.build());
+	}
+
+	@Override
+	public OpenViduTokenResponseDto getToken(Long battleId, User user) {
+		BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElseThrow(NoSuchElementException::new);
+
+		Session session = createSession(battleBoard);
+
+		OpenViduRole role = OpenViduRole.SUBSCRIBER;
+		int index = getUserCurrentRole(battleBoard, user);
+		Date tokenEndDate = new Date();
+
+		if (index == -2) {
 			return null;
 		}
 
-		Room room = battleBoard.getRoom();
-		Session session = null;
-		String roomId = null;
-		if (room == null) {
-			session = createSession(battleId);
-		} else {
-			roomId = room.getRoomId();
-			for (Session s : openVidu.getActiveSessions()) {
-				if (s.getSessionId().equals(roomId)) {
-					session = s;
-				}
-			}
-			if (session == null) {
-				session = createSession(battleId);
-			}
-
+		if (index == 0 || index == 1) {
+			role = OpenViduRole.PUBLISHER;
 		}
 
-		logger.info(
-			"[getToken method] " + count++ + " roomId: " + session.getSessionId() + ", user name:" + user.getId());
-
-		OpenViduRole role = OpenViduRole.SUBSCRIBER;
-		int index = -1;
-
-		if (battleBoard.getRegistUser().getId() == user.getId()) {
-			role = OpenViduRole.PUBLISHER;
-			index = 0;
-		} else if (battleBoard.getOppositeUser().getId() == user.getId()) {
-			role = OpenViduRole.PUBLISHER;
-			index = 1;
-		}
-		logger.info(
-			"[GetToken] room: " + roomId + ", userId: " + user.getId() + ", role:" + role + ", index: " + index);
-
-		ConnectionProperties.Builder connectionPropertiesBuilder = new ConnectionProperties.Builder()
+		ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
 			.type(ConnectionType.WEBRTC)
-			.role(role);
+			.data(getServerData(index, getUserTokenEndedDate(battleBoard, user.getId(), role)))
+			.role(role)
 
-		String token = null;
-		try {
-			token = session.createConnection(connectionPropertiesBuilder.build()).getToken();
-		} catch (OpenViduHttpException e) {
-			session = createSession(battleId);
-			room = roomRepository.findByRoomId(session.getSessionId());
-			token = session.createConnection(connectionPropertiesBuilder.build()).getToken();
-		}
-
-		User managedUser = userRepository.findById(user.getId())
-			.orElseThrow(() -> new RuntimeException("User not found"));
-
-		assert room != null;
-		LiveApplyUser existingEntry = liveApplyUserRepository.findByRoomIdAndParticipantId(room.getId(),
-			managedUser.getId());
-
-		if (existingEntry != null) {
-			logger.info("[User Token] :" + token + ", userid: " + existingEntry.getParticipantId());
-			existingEntry.setToken(token);
-			liveApplyUserRepository.save(existingEntry);
-			return new OpenViduTokenResponseDto(existingEntry.getToken(), index);
-		}
-
-		// Save LiveApplyUser
-		liveApplyUserRepository.save(LiveApplyUser.builder()
-			.room(room)
-			.participant(managedUser) // 영속성 컨텍스트 내에서 관리되는 user 객체
-			.role(role == OpenViduRole.PUBLISHER ? "broadcaster" : "viewer")
-			.token(token)
-			.build());
-
-		logger.info("[User Token] :" + token + ", userid: " + user.getId());
-		return new OpenViduTokenResponseDto(token, index);
-
-	}
-
-	@Override
-	public Recording startRecording(String roomId) throws OpenViduJavaClientException, OpenViduHttpException {
-		RecordingProperties recordingProperties = new RecordingProperties.Builder()
-			.outputMode(Recording.OutputMode.INDIVIDUAL) // 개별 스트림 녹화 모드
 			.build();
 
-		return openVidu.startRecording(roomId, recordingProperties);
+		String token;
+		try {
+			token = session.createConnection(connectionProperties).getToken();
+		} catch (OpenViduException exception) {
+			throw new RuntimeException("Failed to create token", exception);
+		}
+
+		saveApplyUserRole(battleBoard, user, token, role);
+
+		logger.info("[User Token] :" + token + ", userid: " + user.getId());
+		return new OpenViduTokenResponseDto(user.getId(), token, index);
 	}
 
 	@Override
-	public boolean stopRecording(Long battleId, Long userId, String recordingId) {
-		try {
-			liveVoiceRecordRepository.save(LiveVoiceRecord.builder()
-				.battleBoard(battleBoardRepository.findById(battleId).orElse(null))
-				.user(userRepository.findById(userId).orElse(null))
-				.selectedOpinion(userVoteOpinionRepository.findByUser_IdAndVoteInfo_Id(userId,
-					Objects.requireNonNull(battleBoardRepository.findById(battleId).orElse(null))
-						.getVoteInfo()
-						.getId()).getVoteInfoIndex())
-				.recordUrl(openVidu.stopRecording(recordingId).getUrl())
-				.build()
-			);
+	public RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId, String connectionId) {
+		if (isValidConnection(Long.toString(battleId), connectionId)) {
+			RedisTopicDto redisTopicDto = RedisTopicDto.builder()
+				.channelId(battleId)
+				.type("accept")
+				.responseDto(new OpenViduTokenResponseDto(userId, null, -2))
+				.build();
 
-			return true;
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+			return redisTopicDto;
+		}
+
+		User user = userRepository.findById(userId).orElse(null);
+		if (user == null) {
+			return new RedisTopicDto<>("accept", battleId, new OpenViduTokenResponseDto(userId, null, -2));
+		}
+
+		LiveApplyUser applyUser = liveApplyUserRepository.findByBattleBoardIdAndParticipantId(battleId, user.getId());
+
+		if (applyUser == null) {
+			return new RedisTopicDto<>("accept", battleId, new OpenViduTokenResponseDto(userId, null, -2));
+		}
+
+		applyUser.setRole(applyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
+		liveApplyUserRepository.save(applyUser);
+		BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElseThrow(NoSuchElementException::new);
+
+		if (applyUser.getRole().equals("broadcaster")) {
+			String data = getServerData(
+				getUserCurrentRole(battleBoard,
+					user), getUserTokenEndedDate(battleBoard, userId,
+					applyUser.getRole().equals("broadcaster") ? OpenViduRole.PUBLISHER : OpenViduRole.SUBSCRIBER));
+
+		}
+
+		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
+			.channelId(battleId)
+			.type("accept")
+			.responseDto(getToken(battleId, user))
+			.build();
+
+		return redisTopicDto;
+	}
+
+	private HttpHeaders createHeaders(String username, String password) {
+		return new HttpHeaders() {
+			{
+				String auth = username + ":" + password;
+				byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes());
+				String authHeader = "Basic " + new String(encodedAuth);
+				set("Authorization", authHeader);
+			}
+		};
+	}
+
+	private boolean isValidConnection(String sessionId, String connectionId) {
+		String url = openviduUrl + "/" + sessionId + "/connection/" + connectionId;
+
+		HttpHeaders headers = createHeaders("OPENVIDUAPP", openviduSecret);
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+		System.out.println(url);
+
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		System.out.println(response.getStatusCode());
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			JsonNode root = objectMapper.readTree(response.getBody());
+			if (root.path("status").asText().equals("active")) {
+				return true;
+			}
+		} catch (Exception e) {
 			return false;
 		}
+		return false;
+	}
+
+	private String getServerData(int index, Date date) {
+		String data = null;
+		if (index >= 0) {
+			try {
+				data = mapper.writeValueAsString(new ServerData(index, PublisherRole.SPEAKER, date));
+			} catch (JsonProcessingException ignored) {
+			}
+		}
+		return data;
+	}
+
+	private Date getUserTokenEndedDate(BattleBoard battleBoard, Long userId, OpenViduRole role) {
+		long register = battleBoard.getRegistUser().getId();
+		long opposite = battleBoard.getOppositeUser().getId();
+
+		if ((role == OpenViduRole.PUBLISHER && (register == userId || opposite == userId))
+			|| (role == OpenViduRole.SUBSCRIBER && (register != userId || opposite != userId))) {
+			return battleBoard.getVoteInfo().getEndDate();
+		}
+
+		Date date = new Date(); // 현재 날짜와 시간
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.MINUTE, 1);
+
+		return calendar.getTime();
 	}
 
 	@Override
-	public void userLeft(Long battleId, String roomId, Long userId) {
-		Room room = roomRepository.findByRoomId(roomId);
-		if (room == null) {
-			throw new RuntimeException("Room not found");
-		}
-
-		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByRoomIdAndParticipantId(room.getId(), userId);
+	public void userLeft(Long battleId, Long userId) {
+		LiveApplyUser liveApplyUser = liveApplyUserRepository.findByBattleBoardIdAndParticipantId(battleId, userId);
 		if (liveApplyUser == null) {
 			throw new RuntimeException("User not found in room");
-		}
-
-		if (liveApplyUser.getRole().equals("broadcaster")) {
-			stopRecording(battleId, userId, (String)redisTemplate.opsForValue().get("recording:" + userId));
 		}
 
 		liveApplyUser.setOutTime(new Date());
 		liveApplyUserRepository.save(liveApplyUser);
 	}
-
-	// 대공사 예정
-	// @Override
-	// public OpenViduTokenResponseDto changeRole(String roomId, User user) {
-	//     try {
-	//         LiveApplyUser liveApplyUser = liveApplyUserRepository.findByRoomIdAndParticipantId(
-	//             roomRepository.findByRoomId(roomId).getId(), user.getId());
-	//
-	//         liveApplyUser.setRole(liveApplyUser.getRole().equals("broadcaster") ? "viewer" : "broadcaster");
-	//         liveApplyUserRepository.save(liveApplyUser);
-	//
-	//         if (liveApplyUser.getRole().equals("publisher")) {
-	//             String recordingId = (String)redisTemplate.opsForValue().get("recording:" + user.getId());
-	//             stopRecording(battleBoardRepository.findByRoomId(
-	//             roomRepository.findByRoomId(roomId).getId()).getId(),
-	//                 user.getId(), recordingId);
-	//             redisTemplate.delete("recording:" + user.getId());
-	//         } else {
-	//             Recording recording = startRecording(roomId);
-	//             redisTemplate.opsForValue().set("recording:" + user.getId(), recording.getId(), 24, TimeUnit.HOURS);
-	//         }
-	//
-	//         return getToken(roomId, user);
-	//
-	//     } catch (Exception e) {
-	//         return null;
-	//     }
-	// }
-
 }

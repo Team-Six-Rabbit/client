@@ -2,7 +2,6 @@ package com.woowahanrabbits.battle_people.domain.battle.domain;
 
 import java.util.Date;
 
-import com.woowahanrabbits.battle_people.domain.live.domain.Room;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 
@@ -54,10 +53,6 @@ public class BattleBoard {
 	private String imageUrl;
 	private String liveUri;
 	private boolean isDeleted;
-
-	@OneToOne
-	@JoinColumn(name = "room_id")
-	private Room room;
 
 	@PrePersist
 	protected void onCreate() {

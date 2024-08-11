@@ -3,6 +3,7 @@ package com.woowahanrabbits.battle_people.domain.balancegame.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameRespo
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.dto.PrincipalDetails;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,10 +55,18 @@ public class BalanceGameController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Id 값으로 밸런스 게임 조회")
-	public ResponseEntity<ApiResponseDto<?>> getBalanceGameById(@PathVariable Long id, @LoginUser User user) {
-		BalanceGameResponse balanceGameResponse = balanceGameService.getBalanceGameById(id, user);
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ApiResponseDto<>("success", "", balanceGameResponse));
+	public ResponseEntity<ApiResponseDto<BalanceGameResponse>> getBalanceGameById(@PathVariable Long id,
+		Authentication authentication) {
+		try {
+			PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
+			User user = principalDetails.getUser();
+			BalanceGameResponse balanceGameResponse = balanceGameService.getBalanceGameById(id, user);
+			return ResponseEntity.status(HttpStatus.OK)
+				.body(new ApiResponseDto<>("success", "", balanceGameResponse));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "internal server error", null));
+		}
 	}
 
 }

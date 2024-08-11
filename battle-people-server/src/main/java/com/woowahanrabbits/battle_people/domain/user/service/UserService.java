@@ -21,12 +21,10 @@ import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserReposito
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Getter
 public class UserService {
 
 	@Value("${storage.location}")

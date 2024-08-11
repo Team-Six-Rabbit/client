@@ -1,5 +1,9 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
+import java.util.List;
+
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
@@ -12,7 +16,9 @@ import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +30,9 @@ public class LiveChatServiceImpl implements LiveChatService {
 
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
 	private final BattleRepository battleRepository;
+	private final RedisMessageListenerContainer redisMessageListenerContainer;
+	private final MessageListenerAdapter messageListenerAdapter;
+	private final VoteOpinionRepository voteOpinionRepository;
 	private static int chatIdx = 0;
 	private static int requestIdx = 0;
 	private final UserRepository userRepository;
@@ -46,7 +55,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 		writeChatResponseDto.setIdx(chatIdx++);
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
-			.battleBoardId(battleBoardId)
+			.channelId(battleBoardId)
 			.type("chat")
 			.responseDto(writeChatResponseDto)
 			.build();
@@ -67,14 +76,17 @@ public class LiveChatServiceImpl implements LiveChatService {
 			throw new RuntimeException();
 		}
 
+		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfo.getId());
+
 		WriteTalkResponseDto writeTalkResponseDto = WriteTalkResponseDto.builder()
-			.basicUserDto(new BasicUserDto(user))
+			.hostUserId(voteOpinions.get(userVoteOpinion.getVoteInfoIndex()).getUser().getId())
+			.requestUserId(user.getId())
 			.idx(requestIdx++)
 			.userVote(userVoteOpinion.getVoteInfoIndex())
 			.build();
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
-			.battleBoardId(battleBoardId)
+			.channelId(battleBoardId)
 			.type("request")
 			.responseDto(writeTalkResponseDto)
 			.build();

@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LiveListResponseDto {
 	private Long id;
-	private String roomId;
 
 	private String title;
 
