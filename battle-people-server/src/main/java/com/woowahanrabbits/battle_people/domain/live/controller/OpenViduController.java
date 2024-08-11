@@ -13,7 +13,6 @@ import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDt
 import com.woowahanrabbits.battle_people.domain.live.service.OpenViduService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
-import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 
 import io.openvidu.java.client.OpenViduException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/openvidu")
 public class OpenViduController {
 	private final OpenViduService openViduService;
-	private final UserService userService;
 
 	@PostMapping("/get-token")
 	public ResponseEntity<ApiResponseDto<OpenViduTokenResponseDto>> getToken(@RequestParam Long battleId,

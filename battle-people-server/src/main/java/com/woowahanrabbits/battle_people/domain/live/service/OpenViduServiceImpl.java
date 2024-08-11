@@ -150,7 +150,6 @@ public class OpenViduServiceImpl implements OpenViduService {
 			.battleId(battleBoard.getId())
 			.participant(user) // 영속성 컨텍스트 내에서 관리되는 user 객체
 			.role(role == OpenViduRole.PUBLISHER ? "broadcaster" : "viewer")
-			.token(token)
 			.build());
 	}
 

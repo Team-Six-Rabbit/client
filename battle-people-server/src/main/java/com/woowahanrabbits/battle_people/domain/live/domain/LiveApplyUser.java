@@ -49,8 +49,6 @@ public class LiveApplyUser {
 
 	private String role;
 
-	private String token;
-
 	@PrePersist
 	protected void onCreate() {
 		this.inTime = new Date();
