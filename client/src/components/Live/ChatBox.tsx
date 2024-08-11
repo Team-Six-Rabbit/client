@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { RiCornerDownLeftLine } from "react-icons/ri";
-import { ChatMessage, SpeechRequestMessage } from "@/types/Chat";
+import { ChatMessage } from "@/types/Chat";
 import "@/assets/styles/scrollbar.css";
 
 function Chat({ user, message, userVote }: ChatMessage) {
@@ -47,7 +47,7 @@ function ChatInput({ sendMessage }: ChatInputProps) {
 				value={input}
 				onChange={(e) => setInput(e.target.value)}
 				onKeyDown={handleKeyDown}
-				placeholder="Type your message..."
+				placeholder="채팅을 입력해주세요."
 				className="flex-1 px-2 py-1 outline-none"
 			/>
 			<RiCornerDownLeftLine className="h-full w-6" />
@@ -57,15 +57,9 @@ function ChatInput({ sendMessage }: ChatInputProps) {
 
 interface SpeechRequestListProps {
 	role: number;
-	speechRequests: SpeechRequestMessage[];
-	sendSpeechRequest: () => void;
 }
 
-function SpeechRequestList({
-	role,
-	speechRequests,
-	sendSpeechRequest,
-}: SpeechRequestListProps) {
+function SpeechRequestList({ role }: SpeechRequestListProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [buttonDisabled, setButtonDisabled] = useState(false);
 
@@ -74,11 +68,10 @@ function SpeechRequestList({
 	};
 
 	const handleRequestSpeech = () => {
-		sendSpeechRequest();
 		setButtonDisabled(true);
 	};
 
-	if (role !== 0 && role !== 1) {
+	if (role === -1) {
 		return (
 			<div className="relative">
 				<button
@@ -93,9 +86,9 @@ function SpeechRequestList({
 		);
 	}
 
-	const filteredRequests = speechRequests.filter(
-		(req) => req.userVote === role, // 투표한 값이 자신의 역할값과 같은 경우만
-	);
+	// const filteredRequests = speechRequests.filter(
+	// 	(req) => req.userVote === role, // 투표한 값이 자신의 역할값과 같은 경우만
+	// );
 
 	return (
 		<div className="relative">
@@ -108,11 +101,11 @@ function SpeechRequestList({
 			</button>
 			{isOpen && (
 				<div className="absolute top-full left-0 w-full bg-white border-solid border-2 border-black rounded-lg shadow-lg z-10 h-40 overflow-y-auto custom-scrollbar">
-					{filteredRequests.map((request) => (
+					{/* {filteredRequests.map((request) => (
 						<div key={request.idx} className="p-2 border-b-2 border-gray-300">
 							{request.user.nickname}[{request.user.rating}]
 						</div>
-					))}
+					))} */}
 				</div>
 			)}
 		</div>
@@ -121,24 +114,14 @@ function SpeechRequestList({
 
 interface ChatBoxProps {
 	messages: ChatMessage[];
-	speechRequests: SpeechRequestMessage[];
 	sendMessage: (userId: number, message: string) => void;
-	sendSpeechRequest: () => void;
 	role: number;
 }
-function ChatBox({
-	messages,
-	speechRequests,
-	sendMessage,
-	sendSpeechRequest,
-	role,
-}: ChatBoxProps) {
+function ChatBox({ messages, sendMessage, role }: ChatBoxProps) {
 	return (
 		<div className="flex flex-col h-150 w-1/4 ms-6 mt-2">
 			<SpeechRequestList
 				role={role} // 지금 나의 역할(0,1,null) 추후에 OpenVidu로 받을 예정
-				speechRequests={speechRequests}
-				sendSpeechRequest={sendSpeechRequest}
 			/>
 			<div className="flex-1 overflow-y-auto p-2 my-2 border-solid border-4 border-black rounded-lg flex flex-col-reverse scrollbar-hide">
 				<div>

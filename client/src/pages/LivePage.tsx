@@ -11,23 +11,25 @@ import useWebRTC from "@/hooks/useWebRTC";
 
 import useChatSocket from "@/hooks/useChatSocket";
 
-const battleBoardId = 7;
-const role = 2;
-
 function LivePage() {
+	const videoElement = useRef<HTMLVideoElement>(null);
+	const canvasElement = useRef<HTMLCanvasElement>(null);
+
 	const [winner, setWinner] = useState("");
 	const [isTimeOver, setIsTimeOver] = useState(false);
 	const [isMicMuted, setIsMicMuted] = useState(true);
-	const videoElement = useRef<HTMLVideoElement>(null);
-	const canvasElement = useRef<HTMLCanvasElement>(null);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(true);
-	const { joinSession, subscribers } = useWebRTC(
+
+	const { joinSession, subscribers, index } = useWebRTC(
 		isMicMuted,
 		isVideoDisabled,
 		videoElement,
 		canvasElement,
 	);
+
 	const { battleId } = useParams();
+	const battleBoardId: number = battleId !== undefined ? Number(battleId) : 0; // 그냥 아무거나 default 0으로 넣어버림
+	const { messages, sendMessage } = useChatSocket(battleBoardId);
 
 	const handleMicClick = () => setIsMicMuted((prev) => !prev);
 	const handleVideoClick = () => setIsVideoDisabled((prev) => !prev);
@@ -37,10 +39,6 @@ function LivePage() {
 	}, [battleId, joinSession]);
 
 	const onVoteEnd = useCallback((winner: string) => {
-	const { messages, sendMessage, speechRequests, sendSpeechRequest } =
-		useChatSocket(battleBoardId);
-
-	const onVoteEnd = (winner: string) => {
 		setWinner(winner);
 	}, []);
 
@@ -53,7 +51,7 @@ function LivePage() {
 				<div className="flex-1 flex mt-16 px-8 pt-8">
 					{/* 추후에 start와 end시간을 계산해서 duration에 넣기 */}
 					<Timer duration={520} onTimeOver={() => setIsTimeOver(true)} />
-					<div className="flex-col justify-center items-center h-144">
+					<div className="flex-col w-full justify-center items-center h-144">
 						<LiveVote
 							title="오늘 저녁 메뉴 추천"
 							optionA="치킨을 먹자"
@@ -68,13 +66,7 @@ function LivePage() {
 							onVideoClick={handleVideoClick}
 						/>
 					</div>
-					<ChatBox
-						messages={messages}
-						speechRequests={speechRequests}
-						sendMessage={sendMessage}
-						sendSpeechRequest={sendSpeechRequest}
-						role={role}
-					/>
+					<ChatBox messages={messages} sendMessage={sendMessage} role={index} />
 				</div>
 				{isTimeOver && <EndedLive winner={winner} />}
 			</div>

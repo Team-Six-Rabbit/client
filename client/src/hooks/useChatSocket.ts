@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
 import { Client, IMessage } from "@stomp/stompjs";
-import { ChatMessage, SpeechRequestMessage } from "@/types/Chat";
+import { ChatMessage } from "@/types/Chat";
 
 interface UseChatStompReturn {
 	messages: ChatMessage[];
-	speechRequests: SpeechRequestMessage[];
 	sendMessage: (userId: number, message: string) => void;
-	sendSpeechRequest: () => void;
 }
 
 const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
-	const [speechRequests, setSpeechRequests] = useState<SpeechRequestMessage[]>(
-		[],
-	);
 	const [stompClient, setStompClient] = useState<Client | null>(null);
 
 	const addMessage = (message: ChatMessage) => {
@@ -21,10 +16,6 @@ const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
 			const updatedMessages = [...prevMessages, message];
 			return updatedMessages.slice(-40); // 마지막 40개 메시지만 유지
 		});
-	};
-
-	const addSpeechRequest = (request: SpeechRequestMessage) => {
-		setSpeechRequests((prevRequests) => [...prevRequests, request]);
 	};
 
 	useEffect(() => {
@@ -47,20 +38,9 @@ const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
 					},
 				);
 
-				const requestSubscription = client.subscribe(
-					`/topic/requests/${battleBoardId}`,
-					(message: IMessage) => {
-						const parsedRequest: SpeechRequestMessage = JSON.parse(
-							message.body,
-						);
-						addSpeechRequest(parsedRequest);
-					},
-				);
-
 				// 구독 해제 및 리소스 해제
 				return () => {
 					chatSubscription.unsubscribe();
-					requestSubscription.unsubscribe();
 					client.deactivate();
 				};
 			},
@@ -75,7 +55,6 @@ const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
 		// 상태 초기화
 		return () => {
 			setMessages([]);
-			setSpeechRequests([]);
 			client.deactivate();
 		};
 	}, [battleBoardId]);
@@ -95,24 +74,9 @@ const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
 		}
 	};
 
-	const sendSpeechRequest = () => {
-		if (stompClient && stompClient.connected) {
-			stompClient.publish({
-				destination: `/app/request/${battleBoardId}`,
-				body: JSON.stringify({}),
-			});
-		} else {
-			console.error(
-				"Unable to send speech request: STOMP client is not connected.",
-			);
-		}
-	};
-
 	return {
 		messages,
-		speechRequests,
 		sendMessage,
-		sendSpeechRequest,
 	};
 };
 
