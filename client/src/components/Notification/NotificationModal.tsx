@@ -2,23 +2,28 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState } from "react";
-import { Notification } from "@/types/notification";
+import NotifyCode from "@/constant/notifyCode";
+import {
+	NotificationLiveDetail,
+	NotificationInviteDetail,
+} from "@/types/notification";
 
 interface NotificationModalProps {
 	isModalOpen: boolean;
 	onModalClose: () => void;
 	handleDelete: () => void;
-	notification: Notification;
+	detail: NotificationLiveDetail | NotificationInviteDetail;
 }
 
 function NotificationModal({
 	isModalOpen,
 	onModalClose,
 	handleDelete,
-	notification,
+	detail,
 }: NotificationModalProps) {
 	const [inputValue, setInputValue] = useState("");
 	const [isAccepted, setIsAccepted] = useState(true);
+	const category = NotifyCode.get(detail.notifyCode); // live | invite
 
 	if (!isModalOpen) return null;
 
@@ -50,12 +55,16 @@ function NotificationModal({
 		>
 			<div className="bg-white border border-slate-200 grid grid-cols-6 gap-2 rounded-xl p-2 text-sm">
 				<h1 className="text-center text-royalBlue text-xl font-bold col-span-6">
-					{notification.category}
+					{category}
 				</h1>
-				{notification.category === "Invite" && (
+				{category === "Invite" && (
 					<>
 						<h2 className="col-span-6 break-all w-full pre-wrap">
-							상대방의 선택지: {notification.opposite}
+							주제: {(detail as NotificationInviteDetail).specificData.title}
+						</h2>
+						<h2 className="col-span-6 break-all w-full pre-wrap">
+							상대방의 선택지:{" "}
+							{(detail as NotificationInviteDetail).specificData.opinion}
 						</h2>
 						<textarea
 							placeholder={
@@ -104,25 +113,28 @@ function NotificationModal({
 						</button>
 					</>
 				)}
-				{notification.category === "Punishment" && (
-					<div className="bg-slate-100 text-slate-600 h-28 placeholder:text-slate-600 placeholder:opacity-50 border border-slate-200 col-span-6 resize-none outline-none rounded-lg p-2 duration-300 focus:border-slate-600">
-						{notification.message}
-					</div>
-				)}
-				{notification.category === "Live" && (
+				{category === "Live" && (
 					<div className="bg-slate-100 text-slate-600 h-28 placeholder:text-slate-600 placeholder:opacity-50 border border-slate-200 col-span-6 resize-none outline-none rounded-lg p-2 duration-300 focus:border-slate-600">
 						{/* 'nickname'님의 라이브\n 'title'이 방송 5분전입니다. */}
-						{notification.message}
+						{detail.title}
 						<p>
 							바로가기:{" "}
-							<a href={notification.url} className="text-blue">
-								{notification.url}
+							<a
+								href={`import.meta.env.BASE_URL/live/${detail.specificData}`}
+								className="text-blue"
+							>
+								{`import.meta.env.BASE_URL/live/${detail.specificData}`}
 							</a>
 						</p>
 					</div>
 				)}
+				{/* {category === "Punishment" && (
+					<div className="bg-slate-100 text-slate-600 h-28 placeholder:text-slate-600 placeholder:opacity-50 border border-slate-200 col-span-6 resize-none outline-none rounded-lg p-2 duration-300 focus:border-slate-600">
+						{detail.title}
+					</div>
+				)} */}
 				<span className="col-span-2" />
-				{notification.category === "Invite" && (
+				{category === "Invite" && (
 					<button
 						type="button"
 						className="bg-slate-100 stroke-slate-600 border border-slate-200 col-span-2 flex justify-center rounded-lg p-2 duration-300 hover:border-slate-600 hover:text-white focus:stroke-blue-200 focus:bg-blue-400"
