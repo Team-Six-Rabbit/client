@@ -78,10 +78,8 @@ public class LiveListServiceImpl implements LiveListService {
 	public LiveEndDetailDto getEndLiveSummary(Long battleId) {
 		BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElse(null);
 		if (battleBoard != null) {
-			System.out.println(convertToEndDetailDto(battleBoard));
 			return convertToEndDetailDto(battleBoard);
 		}
-		System.out.println("BattleBoard not found with id " + battleId);
 		return null;
 	}
 
@@ -92,8 +90,6 @@ public class LiveListServiceImpl implements LiveListService {
 		if (voteOpinions.size() < 2) {
 			return null;
 		}
-		System.out.println("battle: " + battleBoard);
-		System.out.println("vote: " + battleBoard.getVoteInfo());
 
 		User registUser = battleBoard.getRegistUser();
 		User oppositeUser = battleBoard.getOppositeUser();
