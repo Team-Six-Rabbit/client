@@ -28,6 +28,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class UserService {
+
+	@Value("${storage.location}")
+	private String uploadDir;
+
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final UserRepository userRepository;
 	private final UserTokenRepository userTokenRepository;
@@ -59,7 +63,7 @@ public class UserService {
 			throw new UserException("Nickname already in use");
 		}
 
-		User user = new User(email, password, nickname, nickname, "ROLE_USER");
+		User user = new User(email, password, nickname, uploadDir + "/default.png", "ROLE_USER");
 
 		userRepository.save(user);
 
@@ -112,12 +116,9 @@ public class UserService {
 		return userRepository.findByNicknameContaining(nickname);
 	}
 
-	@Value("${storage.location}")
-	private String uploadDir;
-
 	public void updateUserImgUrl(long userId, String imgUrl) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
-		user.setImgUrl(imgUrl);
+		user.setImgUrl(uploadDir + "/" + imgUrl);
 		userRepository.save(user);
 	}
 
