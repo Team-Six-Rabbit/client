@@ -1,6 +1,7 @@
+import styled from "styled-components";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/userAuthStore";
-import { useState } from "react";
 import BalanceGameModal from "@/components/Modal/BalanceGameModal";
 import {
 	BalanceGameCardType,
@@ -14,7 +15,6 @@ import {
 } from "@/assets/styles/balanceGameStyle";
 import fireExtinguisher from "@/assets/images/fireExtinguisher.gif";
 import fire from "@/assets/images/fire.gif";
-import styled from "styled-components";
 import { balanceGameService } from "@/services/balanceGameService";
 
 interface BalanceGameCardProps {
