@@ -10,4 +10,6 @@ public interface NotifyRepository extends JpaRepository<Notify, Long> {
 	List<Notify> findAllByUserIdAndIsReadFalse(Long userId);
 
 	List<Notify> findAllByUserIdAndIsReadFalseOrderByIsReadAscRegistDateDesc(Long userId);
+
+	List<Notify> findAllByUserIdOrderByIsReadAscRegistDateDesc(Long userId);
 }

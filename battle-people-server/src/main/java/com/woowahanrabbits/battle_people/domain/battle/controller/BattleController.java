@@ -43,6 +43,7 @@ public class BattleController {
 	@Operation(summary = "[점화] 배틀을 요청한다.")
 	public ResponseEntity<?> registBattle(@RequestBody @Valid BattleInviteRequest battleInviteRequest,
 		@LoginUser User user) {
+		System.out.println(user);
 		battleService.registBattle(battleInviteRequest, user);
 		return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 	}

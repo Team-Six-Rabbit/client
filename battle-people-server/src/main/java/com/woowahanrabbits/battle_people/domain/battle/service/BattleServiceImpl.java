@@ -21,7 +21,10 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
+import com.woowahanrabbits.battle_people.domain.notify.domain.Notify;
+import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationDetailResponseDto;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
+import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
 import com.woowahanrabbits.battle_people.domain.notify.service.NotifyService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
@@ -45,6 +48,7 @@ public class BattleServiceImpl implements BattleService {
 	private final UserRepository userRepository;
 	private final BattleValidator battleValidator;
 	private final NotifyService notifyService;
+	private final NotifyRepository notifyRepository;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
@@ -52,7 +56,6 @@ public class BattleServiceImpl implements BattleService {
 	@Transactional
 	@Override
 	public void registBattle(BattleInviteRequest battleInviteRequest, User user) {
-
 		//endDate 설정
 		LocalDateTime startDateTime = battleInviteRequest.getStartDate().toInstant()
 			.atZone(ZoneId.systemDefault())
@@ -96,8 +99,9 @@ public class BattleServiceImpl implements BattleService {
 			.battleRule(battleInviteRequest.getBattleRule())
 			.build();
 		battleRepository.save(battleBoard);
+		System.out.println(user);
 
-		notifyService.sendNotification(user, battleBoard, NotificationType.BATTLE_REQUEST);
+		notifyService.sendNotification(battleBoard.getOppositeUser(), battleBoard, NotificationType.BATTLE_REQUEST);
 	}
 
 	@Override
@@ -109,6 +113,33 @@ public class BattleServiceImpl implements BattleService {
 			battleBoard.getVoteInfo().getId());
 
 		return new BattleResponse(battleBoard, voteOpinions.get(0));
+	}
+
+	@Override
+	public NotificationDetailResponseDto getNotificationDetail(Long notifyId) {
+		Notify notify = notifyRepository.findById(notifyId).get();
+		NotificationDetailResponseDto notificationDetailResponseDto = new NotificationDetailResponseDto();
+
+		int notifyCode = notify.getNotifyCode();
+
+		notificationDetailResponseDto.setId(notifyId);
+		notificationDetailResponseDto.setNotifyCode(notifyCode);
+		notificationDetailResponseDto.setTitle(notify.getTitle());
+
+		Long battleBoardId = notify.getBattleBoard().getId();
+
+		if (notifyCode == 0) {
+			//배틀정보
+			BattleResponse battleResponse = getReceivedBattle(battleBoardId);
+			notificationDetailResponseDto.setSpecificData((BattleResponse)battleResponse);
+		} else if (notifyCode == 1) {
+			notificationDetailResponseDto.setSpecificData((Long)battleBoardId);
+		}
+
+		notify.setRead(true);
+		notifyRepository.save(notify);
+
+		return notificationDetailResponseDto;
 	}
 
 	@Transactional
@@ -147,7 +178,7 @@ public class BattleServiceImpl implements BattleService {
 	@Override
 	public List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user, int size) {
 		Pageable pageable = PageRequest.of(page, size);
-
+		System.out.println(user.toString());
 		List<VoteInfo> voteInfos = category == null
 			? voteInfoRepository.findAllByCurrentStateOrderByStartDateDesc(2, pageable).getContent()
 			:
