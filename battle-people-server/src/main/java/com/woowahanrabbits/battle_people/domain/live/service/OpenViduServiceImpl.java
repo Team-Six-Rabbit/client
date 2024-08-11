@@ -119,7 +119,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 			user.getId());
 
 		if (applyUser == null) {
-			return -2;
+			return -1;
 		}
 		if (applyUser.getRole().equals("viewer")) {
 			return -1;
