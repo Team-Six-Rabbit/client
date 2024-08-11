@@ -41,7 +41,6 @@ public class LiveChatController {
 	@MessageMapping("/chat/{battleBoardId}")
 	public void sendMessage(@DestinationVariable Long battleBoardId, WriteChatRequestDto writeChatRequestDto) {
 		String key = "chat";
-
 		redisTemplate.convertAndSend(key, liveChatService.saveMessage(battleBoardId, writeChatRequestDto));
 	}
 

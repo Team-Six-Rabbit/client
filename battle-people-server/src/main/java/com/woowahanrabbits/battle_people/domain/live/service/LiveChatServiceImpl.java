@@ -2,8 +2,6 @@ package com.woowahanrabbits.battle_people.domain.live.service;
 
 import java.util.List;
 
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
@@ -30,8 +28,6 @@ public class LiveChatServiceImpl implements LiveChatService {
 
 	private final UserVoteOpinionRepository userVoteOpinionRepository;
 	private final BattleRepository battleRepository;
-	private final RedisMessageListenerContainer redisMessageListenerContainer;
-	private final MessageListenerAdapter messageListenerAdapter;
 	private final VoteOpinionRepository voteOpinionRepository;
 	private static int chatIdx = 0;
 	private static int requestIdx = 0;
