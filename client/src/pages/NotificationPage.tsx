@@ -19,8 +19,8 @@ function NotificationPage() {
 	useEffect(() => {
 		const fetchNotifications = async () => {
 			try {
-				const data = await notificationService.getNotificationList();
-				setNotifications(data);
+				const response = await notificationService.getNotificationList();
+				setNotifications(response.data!);
 			} catch (error) {
 				console.error("Failed to load notifications:", error);
 			}
@@ -39,8 +39,29 @@ function NotificationPage() {
 	const onDelete = async (id: number) => {
 		try {
 			await notificationService.deleteNotification(id);
+			setNotifications((prevNotifications) =>
+				prevNotifications.filter((notification) => notification.id !== id),
+			);
 		} catch (error) {
 			console.error("Failed to delete notification", error);
+		}
+	};
+
+	const onSendAcceptOrDecline = async (
+		battleId: number,
+		respond: string,
+		content: string,
+	): Promise<boolean> => {
+		try {
+			const success = await notificationService.sendAcceptOrDecline(
+				battleId,
+				respond,
+				content,
+			);
+			return success;
+		} catch (error) {
+			console.error("Failed to send accept or decline response", error);
+			return false;
 		}
 	};
 
@@ -48,7 +69,8 @@ function NotificationPage() {
 		id: number,
 	): Promise<NotificationLiveDetail | NotificationInviteDetail | null> => {
 		try {
-			const detail = await notificationService.getNotificationDetail(id);
+			const response = await notificationService.getNotificationDetail(id);
+			const detail = response.data!;
 			return detail.notifyCode === 0 // Code에는 2(전체보기)가 있지만 detail에서는 0과 1만 존재
 				? (detail as NotificationInviteDetail)
 				: (detail as NotificationLiveDetail);
@@ -79,6 +101,7 @@ function NotificationPage() {
 									notification={notification}
 									onDelete={() => onDelete(notification.id)}
 									onViewDetail={() => onViewDetail(notification.id)}
+									onSendAcceptOrDecline={onSendAcceptOrDecline}
 								/>
 							))}
 					</div>

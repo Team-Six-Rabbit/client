@@ -1,12 +1,16 @@
-import { MouseEvent, MouseEventHandler } from "react";
+import { MouseEvent, MouseEventHandler, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import profileIcon from "@/assets/images/profile.png";
 import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
+import newNotificationIcon from "@/assets/images/newNotification.png";
 import brandIcon from "@/assets/images/Logo.png";
 import { useAuthStore } from "@/stores/userAuthStore";
 import { authService } from "@/services/userAuthService";
+import { getNewNotification } from "@/services/notificationService";
+import notificationStore from "@/stores/notifyStore";
+import { useNotifySocket } from "@/hooks/useNotifySocket";
 
 interface DropDownMenuItem {
 	link: string;
@@ -17,7 +21,10 @@ interface DropDownMenuItem {
 export function ProfileBtn() {
 	const { isLogin, user } = useAuthStore();
 	const navigator = useNavigate();
-
+	const { deactivateClient } = useNotifySocket(useAuthStore().user?.id);
+	const setNewNotification = notificationStore(
+		(state) => state.setNewNotification,
+	);
 	const doLogout = async (event: MouseEvent) => {
 		event.preventDefault();
 
@@ -26,6 +33,8 @@ export function ProfileBtn() {
 		} catch (err) {
 			console.error("로그아웃 실패");
 		} finally {
+			setNewNotification(false);
+			deactivateClient();
 			navigator("/");
 		}
 	};
@@ -124,6 +133,25 @@ function SearchBar() {
 }
 
 function RightHeader() {
+	const setNewNotification = notificationStore(
+		(state) => state.setNewNotification,
+	);
+	const hasNewNotification = notificationStore(
+		(state) => state.hasNewNotification,
+	);
+
+	useEffect(() => {
+		const checkNewNotification = async () => {
+			try {
+				const response = await getNewNotification();
+				setNewNotification(response.data!);
+			} catch (error) {
+				console.error("Failed to check new notifications:", error);
+			}
+		};
+		checkNewNotification();
+	}, [setNewNotification]);
+
 	return (
 		<div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
 			<SearchBar />
@@ -133,7 +161,11 @@ function RightHeader() {
 					className="block text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
 				>
 					<button type="button" className="btn hover:scale-105">
-						<img className="w-8 h-8" src={notificationIcon} alt="알림 버튼" />
+						<img
+							className="w-8 h-8"
+							src={hasNewNotification ? newNotificationIcon : notificationIcon}
+							alt="알림 버튼"
+						/>
 					</button>
 				</Link>
 

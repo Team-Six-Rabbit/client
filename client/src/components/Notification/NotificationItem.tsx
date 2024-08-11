@@ -14,12 +14,18 @@ interface NotificationItemProps {
 	onViewDetail: (
 		id: number,
 	) => Promise<NotificationLiveDetail | NotificationInviteDetail | null>;
+	onSendAcceptOrDecline: (
+		battleId: number,
+		respond: string,
+		content: string,
+	) => Promise<boolean>;
 }
 
 function NotificationItem({
 	notification,
 	onDelete,
 	onViewDetail,
+	onSendAcceptOrDecline,
 }: NotificationItemProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
@@ -49,10 +55,10 @@ function NotificationItem({
 	return (
 		<div>
 			<div
-				className={`flex justify-between items-center p-4 my-2 mx-4
-										border-solid border-royalBlue border-b-2
-										transition-transform duration-300 ease-in-out
-										${isDeleting ? "transform -translate-x-full" : ""}`}
+				className={`flex justify-between items-center p-4 mx-4
+					border-solid border-royalBlue border-b-2 transition-transform 
+					duration-300 ease-in-out ${isDeleting ? "transform -translate-x-full" : ""} 
+					${notification.read ? "bg-gray-200" : "bg-white"}`} // 조건부 배경색 클래스
 			>
 				<div className="cursor-pointer" onClick={handleModalOpen}>
 					{notification.title}
@@ -69,7 +75,8 @@ function NotificationItem({
 				<NotificationModal
 					isModalOpen={isModalOpen}
 					onModalClose={() => setIsModalOpen(false)}
-					handleDelete={() => handleDelete(notification.id)}
+					onDelete={onDelete}
+					onSendAcceptOrDecline={onSendAcceptOrDecline}
 					detail={notificationDetail} // 상세 정보 전달
 				/>
 			)}

@@ -7,18 +7,25 @@ import {
 	NotificationLiveDetail,
 	NotificationInviteDetail,
 } from "@/types/notification";
+import { convertToTimeZone } from "@/utils/dateUtils";
 
 interface NotificationModalProps {
 	isModalOpen: boolean;
 	onModalClose: () => void;
-	handleDelete: () => void;
+	onDelete: (id: number) => void;
+	onSendAcceptOrDecline: (
+		battleId: number,
+		respond: string,
+		content: string,
+	) => Promise<boolean>;
 	detail: NotificationLiveDetail | NotificationInviteDetail;
 }
 
 function NotificationModal({
 	isModalOpen,
 	onModalClose,
-	handleDelete,
+	onDelete,
+	onSendAcceptOrDecline,
 	detail,
 }: NotificationModalProps) {
 	const [inputValue, setInputValue] = useState("");
@@ -34,18 +41,18 @@ function NotificationModal({
 	};
 
 	const handleParticipateClick = () => {
-		setIsAccepted(true);
+		setIsAccepted((prev) => !prev);
 		setInputValue("");
 	};
 
-	const handleRejectClick = () => {
-		setIsAccepted(false);
-		setInputValue("");
-	};
-
-	const handleSendClick = () => {
-		// 추후에 소켓 연결 처리 추가
-		handleDelete();
+	const handleSendClick = async (
+		detail: NotificationInviteDetail,
+		respond: string,
+		content: string,
+	) => {
+		await onSendAcceptOrDecline(detail.specificData.battleId, respond, content);
+		onDelete(detail.id);
+		onModalClose();
 	};
 
 	return (
@@ -61,6 +68,13 @@ function NotificationModal({
 					<>
 						<h2 className="col-span-6 break-all w-full pre-wrap">
 							주제: {(detail as NotificationInviteDetail).specificData.title}
+						</h2>
+						<h2 className="col-span-6 break-all w-full pre-wrap">
+							날짜:{" "}
+							{convertToTimeZone(
+								(detail as NotificationInviteDetail).specificData.startDate,
+								"Asia/Seoul",
+							)}
 						</h2>
 						<h2 className="col-span-6 break-all w-full pre-wrap">
 							상대방의 선택지:{" "}
@@ -101,7 +115,7 @@ function NotificationModal({
 									? "border border-royalBlue"
 									: "border border-slate-200"
 							} hover:border-slate-600 focus:fill-blue-200 focus:bg-blue-400`}
-							onClick={handleRejectClick}
+							onClick={handleParticipateClick}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -138,7 +152,13 @@ function NotificationModal({
 					<button
 						type="button"
 						className="bg-slate-100 stroke-slate-600 border border-slate-200 col-span-2 flex justify-center rounded-lg p-2 duration-300 hover:border-slate-600 hover:text-white focus:stroke-blue-200 focus:bg-blue-400"
-						onClick={handleSendClick}
+						onClick={() =>
+							handleSendClick(
+								detail as NotificationInviteDetail,
+								isAccepted ? "accept" : "decline",
+								inputValue,
+							)
+						}
 					>
 						<svg
 							fill="none"
