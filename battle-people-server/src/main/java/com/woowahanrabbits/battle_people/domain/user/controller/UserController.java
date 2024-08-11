@@ -164,9 +164,9 @@ public class UserController {
 			file.transferTo(dest);
 
 			System.out.println("File saved to: " + dest.getAbsolutePath()); // 디버깅 로그
-			userService.updateUserImgUrl(user.getId(), fileName);
+			user = userService.updateUserImgUrl(user.getId(), fileName);
 
-			return ResponseEntity.ok(new ApiResponseDto<>("success", "파일 업로드 성공", fileName));
+			return ResponseEntity.ok(new ApiResponseDto<>("success", "파일 업로드 성공", user.getImgUrl()));
 		} catch (IOException e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
