@@ -203,6 +203,24 @@ export const authService = {
 			throw error;
 		}
 	},
+
+	// 사용자가 생성한 라이브 목록 가져오기
+	getUserCreatedLives: async (): Promise<ApiCreatedLive[]> => {
+		try {
+			const response = await axiosInstance.get<ApiResponse<ApiCreatedLive[]>>(
+				"/user/profile/create_lives",
+			);
+
+			if (response.data.code === "success" && response.data.data) {
+				console.log(response);
+				return response.data.data;
+			}
+			throw new Error(response.data.msg || "Failed to fetch created lives");
+		} catch (error) {
+			console.error("Error fetching created lives: ", error);
+			throw error;
+		}
+	},
 };
 
 export interface UserWinHistory {
@@ -210,4 +228,10 @@ export interface UserWinHistory {
 	winCnt: number;
 	loseCnt: number;
 	winRate: number;
+}
+
+export interface ApiCreatedLive {
+	title: string;
+	registDate: string; // 여기서 `string`으로 정의
+	isWin: boolean;
 }
