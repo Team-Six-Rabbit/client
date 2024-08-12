@@ -56,3 +56,10 @@ export interface BalanceGameModalType {
 	currentState: number;
 	userVote: number | null;
 }
+
+export interface PrticipatedVotesModalType {
+	id: number;
+	title: string;
+	registDate: string;
+	opinions: Opinion[];
+}

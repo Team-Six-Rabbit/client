@@ -1,62 +1,97 @@
 import { useEffect, useState } from "react";
+import ModalContent from "@/components/Modal/ModalContent";
 import ModalForm from "@/components/Modal/ModalForm";
-import { authService, VoteDetail } from "@/services/userAuthService";
-import "@/assets/styles/scrollbar.css";
+import { PrticipatedVotesModalType, User } from "@/types/Board/modalTypes";
+import { authService } from "@/services/userAuthService";
+import person_blue from "@/assets/images/person_blue.png";
+import person_orange from "@/assets/images/person_orange.png";
 
 interface ParticipatedVotesModalProps {
 	voteId: number;
+	title: string;
+	registDate: string;
+	detail: string;
 	onClose: () => void;
 }
 
 function ParticipatedVotesModal({
 	voteId,
+	title,
+	detail,
+	registDate,
 	onClose,
 }: ParticipatedVotesModalProps) {
-	const [data, setData] = useState<VoteDetail | null>(null);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [voteDetail, setVoteDetail] =
+		useState<PrticipatedVotesModalType | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	const defaultUser1: User = {
+		id: 0,
+		nickname: "",
+		imgUrl: person_orange,
+		rating: 0,
+		opinion: "No opinion",
+	};
+
+	const defaultUser2: User = {
+		id: 0,
+		nickname: "",
+		imgUrl: person_blue,
+		rating: 0,
+		opinion: "No opinion",
+	};
 
 	useEffect(() => {
 		const fetchVoteDetail = async () => {
 			try {
-				const VoteDetail = await authService.getVoteDetail(voteId);
-				setData(VoteDetail); // API 응답 데이터를 상태에 저장
-			} catch (error) {
-				console.error("Failed to fetch vote detail:", error);
+				const response = await authService.getVoteDetail(voteId); // Fetch vote details
+
+				const voteDetail: PrticipatedVotesModalType = {
+					id: voteId,
+					title,
+					registDate,
+					opinions: response.opinions,
+				};
+
+				setVoteDetail(voteDetail);
+			} catch (err) {
+				setError("Failed to fetch vote details.");
 			} finally {
-				setIsLoading(false);
+				setLoading(false);
 			}
 		};
 
 		fetchVoteDetail();
-	}, [voteId]);
+	}, [voteId, title, registDate]);
 
-	if (isLoading) {
-		return <div>Loading...</div>; // 로딩 중 처리
+	if (loading) {
+		return <div>Loading...</div>;
 	}
 
-	if (!data) {
-		return <div>데이터를 불러오지 못했습니다.</div>; // 데이터가 없을 때 처리
+	if (error) {
+		return <div>{error}</div>;
+	}
+
+	if (!voteDetail) {
+		return null;
 	}
 
 	return (
 		<ModalForm
-			title="참여한 투표 결과"
-			infoText={`총 ${data.totalCount}명이 참여했습니다.`}
-			summary="투표에 대한 의견을 아래에서 확인하세요."
+			title="투표 내역 상세보기"
+			infoText={title}
+			summary={detail}
 			onClose={onClose}
-			borderColor="#3f51b5"
+			borderColor="#fbca27"
 		>
-			<div className="vote-results">
-				{data.opinions.map((opinion) => (
-					<div key={opinion.index} className="vote-opinion">
-						<div className="opinion-text">{opinion.opinion}</div>
-						<div className="opinion-stats">
-							<span>{opinion.count}명</span>
-							<span>({opinion.percentage}%)</span>
-						</div>
-					</div>
-				))}
-			</div>
+			<ModalContent
+				registerUser={defaultUser1}
+				oppositeUser={defaultUser2}
+				speechBubbleColor="#fbca27"
+				status="balance" // Assuming status is "balance", you can adjust based on your needs
+				opinions={voteDetail.opinions}
+			/>
 		</ModalForm>
 	);
 }

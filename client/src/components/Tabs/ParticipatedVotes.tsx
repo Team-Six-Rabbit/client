@@ -58,12 +58,13 @@ interface Vote {
 	id: number;
 	title: string;
 	date: string;
+	detail: string;
 	statusColor: string;
 }
 
 function ParticipatedVotesList() {
 	const [votes, setVotes] = useState<Vote[]>([]);
-	const [selectedVoteId, setSelectedVoteId] = useState<number | null>(null);
+	const [selectedVote, setSelectedVote] = useState<Vote | null>(null);
 	const [, setLoading] = useState(true);
 	const [, setError] = useState<string | null>(null);
 
@@ -83,6 +84,7 @@ function ParticipatedVotesList() {
 						id: vote.id,
 						title: vote.title,
 						date: `${dateOnly}`, // 날짜를 로컬 형식으로 변환
+						detail: vote.detail,
 						statusColor: vote.isWin ? "#BDE3FF" : "#FFC7C2", // 승리 여부에 따른 색상 설정
 					};
 				});
@@ -101,10 +103,7 @@ function ParticipatedVotesList() {
 		<VotesContainer className="custom-scrollbar">
 			<VotesList>
 				{votes.map((vote) => (
-					<VotesListItem
-						key={vote.id}
-						onClick={() => setSelectedVoteId(Number(vote.id))}
-					>
+					<VotesListItem key={vote.id} onClick={() => setSelectedVote(vote)}>
 						<TitleContainer>{vote.title}</TitleContainer>
 						<DateStatusContainer>
 							<VoteDate>{vote.date}</VoteDate>
@@ -113,10 +112,13 @@ function ParticipatedVotesList() {
 					</VotesListItem>
 				))}
 			</VotesList>
-			{selectedVoteId && (
+			{selectedVote && (
 				<ParticipatedVotesModal
-					voteId={selectedVoteId}
-					onClose={() => setSelectedVoteId(null)} // 모달 닫기
+					voteId={selectedVote.id}
+					title={selectedVote.title}
+					registDate={selectedVote.date}
+					detail={selectedVote.detail}
+					onClose={() => setSelectedVote(null)} // 모달 닫기
 				/>
 			)}
 		</VotesContainer>
