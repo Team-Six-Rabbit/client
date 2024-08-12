@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
 import LiveCard from "@/components/Board/firework/LiveCard";
