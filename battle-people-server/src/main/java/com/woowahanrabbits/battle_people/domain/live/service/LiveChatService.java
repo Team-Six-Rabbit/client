@@ -7,6 +7,6 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 public interface LiveChatService {
 	RedisTopicDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto);
 
-	RedisTopicDto saveRequest(Long battleBoardId, User user);
+	RedisTopicDto saveRequest(Long battleBoardId, User user, String connectionId);
 
 }

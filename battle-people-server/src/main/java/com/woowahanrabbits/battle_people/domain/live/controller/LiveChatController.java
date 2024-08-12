@@ -78,14 +78,16 @@ public class LiveChatController {
 		String key = "private-request";
 
 		LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)data;
-		Long userId = objectMapper.convertValue(map, WriteTalkRequestDto.class).getUserId();
+		WriteTalkRequestDto writeTalkRequestDto = objectMapper.convertValue(map, WriteTalkRequestDto.class);
+		Long userId = writeTalkRequestDto.getUserId();
+		String connectionId = writeTalkRequestDto.getConnectionId();
 
 		if (valueOps.get(key + ":" + battleBoardId + ":" + userId) != null) {
 			throw new RuntimeException("User with id " + userId + " has already sent a request.");
 		}
 		// 요청 저장
 		User user = userRepository.findById(userId).orElse(null);
-		redisTemplate.convertAndSend("live", liveChatService.saveRequest(battleBoardId, user));
+		redisTemplate.convertAndSend("live", liveChatService.saveRequest(battleBoardId, user, connectionId));
 		valueOps.set(key + ":" + battleBoardId + ":" + userId, userId);
 	}
 
