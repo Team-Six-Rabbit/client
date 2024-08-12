@@ -87,9 +87,27 @@ const useOpenVidu = () => {
 			console.log("STREAM CREATED");
 			const serverData = parseServerData(event.stream.connection);
 
-			const streamManager =
-				publisher ?? session.current!.subscribe(event.stream, undefined);
-			setSubscribers((prevSubscribers) => [...prevSubscribers, streamManager]);
+			if (publisher) {
+				setSubscribers((prevSubscribers) => {
+					return [...prevSubscribers, publisher];
+				});
+			} else {
+				const subscriber = session.current!.subscribe(
+					event.stream,
+					undefined,
+					(error: Error | undefined) => {
+						if (error) {
+							console.error("ERROR", error);
+						} else {
+							setTimeout(() => {
+								setSubscribers((prevSubscribers) => {
+									return [...prevSubscribers, subscriber];
+								});
+							}, 100);
+						}
+					},
+				);
+			}
 
 			if (serverData.role === "SUPPORTER") onSupporterPublish(serverData);
 		},
