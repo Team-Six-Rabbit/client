@@ -31,13 +31,13 @@ function VideoAudioIcons({
 				{isVideoDisabled ? (
 					<FaVideoSlash
 						size={36}
-						className="text-white cursor-pointer transform hover:scale-110"
+						className="text-white cursor-pointer transform hover:scale-110 hidden"
 						onClick={onVideoClick}
 					/>
 				) : (
 					<FaVideo
 						size={36}
-						className="text-white cursor-pointer transform hover:scale-110"
+						className="text-white cursor-pointer transform hover:scale-110 hidden"
 						onClick={onVideoClick}
 					/>
 				)}
@@ -50,13 +50,13 @@ function VideoAudioIcons({
 				{isMicMuted ? (
 					<FaMicrophoneSlash
 						size={36}
-						className="text-white cursor-pointer transform hover:scale-110"
+						className="text-white cursor-pointer transform hover:scale-110 hidden"
 						onClick={onMicClick}
 					/>
 				) : (
 					<FaMicrophone
 						size={34}
-						className="text-white cursor-pointer transform hover:scale-110"
+						className="text-white cursor-pointer transform hover:scale-110 hidden"
 						onClick={onMicClick}
 					/>
 				)}
@@ -116,6 +116,14 @@ function ItemBox({
 	onMicClick,
 	onVideoClick,
 }: ItemBoxProps) {
+	console.debug(
+		isMicMuted,
+		isVideoDisabled,
+		onMicClick,
+		onVideoClick,
+		BombTicketIcons,
+		VideoAudioIcons,
+	);
 	return (
 		<div className="flex justify-between w-full p-2 mt-6 bg-black rounded-lg">
 			<VideoAudioIcons
