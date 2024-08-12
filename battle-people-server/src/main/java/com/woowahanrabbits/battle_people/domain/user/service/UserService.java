@@ -10,7 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.interest.domain.Interest;
+import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
+import com.woowahanrabbits.battle_people.domain.notify.service.NotifyService;
+import com.woowahanrabbits.battle_people.domain.user.domain.Rating;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.dto.BasicUserDto;
 import com.woowahanrabbits.battle_people.domain.user.dto.InterestRequest;
@@ -19,7 +23,6 @@ import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.handler.UserException;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.InterestRepository;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
-import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 
 import jakarta.transaction.Transactional;
@@ -34,7 +37,7 @@ public class UserService {
 
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final UserRepository userRepository;
-	private final UserTokenRepository userTokenRepository;
+	private final NotifyService notifyService;
 	private final InterestRepository interestRepository;
 	private final JwtUtil jwtUtil;
 
@@ -129,5 +132,14 @@ public class UserService {
 		user.setNickname(userDto.getNickname());
 		user.setImgUrl(userDto.getImgUrl());
 		userRepository.save(user);
+	}
+
+	//point
+	public void addPoint(User user, BattleBoard battleBoard, Rating rating) {
+		int rate = user.getRating();
+		rate += rating.getPoint();
+		user.setRating(rate);
+		userRepository.save(user);
+		notifyService.sendPointNotification(user, battleBoard, NotificationType.ADD_POINT, rating);
 	}
 }

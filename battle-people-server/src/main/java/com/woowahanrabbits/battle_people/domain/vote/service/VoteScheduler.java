@@ -39,6 +39,10 @@ public class VoteScheduler {
 			voteOpinions.get(idx).setFinalCount(finalCount);
 			voteOpinionRepository.save(voteOpinions.get(idx));
 		}
-		return voteOpinions.get(0).getFinalCount() > voteOpinions.get(1).getFinalCount() ? 0 : 1;
+		if (voteOpinions.get(0).getFinalCount() == voteOpinions.get(1).getFinalCount()) {
+			return -1;
+		} else {
+			return voteOpinions.get(0).getFinalCount() > voteOpinions.get(1).getFinalCount() ? 0 : 1;
+		}
 	}
 }
