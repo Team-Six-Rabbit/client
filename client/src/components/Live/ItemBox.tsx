@@ -65,6 +65,11 @@ function VideoAudioIcons({
 	);
 }
 
+// interface BombTicketIconsProps {
+// 	sendItem: (userId: number, targetIndex: number, itemCode: number) => void;
+// }
+// { sendItem }: BombTicketIconsProps
+
 function BombTicketIcons() {
 	const [bombCount, setBombCount] = useState(2);
 	const [ticketCount, setTicketCount] = useState(1);
@@ -116,7 +121,6 @@ function ItemBox({
 	isVideoDisabled,
 	onMicClick,
 	onVideoClick,
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	sendItem,
 }: ItemBoxProps) {
 	console.debug(
@@ -127,6 +131,9 @@ function ItemBox({
 		BombTicketIcons,
 		VideoAudioIcons,
 	);
+
+	console.log(sendItem);
+
 	return (
 		<div className="flex justify-between w-full p-2 mt-6 bg-black rounded-lg">
 			<VideoAudioIcons
