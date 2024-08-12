@@ -165,9 +165,8 @@ const useOpenVidu = () => {
 				videoSource,
 				publishAudio,
 				publishVideo,
-				resolution: "640x480",
+				resolution: "480x240",
 				frameRate,
-				insertMode: "APPEND",
 			});
 			pub.on("streamCreated", (event) => onStreamCreated(event, pub));
 			pub.on("streamDestroyed", onStreamDestroyed);

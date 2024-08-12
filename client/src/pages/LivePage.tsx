@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import ItemBox from "@/components/Live/ItemBox";
 import VideoScreen from "@/components/Live/VideoScreen";
@@ -18,19 +18,19 @@ function LivePage() {
 			stream.getTracks().forEach((track) => track.stop());
 		}, 10000);
 	});
-	const videoElement = useRef<HTMLVideoElement>(null);
-	const canvasElement = useRef<HTMLCanvasElement>(null);
+	// const videoElement = useRef<HTMLVideoElement>(null);
+	// const canvasElement = useRef<HTMLCanvasElement>(null);
 
 	const [winner, setWinner] = useState("");
 	const [isTimeOver, setIsTimeOver] = useState(false);
-	const [isMicMuted, setIsMicMuted] = useState(true);
-	const [isVideoDisabled, setIsVideoDisabled] = useState(true);
+	const [isMicMuted, setIsMicMuted] = useState(false);
+	const [isVideoDisabled, setIsVideoDisabled] = useState(false);
 
-	const { drawMask, joinSession, subscribers, index } = useWebRTC(
+	const { joinSession, subscribers, index } = useWebRTC(
 		isMicMuted,
 		isVideoDisabled,
-		videoElement,
-		canvasElement,
+		// videoElement,
+		// canvasElement,
 	);
 
 	const { battleId } = useParams();
@@ -51,7 +51,7 @@ function LivePage() {
 	return (
 		<>
 			<Header />
-			<video
+			{/* <video
 				ref={videoElement}
 				onLoadedMetadata={drawMask}
 				autoPlay
@@ -61,7 +61,7 @@ function LivePage() {
 			<canvas
 				ref={canvasElement}
 				className="invisible fixed w-[640px] h-[480px]"
-			/>
+			/> */}
 			<div className="flex flex-col h-screen">
 				<div className="flex-1 flex mt-16 px-8 pt-8">
 					{/* 추후에 start와 end시간을 계산해서 duration에 넣기 */}
