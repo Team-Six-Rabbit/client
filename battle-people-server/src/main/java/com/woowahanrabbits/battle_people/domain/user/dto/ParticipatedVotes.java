@@ -10,11 +10,13 @@ import lombok.ToString;
 @ToString
 @Getter
 public class ParticipatedVotes {
+	private final Long id;
 	private final String title;
 	private final Date registDate;
 	private final Boolean isWin;
 
 	public ParticipatedVotes(UserVoteOpinion userVoteOpinion, Boolean isWin) {
+		this.id = userVoteOpinion.getVoteInfoId();
 		this.title = userVoteOpinion.getVoteInfo().getTitle();
 		this.registDate = userVoteOpinion.getVoteInfo().getStartDate();
 		this.isWin = isWin;
