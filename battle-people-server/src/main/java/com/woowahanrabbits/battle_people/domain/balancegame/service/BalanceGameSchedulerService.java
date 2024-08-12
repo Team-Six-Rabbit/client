@@ -23,7 +23,7 @@ public class BalanceGameSchedulerService {
 
 	@Scheduled(cron = "0 * * * * *")
 	public void endBalanceGame() {
-		List<VoteInfo> list = voteInfoRepository.findAllByEndDateAfterAndCurrentState(new Date(), 5);
+		List<VoteInfo> list = voteInfoRepository.findAllByEndDateBeforeAndCurrentState(new Date(), 5);
 		for (VoteInfo voteInfo : list) {
 			voteScheduler.updateFinalVoteCount(voteInfo);
 			voteInfo.setCurrentState(6);
