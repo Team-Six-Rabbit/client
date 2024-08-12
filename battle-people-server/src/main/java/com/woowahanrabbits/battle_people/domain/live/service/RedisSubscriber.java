@@ -63,13 +63,14 @@ public class RedisSubscriber implements MessageListener {
 						LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
 						ItemRequestDto dto = objectMapper.convertValue(map, ItemRequestDto.class);
 						System.out.println("item: " + dto);
-						messagingTemplate.convertAndSend("/topic/live/" + channelId, dto);
+						messagingTemplate.convertAndSend("/topic/live/" + channelId,
+							new RedisTopicDto<>("item", channelId, dto));
 					}
 					if (redisTopicDto.getType().equals("request")) {
 						LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
 						WriteTalkResponseDto returnValue = objectMapper.convertValue(map, WriteTalkResponseDto.class);
 						messagingTemplate.convertAndSend(
-							"/topic/live/" + channelId, redisTopicDto);
+							"/topic/live/" + channelId, new RedisTopicDto<>("request", channelId, returnValue));
 
 					}
 					if (redisTopicDto.getType().equals("vote")) {
@@ -78,7 +79,8 @@ public class RedisSubscriber implements MessageListener {
 							});
 
 						messagingTemplate.convertAndSend("/topic/live/" + channelId,
-							responseTopicDto.getResponseDto().get(1));
+							new RedisTopicDto<>("vote", channelId, responseTopicDto.getResponseDto().get(1))
+						);
 					}
 				}
 			}
