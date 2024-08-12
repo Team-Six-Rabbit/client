@@ -94,10 +94,12 @@ public class LiveListServiceImpl implements LiveListService {
 		User registUser = battleBoard.getRegistUser();
 		User oppositeUser = battleBoard.getOppositeUser();
 
-		int registPreCount = voteOpinions.get(0).getPreCount();
-		int oppositePreCount = voteOpinions.get(1).getPreCount();
-		int registFinalCount = voteOpinions.get(0).getFinalCount();
-		int oppositeFinalCount = voteOpinions.get(1).getFinalCount();
+		int registPreCount = voteOpinions.get(0).getPreCount() == null ? 0 : voteOpinions.get(0).getPreCount();
+		int oppositePreCount = voteOpinions.get(1).getPreCount() == null ? 0 : voteOpinions.get(1).getPreCount();
+		int registFinalCount =
+			voteOpinions.get(0).getFinalCount() == null ? 0 : voteOpinions.get(0).getFinalCount();
+		int oppositeFinalCount =
+			voteOpinions.get(1).getFinalCount() == null ? 0 : voteOpinions.get(1).getFinalCount();
 
 		int registPrePercent = 0;
 		int oppositePrePercent = 0;
