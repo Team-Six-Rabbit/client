@@ -24,7 +24,6 @@ public class NotifyServiceImpl implements NotifyService {
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	public void sendNotification(User user, BattleBoard battleBoard, NotificationType type) {
-		System.out.println(battleBoard.getRegistUser());
 		String title = String.format(type.getMessageTemplate(),
 			switch (type.getCode()) {
 				case 0 -> battleBoard.getRegistUser().getNickname();
@@ -42,6 +41,10 @@ public class NotifyServiceImpl implements NotifyService {
 		notify.setRegistDate(new Date());
 		notify.setBattleBoard(battleBoard);
 		notify.setRead(false);
+
+		if (notify.getNotifyCode() == 1) {
+			System.out.println(title);
+		}
 
 		notifyRepository.save(notify);
 		redisTemplate.convertAndSend("notify", user.getId());
