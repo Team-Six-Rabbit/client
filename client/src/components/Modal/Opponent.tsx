@@ -32,7 +32,11 @@ function Opponent({
 			<CustomSpeechBubble color={speechBubbleColor}>
 				{opinion}
 			</CustomSpeechBubble>
-			<OpponentImage src={imgUrl} alt={nickname} />
+			<OpponentImage
+				src={imgUrl}
+				alt={nickname}
+				borderColor={speechBubbleColor}
+			/>
 			<InfoTextSpan>{nickname}</InfoTextSpan>
 		</StyledOpponent>
 	);

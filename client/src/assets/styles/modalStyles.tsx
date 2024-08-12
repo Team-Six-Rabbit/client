@@ -107,12 +107,13 @@ export const Opponent = styled.div`
 	margin: 0 30px;
 `;
 
-export const OpponentImage = styled.img`
+export const OpponentImage = styled.img<{ borderColor: string }>`
 	width: 65px;
 	height: 65px;
 	border-radius: 50%;
 	margin-bottom: 8px;
 	margin-top: 8px;
+	border: 4px solid ${({ borderColor }) => borderColor};
 `;
 
 export const SpeechBubble = styled.div`
