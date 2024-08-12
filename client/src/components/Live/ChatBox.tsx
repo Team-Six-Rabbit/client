@@ -116,8 +116,9 @@ interface ChatBoxProps {
 	messages: ChatMessage[];
 	sendMessage: (userId: number, message: string) => void;
 	role: number;
+	userId: number;
 }
-function ChatBox({ messages, sendMessage, role }: ChatBoxProps) {
+function ChatBox({ messages, sendMessage, role, userId }: ChatBoxProps) {
 	return (
 		<div className="flex flex-col h-150 w-1/4 ms-6 mt-2">
 			<SpeechRequestList
@@ -136,7 +137,7 @@ function ChatBox({ messages, sendMessage, role }: ChatBoxProps) {
 					))}
 				</div>
 			</div>
-			<ChatInput sendMessage={(message) => sendMessage(7, message)} />
+			<ChatInput sendMessage={(message) => sendMessage(userId, message)} />
 		</div>
 	);
 }

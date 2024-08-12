@@ -7,7 +7,7 @@ interface UseChatStompReturn {
 	sendMessage: (userId: number, message: string) => void;
 }
 
-const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
+const useChatSocket = (battleId: string): UseChatStompReturn => {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [stompClient, setStompClient] = useState<Client | null>(null);
 
@@ -31,7 +31,7 @@ const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
 
 				// 구독 설정
 				const chatSubscription = client.subscribe(
-					`/topic/chat/${battleBoardId}`,
+					`/topic/chat/${battleId}`,
 					(message: IMessage) => {
 						const parsedMessage: ChatMessage = JSON.parse(message.body);
 						addMessage(parsedMessage);
@@ -41,7 +41,6 @@ const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
 				// 구독 해제 및 리소스 해제
 				return () => {
 					chatSubscription.unsubscribe();
-					client.deactivate();
 				};
 			},
 			onStompError: (frame) => {
@@ -57,7 +56,7 @@ const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
 			setMessages([]);
 			client.deactivate();
 		};
-	}, [battleBoardId]);
+	}, [battleId]);
 
 	const sendMessage = (userId: number, message: string) => {
 		if (stompClient && stompClient.connected) {
@@ -66,7 +65,7 @@ const useChatSocket = (battleBoardId: number): UseChatStompReturn => {
 				message,
 			};
 			stompClient.publish({
-				destination: `/app/chat/${battleBoardId}`,
+				destination: `/app/chat/${battleId}`,
 				body: JSON.stringify(chatMessage),
 			});
 		} else {
