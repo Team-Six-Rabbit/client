@@ -189,9 +189,9 @@ export const authService = {
 
 	postUserInterests: async (
 		selectedCategories: number[],
-	): Promise<ApiResponse<null>> => {
+	): Promise<ApiResponse<InterestRequest>> => {
 		try {
-			const response = await axiosInstance.post<ApiResponse<null>>(
+			const response = await axiosInstance.post<ApiResponse<InterestRequest>>(
 				"/user/interest",
 				{
 					category: selectedCategories,
@@ -264,6 +264,10 @@ export interface UserWinHistory {
 	winRate: number;
 }
 
+export interface InterestRequest {
+	category: number[];
+}
+
 export interface ApiCreatedLive {
 	battleBoardId: number;
 	title: string;
@@ -275,6 +279,7 @@ export interface VoteInfo {
 	id: number;
 	title: string;
 	registDate: string;
+	detail: string;
 	isWin: boolean;
 }
 

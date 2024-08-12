@@ -89,7 +89,15 @@ function Interests() {
 	const handleSave = async () => {
 		try {
 			const response = await authService.postUserInterests(selectedInterests);
-			console.log("Saved user interests:", response);
+			const categoryIds = response.data!.category;
+			const categoryNames = categoryIds.map((id) => {
+				const category = categories.find((cat) => cat.id === id);
+				return category ? category.name : "Unknown"; // Fallback to "Unknown" if ID is not found
+			});
+			const categoryNamesString = categoryNames.join(", ");
+			alert(
+				`선택하신 항목들: [${categoryNamesString}]\n등록이 완료되었습니다.`,
+			);
 		} catch (error) {
 			console.error("Failed to save user interests:", error);
 		}
