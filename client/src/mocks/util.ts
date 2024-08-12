@@ -1,9 +1,9 @@
+import { LoremIpsum } from "lorem-ipsum";
 import {
 	BalanceGameResponse,
 	BattleResponse,
 	PageableResponse,
 } from "@/types/api";
-import { LoremIpsum } from "lorem-ipsum";
 import { Battle, BattleWaitingParticipant } from "@/types/battle";
 import { OpinionWithPercentage } from "@/types/vote";
 import { BasicUserInfo } from "@/types/user";
@@ -209,9 +209,17 @@ export const generateFinishedLiveBattleResponse = (
 			percentageRegisterOpinion: prePercentageA,
 			percentageOppositeOpinion: 100 - finalPercentageA,
 		},
+		preResultCount: {
+			percentageRegisterOpinion: generateInteger(100),
+			percentageOppositeOpinion: generateInteger(100),
+		},
 		finalResult: {
 			percentageRegisterOpinion: finalPercentageA,
 			percentageOppositeOpinion: 100 - finalPercentageA,
+		},
+		finalResultCount: {
+			percentageRegisterOpinion: generateInteger(100),
+			percentageOppositeOpinion: generateInteger(100),
 		},
 		imageUri: "https://picsum.photos/400/400",
 		summary: generateSentences(3, 1000),
