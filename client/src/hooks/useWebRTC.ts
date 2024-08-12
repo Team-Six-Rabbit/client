@@ -21,7 +21,11 @@ const useWebRTC = (
 		isPublisher,
 		shouldPublish,
 	} = useOpenVidu();
-	const { isReady, shouldRenderVideo } = useFaceApi(isPublisher, video, canvas);
+	const { drawMask, isReady, shouldRenderVideo, shouldRenderMask } = useFaceApi(
+		isPublisher,
+		video,
+		canvas,
+	);
 
 	useEffect(() => {
 		if (!shouldPublish) {
@@ -55,7 +59,15 @@ const useWebRTC = (
 		}
 	}, [isMicMuted, isReady, isVideoDisabled, publisher]);
 
-	return { joinSession, index, subscribers, connectionId };
+	return {
+		joinSession,
+		drawMask,
+		index,
+		subscribers,
+		connectionId,
+		shouldRenderVideo,
+		shouldRenderMask,
+	};
 };
 
 export default useWebRTC;

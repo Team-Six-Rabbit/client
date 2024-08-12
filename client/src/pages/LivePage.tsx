@@ -21,7 +21,7 @@ function LivePage() {
 	const [isMicMuted, setIsMicMuted] = useState(true);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(true);
 
-	const { joinSession, subscribers, index } = useWebRTC(
+	const { drawMask, joinSession, subscribers, index } = useWebRTC(
 		isMicMuted,
 		isVideoDisabled,
 		videoElement,
@@ -46,8 +46,17 @@ function LivePage() {
 	return (
 		<>
 			<Header />
-			<video ref={videoElement} autoPlay muted className="w-[0px] h-[0px]" />
-			<canvas ref={canvasElement} className="w-[0px] h-[0px]" />
+			<video
+				ref={videoElement}
+				onLoadedMetadata={drawMask}
+				autoPlay
+				muted
+				className="invisible fixed w-[640px] h-[480px]"
+			/>
+			<canvas
+				ref={canvasElement}
+				className="invisible fixed w-[640px] h-[480px]"
+			/>
 			<div className="flex flex-col h-screen">
 				<div className="flex-1 flex mt-16 px-8 pt-8">
 					{/* 추후에 start와 end시간을 계산해서 duration에 넣기 */}
