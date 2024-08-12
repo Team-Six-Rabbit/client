@@ -22,36 +22,36 @@ export const useAuthStore = create<AuthState & AuthAction>()(
 			user: null,
 			login: (user: DetailUserInfo) => {
 				set({ isLogin: true, user });
-				sessionStorage.setItem("user", JSON.stringify({ user }));
+				localStorage.setItem("user", JSON.stringify({ user }));
 			},
 			logout: () => {
 				set({ isLogin: false, user: null });
-				sessionStorage.removeItem("user");
+				localStorage.removeItem("user");
 			},
 			setUser: (user: DetailUserInfo | null) => {
 				set({ user });
-				const storedUser = sessionStorage.getItem("user");
+				const storedUser = localStorage.getItem("user");
 				let expireAt = new Date(Date.now() + 3600).toISOString();
 				if (storedUser) {
 					expireAt = JSON.parse(storedUser).expireAt;
 				}
-				sessionStorage.setItem("user", JSON.stringify({ user, expireAt }));
+				localStorage.setItem("user", JSON.stringify({ user, expireAt }));
 			},
 		}),
 		{
 			name: "auth",
-			storage: createJSONStorage(() => sessionStorage),
+			storage: createJSONStorage(() => localStorage),
 		},
 	),
 );
 
 // 페이지가 새로고침될 때 유저 정보를 세션 스토리지에서 가져와서 상태를 갱신
-const storedUser = sessionStorage.getItem("user");
+const storedUser = localStorage.getItem("user");
 if (storedUser) {
 	const { user } = JSON.parse(storedUser);
 	if (new Date() < new Date(user.accessExpiration)) {
 		useAuthStore.getState().login(user);
 	} else {
-		sessionStorage.removeItem("user");
+		localStorage.removeItem("user");
 	}
 }
