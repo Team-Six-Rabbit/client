@@ -19,4 +19,6 @@ public class WriteTalkResponseDto {
 	private Long hostUserId;
 	private String connectionId;
 	private int idx;
+	private String nickname;
+	private int rating;
 }
