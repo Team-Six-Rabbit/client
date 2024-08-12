@@ -35,11 +35,10 @@ public class BattleScheduler {
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
 
-	static Date date = new Date();
-
 	//1. 상태코드 0인 battle 중 시작시간 30분 이전 거 상태코드 변환
 	@Scheduled(cron = "0 * * * * *")
 	public void appliedBattleEndedCheck() {
+		Date date = new Date();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		calendar.add(Calendar.MINUTE, 30);
@@ -54,6 +53,7 @@ public class BattleScheduler {
 	//todo: 2-2. 상태코드 2인 battle 중 시작시간 20분 이전 거 최소인원 수 넘었을 시 [이미지생성 + 상태코드 변환 + 표 취합] 매서드 실행
 	@Scheduled(cron = "0 * * * * *")
 	public void battleNotEnoughPeople() {
+		Date date = new Date();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		calendar.add(Calendar.MINUTE, 20);
@@ -88,6 +88,7 @@ public class BattleScheduler {
 
 	@Scheduled(cron = "0 * * * * *")
 	public void changeLiveStatus() {
+		Date date = new Date();
 		List<VoteInfo> endLives = voteInfoRepository.findAllByEndDateAfterAndCurrentState(date, 4);
 		for (VoteInfo voteInfo : endLives) {
 			voteInfo.setCurrentState(8);
@@ -104,6 +105,7 @@ public class BattleScheduler {
 
 	@Scheduled(cron = "0 * * * * *")
 	public void liveNotice() {
+		Date date = new Date();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		calendar.add(Calendar.MINUTE, 5);
