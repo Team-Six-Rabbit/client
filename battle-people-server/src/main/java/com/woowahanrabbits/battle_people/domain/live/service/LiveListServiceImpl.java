@@ -100,13 +100,17 @@ public class LiveListServiceImpl implements LiveListService {
 		int oppositeFinalCount = voteOpinions.get(1).getFinalCount();
 
 		int registPrePercent = 0;
+		int oppositePrePercent = 0;
 		int registFinalPercent = 0;
+		int oppositeFinalPercent = 0;
 
 		if (registPreCount + oppositePreCount > 0) {
 			registPrePercent = 100 * registPreCount / (registPreCount + oppositePreCount);
+			oppositePrePercent = 100 - registPrePercent;
 		}
 		if (registFinalCount + oppositeFinalCount > 0) {
 			registFinalPercent = 100 * registFinalCount / (registFinalCount + oppositeFinalCount);
+			oppositeFinalPercent = 100 - registFinalPercent;
 		}
 
 		return new LiveEndDetailDto(
@@ -116,9 +120,9 @@ public class LiveListServiceImpl implements LiveListService {
 				registUser.getRating(), voteOpinions.get(0).getOpinion()),
 			new LiveEndDetailDto.BroadcastUser(oppositeUser.getId(), oppositeUser.getNickname(),
 				oppositeUser.getImgUrl(), oppositeUser.getRating(), voteOpinions.get(1).getOpinion()),
-			new LiveEndDetailDto.VoteResult(registPrePercent, 100 - registPrePercent),
+			new LiveEndDetailDto.VoteResult(registPrePercent, oppositePrePercent),
 			new LiveEndDetailDto.VoteResult(registPreCount, oppositePreCount),
-			new LiveEndDetailDto.VoteResult(registFinalPercent, 100 - registFinalPercent),
+			new LiveEndDetailDto.VoteResult(registFinalPercent, oppositeFinalPercent),
 			new LiveEndDetailDto.VoteResult(registFinalCount, oppositeFinalCount),
 			voteInfo.getCategory(),
 			battleBoard.getImageUrl(),
