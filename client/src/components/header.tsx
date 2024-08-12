@@ -133,6 +133,7 @@ function SearchBar() {
 }
 
 function RightHeader() {
+	const { isLogin } = useAuthStore();
 	const setNewNotification = notificationStore(
 		(state) => state.setNewNotification,
 	);
@@ -154,21 +155,24 @@ function RightHeader() {
 
 	return (
 		<div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
-			<SearchBar />
+			{false && <SearchBar />}
 			<div className="flex items-center justify-center space-x-4 mt-4 sm:mt-1">
-				<Link
-					to="/notification"
-					className="block text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-				>
-					<button type="button" className="btn hover:scale-105">
-						<img
-							className="w-8 h-8"
-							src={hasNewNotification ? newNotificationIcon : notificationIcon}
-							alt="알림 버튼"
-						/>
-					</button>
-				</Link>
-
+				{isLogin && (
+					<Link
+						to="/notification"
+						className="block text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+					>
+						<button type="button" className="btn hover:scale-105">
+							<img
+								className="w-8 h-8"
+								src={
+									hasNewNotification ? newNotificationIcon : notificationIcon
+								}
+								alt="알림 버튼"
+							/>
+						</button>
+					</Link>
+				)}
 				<ProfileBtn />
 			</div>
 		</div>
