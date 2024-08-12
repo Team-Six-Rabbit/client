@@ -115,6 +115,12 @@ public class UserController {
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "Vote Infos", response));
 	}
 
+	@GetMapping("/profile/votes/{vote_info_id}")
+	public ResponseEntity<?> getVoteDetail(@PathVariable("vote_info_id") long voteInfoId) {
+		return ResponseEntity.ok(
+			new ApiResponseDto<>("success", "Vote Info", voteService.getVoteResultByVoteInfoId(voteInfoId)));
+	}
+
 	@GetMapping("/profile/{userId}")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<ApiResponseDto<BasicUserDto>> getUserProfile(@PathVariable(value = "userId") Long userId) {
