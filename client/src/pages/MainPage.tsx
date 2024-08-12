@@ -165,9 +165,10 @@ function MainPage() {
 	return (
 		<div>
 			<Header />
-			{largeCarouselCards.length >= 3 && (
+			{/* {largeCarouselCards.length >= 3 && (
 				<LargeCarousel cards={largeCarouselCards} />
-			)}
+			)} */}
+			<LargeCarousel cards={largeCarouselCards} />
 			<PageContainer>
 				{!isLogin && (
 					<>

@@ -5,6 +5,8 @@ import styled, { keyframes, css } from "styled-components";
 import { CardType } from "@/types/Board/liveBoardCard";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import noImage from "@/assets/images/noImage.png";
+import { createLiveStateBorder, CustomCSSProperties } from "@/utils/textBorder";
 
 const SliderContainer = styled.div`
 	width: 100%;
@@ -104,22 +106,25 @@ const TextOverlay = styled.div<{ animate: boolean }>`
 		`}
 `;
 
-const Title = styled.h3`
+const Title = styled.div<CustomCSSProperties>`
 	margin: 0;
 	font-size: 2em;
 	color: white;
+	text-shadow: ${({ textShadow }) => textShadow || "none"};
 `;
 
-const UserInfo = styled.p`
+const UserInfo = styled.div<CustomCSSProperties>`
 	margin: 5px 0 0;
 	font-size: 1.5em;
 	line-height: 1.2;
 	color: white;
+	text-shadow: ${({ textShadow }) => textShadow || "none"};
 `;
 
 function LargeCarousel({ cards }: { cards: CardType[] }) {
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const navigate = useNavigate();
+	const liveStateBorder = createLiveStateBorder("#000000", 3);
 
 	const settings = {
 		className: "center",
@@ -156,11 +161,14 @@ function LargeCarousel({ cards }: { cards: CardType[] }) {
 							onClick={() => handleSlideClick(card.id.toString())}
 						>
 							{card.image_uri && (
-								<StyledImage src={card.image_uri} alt={card.title} />
+								// <StyledImage src={card.image_uri || noImage} alt={card.title} />
+								<StyledImage src={noImage} alt={card.title} />
 							)}
 							<TextOverlay animate={currentSlide === index}>
-								<Title>{card.title}</Title>
-								<UserInfo>
+								<Title textShadow={liveStateBorder.textShadow}>
+									{card.title}
+								</Title>
+								<UserInfo textShadow={liveStateBorder.textShadow}>
 									{card.regist_user_id} vs {card.opposite_user_id}
 								</UserInfo>
 							</TextOverlay>
