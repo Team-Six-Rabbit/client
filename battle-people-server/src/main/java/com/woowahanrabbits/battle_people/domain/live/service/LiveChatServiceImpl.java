@@ -85,7 +85,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
 			.channelId(battleBoardId)
-			.type("request")
+			.type("speak")
 			.responseDto(writeTalkResponseDto)
 			.build();
 

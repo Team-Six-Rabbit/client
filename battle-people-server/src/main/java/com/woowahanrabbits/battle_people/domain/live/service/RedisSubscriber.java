@@ -66,11 +66,11 @@ public class RedisSubscriber implements MessageListener {
 						messagingTemplate.convertAndSend("/topic/live/" + channelId,
 							new RedisTopicDto<>("item", channelId, dto));
 					}
-					if (redisTopicDto.getType().equals("request")) {
+					if (redisTopicDto.getType().equals("speak")) {
 						LinkedHashMap<?, ?> map = (LinkedHashMap<?, ?>)redisTopicDto.getResponseDto();
 						WriteTalkResponseDto returnValue = objectMapper.convertValue(map, WriteTalkResponseDto.class);
 						messagingTemplate.convertAndSend(
-							"/topic/live/" + channelId, new RedisTopicDto<>("request", channelId, returnValue));
+							"/topic/live/" + channelId, new RedisTopicDto<>("speak", channelId, returnValue));
 
 					}
 					if (redisTopicDto.getType().equals("vote")) {
