@@ -39,6 +39,8 @@ const InterestPrompt = styled.div`
 	font-size: 1.5em;
 	text-align: center;
 	margin-top: 50px;
+	background-color: #eeeeee;
+	padding: 10px;
 `;
 
 function MainPage() {
@@ -163,7 +165,9 @@ function MainPage() {
 	return (
 		<div>
 			<Header />
-			<LargeCarousel cards={largeCarouselCards} />
+			{largeCarouselCards.length >= 3 && (
+				<LargeCarousel cards={largeCarouselCards} />
+			)}
 			<PageContainer>
 				{!isLogin && (
 					<>
@@ -189,7 +193,7 @@ function MainPage() {
 				{isLogin && selectedInterests.length === 0 && (
 					<>
 						<InterestPrompt>
-							🔥 마이페이지에서 관심사를 등록해보세요! 관심사에 맞는 라이브
+							📢 마이페이지에서 관심사를 등록해보세요! 관심사에 맞는 라이브
 							방송을 먼저 보여드릴게요.
 						</InterestPrompt>
 						<SectionHeader>🔍 전체 카테고리 탐색하기</SectionHeader>

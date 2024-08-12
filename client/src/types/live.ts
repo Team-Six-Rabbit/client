@@ -22,7 +22,9 @@ export interface WaitingLiveBattleDetail extends LiveBattleCardInfo {
 
 export interface FinishedLiveBattleDetail extends LiveBattle {
 	preResult: LiveVoteResult;
+	preResultCount: LiveVoteResult;
 	finalResult: LiveVoteResult;
+	finalResultCount: LiveVoteResult;
 	summary?: string;
 }
 

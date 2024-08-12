@@ -61,20 +61,22 @@ export const InfoText = styled.p<{ borderColor: string }>`
 	font-weight: 600;
 	color: #4b5563;
 	border-radius: 15px;
-	padding: 10px;
+	padding: 20px;
 	height: 150px;
-	overflow: auto;
+	overflow-y: auto; /* Enable vertical scrolling */
+	overflow-x: hidden; /* Prevent horizontal scrolling */
 	background-color: #f9fafb;
 	border: 3px solid ${({ borderColor }) => borderColor};
 	text-align: center;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	box-sizing: border-box;
+	word-wrap: break-word;
+	max-width: 100%; /* Ensure no overflow */
 `;
 
 export const InfoTextSpan = styled.span`
 	font-weight: 400;
 	color: #6b7280;
+	display: block;
 `;
 
 export const TitleText = styled.p<{ borderColor: string }>`

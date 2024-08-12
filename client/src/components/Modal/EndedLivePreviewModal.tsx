@@ -4,6 +4,7 @@ import ModalContent from "@/components/Modal/ModalContent";
 import { liveBattleService } from "@/services/liveBattleService";
 import { FinishedLiveBattleDetail } from "@/types/live";
 import "@/assets/styles/scrollbar.css";
+import defaultUserImage from "@/assets/images/default.png";
 
 interface EndedLivePreviewModalProps {
 	battleId: number;
@@ -42,8 +43,16 @@ function EndedLivePreviewModal({
 		return <div>데이터를 불러오지 못했습니다.</div>; // 데이터가 없을 때 처리
 	}
 
-	const { title, registerUser, oppositeUser, preResult, finalResult, summary } =
-		data;
+	const {
+		title,
+		registerUser,
+		oppositeUser,
+		preResult,
+		finalResult,
+		summary,
+		preResultCount,
+		finalResultCount,
+	} = data;
 
 	return (
 		<ModalForm
@@ -56,18 +65,20 @@ function EndedLivePreviewModal({
 			<ModalContent
 				registerUser={{
 					nickname: registerUser.nickname,
-					imgUrl: registerUser.imgUrl || "",
+					imgUrl: registerUser.imgUrl || defaultUserImage,
 					opinion: registerUser.opinion || "",
 				}}
 				oppositeUser={{
 					nickname: oppositeUser.nickname,
-					imgUrl: oppositeUser.imgUrl || "",
+					imgUrl: oppositeUser.imgUrl || defaultUserImage,
 					opinion: oppositeUser.opinion || "",
 				}}
 				speechBubbleColor="#8bc34a"
 				status="ended"
 				preResult={preResult}
+				preResultCount={preResultCount}
 				finalResult={finalResult}
+				finalResultCount={finalResultCount}
 			/>
 		</ModalForm>
 	);
