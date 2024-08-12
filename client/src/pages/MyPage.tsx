@@ -7,7 +7,7 @@ import "@/assets/styles/mypage.css";
 import Header from "@/components/header";
 import { authService } from "@/services/userAuthService";
 import editIcon from "@/assets/images/edit.png";
-import profileImagePlaceholder from "@/assets/images/test.png";
+import profileImagePlaceholder from "@/assets/images/default.png";
 import "@/assets/styles/shake.css";
 import MyPageContent from "@/components/MyPageContent";
 import { useAuthStore } from "@/stores/userAuthStore";
@@ -27,7 +27,9 @@ function MyPage() {
 		navigate("/login");
 	}
 
-	const [profileImage, setProfileImage] = useState<string>(user!.imgUrl);
+	const [profileImage, setProfileImage] = useState<string>(
+		user!.imgUrl || profileImagePlaceholder,
+	);
 
 	useEffect(() => {
 		if (location.pathname === "/my-page") {
@@ -92,6 +94,10 @@ function MyPage() {
 		}
 	};
 
+	const handleImageError = () => {
+		setProfileImage(profileImagePlaceholder);
+	};
+
 	const { email, nickname, rating } = user!;
 
 	return (
@@ -107,6 +113,7 @@ function MyPage() {
 									src={profileImage}
 									alt="프로필 이미지"
 									onClick={handleIconClick}
+									onError={handleImageError} // 이미지 로드 오류 처리
 									onKeyDown={(e) => {
 										if (e.key === "Enter" || e.key === " ") {
 											handleIconClick();
