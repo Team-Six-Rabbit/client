@@ -73,7 +73,6 @@ public class VoteServiceImpl implements VoteService {
 				.build();
 			userVoteOpinionRepository.save(userVoteOpinion);
 		}
-		System.out.println(voteInfoId);
 		CurrentVoteResponseDto responseDto = resultDto(voteInfoId);
 
 		return responseDto;
@@ -105,8 +104,6 @@ public class VoteServiceImpl implements VoteService {
 			.type("vote")
 			.responseDto(currentVoteResponseDto.getOpinions())
 			.build();
-
-		System.out.println(redisTopicDto);
 
 		return redisTopicDto;
 	}
@@ -160,7 +157,6 @@ public class VoteServiceImpl implements VoteService {
 		}
 
 		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
-		System.out.println(voteOpinions);
 
 		List<VoteOpinionDtoWithVoteCount> opinions = new ArrayList<>();
 		opinions.add(new VoteOpinionDtoWithVoteCount(0, voteOpinions.get(0).getOpinion(), voteCountOpt1,
