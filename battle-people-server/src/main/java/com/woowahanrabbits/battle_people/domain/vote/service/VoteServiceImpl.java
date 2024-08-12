@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.config.AppProperties;
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
@@ -72,7 +73,7 @@ public class VoteServiceImpl implements VoteService {
 				.build();
 			userVoteOpinionRepository.save(userVoteOpinion);
 		}
-
+		System.out.println(voteInfoId);
 		CurrentVoteResponseDto responseDto = resultDto(voteInfoId);
 
 		return responseDto;
@@ -90,8 +91,14 @@ public class VoteServiceImpl implements VoteService {
 
 	@Override
 	public RedisTopicDto<List<VoteOpinionDtoWithVoteCount>> putLiveVote(Long battleBoardId, VoteRequest voteRequest) {
+		BattleBoard battleBoard = battleBoardRepository.findById(battleBoardId).orElse(null);
+
+		if (battleBoard == null) {
+			return null;
+		}
+
 		CurrentVoteResponseDto currentVoteResponseDto = putVoteOpinion(voteRequest.getUserId(),
-			battleBoardId, voteRequest.getVoteInfoIndex());
+			battleBoard.getVoteInfo().getId(), voteRequest.getVoteInfoIndex());
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
 			.channelId(battleBoardId)
@@ -153,6 +160,7 @@ public class VoteServiceImpl implements VoteService {
 		}
 
 		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
+		System.out.println(voteOpinions);
 
 		List<VoteOpinionDtoWithVoteCount> opinions = new ArrayList<>();
 		opinions.add(new VoteOpinionDtoWithVoteCount(0, voteOpinions.get(0).getOpinion(), voteCountOpt1,
