@@ -63,7 +63,7 @@ const useOpenVidu = () => {
 	};
 
 	const onSupporterPublish = useCallback((serverData: ServerData) => {
-		const diffMs = new Date(serverData.publishUntil!).getTime() - Date.now();
+		const diffMs = new Date(serverData.tokenEndDate!).getTime() - Date.now();
 
 		if (publisher) {
 			setTimeout(() => {

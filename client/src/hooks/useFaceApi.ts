@@ -7,7 +7,8 @@ const useFaceApi = (
 	canvas: RefObject<HTMLCanvasElement>,
 ) => {
 	const [isReady, setIsReady] = useState<boolean>(false);
-	const shouldRenderVideo = useRef<boolean>(false);
+	const shouldRenderVideo = useRef<boolean>(true);
+	const shouldRenderMask = useRef<boolean>(true);
 	const timeout = useRef<unknown>();
 	const stream = useRef<MediaStream>();
 
@@ -65,8 +66,8 @@ const useFaceApi = (
 		detection: faceapi.WithFaceLandmarks<{
 			detection: faceapi.FaceDetection;
 		}>,
+		ctx: CanvasRenderingContext2D,
 	) => {
-		const ctx = canvas.current!.getContext("2d")!;
 		const { positions } = detection.landmarks;
 
 		const leftEye = positions[36];
@@ -119,8 +120,7 @@ const useFaceApi = (
 		);
 	};
 
-	const renderVideoToCanvas = () => {
-		const ctx = canvas.current!.getContext("2d")!;
+	const renderVideoToCanvas = (ctx: CanvasRenderingContext2D) => {
 		if (!video.current!.paused && !video.current!.ended) {
 			ctx.drawImage(
 				video.current!,
@@ -135,34 +135,44 @@ const useFaceApi = (
 	const onPlay = async () => {
 		if (
 			!video.current ||
-			video.current?.paused ||
-			video.current?.ended ||
-			!isFaceDetectionModelLoaded()
+			(shouldRenderMask.current && !isFaceDetectionModelLoaded())
 		) {
-			timeout.current = setTimeout(() => onPlay(), 100);
+			console.error(
+				video.current,
+				video.current?.paused,
+				video.current?.ended,
+				shouldRenderMask.current,
+				isFaceDetectionModelLoaded(),
+			);
+			timeout.current = setTimeout(() => onPlay(), 1000);
 			return timeout.current;
 		}
 
-		const options = getFaceDetectorOptions();
-		console.time("onPlay Execution Time");
-		const result = await faceapi
-			.detectSingleFace(video.current!, options)
-			.withFaceLandmarks(true);
-		console.timeEnd("onPlay Execution Time");
+		let resizedResult;
+		if (shouldRenderMask.current) {
+			const options = getFaceDetectorOptions();
+			console.time("onPlay Execution Time");
+			const result = await faceapi
+				.detectSingleFace(video.current!, options)
+				.withFaceLandmarks(true);
+			console.timeEnd("onPlay Execution Time");
 
-		if (result) {
-			const dims = faceapi.matchDimensions(
-				canvas.current!,
-				{ width: 640, height: 480 },
-				true,
-			);
-			const resizedResult = faceapi.resizeResults(result, dims);
-
-			if (shouldRenderVideo.current) renderVideoToCanvas();
-			render2DCharacter(resizedResult);
+			if (result) {
+				const dims = faceapi.matchDimensions(
+					canvas.current!,
+					{ width: 640, height: 480 },
+					true,
+				);
+				resizedResult = faceapi.resizeResults(result, dims);
+			}
 		}
 
-		return onPlay();
+		const ctx = canvas.current!.getContext("2d")!;
+		if (shouldRenderVideo.current) renderVideoToCanvas(ctx);
+		if (resizedResult) render2DCharacter(resizedResult, ctx);
+
+		timeout.current = setTimeout(() => onPlay(), 0);
+		return timeout.current;
 	};
 
 	const loadModel = () => {
@@ -181,22 +191,20 @@ const useFaceApi = (
 		return stream.current;
 	};
 
+	const drawMask = async () => {
+		if (!isFaceDetectionModelLoaded()) await loadModel();
+		setIsReady(true);
+		onPlay();
+	};
+
 	useEffect(() => {
 		if (!isPublisher) return;
 
-		startVideo()
-			.then(() => {
-				if (!isFaceDetectionModelLoaded()) return loadModel();
-				return Promise.resolve<[void, void]>([undefined, undefined]);
-			})
-			.then(() => {
-				setIsReady(true);
-			})
-			.then(onPlay);
+		startVideo();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isPublisher]);
 
-	return { isReady, shouldRenderVideo };
+	return { drawMask, isReady, shouldRenderVideo, shouldRenderMask };
 };
 
 export default useFaceApi;
