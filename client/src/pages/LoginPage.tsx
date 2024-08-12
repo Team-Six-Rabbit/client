@@ -1,7 +1,6 @@
 import { ChangeEvent, useState, KeyboardEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthInput, AuthSubmitBtn } from "@/components/auth/AuthFormComponent";
-import GoogleLoginButton from "@/components/auth/googleLoginBtn";
 import { LoginRequest } from "@/types/api";
 import { authService } from "@/services/userAuthService";
 import { createLiveStateBorder } from "@/utils/textBorder"; // textBorder import
@@ -121,7 +120,6 @@ function LoginPage() {
 						</div>
 					)}
 				</div>
-				<GoogleLoginButton />
 				<div className="flex justify-between mt-4">
 					<Link
 						to="/join"
