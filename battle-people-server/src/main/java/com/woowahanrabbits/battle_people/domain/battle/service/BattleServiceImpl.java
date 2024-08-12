@@ -244,13 +244,13 @@ public class BattleServiceImpl implements BattleService {
 			.build();
 		battleApplyUserRepository.save(battleApplyUser);
 
-		// //최소 인원 충족 체크
-		// if (currentPeopleCount > minPeopleCount) {
-		// 	voteScheduler.updatePreVoteCount(battleBoard);
-		// 	VoteInfo voteInfo = battleBoard.getVoteInfo();
-		// 	voteInfo.setCurrentState(3);
-		// 	voteInfoRepository.save(voteInfo);
-		// }
+		//최대 인원 충족 체크
+		if (currentPeopleCount >= battleBoard.getMaxPeopleCount()) {
+			voteScheduler.updatePreVoteCount(battleBoard);
+			VoteInfo voteInfo = battleBoard.getVoteInfo();
+			voteInfo.setCurrentState(3);
+			voteInfoRepository.save(voteInfo);
+		}
 
 		//참여 신청한 인원 수 return
 		return battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
