@@ -34,6 +34,11 @@ function SignUpPage() {
 
 	const handleInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = event.target;
+
+		if (name === "nickname" && value.length > 12) {
+			return;
+		}
+
 		setFormValues({
 			...formValues,
 			[name]: value,
