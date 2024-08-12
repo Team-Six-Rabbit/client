@@ -61,7 +61,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 	}
 
 	@Override
-	public RedisTopicDto saveRequest(Long battleBoardId, User user) {
+	public RedisTopicDto saveRequest(Long battleBoardId, User user, String connectionId) {
 
 		VoteInfo voteInfo = battleRepository.findById(battleBoardId)
 			.orElseThrow()
@@ -80,6 +80,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 			.idx(requestIdx++)
 			.userVote(userVoteOpinion.getVoteInfoIndex())
 			.nickname(user.getNickname())
+			.connectionId(connectionId)
 			.rating(user.getRating())
 			.build();
 
