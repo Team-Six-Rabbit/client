@@ -28,15 +28,22 @@ function ModalContent({
 	finalResult,
 	opinions = [],
 }: OpponentsProps) {
-	const firstOpinion = registerUser.opinion || "";
-	const secondOpinion = oppositeUser.opinion || "";
+	const oppositeUserOpinion =
+		status === "balance" && opinions.length >= 2
+			? opinions[1].opinion
+			: oppositeUser.opinion;
+
+	const registerUserOpinion =
+		status === "balance" && opinions.length >= 2
+			? opinions[0].opinion
+			: registerUser.opinion;
 
 	return (
 		<StyledOpponents>
 			<Opponent
 				nickname={registerUser.nickname}
 				imgUrl={registerUser.imgUrl}
-				opinion={firstOpinion}
+				opinion={registerUserOpinion}
 				speechBubbleColor={speechBubbleColor}
 			/>
 			{status === "upcoming" && <VS>VS</VS>}
@@ -72,7 +79,7 @@ function ModalContent({
 			<Opponent
 				nickname={oppositeUser.nickname}
 				imgUrl={oppositeUser.imgUrl}
-				opinion={secondOpinion}
+				opinion={oppositeUserOpinion}
 				speechBubbleColor={speechBubbleColor}
 			/>
 		</StyledOpponents>

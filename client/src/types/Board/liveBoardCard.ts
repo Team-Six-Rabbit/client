@@ -10,5 +10,5 @@ export interface CardType {
 	currentPeopleCount: number;
 	image_uri: string;
 	live_uri: string;
-	status: "live" | "upcoming" | "ended";
+	status: string;
 }

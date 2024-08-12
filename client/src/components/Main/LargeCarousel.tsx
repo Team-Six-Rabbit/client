@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import styled, { keyframes, css } from "styled-components";
 import { CardType } from "@/types/Board/liveBoardCard";
@@ -9,6 +10,8 @@ const SliderContainer = styled.div`
 	width: 100%;
 	margin-top: 120px;
 	position: relative;
+	box-sizing: border-box;
+	background-color: white;
 `;
 
 const StyledSlider = styled(Slider)`
@@ -21,35 +24,34 @@ const StyledSlider = styled(Slider)`
 		position: absolute;
 		top: 50%;
 		transform: translateY(-50%);
-
 		&:before {
-			font-size: 40px;
-			color: orange;
+			font-size: 60px;
+			color: black;
 		}
 	}
-
 	.slick-prev {
-		left: 130px;
+		left: 280px;
 	}
-
 	.slick-next {
-		right: 130px;
+		right: 280px;
 	}
-
 	.slick-slide > div {
-		margin: 0 15px;
-		background-color: #f0f0f0;
+		margin: 0 10px; /* 슬라이더 사이의 공백 설정 */
+		background-color: white;
 		height: 400px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		position: relative;
 		overflow: hidden;
+		box-sizing: border-box;
+		width: 80%; /* 슬라이더의 가로 길이를 줄임 */
+		margin: 0 auto;
 	}
 `;
 
 const ImageContainer = styled.div`
-	width: 100%;
+	max-width: 100%;
 	height: 400px;
 	position: relative;
 	display: flex;
@@ -58,6 +60,9 @@ const ImageContainer = styled.div`
 	overflow: hidden;
 	border-radius: 19px;
 	border: 6px solid black;
+	cursor: pointer;
+	box-sizing: border-box;
+	background-color: white;
 `;
 
 const StyledImage = styled.img`
@@ -72,12 +77,12 @@ const StyledImage = styled.img`
 
 const slideUp = keyframes`
 	from {
-    transform: translateY(20px);
-    opacity: 0;
+		transform: translateY(20px);
+		opacity: 0;
 	}
 	to {
-    transform: translateY(0);
-    opacity: 1;
+		transform: translateY(0);
+		opacity: 1;
 	}
 `;
 
@@ -90,13 +95,12 @@ const TextOverlay = styled.div<{ animate: boolean }>`
 	padding: 10px;
 	border-radius: 5px;
 	max-width: 80%;
-	opacity: 0; /* 기본적으로 투명하게 설정 */
-
+	opacity: 0;
 	${({ animate }) =>
 		animate &&
 		css`
 			animation: ${slideUp} 0.9s ease-out;
-			opacity: 1; /* 애니메이션 시 보이도록 설정 */
+			opacity: 1;
 		`}
 `;
 
@@ -113,39 +117,24 @@ const UserInfo = styled.p`
 	color: white;
 `;
 
-function CenterMode({ cards }: { cards: CardType[] }) {
+function LargeCarousel({ cards }: { cards: CardType[] }) {
 	const [currentSlide, setCurrentSlide] = useState(0);
+	const navigate = useNavigate();
 
 	const settings = {
 		className: "center",
 		centerMode: true,
 		infinite: true,
-		centerPadding: "200px",
+		centerPadding: "20%", // 양쪽에 슬라이드가 보이도록 패딩 설정
 		slidesToShow: 1,
 		speed: 1500,
 		autoplay: true,
 		autoplaySpeed: 4000,
 		afterChange: (index: number) => setCurrentSlide(index),
-		responsive: [
-			{
-				breakpoint: 1500,
-				settings: {
-					slidesToShow: 3,
-				},
-			},
-			{
-				breakpoint: 1500,
-				settings: {
-					slidesToShow: 2,
-				},
-			},
-			{
-				breakpoint: 1500,
-				settings: {
-					slidesToShow: 1,
-				},
-			},
-		],
+	};
+
+	const handleSlideClick = (cardId: string) => {
+		navigate(`/live/${cardId}`);
 	};
 
 	return (
@@ -160,11 +149,12 @@ function CenterMode({ cards }: { cards: CardType[] }) {
 				autoplay={settings.autoplay}
 				autoplaySpeed={settings.autoplaySpeed}
 				afterChange={settings.afterChange}
-				responsive={settings.responsive}
 			>
 				{cards.map((card, index) => (
 					<div key={card.id}>
-						<ImageContainer>
+						<ImageContainer
+							onClick={() => handleSlideClick(card.id.toString())}
+						>
 							{card.image_uri && (
 								<StyledImage src={card.image_uri} alt={card.title} />
 							)}
@@ -182,4 +172,4 @@ function CenterMode({ cards }: { cards: CardType[] }) {
 	);
 }
 
-export default CenterMode;
+export default LargeCarousel;

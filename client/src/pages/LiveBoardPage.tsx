@@ -15,6 +15,7 @@ function LiveBoardPage() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [page, setPage] = useState<number>(0);
 	const [hasMore, setHasMore] = useState<boolean>(true);
+
 	const handleCategorySelect = (category: string) => {
 		setSelectedCategory(category);
 		setPage(0);
@@ -136,21 +137,7 @@ function LiveBoardPage() {
 				) : (
 					<div className="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
 						{filteredCards.map((card) => (
-							<LiveCard
-								key={card.id}
-								id={card.id}
-								title={card.title}
-								regist_user_id={card.regist_user_id}
-								opposite_user_id={card.opposite_user_id}
-								start_date={card.start_date}
-								end_date={card.end_date}
-								max_people_count={card.max_people_count}
-								category={card.category}
-								image_uri={card.image_uri}
-								live_uri={card.live_uri}
-								status={card.status}
-								currentPeopleCount={card.currentPeopleCount}
-							/>
+							<LiveCard key={card.id} card={card} />
 						))}
 					</div>
 				)}

@@ -34,12 +34,11 @@ interface LiveSlickCarouselProps {
 
 function LiveSlickCarousel({ cards }: LiveSlickCarouselProps) {
 	const settings = {
-		className: "center",
 		infinite: false,
 		centerPadding: "60px",
-		slidesToShow: 4, // 화면에 보일 카드 수를 설정
+		slidesToShow: 4,
 		swipeToSlide: true,
-		draggable: false, // 마우스 드래그 비활성화
+		draggable: false,
 		afterChange: (index: number) => {
 			console.log(
 				`Slider Changed to: ${index + 1}, background: #222; color: #bada55`,
@@ -50,7 +49,6 @@ function LiveSlickCarousel({ cards }: LiveSlickCarouselProps) {
 	return (
 		<SliderContainer>
 			<StyledSlider
-				className={settings.className}
 				infinite={settings.infinite}
 				centerPadding={settings.centerPadding}
 				slidesToShow={settings.slidesToShow}
@@ -60,20 +58,7 @@ function LiveSlickCarousel({ cards }: LiveSlickCarouselProps) {
 			>
 				{cards.map((cardData) => (
 					<div key={cardData.id}>
-						<LiveCard
-							id={cardData.id}
-							title={cardData.title}
-							regist_user_id={cardData.regist_user_id}
-							opposite_user_id={cardData.opposite_user_id}
-							start_date={cardData.start_date}
-							end_date={cardData.end_date}
-							max_people_count={cardData.max_people_count}
-							currentPeopleCount={cardData.currentPeopleCount}
-							category={cardData.category}
-							image_uri={cardData.image_uri}
-							live_uri={cardData.live_uri}
-							status={cardData.status}
-						/>
+						<LiveCard card={cardData} />
 					</div>
 				))}
 			</StyledSlider>

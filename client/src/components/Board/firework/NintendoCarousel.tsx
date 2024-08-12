@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import { liveBattleService } from "@/services/liveBattleService";
 import { LiveBattleCardInfo } from "@/types/live";
 import { createLiveStateBorder, CustomCSSProperties } from "@/utils/textBorder";
@@ -159,6 +159,7 @@ function Carousel({ selectedCategory }: { selectedCategory: string }) {
 	const [images, setImages] = useState<string[]>([]);
 	const [titles, setTitles] = useState<string[]>([]);
 	const [currentIndex, setCurrentIndex] = useState(0);
+	const [liveBattles, setLiveBattles] = useState<LiveBattleCardInfo[]>([]); // 추가
 
 	const navigate = useNavigate(); // Initialize navigate
 
@@ -176,15 +177,16 @@ function Carousel({ selectedCategory }: { selectedCategory: string }) {
 					0,
 					5,
 				);
-				const liveBattles: LiveBattleCardInfo[] = response.data || [];
 
+				const liveBattles: LiveBattleCardInfo[] = response.data || [];
 				const imageList = liveBattles
-					.map((battle) => battle.imageUri || "")
+					.map((battle) => battle.imageUri || noImage)
 					.filter(Boolean);
 				const titleList = liveBattles.map((battle) => battle.title);
 
 				setImages(imageList);
 				setTitles(titleList);
+				setLiveBattles(liveBattles); // 추가
 			} catch (error) {
 				console.error("Failed to fetch carousel images:", error);
 			}
@@ -212,7 +214,12 @@ function Carousel({ selectedCategory }: { selectedCategory: string }) {
 	};
 
 	const handleNavigation = () => {
-		navigate("/live"); // Navigate to the live page
+		const selectedBattle = liveBattles[currentIndex]; // 선택된 배틀 정보 가져오기
+		if (selectedBattle) {
+			navigate(`/live/${selectedBattle.id}`, {
+				state: { ...selectedBattle },
+			});
+		}
 	};
 
 	const liveStateBorder = createLiveStateBorder("#000000", 3);
