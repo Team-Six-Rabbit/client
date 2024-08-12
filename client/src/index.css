@@ -6,10 +6,10 @@
     font-family: 'DNFBitBitv2';
     font-style: normal;
     font-weight: 400;
-    src: url('assets/fonts/DNFBitBitv2.ttf') format('opentype');
+    src: url('/DNFBitBitv2.otf') format('opentype');
 }
 @font-face {
     font-family: 'BMHANNA_11yrs';
     font-style: normal;
-    src: url('assets/fonts/BMHANNA_11yrs.ttf') format('opentype');
+    src: url('/BMHANNA_11yrs_otf.otf') format('opentype');
 }
