@@ -13,10 +13,6 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 @Repository
 public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 
-	List<VoteInfo> findByEndDateBeforeAndCurrentState(Date now, int currentState);
-
-	List<VoteInfo> findByStartDateBeforeAndCurrentState(Date time, int currentState);
-
 	Page<VoteInfo> findAllByCurrentStateOrderByStartDateDesc(int id, Pageable pageable);
 
 	Page<VoteInfo> findAllByCurrentStateOrderByIdDesc(int status, Pageable pageable);
@@ -29,8 +25,8 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 
 	List<VoteInfo> findAllByStartDateBeforeAndCurrentState(Date deadLineTimeCheck, int currentState);
 
-	List<VoteInfo> findAllByStartDateAfterAndCurrentState(Date date, int currentState);
-
 	List<VoteInfo> findAllByEndDateAfterAndCurrentState(Date date, int currentState);
+
+	List<VoteInfo> findAllByEndDateBeforeAndCurrentState(Date date, int currentState);
 }
 

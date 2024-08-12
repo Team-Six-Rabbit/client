@@ -14,6 +14,7 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
+import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
 import com.woowahanrabbits.battle_people.domain.notify.service.NotifyService;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
@@ -31,6 +32,7 @@ public class BattleScheduler {
 	private final BattleApplyUserRepository battleApplyUserRepository;
 	private final VoteScheduler voteScheduler;
 	private final NotifyService notifyService;
+	private final NotifyRepository notifyRepository;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
@@ -89,14 +91,14 @@ public class BattleScheduler {
 	@Scheduled(cron = "0 * * * * *")
 	public void changeLiveStatus() {
 		Date date = new Date();
-		List<VoteInfo> endLives = voteInfoRepository.findAllByEndDateAfterAndCurrentState(date, 4);
+		List<VoteInfo> endLives = voteInfoRepository.findAllByEndDateBeforeAndCurrentState(date, 4);
 		for (VoteInfo voteInfo : endLives) {
 			voteInfo.setCurrentState(8);
 			voteScheduler.updateFinalVoteCount(voteInfo);
 			voteInfoRepository.save(voteInfo);
 		}
 
-		List<VoteInfo> startLives = voteInfoRepository.findAllByStartDateAfterAndCurrentState(new Date(), 3);
+		List<VoteInfo> startLives = voteInfoRepository.findAllByStartDateBeforeAndCurrentState(new Date(), 3);
 		for (VoteInfo voteInfo : startLives) {
 			voteInfo.setCurrentState(4);
 			voteInfoRepository.save(voteInfo);
@@ -113,6 +115,10 @@ public class BattleScheduler {
 		Date after5Mins = calendar.getTime();
 		List<VoteInfo> list = voteInfoRepository.findAllByStartDateBeforeAndCurrentState(after5Mins, 3);
 		for (VoteInfo voteInfo : list) {
+			if (notifyRepository.existsByBattleBoardIdAndNotifyCode(
+				battleRepository.findByVoteInfoId(voteInfo.getId()).getId(), 1)) {
+				continue;
+			}
 			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
 			notifyService.sendNotification(battleBoard.getOppositeUser(), battleBoard,
 				NotificationType.LIVE_NOTICE);
