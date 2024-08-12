@@ -26,7 +26,12 @@ const onResponseError = (error: AxiosError | Error) => {
 	if (axios.isAxiosError(error)) {
 		const originalRequest = error.config! as CustomAxiosRequestConfig;
 
-		if (error.response?.status === 401 && !originalRequest.retry) {
+		if (
+			error.response?.status === 401 &&
+			!originalRequest.retry &&
+			originalRequest.url &&
+			!originalRequest.url!.includes("/auth/refresh")
+		) {
 			originalRequest.retry = true;
 
 			return new Promise((resolve, reject) => {
