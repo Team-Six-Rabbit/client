@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class VoteController {
 	private final VoteService voteService;
+	private final BattleBoardRepository battleBoardRepository;
 
 	@PostMapping("/user-vote-battle/{battleId}")
 	@Operation(summary = "[]")
@@ -30,14 +33,20 @@ public class VoteController {
 		@RequestParam Integer voteOpinionIndex,
 		@LoginUser User user) {
 		try {
-			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "",
-					voteService.putVoteOpinion(user.getId(), battleId, voteOpinionIndex)));
+			BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElse(null);
+			if (battleBoard != null) {
+				Long voteId = battleBoard.getVoteInfo().getId();
+				return ResponseEntity.status(HttpStatus.OK)
+					.body(new ApiResponseDto<>("success", "",
+						voteService.putVoteOpinion(user.getId(), voteId, voteOpinionIndex)));
+			}
 		} catch (Exception e) {
 			System.out.println(e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(new ApiResponseDto<>("fail", "", null));
 		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body(new ApiResponseDto<>("fail", "no exist battleBoard", null));
 	}
 
 	@PostMapping("/user-vote-balance-game/{voteInfoId}")
