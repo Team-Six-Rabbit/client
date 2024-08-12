@@ -79,6 +79,8 @@ public class LiveChatServiceImpl implements LiveChatService {
 			.requestUserId(user.getId())
 			.idx(requestIdx++)
 			.userVote(userVoteOpinion.getVoteInfoIndex())
+			.nickname(user.getNickname())
+			.rating(user.getRating())
 			.build();
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
