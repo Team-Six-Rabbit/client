@@ -10,6 +10,7 @@ import EndedLive from "@/components/Live/EndLive";
 import useWebRTC from "@/hooks/useWebRTC";
 
 import useChatSocket from "@/hooks/useChatSocket";
+import { useAuthStore } from "@/stores/userAuthStore";
 
 function LivePage() {
 	const videoElement = useRef<HTMLVideoElement>(null);
@@ -28,8 +29,8 @@ function LivePage() {
 	);
 
 	const { battleId } = useParams();
-	const battleBoardId: number = battleId !== undefined ? Number(battleId) : 0; // 그냥 아무거나 default 0으로 넣어버림
-	const { messages, sendMessage } = useChatSocket(battleBoardId);
+	const { messages, sendMessage } = useChatSocket(battleId!);
+	const userId = useAuthStore().user?.id;
 
 	const handleMicClick = () => setIsMicMuted((prev) => !prev);
 	const handleVideoClick = () => setIsVideoDisabled((prev) => !prev);
@@ -66,7 +67,12 @@ function LivePage() {
 							onVideoClick={handleVideoClick}
 						/>
 					</div>
-					<ChatBox messages={messages} sendMessage={sendMessage} role={index} />
+					<ChatBox
+						messages={messages}
+						sendMessage={sendMessage}
+						role={index}
+						userId={userId!}
+					/>
 				</div>
 				{isTimeOver && <EndedLive winner={winner} />}
 			</div>
