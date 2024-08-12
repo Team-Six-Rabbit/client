@@ -3,6 +3,7 @@ import styled from "styled-components";
 import "@/assets/styles/scrollbar.css";
 import { authService } from "@/services/userAuthService";
 import { convertToTimeZone } from "@/utils/dateUtils";
+import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 
 const CreatedLivesContainer = styled.div`
 	width: 100%;
@@ -26,6 +27,7 @@ const CreatedLivesListItem = styled.li`
 	padding: 5px 20px;
 	margin-bottom: 10px;
 	font-size: 16px;
+	cursor: pointer; /* 클릭 가능하게 설정 */
 `;
 
 const Date = styled.span`
@@ -53,7 +55,7 @@ const DateStatusContainer = styled.div`
 `;
 
 interface CreatedLive {
-	id: string;
+	battleBoardId: number;
 	title: string;
 	date: string;
 	statusColor: string;
@@ -63,12 +65,13 @@ function CreatedLives() {
 	const [lives, setLives] = useState<CreatedLive[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [selectedBattleId, setSelectedBattleId] = useState<number | null>(null);
 
 	useEffect(() => {
 		const fetchLives = async () => {
 			try {
 				const data = await authService.getUserCreatedLives();
-				const formattedLives = data.map((live, index) => {
+				const formattedLives = data.map((live) => {
 					const formattedDate = convertToTimeZone(
 						live.registDate,
 						"Asia/Seoul",
@@ -77,7 +80,7 @@ function CreatedLives() {
 					const dateOnly = formattedDate.split(" ")[0]; // 'YYYY-MM-DD'
 
 					return {
-						id: String(index + 1),
+						battleBoardId: live.battleBoardId,
 						title: live.title,
 						date: `${dateOnly}`, // 'YYYY-MM-DD HH:MM'
 						statusColor: live.isWin ? "#BDE3FF" : "#FFC7C2",
@@ -94,6 +97,14 @@ function CreatedLives() {
 		fetchLives();
 	}, []);
 
+	const handleTitleClick = (battleId: number) => {
+		setSelectedBattleId(battleId);
+	};
+
+	const closeModal = () => {
+		setSelectedBattleId(null);
+	};
+
 	if (loading) {
 		return <div>Loading...</div>;
 	}
@@ -106,7 +117,10 @@ function CreatedLives() {
 		<CreatedLivesContainer className="custom-scrollbar">
 			<CreatedLivesList>
 				{lives.map((live) => (
-					<CreatedLivesListItem key={live.id}>
+					<CreatedLivesListItem
+						key={live.battleBoardId}
+						onClick={() => handleTitleClick(live.battleBoardId)}
+					>
 						<TitleContainer>{live.title}</TitleContainer>
 						<DateStatusContainer>
 							<Date>{live.date}</Date>
@@ -115,6 +129,13 @@ function CreatedLives() {
 					</CreatedLivesListItem>
 				))}
 			</CreatedLivesList>
+
+			{selectedBattleId !== null && (
+				<EndedLivePreviewModal
+					battleId={selectedBattleId}
+					onClose={closeModal}
+				/>
+			)}
 		</CreatedLivesContainer>
 	);
 }

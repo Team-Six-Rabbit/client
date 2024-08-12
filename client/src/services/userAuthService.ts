@@ -239,6 +239,22 @@ export const authService = {
 			throw error;
 		}
 	},
+
+	getVoteDetail: async (voteInfoId: number): Promise<VoteDetail> => {
+		try {
+			const response = await axiosInstance.get<ApiResponse<VoteDetail>>(
+				`/user/profile/votes/${voteInfoId}`,
+			);
+
+			if (response.data.code === "success" && response.data.data) {
+				return response.data.data;
+			}
+			throw new Error(response.data.msg || "Failed to fetch vote detail");
+		} catch (error) {
+			console.error("Error fetching vote detail: ", error);
+			throw error;
+		}
+	},
 };
 
 export interface UserWinHistory {
@@ -249,9 +265,9 @@ export interface UserWinHistory {
 }
 
 export interface ApiCreatedLive {
-	id: number;
+	battleBoardId: number;
 	title: string;
-	registDate: string; // 여기서 `string`으로 정의
+	registDate: string;
 	isWin: boolean;
 }
 
@@ -260,4 +276,14 @@ export interface VoteInfo {
 	title: string;
 	registDate: string;
 	isWin: boolean;
+}
+
+export interface VoteDetail {
+	totalCount: number;
+	opinions: {
+		index: number;
+		opinion: string;
+		count: number;
+		percentage: number;
+	}[];
 }
