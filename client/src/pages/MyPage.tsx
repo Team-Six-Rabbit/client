@@ -11,11 +11,13 @@ import profileImagePlaceholder from "@/assets/images/default.png";
 import "@/assets/styles/shake.css";
 import MyPageContent from "@/components/MyPageContent";
 import { useAuthStore } from "@/stores/userAuthStore";
+import penIcon from "@/assets/images/pen.png";
 
 function MyPage() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [isEditing, setIsEditing] = useState(false);
+	const [isEditingNickname, setIsEditingNickname] = useState(false);
 	const [errors, setErrors] = useState({ nickname: "" });
 	const [doShake, setDoShake] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,6 +32,11 @@ function MyPage() {
 	const [profileImage, setProfileImage] = useState<string>(
 		user!.imgUrl || profileImagePlaceholder,
 	);
+
+	const [nickname, setNickname] = useState<string>(user!.nickname);
+	const [originalNickname, setOriginalNickname] = useState<string>(
+		user!.nickname,
+	); // 원래 닉네임 저장
 
 	useEffect(() => {
 		if (location.pathname === "/my-page") {
@@ -48,6 +55,74 @@ function MyPage() {
 			setErrors({ nickname: "" });
 		}
 		setIsEditing(!isEditing);
+	};
+
+	const handleNicknameEditClick = () => {
+		setIsEditingNickname(true);
+	};
+
+	const handleNicknameInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const newNickname = e.target.value;
+
+		if (newNickname.length <= 12) {
+			setNickname(newNickname);
+		}
+
+		if (newNickname === originalNickname) {
+			setErrors({ nickname: "" });
+			return;
+		}
+
+		if (!newNickname) {
+			setErrors({ nickname: "닉네임을 입력해 주세요." });
+			return;
+		}
+
+		// 닉네임 중복 확인 로직
+		authService.checkNicknameAvailability(newNickname).then((isAvailable) => {
+			if (!isAvailable) {
+				setErrors({ nickname: "이미 사용 중인 닉네임입니다." });
+			} else {
+				setErrors({ nickname: "" });
+			}
+		});
+	};
+
+	const handleNicknameSaveClick = async () => {
+		if (!nickname) {
+			setDoShake(true);
+			setErrors({ nickname: "닉네임을 입력해 주세요." });
+			setTimeout(() => setDoShake(false), 500);
+			return;
+		}
+
+		if (nickname === originalNickname) {
+			setIsEditingNickname(false);
+			return;
+		}
+
+		if (errors.nickname) {
+			setDoShake(true);
+			setTimeout(() => setDoShake(false), 500);
+			return;
+		}
+
+		// 닉네임 저장 로직
+		try {
+			await authService.updateUserProfile({ ...user!, nickname });
+			setOriginalNickname(nickname); // 저장된 닉네임을 원래 닉네임으로 설정
+			setIsEditingNickname(false);
+			setUser({ ...user!, nickname }); // 전역 상태에 업데이트
+		} catch (error) {
+			setDoShake(true);
+			setTimeout(() => setDoShake(false), 500);
+		}
+	};
+
+	const handleNicknameCancelClick = () => {
+		setNickname(originalNickname); // 원래 닉네임으로 복구
+		setErrors({ nickname: "" });
+		setIsEditingNickname(false);
 	};
 
 	const handleSaveClick = async () => {
@@ -98,7 +173,7 @@ function MyPage() {
 		setProfileImage(profileImagePlaceholder);
 	};
 
-	const { email, nickname, rating } = user!;
+	const { email, rating } = user!;
 
 	return (
 		<div>
@@ -151,8 +226,8 @@ function MyPage() {
 								</button>
 								{isEditing && (
 									<button
-										className={`save-btn ${doShake ? "shake" : ""}`}
 										onClick={handleSaveClick}
+										className={`save-btn ${doShake ? "shake" : ""}`}
 									>
 										Save
 									</button>
@@ -164,16 +239,46 @@ function MyPage() {
 						<div className="profile-info">
 							<label>이메일</label>
 							<input type="text" value={email} readOnly />
-							<label>닉네임</label>
+							<label>
+								닉네임
+								{!isEditingNickname && ( // 닉네임 수정 중이 아닐 때만 아이콘을 표시
+									<img
+										className="edit-icon-small"
+										src={penIcon}
+										alt="닉네임 수정"
+										onClick={handleNicknameEditClick}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" || e.key === " ") {
+												handleNicknameEditClick();
+											}
+										}}
+										role="button" // 역할을 명시적으로 버튼으로 설정
+										tabIndex={0} // 키보드 포커스 가능하도록 설정
+									/>
+								)}
+							</label>
 							<div className="input-with-error">
 								<input
 									type="text"
 									name="nickname"
 									value={nickname}
-									readOnly={!isEditing}
-									// 주석 처리된 handleInputChange 부분
-									// onChange={handleInputChange}
+									onChange={handleNicknameInputChange}
+									readOnly={!isEditingNickname}
+									maxLength={12}
+									className={isEditingNickname ? "editable" : ""}
 								/>
+								{isEditingNickname && (
+									<div className="nickname-edit-buttons">
+										<button
+											onClick={handleNicknameSaveClick}
+											className={`save-btn ${doShake ? "shake" : ""}`}
+											style={{ backgroundColor: "#1D3D6B", color: "#fff" }}
+										>
+											저장
+										</button>
+										<button onClick={handleNicknameCancelClick}>취소</button>
+									</div>
+								)}
 								{errors.nickname && (
 									<div className="error-message">{errors.nickname}</div>
 								)}

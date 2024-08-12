@@ -10,7 +10,6 @@
 	margin-left: auto; /* 가운데 정렬 */
 	margin-right: auto; /* 가운데 정렬 */
 	margin-bottom: 70px; /* 상단과 동일한 패딩 */
-	min-width: 700px;
 }
 
 .mypage-header,
@@ -126,20 +125,90 @@
 .profile-info label {
 	margin-top: 10px;
 	color: #1D3D6B;
+	display: flex;
+	align-items: center;
 }
 
 .profile-info input {
 	margin-top: 5px;
 	margin-bottom: 10px;
 	padding: 10px;
-	border: 2px solid #1D3D6B; /* 테두리 색상 */
+	border: 2px solid #1D3D6B;
 	border-radius: 5px;
-	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 	width: 100%;
 }
 
+.profile-info .edit-icon-small {
+	margin-left: 5px;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
 .input-with-error {
+    width: 100%;
+    position: relative;
+    padding-right: 110px; /* Save, Cancel 버튼 공간 확보 */
+    border: 2px solid #1D3D6B;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.input-with-error input {
+    width: 200px;
+    border: none;
+    padding: 10px;
+    box-sizing: border-box;
+	outline: none; /* 포커스 시에도 테두리가 나타나지 않도록 설정 */
+}
+
+.nickname-edit-container {
+	display: flex;
+	align-items: center;
 	width: 100%;
+	position: relative;
+}
+
+.nickname-edit-container input {
+	width: 100%; /* 입력 칸의 전체 너비 */
+	padding-right: 110px; /* 버튼 영역을 위한 패딩 */
+	border: none;
+	box-sizing: border-box;
+}
+
+.nickname-edit-buttons {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.nickname-edit-buttons button {
+    margin-left: 5px;
+    padding: 5px 10px;
+    border: 3px solid #1D3D6B;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #1D3D6B;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	white-space: nowrap;
+}
+
+.save-btn {
+	background-color: #1D3D6B;
+	color: #fff;
+}
+
+.error-message {
+    position: absolute;
+    top: -20px;
+    right: 0;
+    color: red;
+    font-size: 10pt;
 }
 
 /* 버튼 그룹 스타일 */
@@ -183,42 +252,3 @@
 	cursor: pointer;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-/* 
-.input-with-button {
-	display: flex;
-	align-items: center;
-	width: 100%;
-}
-
-.mypage-nav {
-	display: flex;
-	justify-content: center;
-	list-style: none;
-	padding: 0;
-	margin: 20px 0;
-}
-
-.mypage-nav li {
-	margin: 0 10px;
-}
-
-.nav-link {
-	padding: 10px 20px;
-	border: 2px solid #1D3D6B; 
-	border-radius: 5px;
-	text-decoration: none;
-	color: #1D3D6B;
-}
-
-.active {
-	background-color: #1D3D6B;
-	color: #fff;
-} */
-
-/* .mypage-content {
-	width: 100%;
-	max-width: 800px;
-	border: 2px solid #1D3D6B; 테두리 색상
-	border-radius: 5px;
-	padding: 20px;
-} */
