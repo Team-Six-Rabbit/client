@@ -96,8 +96,14 @@ public class VoteServiceImpl implements VoteService {
 			return null;
 		}
 
-		CurrentVoteResponseDto currentVoteResponseDto = putVoteOpinion(voteRequest.getUserId(),
-			battleBoard.getVoteInfo().getId(), voteRequest.getVoteInfoIndex());
+		CurrentVoteResponseDto currentVoteResponseDto;
+		if (battleBoard.getRegistUser().getId() == voteRequest.getUserId()
+			|| battleBoard.getOppositeUser().getId() == voteRequest.getUserId()) {
+			currentVoteResponseDto = resultDto(battleBoard.getVoteInfo().getId());
+		} else {
+			currentVoteResponseDto = putVoteOpinion(voteRequest.getUserId(),
+				battleBoard.getVoteInfo().getId(), voteRequest.getVoteInfoIndex());
+		}
 
 		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
 			.channelId(battleBoardId)
@@ -152,19 +158,22 @@ public class VoteServiceImpl implements VoteService {
 
 		int totalCount = voteCountOpt1 + voteCountOpt2;
 
-		if (totalCount == 0) {
-			totalCount = 100;
+		int votePerOpt1 = 0;
+		int votePerOpt2 = 0;
+
+		if (totalCount != 0) {
+			votePerOpt1 = 100 * voteCountOpt1 / totalCount;
+			votePerOpt2 = 100 - votePerOpt1;
 		}
 
 		List<VoteOpinion> voteOpinions = voteOpinionRepository.findByVoteInfoId(voteInfoId);
 
 		List<VoteOpinionDtoWithVoteCount> opinions = new ArrayList<>();
 		opinions.add(new VoteOpinionDtoWithVoteCount(0, voteOpinions.get(0).getOpinion(), voteCountOpt1,
-			100 * voteCountOpt1 / totalCount));
+			votePerOpt1));
 
 		opinions.add(new VoteOpinionDtoWithVoteCount(1, voteOpinions.get(1).getOpinion(), voteCountOpt2,
-
-			100 - (100 * voteCountOpt1 / totalCount)));
+			votePerOpt2));
 
 		return new CurrentVoteResponseDto(voteCountOpt1 + voteCountOpt2, opinions);
 	}
