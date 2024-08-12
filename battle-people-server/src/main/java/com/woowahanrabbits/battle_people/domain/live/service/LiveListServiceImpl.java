@@ -117,7 +117,9 @@ public class LiveListServiceImpl implements LiveListService {
 			new LiveEndDetailDto.BroadcastUser(oppositeUser.getId(), oppositeUser.getNickname(),
 				oppositeUser.getImgUrl(), oppositeUser.getRating(), voteOpinions.get(1).getOpinion()),
 			new LiveEndDetailDto.VoteResult(registPrePercent, 100 - registPrePercent),
+			new LiveEndDetailDto.VoteResult(registPreCount, oppositePreCount),
 			new LiveEndDetailDto.VoteResult(registFinalPercent, 100 - registFinalPercent),
+			new LiveEndDetailDto.VoteResult(registFinalCount, oppositeFinalCount),
 			voteInfo.getCategory(),
 			battleBoard.getImageUrl(),
 			battleBoard.getVoteInfo().getDetail()
