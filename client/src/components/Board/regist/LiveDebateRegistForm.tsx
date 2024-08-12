@@ -20,22 +20,44 @@ import { battleService } from "@/services/battleService";
 import { authService } from "@/services/userAuthService";
 
 const Options = styled.div`
+	display: flex;
+	flex-direction: column;
+	border-radius: 5px;
+	padding: 5px;
+	background-color: #ffffff;
 	position: absolute;
 	top: 100%;
 	left: 0;
-	right: 0;
-	background-color: white;
-	border: 1px solid #ccc;
-	border-radius: 10px;
-	z-index: 100;
+	width: 100%;
+	z-index: 1000;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	max-height: 200px; /* 고정 크기 */
+	overflow-y: auto; /* 스크롤 추가 */
+	/* Optional: Custom scrollbar styling */
+	&::-webkit-scrollbar {
+		width: 8px;
+	}
+	&::-webkit-scrollbar-thumb {
+		background-color: #000000;
+		border-radius: 10px;
+	}
+	&::-webkit-scrollbar-thumb:hover {
+		background-color: #aaaaaa;
+	}
+	&::-webkit-scrollbar-track {
+		background-color: #f0f0f0;
+		border-radius: 10px;
+	}
 `;
 
 const Option = styled.div`
-	padding: 8px;
+	border-radius: 5px;
+	padding: 12px 16px;
+	transition: 300ms;
+	background-color: #ffffff;
+	font-size: 14px;
+	color: #000000;
 	cursor: pointer;
-	transition: background-color 0.2s;
-
 	&:hover {
 		background-color: #f0f0f0;
 	}
@@ -236,6 +258,7 @@ function LiveDebateRegistForm() {
 							type="text"
 							placeholder="제목을 입력하세요"
 							value={title}
+							maxLength={16}
 							onChange={(e) => {
 								setTitle(e.target.value);
 								setErrors((prevErrors) => ({
@@ -308,6 +331,7 @@ function LiveDebateRegistForm() {
 					<Input
 						id="authorChoice"
 						type="text"
+						maxLength={16}
 						placeholder="작성자 선택지를 입력하세요"
 						value={authorChoice}
 						onChange={(e) => {

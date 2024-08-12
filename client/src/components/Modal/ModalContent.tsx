@@ -16,6 +16,8 @@ interface OpponentsProps {
 	status: "upcoming" | "ended" | "balance";
 	preResult?: Result;
 	finalResult?: Result;
+	preResultCount?: Result;
+	finalResultCount?: Result;
 	opinions?: Opinion[];
 }
 
@@ -26,6 +28,8 @@ function ModalContent({
 	status,
 	preResult,
 	finalResult,
+	preResultCount,
+	finalResultCount,
 	opinions = [],
 }: OpponentsProps) {
 	const oppositeUserOpinion =
@@ -53,6 +57,8 @@ function ModalContent({
 						title="사전 투표"
 						percentageRegisterOpinion={preResult.percentageRegisterOpinion}
 						percentageOppositeOpinion={preResult.percentageOppositeOpinion}
+						countRegisterOpinion={preResultCount?.percentageRegisterOpinion}
+						countOppositeOpinion={preResultCount?.percentageOppositeOpinion}
 						registerColor="#FFC7C2"
 						oppositeColor="#BDE3FF"
 					/>
@@ -60,6 +66,8 @@ function ModalContent({
 						title="최종 투표"
 						percentageRegisterOpinion={finalResult.percentageRegisterOpinion}
 						percentageOppositeOpinion={finalResult.percentageOppositeOpinion}
+						countRegisterOpinion={finalResultCount?.percentageRegisterOpinion}
+						countOppositeOpinion={finalResultCount?.percentageOppositeOpinion}
 						registerColor="#FFC7C2"
 						oppositeColor="#BDE3FF"
 					/>
@@ -71,6 +79,8 @@ function ModalContent({
 						title="투표 결과"
 						percentageRegisterOpinion={opinions[0].percentage}
 						percentageOppositeOpinion={opinions[1].percentage}
+						countRegisterOpinion={opinions[0].count}
+						countOppositeOpinion={opinions[1].count}
 						registerColor="#F66C23"
 						oppositeColor="#0B68EC"
 					/>

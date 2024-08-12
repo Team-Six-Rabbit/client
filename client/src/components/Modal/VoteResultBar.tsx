@@ -10,6 +10,8 @@ interface VoteResultBarProps {
 	title: string;
 	percentageRegisterOpinion: number;
 	percentageOppositeOpinion: number;
+	countRegisterOpinion?: number;
+	countOppositeOpinion?: number;
 	registerColor: string;
 	oppositeColor: string;
 }
@@ -18,6 +20,8 @@ function VoteResultBar({
 	title,
 	percentageRegisterOpinion,
 	percentageOppositeOpinion,
+	countRegisterOpinion = 0,
+	countOppositeOpinion = 0,
 	registerColor,
 	oppositeColor,
 }: VoteResultBarProps) {
@@ -36,8 +40,12 @@ function VoteResultBar({
 				/>
 			</ProgressBarContainer>
 			<VoteRow>
-				<VoteText>{percentageRegisterOpinion}%</VoteText>
-				<VoteText>{percentageOppositeOpinion}%</VoteText>
+				<VoteText>
+					{percentageRegisterOpinion}%({countRegisterOpinion}명)
+				</VoteText>
+				<VoteText>
+					{percentageOppositeOpinion}%({countOppositeOpinion}명)
+				</VoteText>
 			</VoteRow>
 		</StyledVoteColumn>
 	);
