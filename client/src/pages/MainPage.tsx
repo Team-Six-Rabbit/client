@@ -72,6 +72,30 @@ function MainPage() {
 				setIsLoading(true);
 				console.log("Fetching live data...");
 
+				// Fetch data for the LargeCarousel independently
+				const largeCarouselResponse = await liveBattleService.getActiveList(
+					undefined,
+					0,
+					5,
+				);
+				const largeCarouselCards = largeCarouselResponse.data!.map(
+					(battle) => ({
+						id: battle.id,
+						title: battle.title,
+						regist_user_id: battle.registerUser.nickname.toString(),
+						opposite_user_id: battle.oppositeUser.nickname.toString(),
+						start_date: battle.startDate,
+						end_date: battle.endDate,
+						max_people_count: battle.currentPeopleCount || 0,
+						currentPeopleCount: battle.currentPeopleCount || 0,
+						category: battle.category,
+						image_uri: battle.imageUri || "",
+						live_uri: battle.roomId,
+						status: "live",
+					}),
+				);
+
+				// Fetch data by categories
 				const promises = categories
 					.filter((category) => category.id !== 7)
 					.map(async (category) => {
@@ -106,22 +130,20 @@ function MainPage() {
 
 				const interested: Record<number, CardType[]> = {};
 				const others: Record<number, CardType[]> = {};
-				const largeCarouselData: CardType[] = [];
 
 				results.forEach(({ categoryId, cards }) => {
 					if (selectedInterests.includes(categoryId)) {
-						largeCarouselData.push(...cards.slice(0, 3));
 						interested[categoryId] = cards;
 					} else {
 						others[categoryId] = cards;
 					}
 				});
 
-				setLargeCarouselCards(largeCarouselData);
+				setLargeCarouselCards(largeCarouselCards);
 				setInterestedCards(interested);
 				setOtherCards(others);
 
-				console.log("Large Carousel Cards:", largeCarouselData);
+				console.log("Large Carousel Cards:", largeCarouselCards);
 				console.log("Interested Cards:", interested);
 				console.log("Other Cards:", others);
 			} catch (error) {

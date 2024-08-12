@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CardType } from "@/types/Board/liveBoardCard";
-import { LiveStatus } from "@/types/Board/liveStatus";
 import UpcomingLivePreviewModal from "@/components/Modal/UpcomingLivePreviewModal";
 import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import { createLiveStateBorder } from "@/utils/textBorder";
 import { convertToTimeZone } from "@/utils/dateUtils";
 import noImage from "@/assets/images/noImage.png"; // Make sure this path is correct
 
-const getLiveStatusBackgroundColor = (status: LiveStatus, index: number) => {
+// Define these functions inside the LiveCard component or outside if you want to reuse them
+const getLiveStatusBackgroundColor = (status: string, index: number) => {
 	if (status === "live") return "bg-transparent";
 	if (status === "ended") return "bg-gray-500";
 	const colors = ["bg-orange", "bg-blue", "bg-yellow", "bg-olive"];
 	return colors[index % colors.length];
 };
 
-const getLiveStatusBackgroundText = (status: LiveStatus) => {
+const getLiveStatusBackgroundText = (status: string) => {
 	switch (status) {
 		case "live":
 			return "라이브";
@@ -28,24 +28,18 @@ const getLiveStatusBackgroundText = (status: LiveStatus) => {
 	}
 };
 
-function LiveCard({
-	id,
-	image_uri,
-	title,
-	regist_user_id,
-	status,
-	start_date,
-	currentPeopleCount,
-}: CardType) {
+function LiveCard({ card }: { card: CardType }) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const navigate = useNavigate();
 
 	const handleCardClick = () => {
-		if (status !== "live") {
+		if (card.status !== "live") {
 			setIsModalOpen(true);
 		}
-		if (status === "live") {
-			navigate("/live");
+		if (card.status === "live") {
+			navigate(`/live/${card.id}`, {
+				state: { ...card },
+			});
 		}
 	};
 
@@ -60,10 +54,10 @@ function LiveCard({
 	};
 
 	const renderStatusOverlay = () => {
-		if (status === "live") {
+		if (card.status === "live") {
 			return (
 				<div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded z-10">
-					{getLiveStatusBackgroundText(status)}
+					라이브
 				</div>
 			);
 		}
@@ -73,13 +67,13 @@ function LiveCard({
 		return (
 			<>
 				<div
-					className={`absolute inset-0 ${getLiveStatusBackgroundColor(status, id)} opacity-75 flex items-center justify-center`}
+					className={`absolute inset-0 ${getLiveStatusBackgroundColor(card.status, card.id)} opacity-75 flex items-center justify-center`}
 				/>
 				<div
 					className="absolute inset-0 flex items-center justify-center text-white text-3xl"
 					style={borderStyles}
 				>
-					{getLiveStatusBackgroundText(status)}
+					{getLiveStatusBackgroundText(card.status)}
 				</div>
 			</>
 		);
@@ -97,34 +91,37 @@ function LiveCard({
 			>
 				<div className="live-card-image h-44 relative overflow-hidden">
 					<img
-						src={image_uri || noImage} // Use noImage if image_uri is null or undefined
-						alt={title}
+						src={card.image_uri || noImage} // Use noImage if image_uri is null or undefined
+						alt={card.title}
 						className="w-full h-full object-cover"
 					/>
 					{renderStatusOverlay()}
 				</div>
 				<div className="live-card-info bg-white py-4 px-3 border-t-4 border-solid">
-					<h3 className="text-xl mb-2 font-medium">{title}</h3>
+					<h3 className="text-xl mb-2 font-medium">{card.title}</h3>
 					<div className="flex justify-between items-center">
-						<p className="text-base text-black">{regist_user_id}</p>
-						{status === "upcoming" && start_date && (
+						<p className="text-base text-black">{card.regist_user_id}</p>
+						{card.status === "upcoming" && card.start_date && (
 							<div className="text-sm text-black">
-								{convertToTimeZone(start_date, "Asia/Seoul")}
+								{convertToTimeZone(card.start_date, "Asia/Seoul")}
 							</div>
 						)}
-						{status === "live" && (
+						{card.status === "live" && (
 							<div className="text-sm text-black">
-								{currentPeopleCount}명 시청중
+								{card.currentPeopleCount}명 시청중
 							</div>
 						)}
 					</div>
 				</div>
 			</div>
-			{isModalOpen && status === "upcoming" && (
-				<UpcomingLivePreviewModal battleId={id} onClose={handleCloseModal} />
+			{isModalOpen && card.status === "upcoming" && (
+				<UpcomingLivePreviewModal
+					battleId={card.id}
+					onClose={handleCloseModal}
+				/>
 			)}
-			{isModalOpen && status === "ended" && (
-				<EndedLivePreviewModal battleId={id} onClose={handleCloseModal} />
+			{isModalOpen && card.status === "ended" && (
+				<EndedLivePreviewModal battleId={card.id} onClose={handleCloseModal} />
 			)}
 		</>
 	);
