@@ -108,6 +108,7 @@ interface ItemBoxProps {
 	isVideoDisabled: boolean;
 	onMicClick: () => void;
 	onVideoClick: () => void;
+	sendItem: (userId: number, targetIndex: number, itemCode: number) => void;
 }
 
 function ItemBox({
@@ -115,6 +116,8 @@ function ItemBox({
 	isVideoDisabled,
 	onMicClick,
 	onVideoClick,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	sendItem,
 }: ItemBoxProps) {
 	console.debug(
 		isMicMuted,

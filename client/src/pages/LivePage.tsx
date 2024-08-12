@@ -11,6 +11,8 @@ import useWebRTC from "@/hooks/useWebRTC";
 
 import useChatSocket from "@/hooks/useChatSocket";
 import { useAuthStore } from "@/stores/userAuthStore";
+import SpeakRequestList from "@/components/Live/SpeakRequestList";
+import useLiveSocket from "@/hooks/useLiveSocket";
 
 function LivePage() {
 	navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
@@ -26,7 +28,7 @@ function LivePage() {
 	const [isMicMuted, setIsMicMuted] = useState(false);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(false);
 
-	const { joinSession, subscribers, index } = useWebRTC(
+	const { joinSession, subscribers, index, connectionId } = useWebRTC(
 		isMicMuted,
 		isVideoDisabled,
 		// videoElement,
@@ -35,6 +37,8 @@ function LivePage() {
 
 	const { battleId } = useParams();
 	const { messages, sendMessage } = useChatSocket(battleId!);
+	const { speakRequests, sendSpeak, voteA, voteB, sendVote, sendItem } =
+		useLiveSocket(battleId!);
 	const userId = useAuthStore().user?.id;
 
 	const handleMicClick = () => setIsMicMuted((prev) => !prev);
@@ -68,9 +72,13 @@ function LivePage() {
 					<Timer duration={520} onTimeOver={() => setIsTimeOver(true)} />
 					<div className="flex-col w-full justify-center items-center h-144">
 						<LiveVote
+							userId={userId!}
+							voteA={voteA}
+							voteB={voteB}
 							title="오늘 저녁 메뉴 추천"
 							optionA="치킨을 먹자"
 							optionB="마라탕을 먹자"
+							sendVote={sendVote}
 							onVoteEnd={onVoteEnd}
 						/>
 						<VideoScreen subscribers={subscribers} />
@@ -79,14 +87,23 @@ function LivePage() {
 							isVideoDisabled={isVideoDisabled}
 							onMicClick={handleMicClick}
 							onVideoClick={handleVideoClick}
+							sendItem={sendItem}
 						/>
 					</div>
-					<ChatBox
-						messages={messages}
-						sendMessage={sendMessage}
-						role={index}
-						userId={userId!}
-					/>
+					<div className="flex flex-col h-150 w-1/4 ms-6 mt-2">
+						<SpeakRequestList
+							userId={userId!}
+							connectionId={connectionId.current}
+							speakRequests={speakRequests}
+							sendSpeak={sendSpeak}
+							role={index} // 지금 나의 역할(0,1,null) 추후에 OpenVidu로 받을 예정
+						/>
+						<ChatBox
+							messages={messages}
+							sendMessage={sendMessage}
+							userId={userId!}
+						/>
+					</div>
 				</div>
 				{isTimeOver && <EndedLive winner={winner} />}
 			</div>
