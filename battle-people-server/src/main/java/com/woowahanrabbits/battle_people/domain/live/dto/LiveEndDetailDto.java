@@ -16,7 +16,9 @@ public class LiveEndDetailDto {
 	private BroadcastUser oppositeUser;
 
 	private VoteResult preResult;
+	private VoteResult preResultCount;
 	private VoteResult finalResult;
+	private VoteResult finalResultCount;
 
 	private int category;
 	private String imageUri;
