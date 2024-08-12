@@ -13,6 +13,11 @@ import useChatSocket from "@/hooks/useChatSocket";
 import { useAuthStore } from "@/stores/userAuthStore";
 
 function LivePage() {
+	navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+		setTimeout(() => {
+			stream.getTracks().forEach((track) => track.stop());
+		}, 10000);
+	});
 	const videoElement = useRef<HTMLVideoElement>(null);
 	const canvasElement = useRef<HTMLCanvasElement>(null);
 

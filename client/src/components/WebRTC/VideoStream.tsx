@@ -12,15 +12,17 @@ function VideoStream({ className, streamManager }: VideoStreamProps) {
 
 	useEffect(() => {
 		if (streamManager && videoRef.current) {
-			videoRef.current.innerHTML = "";
-			streamManager.addVideoElement(videoRef.current);
+			videoRef.current.srcObject = streamManager.stream.getMediaStream();
+			videoRef.current.muted = true;
+			videoRef.current.play();
+			if (!streamManager.stream.isLocal()) videoRef.current.muted = false;
 		}
 	}, [streamManager]);
 
 	return (
 		<div className={className}>
 			{streamManager ? (
-				<video ref={videoRef} autoPlay playsInline>
+				<video ref={videoRef} autoPlay playsInline preload="metadata">
 					<track kind="captions" srcLang="en" src="captions_en.vtt" default />
 				</video>
 			) : (
