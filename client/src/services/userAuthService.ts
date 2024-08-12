@@ -230,6 +230,7 @@ export const authService = {
 			);
 
 			if (response.data.code === "success" && response.data.data) {
+				console.log(response);
 				return response.data.data;
 			}
 			throw new Error(response.data.msg || "Failed to fetch vote infos");
@@ -248,12 +249,14 @@ export interface UserWinHistory {
 }
 
 export interface ApiCreatedLive {
+	id: number;
 	title: string;
 	registDate: string; // 여기서 `string`으로 정의
 	isWin: boolean;
 }
 
 export interface VoteInfo {
+	id: number;
 	title: string;
 	registDate: string;
 	isWin: boolean;
