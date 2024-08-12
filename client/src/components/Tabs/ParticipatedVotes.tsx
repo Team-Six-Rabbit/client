@@ -3,6 +3,7 @@ import styled from "styled-components";
 import "@/assets/styles/scrollbar.css";
 import { authService } from "@/services/userAuthService";
 import { convertToTimeZone } from "@/utils/dateUtils";
+import ParticipatedVotesModal from "@/components/Modal/ParticipatedVotesModal";
 
 const VotesContainer = styled.div`
 	width: 100%;
@@ -26,6 +27,7 @@ const VotesListItem = styled.li`
 	padding: 5px 20px;
 	margin-bottom: 10px;
 	font-size: 16px;
+	cursor: pointer;
 `;
 
 const VoteDate = styled.span`
@@ -53,7 +55,7 @@ const DateStatusContainer = styled.div`
 `;
 
 interface Vote {
-	id: string;
+	id: number;
 	title: string;
 	date: string;
 	statusColor: string;
@@ -61,6 +63,7 @@ interface Vote {
 
 function ParticipatedVotesList() {
 	const [votes, setVotes] = useState<Vote[]>([]);
+	const [selectedVoteId, setSelectedVoteId] = useState<number | null>(null);
 	const [, setLoading] = useState(true);
 	const [, setError] = useState<string | null>(null);
 
@@ -68,7 +71,7 @@ function ParticipatedVotesList() {
 		const fetchVotes = async () => {
 			try {
 				const data = await authService.getUserVotes(); // API 호출
-				const formattedVotes = data.map((vote, index) => {
+				const formattedVotes = data.map((vote) => {
 					const formattedDate = convertToTimeZone(
 						vote.registDate,
 						"Asia/Seoul",
@@ -77,7 +80,7 @@ function ParticipatedVotesList() {
 					const dateOnly = formattedDate.split(" ")[0]; // 'YYYY-MM-DD'
 
 					return {
-						id: String(index + 1),
+						id: vote.id,
 						title: vote.title,
 						date: `${dateOnly}`, // 날짜를 로컬 형식으로 변환
 						statusColor: vote.isWin ? "#BDE3FF" : "#FFC7C2", // 승리 여부에 따른 색상 설정
@@ -98,7 +101,10 @@ function ParticipatedVotesList() {
 		<VotesContainer className="custom-scrollbar">
 			<VotesList>
 				{votes.map((vote) => (
-					<VotesListItem key={vote.id}>
+					<VotesListItem
+						key={vote.id}
+						onClick={() => setSelectedVoteId(Number(vote.id))}
+					>
 						<TitleContainer>{vote.title}</TitleContainer>
 						<DateStatusContainer>
 							<VoteDate>{vote.date}</VoteDate>
@@ -107,6 +113,12 @@ function ParticipatedVotesList() {
 					</VotesListItem>
 				))}
 			</VotesList>
+			{selectedVoteId && (
+				<ParticipatedVotesModal
+					voteId={selectedVoteId}
+					onClose={() => setSelectedVoteId(null)} // 모달 닫기
+				/>
+			)}
 		</VotesContainer>
 	);
 }
