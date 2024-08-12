@@ -244,6 +244,8 @@ public class BattleServiceImpl implements BattleService {
 			.build();
 		battleApplyUserRepository.save(battleApplyUser);
 
+		currentPeopleCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
+
 		//최대 인원 충족 체크
 		if (currentPeopleCount >= battleBoard.getMaxPeopleCount()) {
 			voteScheduler.updatePreVoteCount(battleBoard);
