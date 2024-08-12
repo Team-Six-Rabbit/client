@@ -139,10 +139,10 @@ public class UserController {
 	}
 
 	@PostMapping("/interest")
-	public ResponseEntity<ApiResponseDto<Void>> setUserInterest(@LoginUser User user,
+	public ResponseEntity<ApiResponseDto<InterestRequest>> setUserInterest(@LoginUser User user,
 		@RequestBody InterestRequest request) {
 		userService.setInterest(user.getId(), request);
-		return ResponseEntity.ok(new ApiResponseDto<>("success", "Create User Category", null));
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "Create User Category", request));
 	}
 
 	@GetMapping("/check/nickname")
