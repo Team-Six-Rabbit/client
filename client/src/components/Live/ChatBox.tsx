@@ -55,75 +55,14 @@ function ChatInput({ sendMessage }: ChatInputProps) {
 	);
 }
 
-interface SpeechRequestListProps {
-	role: number;
-}
-
-function SpeechRequestList({ role }: SpeechRequestListProps) {
-	const [isOpen, setIsOpen] = useState(false);
-	const [buttonDisabled, setButtonDisabled] = useState(false);
-
-	const toggleOpen = () => {
-		setIsOpen(!isOpen);
-	};
-
-	const handleRequestSpeech = () => {
-		setButtonDisabled(true);
-	};
-
-	if (role === -1) {
-		return (
-			<div className="relative">
-				<button
-					type="button"
-					onClick={handleRequestSpeech}
-					className={`border-solid border-4 border-black p-2 w-full text-left rounded-lg ${buttonDisabled ? "bg-black text-white" : ""}`}
-					disabled={buttonDisabled}
-				>
-					발언권 신청
-				</button>
-			</div>
-		);
-	}
-
-	// const filteredRequests = speechRequests.filter(
-	// 	(req) => req.userVote === role, // 투표한 값이 자신의 역할값과 같은 경우만
-	// );
-
-	return (
-		<div className="relative">
-			<button
-				type="button"
-				onClick={toggleOpen}
-				className="border-solid border-4 border-black text-black p-2 w-full text-left rounded-lg"
-			>
-				발언권 신청 목록
-			</button>
-			{isOpen && (
-				<div className="absolute top-full left-0 w-full bg-white border-solid border-2 border-black rounded-lg shadow-lg z-10 h-40 overflow-y-auto custom-scrollbar">
-					{/* {filteredRequests.map((request) => (
-						<div key={request.idx} className="p-2 border-b-2 border-gray-300">
-							{request.user.nickname}[{request.user.rating}]
-						</div>
-					))} */}
-				</div>
-			)}
-		</div>
-	);
-}
-
 interface ChatBoxProps {
 	messages: ChatMessage[];
 	sendMessage: (userId: number, message: string) => void;
-	role: number;
 	userId: number;
 }
-function ChatBox({ messages, sendMessage, role, userId }: ChatBoxProps) {
+function ChatBox({ messages, sendMessage, userId }: ChatBoxProps) {
 	return (
-		<div className="flex flex-col h-150 w-1/4 ms-6 mt-2">
-			<SpeechRequestList
-				role={role} // 지금 나의 역할(0,1,null) 추후에 OpenVidu로 받을 예정
-			/>
+		<>
 			<div className="flex-1 overflow-y-auto p-2 my-2 border-solid border-4 border-black rounded-lg flex flex-col-reverse scrollbar-hide">
 				<div>
 					{messages.map((msg) => (
@@ -138,7 +77,7 @@ function ChatBox({ messages, sendMessage, role, userId }: ChatBoxProps) {
 				</div>
 			</div>
 			<ChatInput sendMessage={(message) => sendMessage(userId, message)} />
-		</div>
+		</>
 	);
 }
 

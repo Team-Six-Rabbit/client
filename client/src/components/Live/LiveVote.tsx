@@ -1,22 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface VoteGaugeProps {
-	rateA: number;
-	rateB: number;
+	rateAPercentage: number;
+	rateBPercentage: number;
 }
 
-interface LiveVoteProps {
-	title: string;
-	optionA: string;
-	optionB: string;
-	onVoteEnd: (winner: string) => void; // 투표가 끝났을 때 호출되는 함수
-}
-
-function VoteGauge({ rateA, rateB }: VoteGaugeProps) {
-	const totalVotes = rateA + rateB;
-	const rateAPercentage = totalVotes > 0 ? (rateA / totalVotes) * 100 : 50;
-	const rateBPercentage = totalVotes > 0 ? (rateB / totalVotes) * 100 : 50;
-
+function VoteGauge({ rateAPercentage, rateBPercentage }: VoteGaugeProps) {
 	return (
 		<div className="w-full h-10 flex border-solid border-4 border-black rounded-lg overflow-hidden">
 			<div
@@ -31,14 +20,35 @@ function VoteGauge({ rateA, rateB }: VoteGaugeProps) {
 	);
 }
 
-function LiveVote({ title, optionA, optionB, onVoteEnd }: LiveVoteProps) {
-	const [votesA, setVotesA] = useState(70);
-	const [votesB, setVotesB] = useState(30);
+interface LiveVoteProps {
+	userId: number;
+	voteA: number;
+	voteB: number;
+	title: string;
+	optionA: string;
+	optionB: string;
+	sendVote: (userId: number, voteInfoIndex: number) => void;
+	onVoteEnd: (winner: string) => void; // 투표가 끝났을 때 호출되는 함수
+}
 
+function LiveVote({
+	userId,
+	voteA,
+	voteB,
+	title,
+	optionA,
+	optionB,
+	sendVote,
+	onVoteEnd,
+}: LiveVoteProps) {
 	useEffect(() => {
-		const winner = votesA > votesB ? optionA : optionB;
+		const winner = voteA > voteB ? optionA : optionB;
 		onVoteEnd(winner);
-	}, [votesA, votesB, optionA, optionB, onVoteEnd]);
+	}, [onVoteEnd, optionA, optionB, voteA, voteB]);
+
+	const handleVote = (voteInfoIndex: number) => {
+		sendVote(userId, voteInfoIndex);
+	};
 
 	return (
 		<div className="flex flex-col items-center mb-2">
@@ -47,15 +57,15 @@ function LiveVote({ title, optionA, optionB, onVoteEnd }: LiveVoteProps) {
 				<button
 					type="button"
 					className="bg-gray-800 me-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none"
-					onClick={() => setVotesA(votesA + 1)}
+					onClick={() => handleVote(0)}
 				>
 					{optionA}
 				</button>
-				<VoteGauge rateA={votesA} rateB={votesB} />
+				<VoteGauge rateAPercentage={voteA} rateBPercentage={voteB} />
 				<button
 					type="button"
 					className="bg-gray-800 ms-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none"
-					onClick={() => setVotesB(votesB + 1)}
+					onClick={() => handleVote(1)}
 				>
 					{optionB}
 				</button>
