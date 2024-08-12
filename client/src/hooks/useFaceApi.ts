@@ -8,7 +8,7 @@ const useFaceApi = (
 ) => {
 	const [isReady, setIsReady] = useState<boolean>(false);
 	const shouldRenderVideo = useRef<boolean>(true);
-	const shouldRenderMask = useRef<boolean>(true);
+	const shouldRenderMask = useRef<boolean>(false);
 	const timeout = useRef<unknown>();
 	const stream = useRef<MediaStream>();
 
