@@ -17,7 +17,7 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime BETWEEN vi.startDate AND vi.endDate "
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.category = :category "
-		+ "AND vi.currentState = 3")
+		+ "AND vi.currentState = 4")
 	Page<BattleBoard> findAllActiveBattleBoardsByCategory(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
@@ -27,7 +27,7 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 
 	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime BETWEEN vi.startDate AND vi.endDate "
 		+ "AND vi.title LIKE %:keyword% "
-		+ "AND vi.currentState = 3")
+		+ "AND vi.currentState = 4")
 	Page<BattleBoard> findAllActiveBattleBoards(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
@@ -57,7 +57,7 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime > vi.endDate "
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.category = :category "
-		+ "AND vi.currentState = 3")
+		+ "AND vi.currentState = 8")
 	Page<BattleBoard> findAllEndBattleBoardsByCategory(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
@@ -67,7 +67,7 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 
 	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime > vi.endDate "
 		+ "AND vi.title LIKE %:keyword% "
-		+ "AND vi.currentState = 3")
+		+ "AND vi.currentState = 8")
 	Page<BattleBoard> findAllEndBattleBoards(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
