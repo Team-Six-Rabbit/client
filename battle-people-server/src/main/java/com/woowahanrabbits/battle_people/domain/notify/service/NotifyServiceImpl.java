@@ -14,6 +14,7 @@ import com.woowahanrabbits.battle_people.domain.notify.domain.Notify;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationResponseDto;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
 import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
+import com.woowahanrabbits.battle_people.domain.user.domain.Rating;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,19 @@ public class NotifyServiceImpl implements NotifyService {
 
 	private final NotifyRepository notifyRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
+
+	public void sendPointNotification(User user, BattleBoard battleBoard, NotificationType type, Rating rating) {
+		String title = NotificationType.ADD_POINT.formatMessage(battleBoard.getVoteInfo(), rating);
+		Notify notify = new Notify();
+		notify.setTitle(title);
+		notify.setUser(user);
+		notify.setBattleBoard(battleBoard);
+		notify.setNotifyCode(type.getCode());
+		notify.setRegistDate(new Date());
+		notify.setRead(false);
+		notifyRepository.save(notify);
+		redisTemplate.convertAndSend("notify", user.getId());
+	}
 
 	public void sendNotification(User user, BattleBoard battleBoard, NotificationType type) {
 		String title = String.format(type.getMessageTemplate(),

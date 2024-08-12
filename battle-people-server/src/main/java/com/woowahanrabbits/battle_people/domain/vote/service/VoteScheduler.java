@@ -31,14 +31,14 @@ public class VoteScheduler {
 		}
 	}
 
-	public void updateFinalVoteCount(VoteInfo voteInfo) {
+	public int updateFinalVoteCount(VoteInfo voteInfo) {
 		List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
-		for (VoteOpinion voteOpinion : voteOpinions) {
+		for (int idx = 0; idx < 2; idx++) {
 			int finalCount = userVoteOpinionRepository.countByVoteInfoIdAndVoteInfoIndex(
-				voteInfo.getId(), voteOpinion.getVoteOpinionIndex());
-			voteOpinion.setFinalCount(finalCount);
-			voteOpinionRepository.save(voteOpinion);
+				voteInfo.getId(), voteOpinions.get(idx).getVoteOpinionIndex());
+			voteOpinions.get(idx).setFinalCount(finalCount);
+			voteOpinionRepository.save(voteOpinions.get(idx));
 		}
-
+		return voteOpinions.get(0).getFinalCount() > voteOpinions.get(1).getFinalCount() ? 0 : 1;
 	}
 }
