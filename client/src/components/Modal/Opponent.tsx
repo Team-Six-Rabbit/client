@@ -5,6 +5,7 @@ import {
 	SpeechBubble,
 	InfoTextSpan,
 } from "@/assets/styles/modalStyles";
+import defaultUserImage from "@/assets/images/default.png";
 
 interface OpponentProps {
 	nickname: string;
@@ -27,6 +28,13 @@ function Opponent({
 	opinion,
 	speechBubbleColor,
 }: OpponentProps) {
+	// Handle image error and fallback to default image
+	const handleImageError = (
+		e: React.SyntheticEvent<HTMLImageElement, Event>,
+	) => {
+		e.currentTarget.src = defaultUserImage;
+	};
+
 	return (
 		<StyledOpponent>
 			<CustomSpeechBubble color={speechBubbleColor}>
@@ -36,6 +44,7 @@ function Opponent({
 				src={imgUrl}
 				alt={nickname}
 				borderColor={speechBubbleColor}
+				onError={handleImageError}
 			/>
 			<InfoTextSpan>{nickname}</InfoTextSpan>
 		</StyledOpponent>

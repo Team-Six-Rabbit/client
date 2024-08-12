@@ -7,7 +7,6 @@ function MyPageContent() {
 	const location = useLocation();
 	const [activeTab, setActiveTab] = useState<string>("win-rate");
 
-	// useEffect로 현재 경로에 따라 활성화된 탭 설정
 	useEffect(() => {
 		const tabs = [
 			{ label: "Win Rate", value: "win-rate" },
@@ -29,13 +28,12 @@ function MyPageContent() {
 
 	return (
 		<div className="mypage-content-container">
-			{/* Tabs navigation */}
 			<ul className="tabs-navigation" role="tablist">
 				{[
-					{ label: "Win Rate", value: "win-rate" },
-					{ label: "Created Lives", value: "created-lives" },
-					{ label: "Participated Votes", value: "participated-votes" },
-					{ label: "Interests", value: "interests" },
+					{ label: "승률", value: "win-rate" },
+					{ label: "개최한 라이브", value: "created-lives" },
+					{ label: "참여한 투표", value: "participated-votes" },
+					{ label: "관심사", value: "interests" },
 				].map(({ label, value }) => (
 					<li key={value} role="presentation">
 						<a
