@@ -1,9 +1,16 @@
 package com.woowahanrabbits.battle_people.domain.live.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteChatRequestDto;
@@ -32,6 +39,7 @@ public class LiveChatServiceImpl implements LiveChatService {
 	private static int chatIdx = 0;
 	private static int requestIdx = 0;
 	private final UserRepository userRepository;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Override
 	public RedisTopicDto saveMessage(Long battleBoardId, WriteChatRequestDto writeChatRequestDto) {
@@ -90,8 +98,79 @@ public class LiveChatServiceImpl implements LiveChatService {
 			.responseDto(writeTalkResponseDto)
 			.build();
 
+		ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
+		valueOps.set("private-request:" + battleBoardId + ":" + user.getId(),
+			userVoteOpinion.getVoteInfoIndex() + "-" + user.getId() + "-" + connectionId);
+
 		return redisTopicDto;
 
+	}
+
+	@Override
+	public List<WriteTalkResponseDto> getRequestList(Long battleBoardId, Long userId) {
+		BattleBoard battleBoard = battleRepository.findById(battleBoardId).orElse(null);
+		if (battleBoard == null || (battleBoard.getOppositeUser().getId() != userId
+			&& battleBoard.getRegistUser().getId() != userId)) {
+			return new ArrayList<>();
+		}
+
+		int index = 0;
+		if (battleBoard.getOppositeUser().getId() == userId) {
+			index = 1;
+		}
+
+		List<WriteTalkResponseDto> responseDtoList = new ArrayList<>();
+
+		List<Object> values = redisTemplate.opsForValue().multiGet(getKeysByPattern(battleBoardId));
+
+		if (values != null) {
+			for (Object value : values) {
+				String[] strings = value.toString().split("-");
+				if (strings.length != 3) {
+					continue;
+				}
+
+				int opinionIndex = Integer.parseInt(strings[0]);
+				Long requestUserId = Long.parseLong(strings[1]);
+
+				User requestUser = userRepository.findById(requestUserId).orElse(null);
+
+				if (opinionIndex != index && requestUser == null) {
+					continue;
+				}
+
+				assert requestUser != null;
+				responseDtoList.add(WriteTalkResponseDto.builder()
+					.userVote(opinionIndex)
+					.requestUserId(requestUserId)
+					.hostUserId(userId)
+					.connectionId(strings[2])
+					.idx(requestIdx++)
+					.nickname(requestUser.getNickname())
+					.rating(requestUser.getRating())
+					.build()
+				);
+			}
+
+		}
+
+		return responseDtoList;
+	}
+
+	public List<String> getKeysByPattern(Long battleBoardId) {
+		String pattern = "private-request:" + battleBoardId + ":*";
+		List<String> keys = new ArrayList<>();
+
+		// SCAN 명령을 실행
+		redisTemplate.execute((RedisCallback<Void>)connection -> {
+			Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(pattern).count(30).build());
+			while (cursor.hasNext()) {
+				keys.add(new String(cursor.next()));
+			}
+			return null;
+		});
+
+		return keys;
 	}
 
 }
