@@ -1,4 +1,4 @@
-import { MouseEvent, MouseEventHandler } from "react";
+import { MouseEvent, MouseEventHandler, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import profileIcon from "@/assets/images/profile.png";
@@ -6,6 +6,7 @@ import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
 import brandIcon from "@/assets/images/Logo.png";
 import helpIcon from "@/assets/images/help.png";
+import ManualModal from "@/components/Modal/ManualModal";
 import { useAuthStore } from "@/stores/userAuthStore";
 import { authService } from "@/services/userAuthService";
 import { useNotifySocket } from "@/hooks/useNotifySocket";
@@ -14,6 +15,10 @@ interface DropDownMenuItem {
 	link: string;
 	text: string;
 	onClick?: MouseEventHandler;
+}
+
+interface RightHeaderProps {
+	onHelpClick: () => void; // Define onHelpClick as a function that returns void
 }
 
 export function ProfileBtn() {
@@ -124,18 +129,19 @@ function SearchBar() {
 	);
 }
 
-function RightHeader() {
+function RightHeader({ onHelpClick }: RightHeaderProps) {
 	const { isLogin } = useAuthStore();
 
 	return (
 		<div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
 			{false && <SearchBar />}
-			<Link
-				to="/notification"
-				className="block text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+			<button
+				type="button"
+				onClick={onHelpClick}
+				className="block text-sm text-gray-700"
 			>
-				<img src={helpIcon} alt="Help" className="w-8 h-8" />
-			</Link>
+				<img src={helpIcon} alt="Help" className="w-6 h-6 sm:w-8 sm:h-8" />
+			</button>
 
 			<div className="flex items-center justify-center space-x-4 mt-4 sm:mt-1">
 				{isLogin && (
@@ -157,12 +163,17 @@ function RightHeader() {
 function Header() {
 	useNotifySocket();
 
+	const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+
+	const openModal = () => setIsManualModalOpen(true);
+	const closeModal = () => setIsManualModalOpen(false);
 	return (
 		<div className="fixed top-0 left-0 w-full h-auto sm:h-[68px] bg-[#000] overflow-hidden z-50 overflow-x-auto">
 			<div className="flex flex-col sm:flex-row items-center h-full px-4 lg:px-8">
 				<LeftHeader />
-				<RightHeader />
+				<RightHeader onHelpClick={openModal} />
 			</div>
+			{isManualModalOpen && <ManualModal onClose={closeModal} />}
 		</div>
 	);
 }
