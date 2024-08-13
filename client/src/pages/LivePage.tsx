@@ -102,6 +102,7 @@ function LivePage() {
 					<div className="flex-col w-full justify-center items-center h-144">
 						<LiveVote
 							userId={userId!}
+							role={index}
 							voteA={voteA}
 							voteB={voteB}
 							title={liveData?.title || "오늘 저녁 메뉴 추천"}

@@ -15,7 +15,7 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 
 function NotificationPage() {
 	useRequireAuth();
-	const [selectedMenu, setSelectedMenu] = useState(2); // 0:invite, 1:live, 2:notify => notifyCode
+	const [selectedMenu, setSelectedMenu] = useState(-1); // 0:invite, 1:live, -1:notify => notifyCode
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 
 	useEffect(() => {

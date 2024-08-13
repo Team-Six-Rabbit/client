@@ -61,12 +61,13 @@ export const notificationService = {
 	},
 };
 
-export const getNewNotification = async (): Promise<ApiResponse<boolean>> => {
-	try {
-		const response = await axiosInstance.get(`/notify/unread`);
-		return response.data;
-	} catch (error) {
-		console.error("Failed to fetch notifications:", error);
-		throw error;
-	}
-};
+// 새로운 알림 탐색
+// export const getNewNotification = async (): Promise<ApiResponse<boolean>> => {
+// 	try {
+// 		const response = await axiosInstance.get(`/notify/unread`);
+// 		return response.data;
+// 	} catch (error) {
+// 		console.error("Failed to fetch notifications:", error);
+// 		throw error;
+// 	}
+// };

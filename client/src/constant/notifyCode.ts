@@ -4,6 +4,7 @@ const NotifyCode = new Map<number, string>([
 	[1, "Live"],
 	[2, "Live"],
 	[3, "Live"],
+	[4, "Live"],
 	// [4, "Punishment"],
 ]);
 

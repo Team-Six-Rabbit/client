@@ -2,11 +2,11 @@ import ReactDOM from "react-dom/client";
 
 import { RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-
 import router from "@/routes/router";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
+// eslint-disable-next-line import/order
 
 if (import.meta.env.MODE === "test") {
 	import("./mocks/browser").then(({ worker }) => {
