@@ -84,6 +84,14 @@ function PreVotingBoardPage() {
 				return; // 투표를 중단
 			}
 
+			if (response.data === -4) {
+				setAlertMessage(
+					"해당 시간에 본인이 진행하는 라이브가 존재하여 참여할 수 없습니다.",
+				);
+				setShowAlert(true);
+				return; // 투표를 중단
+			}
+
 			const updatedTickets = filteredTickets.map((ticket) => {
 				if (ticket.id === ticketId) {
 					return {

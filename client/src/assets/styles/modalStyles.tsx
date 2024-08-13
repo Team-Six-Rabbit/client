@@ -143,7 +143,8 @@ export const SpeechBubble = styled.div`
 	align-items: center;
 	justify-content: center;
 	text-align: center;
-
+	word-break: break-word;
+	word-wrap: break-word;
 	&:after {
 		content: "";
 		position: absolute;
