@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
 import PlusButton from "@/components/Board/fanning/PlusButton";
@@ -137,6 +138,7 @@ function BalanceGameBoardPage() {
 
 	const handleVote = async (cardId: number, updatedOpinions: OpinionType[]) => {
 		if (!isLogin) {
+			toast.error("로그인이 필요합니다", { autoClose: 1000 });
 			navigate("/login");
 			return;
 		}

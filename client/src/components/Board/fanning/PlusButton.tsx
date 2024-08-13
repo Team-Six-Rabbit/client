@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuthStore } from "@/stores/userAuthStore";
 
 interface ButtonProps {
@@ -51,6 +52,7 @@ function PlusButton({
 		if (isLogin && user) {
 			navigate("/ignition", { state: { user, defaultForm } });
 		} else {
+			toast.error("로그인이 필요합니다", { autoClose: 1000 });
 			navigate("/login");
 		}
 	};
