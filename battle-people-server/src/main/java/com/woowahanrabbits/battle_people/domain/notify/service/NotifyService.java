@@ -19,4 +19,7 @@ public interface NotifyService {
 	boolean hasUnreadNotifications(Long userId);
 
 	void deleteNotification(Long notifyId);
+
+	List<NotificationResponseDto> updateReadState(Long notifyId);
+
 }

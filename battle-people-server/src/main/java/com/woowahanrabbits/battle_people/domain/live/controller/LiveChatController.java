@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.live.dto.ItemRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
-import com.woowahanrabbits.battle_people.domain.live.dto.request.LiveBattleActionRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.RoleAcceptRequestDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.request.SocketRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteChatRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.WriteTalkRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.service.LiveChatService;
@@ -46,7 +46,7 @@ public class LiveChatController {
 
 	@MessageMapping("/live/{battleBoardId}")
 	public void sendLiveBattleAction(@DestinationVariable Long battleBoardId,
-		LiveBattleActionRequestDto<?> liveBattleActionRequestDto) {
+		SocketRequestDto<?> liveBattleActionRequestDto) {
 		String type = liveBattleActionRequestDto.getType();
 
 		String key = "live";

@@ -94,4 +94,25 @@ public class NotifyServiceImpl implements NotifyService {
 	public void deleteNotification(Long notifyId) {
 		notifyRepository.deleteById(notifyId);
 	}
+
+	@Override
+	public List<NotificationResponseDto> updateReadState(Long notifyId) {
+		Notify notify = notifyRepository.findById(notifyId).orElse(null);
+		if (notify == null) {
+			return new ArrayList<>();
+		}
+
+		notify.setRead(true);
+		notifyRepository.save(notify);
+
+		List<Notify> userNotifies = notifyRepository.findAllByUserIdOrderByIsReadAscRegistDateDesc(
+			notify.getUser().getId());
+		List<NotificationResponseDto> returnList = new ArrayList<>();
+		for (Notify userNotify : userNotifies) {
+			NotificationResponseDto notificationResponseDto = new NotificationResponseDto(userNotify);
+			returnList.add(notificationResponseDto);
+		}
+		return returnList;
+
+	}
 }
