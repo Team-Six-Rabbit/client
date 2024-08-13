@@ -4,6 +4,7 @@
 import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "@/assets/styles/mypage.css";
+import { toast } from "react-toastify";
 import Header from "@/components/header";
 import { authService } from "@/services/userAuthService";
 import editIcon from "@/assets/images/edit.png";
@@ -110,6 +111,7 @@ function MyPage() {
 			setOriginalNickname(nickname); // 저장된 닉네임을 원래 닉네임으로 설정
 			setIsEditingNickname(false);
 			setUser({ ...user!, nickname }); // 전역 상태에 업데이트
+			toast.info("닉네임이 수정되었습니다.", { autoClose: 1000 });
 		} catch (error) {
 			setDoShake(true);
 			setTimeout(() => setDoShake(false), 500);
@@ -136,6 +138,7 @@ function MyPage() {
 
 			await authService.updateUserProfile(user!);
 			setIsEditing(false);
+			toast.info("프로필이 저장되었습니다.", { autoClose: 1000 });
 		} catch (error) {
 			setDoShake(true);
 			setTimeout(() => setDoShake(false), 500);
