@@ -5,9 +5,8 @@ import UpcomingLivePreviewModal from "@/components/Modal/UpcomingLivePreviewModa
 import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import { createLiveStateBorder } from "@/utils/textBorder";
 import { convertToTimeZone } from "@/utils/dateUtils";
-import noImage from "@/assets/images/noImage.png"; // Make sure this path is correct
+import noImage from "@/assets/images/noImage.png";
 
-// Define these functions inside the LiveCard component or outside if you want to reuse them
 const getLiveStatusBackgroundColor = (status: string, index: number) => {
 	if (status === "live") return "bg-transparent";
 	if (status === "ended") return "bg-gray-500";
@@ -83,6 +82,7 @@ function LiveCard({ card }: { card: CardType }) {
 		<>
 			<div
 				className="relative flex flex-col border-solid border-black border-4 shadow-md rounded-xl overflow-hidden focus:shadow-lg focus:-translate-y-1 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 max-w-sm"
+				style={{ height: "18.75rem" }}
 				onClick={handleCardClick}
 				onKeyDown={handleKeyDown}
 				tabIndex={0}
@@ -91,7 +91,7 @@ function LiveCard({ card }: { card: CardType }) {
 			>
 				<div className="live-card-image h-44 relative overflow-hidden">
 					<img
-						src={card.image_uri || noImage} // Use noImage if image_uri is null or undefined
+						src={card.image_uri || noImage}
 						alt={card.title}
 						className="w-full h-full object-cover"
 					/>
