@@ -156,6 +156,7 @@
     border: 2px solid #1D3D6B;
     border-radius: 5px;
     box-sizing: border-box;
+	height: 47.2px;
 }
 
 .input-with-error input {
@@ -164,6 +165,7 @@
     padding: 10px;
     box-sizing: border-box;
 	outline: none; /* 포커스 시에도 테두리가 나타나지 않도록 설정 */
+	margin: 0;
 }
 
 .nickname-edit-container {
