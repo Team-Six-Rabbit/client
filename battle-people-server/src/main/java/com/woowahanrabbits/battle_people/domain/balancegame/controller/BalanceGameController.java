@@ -15,6 +15,7 @@ import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
+import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class BalanceGameController {
 
 	private final BalanceGameService balanceGameService;
+	private final BattleRepository battleRepository;
 
 	@PostMapping("")
 	@PreAuthorize("isAuthenticated()")

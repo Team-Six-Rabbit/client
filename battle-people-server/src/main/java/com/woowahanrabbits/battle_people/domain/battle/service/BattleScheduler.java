@@ -1,7 +1,5 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -47,58 +45,82 @@ public class BattleScheduler {
 	private Integer minPeopleCount;
 
 	@Scheduled(cron = "0 * * * * *")
-	public void checkLiveStatus() {
-
-		//라이브 시작 상태 체크
-		List<VoteInfo> list = voteInfoRepository.findAllByStartDateBeforeAndCurrentStateLessThan(new Date(), 5);
-		for (VoteInfo voteInfo : list) {
-			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
-			int currentPeopleCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
-
-			if (currentPeopleCount < minPeopleCount) {
-				//todo 상대방 응답 없으면 폐기
-				if (voteInfo.getCurrentState() == 0) {
-					voteInfo.setCurrentState(9);
-					voteInfoRepository.save(voteInfo);
-				} else if (voteInfo.getCurrentState() == 2) {
-					//todo 밸런스 게임으로 이동
-					Calendar endDate = Calendar.getInstance();
-					endDate.setTime(new Date());
-					endDate.add(Calendar.DATE, 3);
-
-					voteInfo.setStartDate(new Date());
-					voteInfo.setEndDate(endDate.getTime());
-					voteInfo.setCurrentState(5);
-					voteInfoRepository.save(voteInfo);
-				}
-			} else {
-				List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
-				BattleInfoDto battleInfoDto = new BattleInfoDto(battleBoard, voteInfo, voteOpinions);
-				if (battleBoard.getImageUrl() == null) {
-					try {
-						CompletableFuture<String> imageFuture = dalleService.generateImageAsync(battleInfoDto);
-					} catch (Exception e) {
-						// throw new RuntimeException(e);
-					}
-				}
-				voteInfo.setCurrentState(3);
-				voteScheduler.updatePreVoteCount(battleBoard);
-				voteInfoRepository.save(voteInfo);
-			}
+	public void checkCurrentState0() {
+		Date now = new Date();
+		List<VoteInfo> state1List = voteInfoRepository.findAllByStartDateBeforeAndCurrentState(now, 0);
+		for (VoteInfo voteInfo : state1List) {
+			voteInfo.setCurrentState(9);
+			voteInfoRepository.save(voteInfo);
 		}
-
 	}
 
 	@Scheduled(cron = "0 * * * * *")
-	public void endLiveStatus() {
+	public void checkCurrentState2() {
+		Date now = new Date();
+		List<VoteInfo> state2List = voteInfoRepository.findAllByStartDateBeforeAndCurrentState(now, 2);
+		for (VoteInfo voteInfo : state2List) {
+			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
+			int applyCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());
+			if (applyCount < minPeopleCount) {
+				voteInfo.setCurrentState(5);
+				voteInfoRepository.save(voteInfo);
+			} else {
+				voteInfo.setCurrentState(4);
+				voteInfoRepository.save(voteInfo);
+				voteScheduler.updatePreVoteCount(battleBoard);
+				List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
+				BattleInfoDto battleInfoDto = new BattleInfoDto(battleBoard, voteInfo, voteOpinions);
+				try {
+					CompletableFuture<String> imageFuture = dalleService.generateImageAsync(battleInfoDto);
+				} catch (Exception e) {
+					// throw new RuntimeException(e);
+				}
+			}
+		}
+	}
 
-		List<VoteInfo> endLives = voteInfoRepository.findAllByEndDateBeforeAndCurrentStateIn(new Date(),
-			Arrays.asList(4, 5));
+	@Scheduled(cron = "0 * * * * *")
+	public void checkCurrentState3() {
+		Date now = new Date();
+		List<VoteInfo> state3List = voteInfoRepository.findAllByStartDateBeforeAndCurrentState(now, 3);
+		for (VoteInfo voteInfo : state3List) {
+			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
 
-		for (VoteInfo voteInfo : endLives) {
-			int result = voteScheduler.updateFinalVoteCount(voteInfo);
-			voteInfo.setCurrentState(voteInfo.getCurrentState() == 4 ? 8 : 6);
+			if (battleBoard.getImageUrl() == null) {
+				List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
+				BattleInfoDto battleInfoDto = new BattleInfoDto(battleBoard, voteInfo, voteOpinions);
+				try {
+					CompletableFuture<String> imageFuture = dalleService.generateImageAsync(battleInfoDto);
+				} catch (Exception e) {
+					// throw new RuntimeException(e);
+				}
+			}
+
+			voteInfo.setCurrentState(4);
 			voteInfoRepository.save(voteInfo);
+			voteScheduler.updatePreVoteCount(battleBoard);
+		}
+	}
+
+	@Scheduled(cron = "0 * * * * *")
+	public void checkCurrentState4() {
+		Date now = new Date();
+		List<VoteInfo> state4List = voteInfoRepository.findAllByEndDateBeforeAndCurrentState(now, 4);
+		for (VoteInfo voteInfo : state4List) {
+			voteInfo.setCurrentState(8);
+			voteInfoRepository.save(voteInfo);
+			voteScheduler.updateFinalVoteCount(voteInfo);
+		}
+	}
+
+	@Scheduled(cron = "0 * * * * *")
+	public void checkCurrentState5() {
+		Date now = new Date();
+		List<VoteInfo> state4List = voteInfoRepository.findAllByEndDateBeforeAndCurrentState(now, 5);
+		for (VoteInfo voteInfo : state4List) {
+			voteInfo.setCurrentState(6);
+			voteInfoRepository.save(voteInfo);
+			voteScheduler.updateFinalVoteCount(voteInfo);
 		}
 	}
 
