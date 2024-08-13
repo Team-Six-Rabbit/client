@@ -29,6 +29,7 @@ import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
 import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
 import com.woowahanrabbits.battle_people.domain.notify.service.NotifyService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.dto.CreateLives;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
@@ -269,7 +270,7 @@ public class BattleServiceImpl implements BattleService {
 	}
 
 	@Override // 개최한 라이브 목록 조회
-	public List<BattleBoard> getBattleBoardsByUserId(Long userId) {
+	public List<CreateLives> getBattleBoardsByUserId(Long userId) {
 		return battleRepository.getCreateLives(userId);
 	}
 }
