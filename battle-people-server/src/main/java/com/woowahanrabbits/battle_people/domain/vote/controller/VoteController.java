@@ -79,4 +79,21 @@ public class VoteController {
 		}
 	}
 
+	@GetMapping("/live-user-vote-opinion/{battleId}")
+	@Operation(summary = "[]")
+	public ResponseEntity<ApiResponseDto<Integer>> getUserLiveVoteOption(@PathVariable Long battleId,
+		@LoginUser User user) {
+		try {
+			BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElse(null);
+
+			return ResponseEntity.status(HttpStatus.OK)
+				.body(new ApiResponseDto<>("success", "",
+					voteService.getUserLiveVoteOpinion(battleBoard.getVoteInfo().getId(), user.getId())));
+		} catch (Exception e) {
+			System.out.println(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "", null));
+		}
+	}
+
 }
