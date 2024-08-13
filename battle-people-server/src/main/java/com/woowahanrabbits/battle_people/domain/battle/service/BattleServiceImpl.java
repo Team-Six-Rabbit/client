@@ -270,6 +270,6 @@ public class BattleServiceImpl implements BattleService {
 
 	@Override // 개최한 라이브 목록 조회
 	public List<BattleBoard> getBattleBoardsByUserId(Long userId) {
-		return battleRepository.findByRegistUserId(userId);
+		return battleRepository.getCreateLives(userId);
 	}
 }
