@@ -17,7 +17,7 @@ public class HttpUtils {
 		"/battle-people/auth/refresh", 0);
 
 	public static Cookie createCookie(String name, String value, String path) {
-		Cookie cookie = new CustomCookie(name, value, path, 60 * 60);
+		Cookie cookie = new CustomCookie(name, value, path, 86400);
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);
 		return cookie;
