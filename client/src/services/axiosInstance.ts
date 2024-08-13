@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/stores/userAuthStore";
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
@@ -22,26 +23,67 @@ const onRequest = (
 
 axiosInstance.interceptors.request.use(onRequest);
 
+let isRefreshing = false;
+let failedQueue: Array<{
+	resolve: (value: unknown) => void;
+	reject: (reason?: unknown) => void;
+}> = [];
+
+const processQueue = (error?: Error) => {
+	failedQueue.forEach((prom) => {
+		if (error) {
+			prom.reject(error);
+		} else {
+			prom.resolve(undefined);
+		}
+	});
+
+	failedQueue = [];
+};
+
 const onResponseError = (error: AxiosError | Error) => {
+	const { logout } = useAuthStore.getState();
+
 	if (axios.isAxiosError(error)) {
 		const originalRequest = error.config! as CustomAxiosRequestConfig;
 
-		if (
-			error.response?.status === 401 &&
-			!originalRequest.retry &&
-			originalRequest.url &&
-			!originalRequest.url!.includes("/auth/refresh")
-		) {
+		if (originalRequest.url && originalRequest.url!.includes("/auth/refresh")) {
+			logout();
+			return Promise.reject(new Error("로그아웃되었습니다"));
+		}
+
+		if (error.response?.status === 401 && !originalRequest.retry) {
 			originalRequest.retry = true;
+
+			if (isRefreshing) {
+				// Refresh 요청이 진행 중이면 큐에 추가하고 대기
+				return new Promise((resolve, reject) => {
+					failedQueue.push({ resolve, reject });
+				})
+					.then(() => {
+						return axiosInstance(originalRequest);
+					})
+					.catch((err) => {
+						return Promise.reject(err);
+					});
+			}
+
+			isRefreshing = true;
 
 			return new Promise((resolve, reject) => {
 				axiosInstance
 					.post("/auth/refresh")
 					.then(() => {
+						processQueue();
 						resolve(axiosInstance(originalRequest));
 					})
 					.catch((err) => {
+						processQueue(err);
+						logout(); // 실패하면 로그아웃
 						reject(err);
+					})
+					.finally(() => {
+						isRefreshing = false;
 					});
 			});
 		}

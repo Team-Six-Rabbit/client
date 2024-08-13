@@ -1,7 +1,4 @@
-// userAuthStore.ts
-
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import { DetailUserInfo } from "@/types/user";
 
 interface AuthState {
@@ -15,35 +12,27 @@ interface AuthAction {
 	setUser: (user: DetailUserInfo | null) => void;
 }
 
-export const useAuthStore = create<AuthState & AuthAction>()(
-	persist(
-		(set) => ({
-			isLogin: false,
-			user: null,
-			login: (user: DetailUserInfo) => {
-				set({ isLogin: true, user });
-				localStorage.setItem("user", JSON.stringify({ user }));
-			},
-			logout: () => {
-				set({ isLogin: false, user: null });
-				localStorage.removeItem("user");
-			},
-			setUser: (user: DetailUserInfo | null) => {
-				set({ user });
-				const storedUser = localStorage.getItem("user");
-				let expireAt = new Date(Date.now() + 3600).toISOString();
-				if (storedUser) {
-					expireAt = JSON.parse(storedUser).expireAt;
-				}
-				localStorage.setItem("user", JSON.stringify({ user, expireAt }));
-			},
-		}),
-		{
-			name: "auth",
-			storage: createJSONStorage(() => localStorage),
-		},
-	),
-);
+export const useAuthStore = create<AuthState & AuthAction>((set) => ({
+	isLogin: false,
+	user: null,
+	login: (user: DetailUserInfo) => {
+		set({ isLogin: true, user });
+		localStorage.setItem("user", JSON.stringify({ user }));
+	},
+	logout: () => {
+		set({ isLogin: false, user: null });
+		localStorage.removeItem("user");
+	},
+	setUser: (user: DetailUserInfo | null) => {
+		set({ user });
+		const storedUser = localStorage.getItem("user");
+		let expireAt = new Date(Date.now() + 3600).toISOString();
+		if (storedUser) {
+			expireAt = JSON.parse(storedUser).expireAt;
+		}
+		localStorage.setItem("user", JSON.stringify({ user, expireAt }));
+	},
+}));
 
 // 페이지가 새로고침될 때 유저 정보를 세션 스토리지에서 가져와서 상태를 갱신
 const storedUser = localStorage.getItem("user");
