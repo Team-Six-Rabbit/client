@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import like from "@/assets/images/like.png"; // Path to your like GIF
+import styled from "styled-components";
 import {
 	OptionWrapper,
 	OptionText,
 	PercentageLabel,
 } from "@/assets/styles/balanceGameStyle";
-import styled from "styled-components";
+import like from "@/assets/images/like.png"; // Path to your like GIF
 
 interface Opinion {
 	index: number;
