@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.AwaitingBattleResponseDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInfoDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
@@ -51,6 +53,7 @@ public class BattleServiceImpl implements BattleService {
 	private final NotifyService notifyService;
 	private final NotifyRepository notifyRepository;
 	private final VoteScheduler voteScheduler;
+	private final DalleService dalleService;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
@@ -181,9 +184,9 @@ public class BattleServiceImpl implements BattleService {
 	public List<AwaitingBattleResponseDto> getAwaitingBattleList(Integer category, int page, User user, int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		List<VoteInfo> voteInfos = category == null
-			? voteInfoRepository.findAllByCurrentStateOrderByStartDateDesc(2, pageable).getContent()
+			? voteInfoRepository.findAllByCurrentStateOrderByIdDesc(2, pageable).getContent()
 			:
-			voteInfoRepository.findAllByCategoryAndCurrentStateOrderByStartDateDesc(category, 2, pageable).getContent();
+			voteInfoRepository.findAllByCategoryAndCurrentStateOrderByIdDesc(category, 2, pageable).getContent();
 		List<AwaitingBattleResponseDto> returnList = new ArrayList<>();
 
 		for (VoteInfo voteInfo : voteInfos) {
@@ -248,10 +251,17 @@ public class BattleServiceImpl implements BattleService {
 
 		//최대 인원 충족 체크
 		if (currentPeopleCount >= battleBoard.getMaxPeopleCount()) {
-			voteScheduler.updatePreVoteCount(battleBoard);
 			VoteInfo voteInfo = battleBoard.getVoteInfo();
 			voteInfo.setCurrentState(3);
 			voteInfoRepository.save(voteInfo);
+			voteScheduler.updatePreVoteCount(battleBoard);
+			List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
+			BattleInfoDto battleInfoDto = new BattleInfoDto(battleBoard, voteInfo, voteOpinions);
+			try {
+				CompletableFuture<String> imageFuture = dalleService.generateImageAsync(battleInfoDto);
+			} catch (Exception e) {
+				// throw new RuntimeException(e);
+			}
 		}
 
 		//참여 신청한 인원 수 return
