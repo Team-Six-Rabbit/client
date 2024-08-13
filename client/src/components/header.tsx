@@ -5,6 +5,7 @@ import profileIcon from "@/assets/images/profile.png";
 import searchIcon from "@/assets/images/search.png";
 import notificationIcon from "@/assets/images/notification.png";
 import brandIcon from "@/assets/images/Logo.png";
+import helpIcon from "@/assets/images/help.png";
 import { useAuthStore } from "@/stores/userAuthStore";
 import { authService } from "@/services/userAuthService";
 import { useNotifySocket } from "@/hooks/useNotifySocket";
@@ -129,6 +130,13 @@ function RightHeader() {
 	return (
 		<div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end space-x-2 lg:space-x-4 w-full max-w-screen-sm ml-auto">
 			{false && <SearchBar />}
+			<Link
+				to="/notification"
+				className="block text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+			>
+				<img src={helpIcon} alt="Help" className="w-8 h-8" />
+			</Link>
+
 			<div className="flex items-center justify-center space-x-4 mt-4 sm:mt-1">
 				{isLogin && (
 					<Link
