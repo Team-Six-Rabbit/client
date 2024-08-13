@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
+import { toast } from "react-toastify";
 import Dropdown from "@/components/Board/regist/Dropdown";
 import { categories } from "@/constant/boardCategory";
 import { BasicUserInfo } from "@/types/user";
@@ -118,7 +119,7 @@ function LiveDebateRegistForm() {
 
 	const getMinDateTime = (): string => {
 		const now = new Date();
-		now.setMinutes(now.getMinutes() + 60);
+		now.setMinutes(now.getMinutes() + 3);
 
 		const year = now.getFullYear();
 		const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -137,7 +138,9 @@ function LiveDebateRegistForm() {
 		const minDateTime = new Date(getMinDateTime());
 
 		if (selectedTime < minDateTime) {
-			alert("라이브 개최 희망 시간은 최소 60분 이후로 설정해주세요.");
+			toast.error("라이브 개최 시간은 최소 3분 이후로 설정해주세요.", {
+				autoClose: 1500,
+			});
 			setStartTime(getMinDateTime());
 		} else {
 			setStartTime(event.target.value);
@@ -145,13 +148,12 @@ function LiveDebateRegistForm() {
 		}
 	};
 
-	// Debounce function setup using useMemo
 	const debouncedFetchSuggestions = useMemo(
 		() =>
 			debounce(async (nickname: string) => {
 				const suggestions = await fetchUserSuggestions(nickname);
 				setOpponentSuggestions(suggestions);
-			}, 300), // 300 milliseconds delay
+			}, 300),
 		[],
 	);
 
@@ -169,7 +171,6 @@ function LiveDebateRegistForm() {
 		setErrors((prevErrors) => ({ ...prevErrors, opponent: false }));
 		setOpponentId(null);
 
-		// Use debounced function to fetch suggestions
 		debounceFetchUserSuggestions(nickname);
 	};
 
@@ -185,11 +186,14 @@ function LiveDebateRegistForm() {
 		const newErrors = {
 			title: !title,
 			category: !category,
-			opponent: !opponent || opponentId === null,
+			opponent: !opponent || opponentId === null, // Ensure this returns a boolean
 			authorChoice: !authorChoice,
 			startTime: !startTime,
 			duration: !duration,
-			maxParticipants: !maxParticipants || parseInt(maxParticipants, 10) < 5,
+			maxParticipants:
+				!maxParticipants ||
+				parseInt(maxParticipants, 10) < 5 ||
+				parseInt(maxParticipants, 10) > 99,
 			details: !details,
 		};
 
@@ -245,11 +249,15 @@ function LiveDebateRegistForm() {
 			} else {
 				console.log("Battle invitation sent successfully:", response);
 				navigate("/fanning");
-				alert("배틀 신청이 성공적으로 전달되었습니다!");
+				toast.info("배틀 신청이 성공적으로 전달되었습니다!", {
+					autoClose: 1500,
+				});
 			}
 		} catch (error) {
 			console.error("Failed to invite to battle:", error);
-			alert("이미 해당시간에 예정된 배틀이 존재합니다.");
+			toast.error("이미 해당시간에 예정된 배틀이 존재합니다.", {
+				autoClose: 1500,
+			});
 		}
 	};
 
@@ -306,7 +314,11 @@ function LiveDebateRegistForm() {
 				<FormGroup style={{ flex: 1, position: "relative" }}>
 					<Label htmlFor="opponent">
 						상대방 닉네임
-						{errors.opponent && <ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>}
+						{errors.opponent && opponent && opponentId === null ? (
+							<ErrorLabel> 등록되지 않은 사용자입니다.</ErrorLabel>
+						) : (
+							errors.opponent && <ErrorLabel> 필수 입력 사항입니다.</ErrorLabel>
+						)}
 					</Label>
 					<Input
 						id="opponent"
@@ -353,10 +365,7 @@ function LiveDebateRegistForm() {
 					/>
 				</FormGroup>
 				<FormGroup style={{ flex: 1 }}>
-					<Label htmlFor="opponentChoice">
-						상대방 선택지
-						{/* Opponent choice doesn't need to be filled */}
-					</Label>
+					<Label htmlFor="opponentChoice">상대방 선택지</Label>
 					<Input
 						id="opponentChoice"
 						type="text"
@@ -407,7 +416,8 @@ function LiveDebateRegistForm() {
 						type="number"
 						placeholder="최대 인원 수"
 						value={maxParticipants}
-						min={5} // Enforces a minimum value of 5
+						min={5}
+						max={99}
 						onChange={(e) => {
 							setMaxParticipants(e.target.value);
 							setErrors((prevErrors) => ({
