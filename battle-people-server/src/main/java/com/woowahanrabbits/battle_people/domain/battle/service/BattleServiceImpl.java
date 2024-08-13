@@ -16,6 +16,7 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.AwaitingBattleResponseDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInfoDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleResponse;
@@ -51,6 +52,7 @@ public class BattleServiceImpl implements BattleService {
 	private final NotifyService notifyService;
 	private final NotifyRepository notifyRepository;
 	private final VoteScheduler voteScheduler;
+	private final DalleService dalleService;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
@@ -252,6 +254,14 @@ public class BattleServiceImpl implements BattleService {
 			VoteInfo voteInfo = battleBoard.getVoteInfo();
 			voteInfo.setCurrentState(3);
 			voteInfoRepository.save(voteInfo);
+
+			List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
+			BattleInfoDto battleInfoDto = new BattleInfoDto(battleBoard, voteInfo, voteOpinions);
+			try {
+				dalleService.generateImage(battleInfoDto);
+			} catch (Exception e) {
+
+			}
 		}
 
 		//참여 신청한 인원 수 return
