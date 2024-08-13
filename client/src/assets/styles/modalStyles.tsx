@@ -23,6 +23,17 @@ export const ModalContent = styled.div<{ borderColor: string }>`
 	border: 8px solid ${({ borderColor }) => borderColor};
 `;
 
+export const ManualModalContent = styled.div<{ borderColor: string }>`
+	background-color: white;
+	padding: 16px;
+	border-radius: 20px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	height: 550px;
+	max-width: 800px;
+	width: 100%;
+	border: 8px solid ${({ borderColor }) => borderColor};
+`;
+
 export const ModalHeader = styled.div`
 	display: flex;
 	justify-content: space-between;
@@ -34,6 +45,11 @@ export const ModalHeader = styled.div`
 `;
 
 export const ModalTitle = styled.h2`
+	font-size: 1.5rem;
+	flex: 1;
+`;
+
+export const ManualModalTitle = styled.h2`
 	font-size: 1.5rem;
 	flex: 1;
 `;
