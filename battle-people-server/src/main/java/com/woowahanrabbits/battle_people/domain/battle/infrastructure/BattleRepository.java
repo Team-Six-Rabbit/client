@@ -34,8 +34,8 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
 		@Param("startDate") Date startDate,
 		@Param("endDate") Date endDate);
 
-	@Query("SELECT b FROM BattleBoard b JOIN b.voteInfo v "
-		+ "WHERE (b.registUser.id = :userId OR b.oppositeUser.id = :userId) AND"
+	@Query("SELECT b FROM BattleBoard b JOIN b.voteInfo v on b.voteInfo.id = v.id "
+		+ "WHERE (b.registUser.id = :userId) AND"
 		+ "(v.currentState = 3 or v.currentState = 4 or v.currentState = 8)")
 	List<BattleBoard> getCreateLives(Long userId);
 }
