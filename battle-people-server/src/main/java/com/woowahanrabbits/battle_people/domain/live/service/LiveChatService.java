@@ -13,4 +13,7 @@ public interface LiveChatService {
 	RedisTopicDto saveRequest(Long battleBoardId, User user, String connectionId);
 
 	List<WriteTalkResponseDto> getRequestList(Long battleBoardId, Long userId);
+
+	Integer isUserSendRequest(Long battleBoardId, Long userId);
+
 }
