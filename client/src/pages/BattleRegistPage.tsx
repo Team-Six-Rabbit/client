@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import styled, { css } from "styled-components";
+import { useLocation } from "react-router-dom";
 import BalanceGameRegistForm from "@/components/Board/regist/BalanceGameRegistForm";
 import LiveDebateRegistForm from "@/components/Board/regist/LiveDebateRegistForm";
 import Header from "@/components/header";
@@ -87,9 +88,17 @@ const RadioButtonCustom = styled.span<{ isSelected: boolean }>`
 		`}
 `;
 
-function BattleRegistPage() {
+function BattleRegistPage({
+	defaultForm = "general",
+}: {
+	defaultForm?: BattleRegistOption;
+}) {
 	useRequireAuth();
-	const [activeForm, setActiveForm] = useState<BattleRegistOption>("general");
+
+	const location = useLocation();
+	const initialForm = location.state?.defaultForm || defaultForm;
+
+	const [activeForm, setActiveForm] = useState<BattleRegistOption>(initialForm);
 
 	const handleKeyPress = (
 		event: React.KeyboardEvent<HTMLDivElement>,

@@ -212,7 +212,11 @@ function BalanceGameBoardPage() {
 					</BoardCardContainer>
 				</BalanceGameBoardContainer>
 			</div>
-			<PlusButton strokeColor="#000000" fillColor="#F66C23" />
+			<PlusButton
+				strokeColor="#000000"
+				fillColor="#F66C23"
+				defaultForm="general"
+			/>
 		</div>
 	);
 }

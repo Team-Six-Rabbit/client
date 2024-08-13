@@ -5,6 +5,7 @@ import { useAuthStore } from "@/stores/userAuthStore";
 interface ButtonProps {
 	strokeColor?: string;
 	fillColor?: string;
+	defaultForm?: "general" | "live";
 }
 
 const Button = styled.button<ButtonProps>`
@@ -38,13 +39,17 @@ const Button = styled.button<ButtonProps>`
 	}
 `;
 
-function PlusButton({ strokeColor, fillColor }: ButtonProps) {
+function PlusButton({
+	strokeColor,
+	fillColor,
+	defaultForm = "general",
+}: ButtonProps) {
 	const navigate = useNavigate();
 	const { isLogin, user } = useAuthStore();
 
 	const handleClick = () => {
 		if (isLogin && user) {
-			navigate("/ignition", { state: { user } });
+			navigate("/ignition", { state: { user, defaultForm } });
 		} else {
 			navigate("/login");
 		}
