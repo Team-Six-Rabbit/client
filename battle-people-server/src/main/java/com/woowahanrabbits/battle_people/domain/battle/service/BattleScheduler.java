@@ -50,7 +50,7 @@ public class BattleScheduler {
 	public void checkLiveStatus() {
 
 		//라이브 시작 상태 체크
-		List<VoteInfo> list = voteInfoRepository.findAllByStartDateAfterAndCurrentStateLessThan(new Date(), 5);
+		List<VoteInfo> list = voteInfoRepository.findAllByStartDateBeforeAndCurrentStateLessThan(new Date(), 5);
 		for (VoteInfo voteInfo : list) {
 			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
 			int currentPeopleCount = battleApplyUserRepository.countByBattleBoardId(battleBoard.getId());

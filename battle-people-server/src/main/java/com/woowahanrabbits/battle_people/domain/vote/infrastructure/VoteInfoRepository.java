@@ -36,5 +36,7 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 	List<VoteInfo> findAllByStartDateAfterAndCurrentStateLessThan(Date date, int currentState);
 
 	List<VoteInfo> findAllByEndDateBeforeAndCurrentStateIn(Date date, List<Integer> list);
+
+	List<VoteInfo> findAllByStartDateBeforeAndCurrentStateLessThan(Date date, int currentState);
 }
 
