@@ -74,7 +74,7 @@ public class BattleScheduler {
 			} else {
 				List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
 				BattleInfoDto battleInfoDto = new BattleInfoDto(battleBoard, voteInfo, voteOpinions);
-				if (battleBoard.getImageUrl().equals(null)) {
+				if (battleBoard.getImageUrl() == null) {
 					try {
 						CompletableFuture<String> imageFuture = dalleService.generateImageAsync(battleInfoDto);
 					} catch (Exception e) {
