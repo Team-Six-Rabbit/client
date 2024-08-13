@@ -53,8 +53,12 @@ const onResponseError = (error: AxiosError | Error) => {
 			originalRequest.url &&
 			originalRequest.url!.includes("/auth/refresh")
 		) {
-			logout();
-			toast.error("세션이 만료되어 로그아웃 되었습니다.", { autoClose: 1000 });
+			axiosInstance.delete("/auth/logout").finally(() => {
+				logout();
+				toast.error("세션이 만료되어 로그아웃 되었습니다.", {
+					autoClose: 1000,
+				});
+			});
 			return Promise.reject(new Error("세션이 만료되어 로그아웃되었습니다"));
 		}
 
