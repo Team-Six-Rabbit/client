@@ -19,8 +19,8 @@ import com.woowahanrabbits.battle_people.domain.battle.dto.BattleApplyDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInviteRequest;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleRespondRequest;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
-import com.woowahanrabbits.battle_people.domain.battle.service.DalleService;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
+import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 public class BattleController {
 
 	private final BattleService battleService;
-	private final DalleService dalleService;
+	private final UserRepository userRepository;
 
 	//배틀 등록
 	@PostMapping("/invite")
@@ -43,6 +43,7 @@ public class BattleController {
 	@Operation(summary = "[점화] 배틀을 요청한다.")
 	public ResponseEntity<?> registBattle(@RequestBody @Valid BattleInviteRequest battleInviteRequest,
 		@LoginUser User user) {
+		System.out.println(user);
 		battleService.registBattle(battleInviteRequest, user);
 		return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>("success", "", null));
 	}
@@ -85,17 +86,5 @@ public class BattleController {
 		@LoginUser User user) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(new ApiResponseDto<>("success", "", battleService.applyBattle(battleApplyDto, user)));
-	}
-
-	@GetMapping("/test")
-	public String aiThumbnail() {
-		// List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(56);
-		// BattleInfoDto battleInfoDto = new BattleInfoDto(battleBoard, voteInfo, voteOpinions);
-		try {
-			dalleService.generateImage(null);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return "test";
 	}
 }

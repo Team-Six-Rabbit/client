@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.json.JSONArray;
@@ -24,8 +23,6 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInfoDto;
 import com.woowahanrabbits.battle_people.domain.battle.dto.ThumbnailRequestDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
-import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
-import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 
@@ -62,14 +59,6 @@ public class DalleService {
 
 	public String generateImage(BattleInfoDto prompt) throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-
-		if (prompt == null) {
-			List<VoteOpinion> opinions = voteOpinionRepository.findAllByVoteInfoId(23L);
-			VoteInfo voteInfo = voteInfoRepository.findById(23L).get();
-			BattleBoard battleBoard = battleRepository.findById(13L).get();
-			prompt = new BattleInfoDto(battleBoard, voteInfo, opinions);
-		}
-
 		ThumbnailRequestDto requestDto = new ThumbnailRequestDto(prompt);
 
 		// HTTP Headers 설정
