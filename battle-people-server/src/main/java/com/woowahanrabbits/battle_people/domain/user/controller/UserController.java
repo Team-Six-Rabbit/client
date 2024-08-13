@@ -115,6 +115,12 @@ public class UserController {
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "Vote Infos", response));
 	}
 
+	@GetMapping("/profile/votes/{vote_info_id}")
+	public ResponseEntity<?> getVoteDetail(@PathVariable("vote_info_id") long voteInfoId) {
+		return ResponseEntity.ok(
+			new ApiResponseDto<>("success", "Vote Info", voteService.getVoteResultByVoteInfoId(voteInfoId)));
+	}
+
 	@GetMapping("/profile/{userId}")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<ApiResponseDto<BasicUserDto>> getUserProfile(@PathVariable(value = "userId") Long userId) {
@@ -133,10 +139,10 @@ public class UserController {
 	}
 
 	@PostMapping("/interest")
-	public ResponseEntity<ApiResponseDto<Void>> setUserInterest(@LoginUser User user,
+	public ResponseEntity<ApiResponseDto<InterestRequest>> setUserInterest(@LoginUser User user,
 		@RequestBody InterestRequest request) {
 		userService.setInterest(user.getId(), request);
-		return ResponseEntity.ok(new ApiResponseDto<>("success", "Create User Category", null));
+		return ResponseEntity.ok(new ApiResponseDto<>("success", "Create User Category", request));
 	}
 
 	@GetMapping("/check/nickname")
