@@ -15,7 +15,6 @@ import com.woowahanrabbits.battle_people.domain.api.dto.ApiResponseDto;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.BalanceGameResponse;
 import com.woowahanrabbits.battle_people.domain.balancegame.dto.CreateBalanceGameRequest;
 import com.woowahanrabbits.battle_people.domain.balancegame.service.BalanceGameService;
-import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
@@ -60,14 +59,6 @@ public class BalanceGameController {
 		BalanceGameResponse balanceGameResponse = balanceGameService.getBalanceGameById(id, user);
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(new ApiResponseDto<>("success", "", balanceGameResponse));
-	}
-
-	@GetMapping("/test")
-	@Operation(summary = "Id 값으로 밸런스 게임 조회")
-	public String test(@RequestParam Long battleId) {
-		BattleBoard battleBoard = battleRepository.findById(battleId).get();
-		System.out.println(battleBoard.getImageUrl());
-		return battleBoard.getImageUrl();
 	}
 
 }
