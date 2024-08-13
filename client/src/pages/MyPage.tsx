@@ -12,8 +12,10 @@ import "@/assets/styles/shake.css";
 import MyPageContent from "@/components/MyPageContent";
 import { useAuthStore } from "@/stores/userAuthStore";
 import penIcon from "@/assets/images/pen.png";
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 function MyPage() {
+	useRequireAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [isEditing, setIsEditing] = useState(false);

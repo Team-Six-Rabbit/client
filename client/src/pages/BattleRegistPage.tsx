@@ -4,6 +4,7 @@ import BalanceGameRegistForm from "@/components/Board/regist/BalanceGameRegistFo
 import LiveDebateRegistForm from "@/components/Board/regist/LiveDebateRegistForm";
 import Header from "@/components/header";
 import { BattleRegistOption } from "@/types/Board/battleRegistOption";
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 const PageContainer = styled.div`
 	min-height: 100vh;
@@ -87,6 +88,7 @@ const RadioButtonCustom = styled.span<{ isSelected: boolean }>`
 `;
 
 function BattleRegistPage() {
+	useRequireAuth();
 	const [activeForm, setActiveForm] = useState<BattleRegistOption>("general");
 
 	const handleKeyPress = (
