@@ -1,5 +1,6 @@
 import { useAuthStore } from "@/stores/userAuthStore";
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { toast } from "react-toastify";
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 	retry?: boolean;
@@ -47,9 +48,14 @@ const onResponseError = (error: AxiosError | Error) => {
 	if (axios.isAxiosError(error)) {
 		const originalRequest = error.config! as CustomAxiosRequestConfig;
 
-		if (originalRequest.url && originalRequest.url!.includes("/auth/refresh")) {
+		if (
+			error.response?.status === 401 &&
+			originalRequest.url &&
+			originalRequest.url!.includes("/auth/refresh")
+		) {
 			logout();
-			return Promise.reject(new Error("로그아웃되었습니다"));
+			toast.error("세션이 만료되어 로그아웃 되었습니다.", { autoClose: 1000 });
+			return Promise.reject(new Error("세션이 만료되어 로그아웃되었습니다"));
 		}
 
 		if (error.response?.status === 401 && !originalRequest.retry) {
