@@ -18,8 +18,12 @@ import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepo
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
 import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
 import com.woowahanrabbits.battle_people.domain.notify.service.NotifyService;
+import com.woowahanrabbits.battle_people.domain.user.domain.Rating;
+import com.woowahanrabbits.battle_people.domain.user.service.UserService;
+import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteScheduler;
@@ -39,6 +43,8 @@ public class BattleScheduler {
 	private final NotifyRepository notifyRepository;
 	private final VoteOpinionRepository voteOpinionRepository;
 	private final DalleService dalleService;
+	private final UserService userService;
+	private final UserVoteOpinionRepository userVoteOpinionRepository;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
@@ -55,6 +61,7 @@ public class BattleScheduler {
 		List<VoteInfo> list = voteInfoRepository.findAllByStartDateBeforeAndCurrentState(deadLineTimeCheck, 0);
 		for (VoteInfo voteInfo : list) {
 			voteInfo.setCurrentState(9);
+			voteInfoRepository.save(voteInfo);
 		}
 	}
 
@@ -105,7 +112,26 @@ public class BattleScheduler {
 		List<VoteInfo> endLives = voteInfoRepository.findAllByEndDateBeforeAndCurrentState(date, 4);
 		for (VoteInfo voteInfo : endLives) {
 			voteInfo.setCurrentState(8);
-			voteScheduler.updateFinalVoteCount(voteInfo);
+			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
+			int result = voteScheduler.updateFinalVoteCount(voteInfo);
+
+			//투표 결과에 따른 포인트 지급
+			List<UserVoteOpinion> voters = userVoteOpinionRepository.findByVoteInfoId(voteInfo.getId());
+			if (result == -1) {
+				for (UserVoteOpinion voter : voters) {
+					userService.addPoint(voter.getUser(), battleBoard, Rating.LIVE_TIE);
+				}
+			} else {
+				for (UserVoteOpinion voter : voters) {
+					userService.addPoint(voter.getUser(), battleBoard,
+						result == voter.getVoteInfoIndex() ? Rating.LIVE_WIN : Rating.LIVE_LOSS);
+				}
+			}
+
+			//라이브 개최자
+			userService.addPoint(battleBoard.getRegistUser(), battleBoard, Rating.LIVE_OWNER);
+			userService.addPoint(battleBoard.getOppositeUser(), battleBoard, Rating.LIVE_OWNER);
+
 			voteInfoRepository.save(voteInfo);
 		}
 
@@ -113,6 +139,14 @@ public class BattleScheduler {
 		for (VoteInfo voteInfo : startLives) {
 			voteInfo.setCurrentState(4);
 			voteInfoRepository.save(voteInfo);
+			BattleBoard battleBoard = battleRepository.findByVoteInfoId(voteInfo.getId());
+
+			//사전참여자에게 10포인트
+			List<BattleApplyUser> participator = battleApplyUserRepository.findByBattleBoardId(battleBoard.getId());
+			for (BattleApplyUser battleApplyUser : participator) {
+				userService.addPoint(battleApplyUser.getUser(), battleBoard, Rating.LIVE_PARTICIPATE);
+			}
+
 		}
 	}
 
@@ -143,5 +177,14 @@ public class BattleScheduler {
 
 		}
 	}
+
+	// //point
+	// public void addPoint(User user, BattleBoard battleBoard, Rating rating) {
+	// 	int rate = user.getRating();
+	// 	rate += rating.getPoint();
+	// 	user.setRating(rate);
+	// 	userRepository.save(user);
+	// 	notifyService.sendPointNotification(user, battleBoard, NotificationType.ADD_POINT, rating);
+	// }
 
 }

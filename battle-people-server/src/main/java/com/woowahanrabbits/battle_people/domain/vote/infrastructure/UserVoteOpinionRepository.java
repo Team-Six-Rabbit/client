@@ -26,4 +26,6 @@ public interface UserVoteOpinionRepository extends JpaRepository<UserVoteOpinion
 	@Query("SELECT COUNT(uvo) FROM UserVoteOpinion uvo WHERE uvo.voteInfo.id = :id "
 		+ "AND uvo.voteInfoIndex = :voteOpinionIndex")
 	int countByVoteInfoIdAndVoteInfoIndex(Long id, Integer voteOpinionIndex);
+
+	List<UserVoteOpinion> findByVoteInfoId(Long id);
 }
