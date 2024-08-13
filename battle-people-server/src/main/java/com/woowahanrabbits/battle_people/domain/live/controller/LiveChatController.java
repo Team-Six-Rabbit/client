@@ -97,12 +97,11 @@ public class LiveChatController {
 		Long battleBoardId = Long.parseLong(channel.split("-")[0]);
 		Long userId = Long.parseLong(channel.split("-")[1]);
 
-		String key = "request";
+		String key = "private-request";
 		ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
-
 		if (valueOps.get(key + ":" + battleBoardId + ":" + userId) != null) {
 			valueOps.getOperations().delete(key + ":" + battleBoardId + ":" + userId);
-			redisTemplate.convertAndSend(key, openViduService.changeRole(battleBoardId, userId,
+			redisTemplate.convertAndSend("request", openViduService.changeRole(battleBoardId, userId,
 				roleAcceptRequestDto.getConnectionId()));
 		}
 

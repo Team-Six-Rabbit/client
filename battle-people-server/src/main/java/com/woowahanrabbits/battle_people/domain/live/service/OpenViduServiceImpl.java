@@ -201,7 +201,7 @@ public class OpenViduServiceImpl implements OpenViduService {
 
 	@Override
 	public RedisTopicDto<OpenViduTokenResponseDto> changeRole(Long battleId, Long userId, String connectionId) {
-		if (isValidConnection(Long.toString(battleId), connectionId)) {
+		if (!isValidConnection(Long.toString(battleId), connectionId)) {
 			RedisTopicDto redisTopicDto = RedisTopicDto.builder()
 				.channelId(battleId)
 				.type("accept")
@@ -259,10 +259,8 @@ public class OpenViduServiceImpl implements OpenViduService {
 
 		HttpHeaders headers = createHeaders("OPENVIDUAPP", openviduSecret);
 		HttpEntity<String> entity = new HttpEntity<>(headers);
-		System.out.println(url);
 
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-		System.out.println(response.getStatusCode());
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode root = objectMapper.readTree(response.getBody());

@@ -35,7 +35,6 @@ public class OpenViduController {
 	@PostMapping("/get-token")
 	public ResponseEntity<ApiResponseDto<OpenViduTokenResponseDto>> getToken(@RequestParam Long battleId,
 		@LoginUser User user) throws OpenViduException {
-		System.out.println("User: " + user);
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(new ApiResponseDto<>("success", "",
 				openViduService.getToken(battleId, user)));
