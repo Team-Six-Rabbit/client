@@ -5,9 +5,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.woowahanrabbits.battle_people.domain.user.domain.UserToken;
 import com.woowahanrabbits.battle_people.domain.user.handler.JwtAuthenticationException;
-import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -17,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-	private final UserTokenRepository userTokenRepository;
-
 	@Value("${jwt.secret}")
 	private String secretKey;
 
@@ -76,31 +72,12 @@ public class JwtUtil {
 		return extractClaims(token).getExpiration().before(new Date());
 	}
 
-	// DB에 토큰과 일치하고, 토큰 기간이 유효한지 체크
 	public boolean validateToken(String token, String type) {
-		try {
-			UserToken userToken = userTokenRepository.findByAccessToken(token);
+		// Jwts.parser().verifyWith()
 
-			if (userToken == null) {
-				throw new JwtAuthenticationException("User token not found in DB for accessToken: " + token);
-			}
-
-			if (isTokenExpired(token)) {
-				throw new JwtAuthenticationException("JWT token is expired");
-			}
-
-			if ("access".equals(type) && userToken.getAccessToken().equals(token)) {
-				return true;
-			} else if ("refresh".equals(type) && userToken.getRefreshToken().equals(token)) {
-				return true;
-			} else {
-				throw new JwtAuthenticationException("Token does not match the type: " + type);
-			}
-
-		} catch (JwtAuthenticationException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new JwtAuthenticationException("Token validation error: " + e.getMessage());
+		if (isTokenExpired(token)) {
+			throw new JwtAuthenticationException("JWT token is expired");
 		}
+		return true;
 	}
 }
