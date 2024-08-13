@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CircularProgressBar } from "@tomickigrzegorz/react-circular-progress-bar";
 import { authService, UserWinHistory } from "@/services/userAuthService"; // authService에서 getLoginUserWinHistory 가져오기
+import empty from "@/assets/images/empty.png";
 
 function WinRate() {
 	const [winHistory, setWinHistory] = useState<UserWinHistory | null>(null);
@@ -27,7 +28,22 @@ function WinRate() {
 	}
 
 	if (error) {
-		return <div>{error}</div>;
+		return (
+			<div style={{ textAlign: "center", fontSize: "x-large" }}>
+				{/* <div>{error}</div> */}
+				<img
+					src={empty}
+					alt="Error"
+					style={{
+						marginLeft: 25,
+						marginTop: -30,
+						width: "200px",
+						height: "200px",
+					}}
+				/>
+				<span>조회된 내역이 없습니다.</span>
+			</div>
+		);
 	}
 
 	if (!winHistory) {
