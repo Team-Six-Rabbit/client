@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/header";
 import BoardHeader from "@/components/Board/BoardHeader";
@@ -55,6 +56,7 @@ function PreVotingBoardPage() {
 
 	const handleVote = async (ticketId: number, opinionIndex: number) => {
 		if (!isLogin) {
+			toast.error("로그인이 필요합니다", { autoClose: 1000 });
 			navigate("/login");
 			return;
 		}

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuthStore } from "@/stores/userAuthStore";
 import BalanceGameModal from "@/components/Modal/BalanceGameModal";
 import {
@@ -63,6 +64,7 @@ function BalanceGameCard({
 
 	const handleVoteClick = (option: number) => {
 		if (!isLogin || !user) {
+			toast.error("로그인이 필요합니다", { autoClose: 1000 });
 			navigate("/login");
 			return;
 		}
