@@ -3,6 +3,7 @@ package com.woowahanrabbits.battle_people.domain.battle.service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -11,13 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleApplyUser;
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.dto.BattleInfoDto;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleApplyUserRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
 import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
 import com.woowahanrabbits.battle_people.domain.notify.service.NotifyService;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteScheduler;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,8 @@ public class BattleScheduler {
 	private final VoteScheduler voteScheduler;
 	private final NotifyService notifyService;
 	private final NotifyRepository notifyRepository;
+	private final VoteOpinionRepository voteOpinionRepository;
+	private final DalleService dalleService;
 
 	@Value("${min.people.count.value}")
 	private Integer minPeopleCount;
@@ -78,8 +84,13 @@ public class BattleScheduler {
 				voteInfoRepository.save(voteInfo);
 
 			} else {
-
-				//todo 썸네일 출력
+				List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
+				BattleInfoDto battleInfoDto = new BattleInfoDto(battleBoard, voteInfo, voteOpinions);
+				try {
+					CompletableFuture<String> imageFuture = dalleService.generateImageAsync(battleInfoDto);
+				} catch (Exception e) {
+					// throw new RuntimeException(e);
+				}
 				voteInfo.setCurrentState(3);
 				voteScheduler.updatePreVoteCount(battleBoard);
 				voteInfoRepository.save(voteInfo);
