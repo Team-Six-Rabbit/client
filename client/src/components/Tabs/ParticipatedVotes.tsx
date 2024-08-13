@@ -4,6 +4,7 @@ import "@/assets/styles/scrollbar.css";
 import { authService } from "@/services/userAuthService";
 import { convertToTimeZone } from "@/utils/dateUtils";
 import ParticipatedVotesModal from "@/components/Modal/ParticipatedVotesModal";
+import empty from "@/assets/images/empty.png";
 
 const VotesContainer = styled.div`
 	width: 100%;
@@ -66,7 +67,7 @@ function ParticipatedVotesList() {
 	const [votes, setVotes] = useState<Vote[]>([]);
 	const [selectedVote, setSelectedVote] = useState<Vote | null>(null);
 	const [, setLoading] = useState(true);
-	const [, setError] = useState<string | null>(null);
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		const fetchVotes = async () => {
@@ -98,6 +99,24 @@ function ParticipatedVotesList() {
 
 		fetchVotes();
 	}, []);
+
+	if (error) {
+		return (
+			<div style={{ textAlign: "center", fontSize: "x-large" }}>
+				<img
+					src={empty}
+					alt="Error"
+					style={{
+						marginLeft: 25,
+						marginTop: -30,
+						width: "200px",
+						height: "200px",
+					}}
+				/>
+				<span>조회된 내역이 없습니다.</span>
+			</div>
+		);
+	}
 
 	return (
 		<VotesContainer className="custom-scrollbar">

@@ -4,6 +4,7 @@ import "@/assets/styles/scrollbar.css";
 import { authService } from "@/services/userAuthService";
 import { convertToTimeZone } from "@/utils/dateUtils";
 import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
+import empty from "@/assets/images/empty.png";
 
 const CreatedLivesContainer = styled.div`
 	width: 100%;
@@ -96,6 +97,24 @@ function CreatedLives() {
 
 		fetchLives();
 	}, []);
+
+	if (error) {
+		return (
+			<div style={{ textAlign: "center", fontSize: "x-large" }}>
+				<img
+					src={empty}
+					alt="Error"
+					style={{
+						marginLeft: 25,
+						marginTop: -30,
+						width: "200px",
+						height: "200px",
+					}}
+				/>
+				<span>조회된 내역이 없습니다.</span>
+			</div>
+		);
+	}
 
 	const handleTitleClick = (battleId: number) => {
 		setSelectedBattleId(battleId);
