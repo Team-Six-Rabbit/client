@@ -17,6 +17,7 @@ import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDt
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
+import com.woowahanrabbits.battle_people.domain.notify.domain.Notify;
 import com.woowahanrabbits.battle_people.domain.notify.infrastructure.NotifyRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -39,8 +40,8 @@ public class RedisSubscriber implements MessageListener {
 			String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
 
 			if (channel.equals("notify")) {
-				Long userId = objectMapper.readValue(publishMessage, Long.class);
-				messagingTemplate.convertAndSend("/topic/" + userId, "왔어요~~~");
+				Notify notify = objectMapper.readValue(publishMessage, Notify.class);
+				messagingTemplate.convertAndSend("/topic/" + notify.getUser().getId(), notify.getTitle());
 			} else {
 				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
 				Long channelId = redisTopicDto.getChannelId();
