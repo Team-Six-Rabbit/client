@@ -49,9 +49,9 @@ public class NotifyServiceImpl implements NotifyService {
 		}
 
 		notifyRepository.save(notify);
-		Map<String, Object> map = new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		map.put("title", title);
-		map.put("id", user.getId());
+		map.put("id", Long.toString(user.getId()));
 		redisTemplate.convertAndSend("notify", map);
 	}
 
