@@ -151,16 +151,25 @@ function MyPage() {
 		}
 	};
 
+	const handleImageError = () => {
+		setProfileImage(profileImagePlaceholder);
+	};
+
 	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
 		if (file) {
 			// 이미지 파일 형식만 허용 (예: jpg, jpeg, png, gif)
 			const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+			console.log(file.type);
 			if (!validImageTypes.includes(file.type)) {
-				toast.info(
+				toast.error(
 					"이미지 파일 형식이 아닙니다. jpg, jpeg, png, gif 형식의 파일만 업로드할 수 있습니다.",
 					{ autoClose: 1500 },
 				);
+				if (fileInputRef.current) {
+					fileInputRef.current.value = "";
+				}
+				handleImageError();
 				return;
 			}
 
@@ -177,10 +186,6 @@ function MyPage() {
 		if (fileInputRef.current) {
 			fileInputRef.current.value = "";
 		}
-	};
-
-	const handleImageError = () => {
-		setProfileImage(profileImagePlaceholder);
 	};
 
 	const { email, rating } = user!;
