@@ -132,6 +132,6 @@ public class DalleService {
 			e.printStackTrace();
 			throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", e);
 		}
-		return filePath + File.separator + Long.toString(battleBoard.getId()); // 저장된 파일 이름 반환
+		return filePath + File.separator + Long.toString(battleBoard.getId()) + ".jpg"; // 저장된 파일 이름 반환
 	}
 }
