@@ -13,13 +13,18 @@ import useChatSocket from "@/hooks/useChatSocket";
 import { useAuthStore } from "@/stores/userAuthStore";
 import SpeakRequestList from "@/components/Live/SpeakRequestList";
 import useLiveSocket from "@/hooks/useLiveSocket";
+import useRequireAuth from "@/hooks/useRequireAuth";
 
 function LivePage() {
-	navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-		setTimeout(() => {
-			stream.getTracks().forEach((track) => track.stop());
-		}, 10000);
-	});
+	const { isLogin } = useRequireAuth();
+
+	if (isLogin) {
+		navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+			setTimeout(() => {
+				stream.getTracks().forEach((track) => track.stop());
+			}, 10);
+		});
+	}
 	// const videoElement = useRef<HTMLVideoElement>(null);
 	// const canvasElement = useRef<HTMLCanvasElement>(null);
 
