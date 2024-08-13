@@ -56,6 +56,15 @@ public class VoteServiceImpl implements VoteService {
 	}
 
 	@Override
+	public Integer getUserLiveVoteOpinion(Long voteInfoId, Long userId) {
+		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(userId, voteInfoId);
+		if (userVoteOpinion == null) {
+			return -1;
+		}
+		return userVoteOpinion.getVoteInfoIndex();
+	}
+
+	@Override
 	public CurrentVoteResponseDto putVoteOpinion(Long userId, Long voteInfoId, int voteInfoIndex) {
 		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(userId, voteInfoId);
 		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));

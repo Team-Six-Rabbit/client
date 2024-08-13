@@ -15,6 +15,8 @@ public interface VoteService {
 
 	void addVoteOpinion(VoteOpinion voteOpinion);
 
+	Integer getUserLiveVoteOpinion(Long voteInfoId, Long userId);
+
 	CurrentVoteResponseDto putVoteOpinion(Long userId, Long battleBoardId, int voteInfoIndex);
 
 	CurrentVoteResponseDto getVoteResult(Long battleBoardId);
