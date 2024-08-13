@@ -30,3 +30,5 @@ export interface NotificationInviteDetail {
 		maxPeopleCount: number;
 	};
 }
+
+export type Detail = NotificationLiveDetail | NotificationInviteDetail;
