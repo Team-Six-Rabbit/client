@@ -47,7 +47,7 @@ public class NotifyServiceImpl implements NotifyService {
 		}
 
 		notifyRepository.save(notify);
-		redisTemplate.convertAndSend("notify", user.getId());
+		redisTemplate.convertAndSend("notify", notify);
 	}
 
 	@Override
