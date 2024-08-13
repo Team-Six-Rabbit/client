@@ -1,17 +1,19 @@
 import { useEffect, useRef } from "react";
-import { Client } from "@stomp/stompjs";
-import notificationStore from "@/stores/notifyStore";
+import { Client, IMessage } from "@stomp/stompjs";
+import { toast } from "react-toastify";
+import { useAuthStore } from "@/stores/userAuthStore";
 
-export const useNotifySocket = (userId: number | undefined | null) => {
+export const useNotifySocket = () => {
 	const clientRef = useRef<Client | null>(null); // client를 ref로 선언
 	const isSubscribedRef = useRef(false); // 구독 상태를 ref로 유지
-	const setNewNotification = notificationStore(
-		(state) => state.setNewNotification,
-	);
+	const { user } = useAuthStore();
 
 	useEffect(() => {
-		if (!userId) {
-			// userId가 없으면 소켓 연결을 건너뜁니다.
+		if (!user) {
+			if (clientRef.current) {
+				clientRef.current.deactivate();
+				clientRef.current = null;
+			}
 			return;
 		}
 
@@ -30,18 +32,13 @@ export const useNotifySocket = (userId: number | undefined | null) => {
 				console.log("Connected to notify server");
 
 				// 구독 설정
-				const notifySubscription = client.subscribe(`/topic/${userId}`, () => {
-					console.log("알림");
-					setNewNotification(true);
+				client.subscribe(`/topic/${user.id}`, (message: IMessage) => {
+					console.log(message.body);
+					toast.info(`${message.body}`, { autoClose: 2000 });
 				});
 
 				isSubscribedRef.current = true; // 구독 상태 업데이트
 				clientRef.current = client; // client 인스턴스 저장
-
-				// 구독 해제 및 리소스 해제
-				return () => {
-					notifySubscription.unsubscribe();
-				};
 			},
 			onStompError: (frame: unknown) => {
 				console.error("STOMP error", frame);
@@ -57,16 +54,5 @@ export const useNotifySocket = (userId: number | undefined | null) => {
 				clientRef.current.deactivate();
 			}
 		};
-	}, [setNewNotification, userId]);
-
-	const deactivateClient = () => {
-		if (clientRef.current) {
-			clientRef.current.deactivate();
-			clientRef.current = null;
-		}
-	};
-
-	return {
-		deactivateClient,
-	};
+	}, [user]);
 };

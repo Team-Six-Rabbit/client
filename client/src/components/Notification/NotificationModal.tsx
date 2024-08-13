@@ -3,10 +3,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState } from "react";
 import NotifyCode from "@/constant/notifyCode";
-import {
-	NotificationLiveDetail,
-	NotificationInviteDetail,
-} from "@/types/notification";
+import { NotificationInviteDetail, Detail } from "@/types/notification";
 import { convertToTimeZone } from "@/utils/dateUtils";
 
 interface NotificationModalProps {
@@ -18,7 +15,7 @@ interface NotificationModalProps {
 		respond: string,
 		content: string,
 	) => Promise<boolean>;
-	detail: NotificationLiveDetail | NotificationInviteDetail;
+	detail: Detail;
 }
 
 function NotificationModal({
@@ -129,17 +126,18 @@ function NotificationModal({
 				)}
 				{category === "Live" && (
 					<div className="bg-slate-100 text-slate-600 h-28 placeholder:text-slate-600 placeholder:opacity-50 border border-slate-200 col-span-6 resize-none outline-none rounded-lg p-2 duration-300 focus:border-slate-600">
-						{/* 'nickname'님의 라이브\n 'title'이 방송 5분전입니다. */}
 						{detail.title}
-						<p>
-							바로가기:{" "}
-							<a
-								href={`import.meta.env.BASE_URL/live/${detail.specificData}`}
-								className="text-blue"
-							>
-								{`import.meta.env.BASE_URL/live/${detail.specificData}`}
-							</a>
-						</p>
+						{detail.specificData && (
+							<p>
+								바로가기:{" "}
+								<a
+									href={`${import.meta.env.BASE_URL}live/${detail.specificData}`}
+									className="text-blue"
+								>
+									{`https://i11a706.p.ssafy.io/live/${detail.specificData}`}
+								</a>
+							</p>
+						)}
 					</div>
 				)}
 				{/* {category === "Punishment" && (

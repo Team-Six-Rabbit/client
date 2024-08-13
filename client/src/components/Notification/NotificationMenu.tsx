@@ -14,7 +14,7 @@ function NotificationMenu({
 			<button
 				type="button"
 				className={`block w-full text-left py-2 px-4 pr-12 ${NotifyCode.get(selectedMenu) === "Notify" ? "bg-royalBlue" : "bg-white text-royalBlue"}`}
-				onClick={() => onSelectMenu(2)}
+				onClick={() => onSelectMenu(-1)}
 			>
 				Notify
 			</button>

@@ -22,6 +22,7 @@ function VoteGauge({ rateAPercentage, rateBPercentage }: VoteGaugeProps) {
 
 interface LiveVoteProps {
 	userId: number;
+	role: number;
 	voteA: number;
 	voteB: number;
 	title: string;
@@ -33,6 +34,7 @@ interface LiveVoteProps {
 
 function LiveVote({
 	userId,
+	role,
 	voteA,
 	voteB,
 	title,
@@ -46,10 +48,6 @@ function LiveVote({
 		onVoteEnd(winner);
 	}, [onVoteEnd, optionA, optionB, voteA, voteB]);
 
-	const handleVote = (voteInfoIndex: number) => {
-		sendVote(userId, voteInfoIndex);
-	};
-
 	return (
 		<div className="flex flex-col items-center mb-2">
 			<h1 className="text-2xl my-2">{title}</h1>
@@ -57,7 +55,8 @@ function LiveVote({
 				<button
 					type="button"
 					className="bg-gray-800 me-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none"
-					onClick={() => handleVote(0)}
+					onClick={() => sendVote(userId, 0)}
+					disabled={role === 0 || role === 1}
 				>
 					{optionA}
 				</button>
@@ -65,7 +64,8 @@ function LiveVote({
 				<button
 					type="button"
 					className="bg-gray-800 ms-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none"
-					onClick={() => handleVote(1)}
+					onClick={() => sendVote(userId, 1)}
+					disabled={role === 0 || role === 1}
 				>
 					{optionB}
 				</button>
