@@ -2,7 +2,9 @@ package com.woowahanrabbits.battle_people.domain.notify.service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,8 +30,8 @@ public class NotifyServiceImpl implements NotifyService {
 			switch (type.getCode()) {
 				case 0 -> battleBoard.getRegistUser().getNickname();
 				case 1 -> battleBoard.getVoteInfo().getTitle();
-				case 2 -> battleBoard.getVoteInfo().getTitle();
-				case 3 -> battleBoard.getVoteInfo().getTitle();
+				case 2 -> battleBoard.getOppositeUser().getNickname();
+				case 3 -> battleBoard.getOppositeUser().getNickname();
 				default -> throw new RuntimeException("Invalid notification type");
 			}
 		);
@@ -47,7 +49,10 @@ public class NotifyServiceImpl implements NotifyService {
 		}
 
 		notifyRepository.save(notify);
-		redisTemplate.convertAndSend("notify", notify);
+		Map<String, Object> map = new HashMap<>();
+		map.put("title", title);
+		map.put("id", user.getId());
+		redisTemplate.convertAndSend("notify", map);
 	}
 
 	@Override
