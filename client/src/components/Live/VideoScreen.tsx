@@ -2,6 +2,7 @@ import VideoStream from "@/components/WebRTC/VideoStream";
 import vsImage from "@/assets/images/LiveVS.png";
 import { createLiveStateBorder } from "@/utils/textBorder";
 import { StreamManager } from "openvidu-browser";
+import { UserWithOpinion } from "@/types/live";
 
 const borderStyles = createLiveStateBorder("black", 4);
 
@@ -57,23 +58,29 @@ function VideoPlayerRight({
 
 interface VideoScreenProps {
 	subscribers: StreamManager[];
+	registerUser?: UserWithOpinion;
+	oppositeUser?: UserWithOpinion;
 }
 
-function VideoScreen({ subscribers }: VideoScreenProps) {
+function VideoScreen({
+	subscribers,
+	registerUser,
+	oppositeUser,
+}: VideoScreenProps) {
 	return (
 		<div className="relative h-70% w-full">
 			<div className="h-full w-full bg-[url('@/assets/images/LivePlayers.png')] bg-contain bg-center bg-no-repeat flex">
 				<VideoPlayerLeft
-					userRank="육두품"
-					userName="반반무마니"
+					userRank={registerUser?.rating.toString() || "육두품"}
+					userName={registerUser?.nickname || "반반무마니"}
 					streamManager={subscribers.find(
 						(streamManager) =>
 							streamManager.stream.connection.serverData?.index === 0,
 					)}
 				/>
 				<VideoPlayerRight
-					userRank="사두품"
-					userName="마라탕탕후루후루"
+					userRank={oppositeUser?.rating.toString() || "사두품"}
+					userName={oppositeUser?.nickname || "마라탕탕후루후루"}
 					streamManager={subscribers.find(
 						(streamManager) =>
 							streamManager.stream.connection.serverData?.index === 1,

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ItemBox from "@/components/Live/ItemBox";
 import VideoScreen from "@/components/Live/VideoScreen";
 import Header from "@/components/header";
@@ -14,9 +14,13 @@ import { useAuthStore } from "@/stores/userAuthStore";
 import SpeakRequestList from "@/components/Live/SpeakRequestList";
 import useLiveSocket from "@/hooks/useLiveSocket";
 import useRequireAuth from "@/hooks/useRequireAuth";
+import { liveBattleService } from "@/services/liveBattleService";
+import { WaitingLiveBattleDetail } from "@/types/live";
+import { toast } from "react-toastify";
 
 function LivePage() {
 	const { isLogin } = useRequireAuth();
+	const navigate = useNavigate();
 
 	if (isLogin) {
 		navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
@@ -32,6 +36,7 @@ function LivePage() {
 	const [isTimeOver, setIsTimeOver] = useState(false);
 	const [isMicMuted, setIsMicMuted] = useState(false);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(false);
+	const [liveData, setLiveData] = useState<WaitingLiveBattleDetail>();
 
 	const { joinSession, subscribers, index, connectionId } = useWebRTC(
 		isMicMuted,
@@ -52,6 +57,24 @@ function LivePage() {
 	useEffect(() => {
 		joinSession(battleId!);
 	}, [battleId, joinSession]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const apiData = await liveBattleService
+				.getWaitDetail(battleId!)
+				.catch(() => ({ code: "fail", data: undefined }));
+			if (apiData.code === "fail" || !apiData.data) {
+				toast.error("라이브 데이터를 가져오지 못했습니다.");
+				navigate("/");
+				return;
+			}
+
+			setLiveData(apiData.data);
+		};
+
+		fetchData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [battleId]);
 
 	const onVoteEnd = useCallback((winner: string) => {
 		setWinner(winner);
@@ -80,13 +103,17 @@ function LivePage() {
 							userId={userId!}
 							voteA={voteA}
 							voteB={voteB}
-							title="오늘 저녁 메뉴 추천"
-							optionA="치킨을 먹자"
-							optionB="마라탕을 먹자"
+							title={liveData?.title || "오늘 저녁 메뉴 추천"}
+							optionA={liveData?.registerUser.opinion || "치킨을 먹자"}
+							optionB={liveData?.oppositeUser.opinion || "마라탕을 먹자"}
 							sendVote={sendVote}
 							onVoteEnd={onVoteEnd}
 						/>
-						<VideoScreen subscribers={subscribers} />
+						<VideoScreen
+							subscribers={subscribers}
+							registerUser={liveData?.registerUser}
+							oppositeUser={liveData?.oppositeUser}
+						/>
 						<ItemBox
 							isMicMuted={isMicMuted}
 							isVideoDisabled={isVideoDisabled}
