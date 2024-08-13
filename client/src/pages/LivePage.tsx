@@ -38,12 +38,13 @@ function LivePage() {
 	const [isVideoDisabled, setIsVideoDisabled] = useState(false);
 	const [liveData, setLiveData] = useState<WaitingLiveBattleDetail>();
 
-	const { joinSession, subscribers, index, connectionId } = useWebRTC(
-		isMicMuted,
-		isVideoDisabled,
-		// videoElement,
-		// canvasElement,
-	);
+	const { joinSession, subscribers, index, connectionId, publisher } =
+		useWebRTC(
+			isMicMuted,
+			isVideoDisabled,
+			// videoElement,
+			// canvasElement,
+		);
 
 	const { battleId } = useParams();
 	const { messages, sendMessage } = useChatSocket(battleId!);
@@ -117,6 +118,10 @@ function LivePage() {
 						<ItemBox
 							isMicMuted={isMicMuted}
 							isVideoDisabled={isVideoDisabled}
+							canUseItem={
+								publisher?.stream.connection.serverData?.role === "SPEAKER" ||
+								false
+							}
 							onMicClick={handleMicClick}
 							onVideoClick={handleVideoClick}
 							sendItem={sendItem}

@@ -31,13 +31,13 @@ function VideoAudioIcons({
 				{isVideoDisabled ? (
 					<FaVideoSlash
 						size={36}
-						className="text-white cursor-pointer transform hover:scale-110 hidden"
+						className="text-white cursor-pointer transform hover:scale-110 invisible"
 						onClick={onVideoClick}
 					/>
 				) : (
 					<FaVideo
 						size={36}
-						className="text-white cursor-pointer transform hover:scale-110 hidden"
+						className="text-white cursor-pointer transform hover:scale-110 invisible"
 						onClick={onVideoClick}
 					/>
 				)}
@@ -111,6 +111,7 @@ function BombTicketIcons() {
 interface ItemBoxProps {
 	isMicMuted: boolean;
 	isVideoDisabled: boolean;
+	canUseItem: boolean;
 	onMicClick: () => void;
 	onVideoClick: () => void;
 	sendItem: (userId: number, targetIndex: number, itemCode: number) => void;
@@ -119,6 +120,7 @@ interface ItemBoxProps {
 function ItemBox({
 	isMicMuted,
 	isVideoDisabled,
+	canUseItem,
 	onMicClick,
 	onVideoClick,
 	sendItem,
@@ -142,7 +144,7 @@ function ItemBox({
 				onMicClick={onMicClick}
 				onVideoClick={onVideoClick}
 			/>
-			<BombTicketIcons />
+			{canUseItem && <BombTicketIcons />}
 		</div>
 	);
 }
