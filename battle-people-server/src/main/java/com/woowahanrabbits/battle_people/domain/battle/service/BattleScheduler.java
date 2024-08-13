@@ -22,8 +22,8 @@ import com.woowahanrabbits.battle_people.domain.user.domain.Rating;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
-import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteScheduler;
@@ -41,7 +41,6 @@ public class BattleScheduler {
 	private final VoteScheduler voteScheduler;
 	private final NotifyService notifyService;
 	private final NotifyRepository notifyRepository;
-	private final UserRepository userRepository;
 	private final VoteOpinionRepository voteOpinionRepository;
 	private final DalleService dalleService;
 	private final UserService userService;
@@ -179,13 +178,13 @@ public class BattleScheduler {
 		}
 	}
 
-	//point
-	public void addPoint(User user, BattleBoard battleBoard, Rating rating) {
-		int rate = user.getRating();
-		rate += rating.getPoint();
-		user.setRating(rate);
-		userRepository.save(user);
-		notifyService.sendPointNotification(user, battleBoard, NotificationType.ADD_POINT, rating);
-	}
+	// //point
+	// public void addPoint(User user, BattleBoard battleBoard, Rating rating) {
+	// 	int rate = user.getRating();
+	// 	rate += rating.getPoint();
+	// 	user.setRating(rate);
+	// 	userRepository.save(user);
+	// 	notifyService.sendPointNotification(user, battleBoard, NotificationType.ADD_POINT, rating);
+	// }
 
 }

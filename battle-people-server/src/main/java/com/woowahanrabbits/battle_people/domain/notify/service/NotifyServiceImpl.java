@@ -36,7 +36,10 @@ public class NotifyServiceImpl implements NotifyService {
 		notify.setRegistDate(new Date());
 		notify.setRead(false);
 		notifyRepository.save(notify);
-		redisTemplate.convertAndSend("notify", user.getId());
+		Map<String, String> map = new HashMap<>();
+		map.put("title", title);
+		map.put("id", Long.toString(user.getId()));
+		redisTemplate.convertAndSend("notify", map);
 	}
 
 	public void sendNotification(User user, BattleBoard battleBoard, NotificationType type) {

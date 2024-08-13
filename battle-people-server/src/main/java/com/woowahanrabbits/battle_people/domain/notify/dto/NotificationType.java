@@ -13,9 +13,7 @@ public enum NotificationType {
 	LIVE_NOTICE(1, "[%s] 라이브가 5분 후 시작됩니다!"),
 	BATTLE_ACCEPT(2, "[%s]님이 배틀을 수락했습니다."),
 	BATTLE_DECLINE(3, "[%s]님이 배틀을 거절했습니다."),
-	BATTLE_UNSATISFIED(4, "[%s] 배틀 인원 미달로 모닥불로 이동되었습니다."),
-	BATTLE_SATISFIED(5, "[%s] 배틀 인원이 충족되어 시작 대기 중입니다."),
-	ADD_POINT(6, "[%s] %s에 %s하여 %d점을 얻었습니다.");
+	ADD_POINT(4, "[%s] %s에 %s하여 %d점을 얻었습니다.");
 
 	private final int code;
 	private final String messageTemplate;
