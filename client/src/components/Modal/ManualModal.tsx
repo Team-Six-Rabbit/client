@@ -113,7 +113,7 @@ function BattleManualModal({ onClose }: ModalProps) {
 								</StyledH3>
 								<StyledP>
 									지금 이 순간, 전장 한복판에서 벌어지는 뜨거운 라이브 토론
-									현장을 실시간으로 구경할 수 있는 메뉴입니다.
+									현장을 실시간으로 구경할 수 있는 게시판입니다.
 								</StyledP>
 								<StyledH3>
 									<img
@@ -144,8 +144,8 @@ function BattleManualModal({ onClose }: ModalProps) {
 									부채질
 								</StyledH3>
 								<StyledP>
-									무슨 기능인가요? 앞으로 벌어질 흥미진진한 토론 전투들을 미리
-									살펴보고, 참여 예약까지 할 수 있는 메뉴입니다.
+									앞으로 벌어질 흥미진진한 토론 전투들을 미리 살펴보고, 참여
+									예약, 사전 투표까지 할 수 있는 게시판입니다.
 								</StyledP>
 								<StyledH3>
 									<img
