@@ -189,7 +189,7 @@ function LiveDebateRegistForm() {
 			authorChoice: !authorChoice,
 			startTime: !startTime,
 			duration: !duration,
-			maxParticipants: !maxParticipants,
+			maxParticipants: !maxParticipants || parseInt(maxParticipants, 10) < 5,
 			details: !details,
 		};
 
@@ -236,11 +236,20 @@ function LiveDebateRegistForm() {
 		console.log("Data to be sent:", dataToSend);
 
 		try {
+			console.log("Sending data to the server...", dataToSend);
 			const response = await battleService.inviteBattle(dataToSend);
-			console.log("Battle invitation sent successfully:", response);
-			navigate("/fanning");
+			console.log("Received response from server:", response);
+
+			if (response.code === "fail") {
+				alert(response.msg);
+			} else {
+				console.log("Battle invitation sent successfully:", response);
+				navigate("/fanning");
+				alert("배틀 신청이 성공적으로 전달되었습니다!");
+			}
 		} catch (error) {
 			console.error("Failed to invite to battle:", error);
+			alert("이미 해당시간에 예정된 배틀이 존재합니다.");
 		}
 	};
 
@@ -398,6 +407,7 @@ function LiveDebateRegistForm() {
 						type="number"
 						placeholder="최대 인원 수"
 						value={maxParticipants}
+						min={5} // Enforces a minimum value of 5
 						onChange={(e) => {
 							setMaxParticipants(e.target.value);
 							setErrors((prevErrors) => ({
