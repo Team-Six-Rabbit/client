@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Client, Message } from "@stomp/stompjs";
 import useSpeakSocket from "@/hooks/useSpeakSocket";
 import useVoteSocket from "@/hooks/useVoteSocket";
@@ -10,19 +10,22 @@ import {
 } from "@/types/liveMessageType";
 
 const useLiveSocket = (battleId: string) => {
-	const [stompClient, setStompClient] = useState<Client | null>(null);
+	const stompClientRef = useRef<Client | null>(null);
 
 	// livePage에서 가져가면 코드가 너무 길어질 것 같아
 	// 단순히 import해서 내려주는 역할
 	const { speakRequests, handleSpeak, sendSpeak } = useSpeakSocket(
-		stompClient!,
+		stompClientRef.current!,
 		battleId,
 	);
 	const { voteA, voteB, handleVote, sendVote } = useVoteSocket(
-		stompClient!,
+		stompClientRef.current!,
 		battleId,
 	);
-	const { handleItem, sendItem } = useItemSocket(stompClient!, battleId);
+	const { handleItem, sendItem } = useItemSocket(
+		stompClientRef.current!,
+		battleId,
+	);
 
 	useEffect(() => {
 		const socket = new WebSocket(import.meta.env.VITE_APP_WEBSOCKET_URL);
@@ -69,10 +72,13 @@ const useLiveSocket = (battleId: string) => {
 		});
 
 		client.activate();
-		setStompClient(client);
+		stompClientRef.current = client;
 
 		return () => {
-			client.deactivate();
+			if (stompClientRef.current) {
+				stompClientRef.current.deactivate();
+				stompClientRef.current = null;
+			}
 		};
 	}, [battleId, handleSpeak, handleVote, handleItem]);
 

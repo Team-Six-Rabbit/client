@@ -1,9 +1,23 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Client } from "@stomp/stompjs";
 import { SpeakRequest, SpeakResponse } from "@/types/liveMessageType";
+import { getSpeackReqeustList } from "@/services/speakReqeustService";
 
 const useSpeakSocket = (stompClient: Client, battleId: string) => {
 	const [speakRequests, setSpeakRequests] = useState<SpeakResponse[]>([]);
+
+	useEffect(() => {
+		const fetchRequests = async () => {
+			try {
+				const response = await getSpeackReqeustList(battleId!);
+				setSpeakRequests(response.data!);
+			} catch (error) {
+				console.error("Failed to load notifications:", error);
+			}
+		};
+
+		fetchRequests();
+	}, [battleId]);
 
 	// 발언권 요청 응답 처리
 	const handleSpeak = useCallback((data: SpeakResponse) => {

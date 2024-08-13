@@ -13,10 +13,11 @@ import useChatSocket from "@/hooks/useChatSocket";
 import { useAuthStore } from "@/stores/userAuthStore";
 import SpeakRequestList from "@/components/Live/SpeakRequestList";
 import useLiveSocket from "@/hooks/useLiveSocket";
-import useRequireAuth from "@/hooks/useRequireAuth";
 import { liveBattleService } from "@/services/liveBattleService";
-import { WaitingLiveBattleDetail } from "@/types/live";
 import { toast } from "react-toastify";
+import useRequireAuth from "@/hooks/useRequireAuth";
+import { WaitingLiveBattleDetail } from "@/types/live";
+import useRequestSocket from "@/hooks/useRequestSocket";
 
 function LivePage() {
 	useRequireAuth();
@@ -30,6 +31,7 @@ function LivePage() {
 	const [isMicMuted, setIsMicMuted] = useState(false);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(false);
 	const [liveData, setLiveData] = useState<WaitingLiveBattleDetail>();
+	const [buttonDisabled, setButtonDisabled] = useState(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	const { joinSession, subscribers, index, connectionId, publisher } =
@@ -40,14 +42,16 @@ function LivePage() {
 			// canvasElement,
 		);
 
+	const userId = useAuthStore().user?.id;
 	const { battleId } = useParams();
 	const { messages, sendMessage } = useChatSocket(battleId!);
+	const { sendRequestAccept } = useRequestSocket(battleId!, userId!);
 	const { speakRequests, sendSpeak, voteA, voteB, sendVote, sendItem } =
 		useLiveSocket(battleId!);
-	const userId = useAuthStore().user?.id;
 
 	const handleMicClick = () => setIsMicMuted((prev) => !prev);
 	const handleVideoClick = () => setIsVideoDisabled((prev) => !prev);
+	const handleButtonClick = () => setButtonDisabled(true);
 
 	useEffect(() => {
 		joinSession(battleId!);
@@ -137,6 +141,9 @@ function LivePage() {
 							connectionId={connectionId.current}
 							speakRequests={speakRequests}
 							sendSpeak={sendSpeak}
+							sendRequestAccept={sendRequestAccept}
+							buttonDisabled={buttonDisabled}
+							onButtonClick={handleButtonClick}
 							role={index} // 지금 나의 역할(0,1,null) 추후에 OpenVidu로 받을 예정
 						/>
 						<ChatBox

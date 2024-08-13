@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Client, IMessage } from "@stomp/stompjs";
 import { ChatMessage } from "@/types/Chat";
 
@@ -9,7 +9,7 @@ interface UseChatStompReturn {
 
 const useChatSocket = (battleId: string): UseChatStompReturn => {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
-	const [stompClient, setStompClient] = useState<Client | null>(null);
+	const stompClientRef = useRef<Client | null>(null);
 
 	const addMessage = (message: ChatMessage) => {
 		setMessages((prevMessages) => {
@@ -30,18 +30,10 @@ const useChatSocket = (battleId: string): UseChatStompReturn => {
 				console.log("Connected to chat server");
 
 				// 구독 설정
-				const chatSubscription = client.subscribe(
-					`/topic/chat/${battleId}`,
-					(message: IMessage) => {
-						const parsedMessage: ChatMessage = JSON.parse(message.body);
-						addMessage(parsedMessage);
-					},
-				);
-
-				// 구독 해제 및 리소스 해제
-				return () => {
-					chatSubscription.unsubscribe();
-				};
+				client.subscribe(`/topic/chat/${battleId}`, (message: IMessage) => {
+					const parsedMessage: ChatMessage = JSON.parse(message.body);
+					addMessage(parsedMessage);
+				});
 			},
 			onStompError: (frame) => {
 				console.error("STOMP error", frame);
@@ -49,22 +41,25 @@ const useChatSocket = (battleId: string): UseChatStompReturn => {
 		});
 
 		client.activate();
-		setStompClient(client);
+		stompClientRef.current = client;
 
 		// 상태 초기화
 		return () => {
 			setMessages([]);
-			client.deactivate();
+			if (stompClientRef.current) {
+				stompClientRef.current.deactivate();
+				stompClientRef.current = null;
+			}
 		};
 	}, [battleId]);
 
 	const sendMessage = (userId: number, message: string) => {
-		if (stompClient && stompClient.connected) {
+		if (stompClientRef.current && stompClientRef.current.connected) {
 			const chatMessage = {
 				userId,
 				message,
 			};
-			stompClient.publish({
+			stompClientRef.current.publish({
 				destination: `/app/chat/${battleId}`,
 				body: JSON.stringify(chatMessage),
 			});

@@ -6,6 +6,9 @@ interface SpeechRequestListProps {
 	connectionId: string | undefined;
 	speakRequests: SpeakResponse[];
 	sendSpeak: (userId: number, connectionId: string) => void;
+	sendRequestAccept: (connectionId: string) => void;
+	buttonDisabled: boolean;
+	onButtonClick: () => void;
 	role: number;
 }
 
@@ -14,10 +17,12 @@ function SpeakRequestList({
 	connectionId,
 	speakRequests,
 	sendSpeak,
+	sendRequestAccept,
+	buttonDisabled,
+	onButtonClick,
 	role,
 }: SpeechRequestListProps) {
 	const [isOpen, setIsOpen] = useState(false);
-	const [buttonDisabled, setButtonDisabled] = useState(false);
 
 	const toggleOpen = () => {
 		setIsOpen(!isOpen);
@@ -25,7 +30,7 @@ function SpeakRequestList({
 
 	const handleRequestSpeech = () => {
 		sendSpeak(userId, connectionId!); // (userId: number, connectionId: string)
-		setButtonDisabled(true);
+		onButtonClick();
 	};
 
 	if (role === -1) {
@@ -59,8 +64,16 @@ function SpeakRequestList({
 			{isOpen && (
 				<div className="absolute top-full left-0 w-full bg-white border-solid border-2 border-black rounded-lg shadow-lg z-10 h-40 overflow-y-auto custom-scrollbar">
 					{filteredRequests.map((request) => (
-						<div key={request.idx} className="p-2 border-b-2 border-gray-300">
-							{request.nickname}[{request.rating}]
+						<div key={request.idx}>
+							<div className="p-2 border-b-2 border-gray-300">
+								{request.nickname}[{request.rating}]
+							</div>
+							<button
+								type="button"
+								onClick={() => sendRequestAccept(request.connectionId)}
+							>
+								V
+							</button>
 						</div>
 					))}
 				</div>
