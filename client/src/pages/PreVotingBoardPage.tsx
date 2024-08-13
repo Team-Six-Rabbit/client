@@ -197,7 +197,11 @@ function PreVotingBoardPage() {
 					</BoardTicketContainer>
 				</PreVotingBoardContainer>
 			</div>
-			<PlusButton />
+			<PlusButton
+				strokeColor="#1D3D6B"
+				fillColor="#FBCA27"
+				defaultForm="live"
+			/>
 			<AlertModal
 				show={showAlert}
 				onClose={() => setShowAlert(false)}
