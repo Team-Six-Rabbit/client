@@ -74,10 +74,12 @@ public class BattleScheduler {
 			} else {
 				List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
 				BattleInfoDto battleInfoDto = new BattleInfoDto(battleBoard, voteInfo, voteOpinions);
-				try {
-					CompletableFuture<String> imageFuture = dalleService.generateImageAsync(battleInfoDto);
-				} catch (Exception e) {
-					// throw new RuntimeException(e);
+				if (battleBoard.getImageUrl().equals(null)) {
+					try {
+						CompletableFuture<String> imageFuture = dalleService.generateImageAsync(battleInfoDto);
+					} catch (Exception e) {
+						// throw new RuntimeException(e);
+					}
 				}
 				voteInfo.setCurrentState(3);
 				voteScheduler.updatePreVoteCount(battleBoard);
