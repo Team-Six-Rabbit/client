@@ -23,7 +23,6 @@ import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.handler.UserException;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.InterestRepository;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
-import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,6 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final NotifyService notifyService;
 	private final InterestRepository interestRepository;
-	private final JwtUtil jwtUtil;
 
 	public User login(LoginRequest loginRequest) {
 		Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());

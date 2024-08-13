@@ -17,7 +17,6 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.domain.UserToken;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginResponse;
-import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserTokenRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 import com.woowahanrabbits.battle_people.util.HttpUtils;
@@ -35,7 +34,6 @@ public class AuthController {
 	private long accessTokenExpiration;
 
 	private final UserService userService;
-	private final UserTokenRepository userTokenRepository;
 	private final JwtUtil jwtUtil;
 
 	@PostMapping("/login")
@@ -50,7 +48,6 @@ public class AuthController {
 		String access = jwtUtil.generateAccessToken(userId, email, nickname, role);
 		String refresh = jwtUtil.generateRefreshToken(userId, email, nickname, role);
 		UserToken userToken = new UserToken(user, access, refresh);
-		userTokenRepository.save(userToken);
 
 		response.addCookie(HttpUtils.createCookie("access", access, "/"));
 		response.addCookie(
@@ -63,9 +60,6 @@ public class AuthController {
 	@DeleteMapping("/logout")
 	public ResponseEntity<?> logout(@CookieValue(value = "access", required = false) String access,
 		HttpServletResponse response) {
-		if (access != null) {
-			userTokenRepository.deleteByUserId(jwtUtil.extractUserId(access));
-		}
 
 		HttpUtils.deleteCookies(
 			response,
@@ -91,7 +85,6 @@ public class AuthController {
 		String userRole = jwtUtil.extractUserRole(refresh);
 		String newAccess = jwtUtil.generateAccessToken(userId, username, nickname, userRole);
 
-		userTokenRepository.updateAccessTokenByUserId(userId, newAccess);
 		response.addCookie(HttpUtils.createCookie("access", newAccess, "/"));
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "Refresh", null));
 	}
