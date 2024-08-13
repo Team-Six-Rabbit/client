@@ -16,7 +16,8 @@ const useWebRTC = (
 		index,
 		connectionId,
 		subscribers,
-		// isPublisher,
+		isPublisher,
+		publisher,
 		shouldPublish,
 	} = useOpenVidu();
 	// const { drawMask, shouldRenderVideo, shouldRenderMask } = useFaceApi(
@@ -54,6 +55,8 @@ const useWebRTC = (
 		joinSession,
 		// drawMask,
 		index,
+		isPublisher,
+		publisher,
 		subscribers,
 		connectionId,
 		// shouldRenderVideo,
