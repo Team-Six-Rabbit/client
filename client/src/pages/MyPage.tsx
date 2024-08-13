@@ -26,11 +26,6 @@ function MyPage() {
 	const formDataRef = useRef<FormData>(new FormData());
 	const { user, setUser } = useAuthStore();
 
-	if (!user) {
-		alert("로그인이 필요합니다.");
-		navigate("/login");
-	}
-
 	const [profileImage, setProfileImage] = useState<string>(
 		user!.imgUrl || profileImagePlaceholder,
 	);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import { toast } from "react-toastify";
 import { categories } from "@/constant/boardCategory";
 import { authService } from "@/services/userAuthService";
 
@@ -89,14 +90,8 @@ function Interests() {
 	const handleSave = async () => {
 		try {
 			const response = await authService.postUserInterests(selectedInterests);
-			// const categoryIds = response.data!.category;
-			// const categoryNames = categoryIds.map((id) => {
-			// 	const category = categories.find((cat) => cat.id === id);
-			// 	return category ? category.name : "Unknown"; // Fallback to "Unknown" if ID is not found
-			// });
-			// const categoryNamesString = categoryNames.join(", ");
 			if (response.code === "success") {
-				alert(`관심사 저장이 완료되었습니다.`);
+				toast.info("관심사 저장이 완료되었습니다.", { autoClose: 1000 });
 			}
 		} catch (error) {
 			console.error("Failed to save user interests:", error);
