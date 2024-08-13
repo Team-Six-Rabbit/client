@@ -156,6 +156,15 @@ public class LiveChatServiceImpl implements LiveChatService {
 		return responseDtoList;
 	}
 
+	@Override
+	public Integer isUserSendRequest(Long battleBoardId, Long userId) {
+		ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
+		if (valueOps.get("private-request:" + battleBoardId + ":" + userId) != null) {
+			return 1;
+		}
+		return 0;
+	}
+
 	public List<String> getKeysByPattern(Long battleBoardId) {
 		String pattern = "private-request:" + battleBoardId + ":*";
 		List<String> keys = new ArrayList<>();

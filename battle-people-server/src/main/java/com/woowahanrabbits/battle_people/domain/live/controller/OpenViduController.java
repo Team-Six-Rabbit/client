@@ -59,4 +59,11 @@ public class OpenViduController {
 			.body(new ApiResponseDto<>("success", "", liveChatService.getRequestList(battleId, user.getId())));
 	}
 
+	@GetMapping("/is-user-speak-request/{battleId}")
+	public ResponseEntity<ApiResponseDto<Integer>> isUserSpeakRequest(@PathVariable Long battleId,
+		@LoginUser User user) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ApiResponseDto<>("success", "", liveChatService.isUserSendRequest(battleId, user.getId())));
+	}
+
 }
