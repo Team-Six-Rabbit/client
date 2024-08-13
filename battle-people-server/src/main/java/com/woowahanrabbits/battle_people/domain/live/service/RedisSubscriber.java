@@ -35,7 +35,8 @@ public class RedisSubscriber implements MessageListener {
 			String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
 
 			if (channel.equals("notify")) {
-				Map<String, Object> map = objectMapper.readValue(publishMessage, Map.class);
+				Map<String, String> map = objectMapper.readValue(publishMessage, Map.class);
+				System.out.println(map.get("id"));
 				messagingTemplate.convertAndSend("/topic/" + map.get("id"), map.get("title"));
 			} else {
 				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
