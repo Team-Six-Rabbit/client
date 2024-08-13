@@ -272,7 +272,7 @@ export interface ApiCreatedLive {
 	battleBoardId: number;
 	title: string;
 	registDate: string;
-	isWin: boolean;
+	isWin: number;
 }
 
 export interface VoteInfo {
