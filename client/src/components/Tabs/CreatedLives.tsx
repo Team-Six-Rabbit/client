@@ -36,12 +36,17 @@ const Date = styled.span`
 	color: #333;
 `;
 
-const StatusCircle = styled.span<{ statusColor: string }>`
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	background-color: ${({ statusColor }) => statusColor};
+const StatusText = styled.span`
+	font-size: 14px;
 `;
+
+// color: ${({ statusColor }) => statusColor}; /* 상태에 따라 텍스트 색상 설정 */
+// const StatusCircle = styled.span<{ statusColor: string }>`
+// 	width: 20px;
+// 	height: 20px;
+// 	border-radius: 50%;
+// 	background: ${({ statusColor }) => statusColor};
+// `;
 
 const TitleContainer = styled.div`
 	flex-grow: 1;
@@ -59,7 +64,7 @@ interface CreatedLive {
 	battleBoardId: number;
 	title: string;
 	date: string;
-	statusColor: string;
+	statusText: string;
 }
 
 function CreatedLives() {
@@ -80,11 +85,25 @@ function CreatedLives() {
 
 					const dateOnly = formattedDate.split(" ")[0]; // 'YYYY-MM-DD'
 
+					// isWin 값에 따라 상태 색상을 설정
+					let statusText;
+					if (live.isWin === 0) {
+						statusText = "승";
+					} else if (live.isWin === 1) {
+						statusText = "패";
+					} else if (live.isWin === 2) {
+						statusText = "무";
+					} else if (live.isWin === 4) {
+						statusText = "-";
+					} else {
+						statusText = "";
+					}
+
 					return {
 						battleBoardId: live.battleBoardId,
 						title: live.title,
-						date: `${dateOnly}`, // 'YYYY-MM-DD HH:MM'
-						statusColor: live.isWin ? "#BDE3FF" : "#FFC7C2",
+						date: `${dateOnly}`, // 'YYYY-MM-DD'
+						statusText,
 					};
 				});
 				setLives(formattedLives);
@@ -143,7 +162,8 @@ function CreatedLives() {
 						<TitleContainer>{live.title}</TitleContainer>
 						<DateStatusContainer>
 							<Date>{live.date}</Date>
-							<StatusCircle statusColor={live.statusColor} />
+							{/* <StatusCircle statusText={live.statusText} /> */}
+							<StatusText>{live.statusText}</StatusText>
 						</DateStatusContainer>
 					</CreatedLivesListItem>
 				))}
