@@ -19,16 +19,9 @@ import { WaitingLiveBattleDetail } from "@/types/live";
 import { toast } from "react-toastify";
 
 function LivePage() {
-	const { isLogin } = useRequireAuth();
+	useRequireAuth();
 	const navigate = useNavigate();
 
-	if (isLogin) {
-		navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-			setTimeout(() => {
-				stream.getTracks().forEach((track) => track.stop());
-			}, 10);
-		});
-	}
 	// const videoElement = useRef<HTMLVideoElement>(null);
 	// const canvasElement = useRef<HTMLCanvasElement>(null);
 
@@ -37,6 +30,7 @@ function LivePage() {
 	const [isMicMuted, setIsMicMuted] = useState(false);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(false);
 	const [liveData, setLiveData] = useState<WaitingLiveBattleDetail>();
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	const { joinSession, subscribers, index, connectionId, publisher } =
 		useWebRTC(
@@ -60,6 +54,7 @@ function LivePage() {
 	}, [battleId, joinSession]);
 
 	useEffect(() => {
+		setIsLoading(true);
 		const fetchData = async () => {
 			const apiData = await liveBattleService
 				.getWaitDetail(battleId!)
@@ -71,6 +66,7 @@ function LivePage() {
 			}
 
 			setLiveData(apiData.data);
+			setIsLoading(false);
 		};
 
 		fetchData();
@@ -98,7 +94,14 @@ function LivePage() {
 			<div className="flex flex-col h-screen">
 				<div className="flex-1 flex mt-16 px-8 pt-8">
 					{/* 추후에 start와 end시간을 계산해서 duration에 넣기 */}
-					<Timer duration={520} onTimeOver={() => setIsTimeOver(true)} />
+					{!isLoading && (
+						<Timer
+							duration={Math.floor(
+								(new Date(liveData!.endDate).getTime() - Date.now()) / 1000,
+							)}
+							onTimeOver={() => setIsTimeOver(true)}
+						/>
+					)}
 					<div className="flex-col w-full justify-center items-center h-144">
 						<LiveVote
 							userId={userId!}
