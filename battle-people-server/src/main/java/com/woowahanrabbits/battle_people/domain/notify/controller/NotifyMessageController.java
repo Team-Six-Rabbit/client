@@ -36,7 +36,7 @@ public class NotifyMessageController {
 			if (notify.isRead()) {
 				return;
 			}
-			redisTemplate.convertAndSend("notify", RedisTopicDto.builder()
+			redisTemplate.convertAndSend("notify-list", RedisTopicDto.builder()
 				.type("read")
 				.channelId(userId)
 				.responseDto(notifyService.updateReadState(notify.getId()))

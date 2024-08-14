@@ -37,6 +37,7 @@ public class RedisConfig {
 		container.addMessageListener(messageListener, new ChannelTopic("live"));
 		container.addMessageListener(messageListener, new ChannelTopic("request"));
 		container.addMessageListener(messageListener, new ChannelTopic("notify"));
+		container.addMessageListener(messageListener, new ChannelTopic("notify-list"));
 		return container;
 	}
 
