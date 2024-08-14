@@ -15,6 +15,7 @@ import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoar
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.LiveCurrentVoteResponseDto;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,6 +73,21 @@ public class VoteController {
 			return ResponseEntity.status(HttpStatus.OK)
 				.body(new ApiResponseDto<>("success", "",
 					voteService.getVoteResult(battleId)));
+		} catch (Exception e) {
+			System.out.println(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new ApiResponseDto<>("fail", "", null));
+		}
+	}
+
+	@GetMapping("/live-user-vote-result/{battleId}")
+	@Operation(summary = "[]")
+	public ResponseEntity<ApiResponseDto<LiveCurrentVoteResponseDto>> getLiveUserVote(@PathVariable Long battleId,
+		@LoginUser User user) {
+		try {
+			return ResponseEntity.status(HttpStatus.OK)
+				.body(new ApiResponseDto<>("success", "",
+					voteService.getVoteLiveResult(battleId, user.getId())));
 		} catch (Exception e) {
 			System.out.println(e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -20,6 +20,7 @@ import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
+import com.woowahanrabbits.battle_people.domain.vote.dto.LiveCurrentVoteResponseDto;
 import com.woowahanrabbits.battle_people.domain.vote.dto.UserWinHistory;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteOpinionDtoWithVoteCount;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteRequest;
@@ -95,6 +96,25 @@ public class VoteServiceImpl implements VoteService {
 			.getId();
 
 		return resultDto(voteInfoId);
+	}
+
+	@Override
+	public LiveCurrentVoteResponseDto getVoteLiveResult(Long battleBoardId, Long userId) {
+		Long voteInfoId = battleBoardRepository.findById(battleBoardId)
+			.orElseThrow(() -> new RuntimeException("BattleBoard not found"))
+			.getVoteInfo()
+			.getId();
+
+		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(userId, voteInfoId);
+
+		Integer index = -1;
+		if (userVoteOpinion != null) {
+			index = userVoteOpinion.getVoteInfoIndex();
+		}
+
+		CurrentVoteResponseDto currentVoteResponseDto = resultDto(voteInfoId);
+		return new LiveCurrentVoteResponseDto(currentVoteResponseDto.getTotalCount(),
+			currentVoteResponseDto.getOpinions(), index);
 	}
 
 	@Override
