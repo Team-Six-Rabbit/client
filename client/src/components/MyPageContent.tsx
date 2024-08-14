@@ -9,7 +9,7 @@ function MyPageContent() {
 
 	useEffect(() => {
 		const tabs = [
-			{ label: "Win Rate", value: "win-rate" },
+			{ label: "Win Rate", value: "" },
 			{ label: "Created Lives", value: "created-lives" },
 			{ label: "Participated Votes", value: "participated-votes" },
 			{ label: "Interests", value: "interests" },
@@ -30,7 +30,7 @@ function MyPageContent() {
 		<div className="mypage-content-container">
 			<ul className="tabs-navigation" role="tablist">
 				{[
-					{ label: "승률", value: "win-rate" },
+					{ label: "승률", value: "" },
 					{ label: "개최한 라이브", value: "created-lives" },
 					{ label: "참여한 투표", value: "participated-votes" },
 					{ label: "관심사", value: "interests" },
