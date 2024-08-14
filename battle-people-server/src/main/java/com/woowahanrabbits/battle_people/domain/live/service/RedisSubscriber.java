@@ -3,7 +3,6 @@ package com.woowahanrabbits.battle_people.domain.live.service;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
@@ -35,9 +34,30 @@ public class RedisSubscriber implements MessageListener {
 			String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
 
 			if (channel.equals("notify")) {
-				Map<String, String> map = objectMapper.readValue(publishMessage, Map.class);
-				System.out.println(map.get("id"));
-				messagingTemplate.convertAndSend("/topic/" + map.get("id"), map.get("title"));
+				// Map<String, String> map = objectMapper.readValue(publishMessage, Map.class);
+				// System.out.println(map.get("id"));
+				// messagingTemplate.convertAndSend("/topic/" + map.get("id"), map.get("title"));
+
+				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
+				Long channelId = redisTopicDto.getChannelId();
+
+				if (redisTopicDto.getType().equals("read")) {
+					RedisTopicDto<List<?>> responseTopicDto = objectMapper.readValue(publishMessage,
+						new TypeReference<>() {
+						});
+
+					messagingTemplate.convertAndSend("/topic/notify/" + channelId,
+						new RedisTopicDto<>("read", channelId, responseTopicDto.getResponseDto().get(1)));
+				}
+
+				if (redisTopicDto.getType().equals("new")) {
+					RedisTopicDto<String> responseTopicDto = objectMapper.readValue(publishMessage,
+						new TypeReference<>() {
+						});
+					messagingTemplate.convertAndSend("/topic/notify/" + channelId,
+						new RedisTopicDto<>("new", channelId, responseTopicDto.getResponseDto()));
+				}
+
 			} else {
 				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
 				Long channelId = redisTopicDto.getChannelId();

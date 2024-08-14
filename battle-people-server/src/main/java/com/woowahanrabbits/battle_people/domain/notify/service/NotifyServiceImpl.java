@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.notify.domain.Notify;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationResponseDto;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
@@ -66,10 +67,11 @@ public class NotifyServiceImpl implements NotifyService {
 		}
 
 		notifyRepository.save(notify);
-		Map<String, String> map = new HashMap<>();
-		map.put("title", title);
-		map.put("id", Long.toString(user.getId()));
-		redisTemplate.convertAndSend("notify", map);
+		// Map<String, String> map = new HashMap<>();
+		// map.put("title", title);
+		// map.put("id", Long.toString(user.getId()));
+
+		redisTemplate.convertAndSend("notify", new RedisTopicDto<>("new", user.getId(), title));
 	}
 
 	@Override
@@ -93,5 +95,26 @@ public class NotifyServiceImpl implements NotifyService {
 	@Override
 	public void deleteNotification(Long notifyId) {
 		notifyRepository.deleteById(notifyId);
+	}
+
+	@Override
+	public List<NotificationResponseDto> updateReadState(Long notifyId) {
+		Notify notify = notifyRepository.findById(notifyId).orElse(null);
+		if (notify == null) {
+			return new ArrayList<>();
+		}
+
+		notify.setRead(true);
+		notifyRepository.save(notify);
+
+		List<Notify> userNotifies = notifyRepository.findAllByUserIdOrderByIsReadAscRegistDateDesc(
+			notify.getUser().getId());
+		List<NotificationResponseDto> returnList = new ArrayList<>();
+		for (Notify userNotify : userNotifies) {
+			NotificationResponseDto notificationResponseDto = new NotificationResponseDto(userNotify);
+			returnList.add(notificationResponseDto);
+		}
+		return returnList;
+
 	}
 }
