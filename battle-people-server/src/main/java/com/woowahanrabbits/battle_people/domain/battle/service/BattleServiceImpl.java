@@ -37,6 +37,8 @@ import com.woowahanrabbits.battle_people.domain.vote.dto.BattleOpinionDto;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteScheduler;
+import com.woowahanrabbits.battle_people.exception.CustomException;
+import com.woowahanrabbits.battle_people.exception.ErrorCode;
 import com.woowahanrabbits.battle_people.validation.BattleValidator;
 
 import lombok.RequiredArgsConstructor;
@@ -71,7 +73,7 @@ public class BattleServiceImpl implements BattleService {
 
 		battleValidator.validateOppositeUser(battleInviteRequest, user);
 		battleValidator.validateTime(battleInviteRequest.getTime());
-		battleValidator.validateStartTime(battleInviteRequest.getStartDate());
+		battleValidator.validateStartTime(battleInviteRequest.getStartDate(), 3);
 		battleValidator.checkOtherBattles(user, battleInviteRequest.getStartDate(), endDate);
 
 		//VoteInfo 만들기
@@ -83,6 +85,38 @@ public class BattleServiceImpl implements BattleService {
 			.currentState(0)
 			.detail(battleInviteRequest.getDetail())
 			.build();
+
+		List<BattleBoard> myList = battleRepository.findMyAwaitingList(user.getId());
+		for (BattleBoard awaitingBoard : myList) {
+			VoteInfo awaitingVoteInfo = awaitingBoard.getVoteInfo();
+
+			if (awaitingVoteInfo.getCurrentState() == 0) {
+				if (awaitingBoard.getRegistUser().getId() != user.getId()) {
+					continue;
+				}
+			}
+
+			if (awaitingVoteInfo.getCurrentState() >= 5 || awaitingVoteInfo.getCurrentState() == 1) {
+				continue;
+			}
+
+			if (awaitingVoteInfo.getStartDate().before(voteInfo.getEndDate()) && awaitingVoteInfo.getStartDate()
+				.after(voteInfo.getStartDate())) {
+				throw new CustomException(ErrorCode.DUPLICATED_BATTLE);
+			}
+			if (awaitingVoteInfo.getEndDate().after(voteInfo.getStartDate()) && awaitingVoteInfo.getEndDate()
+				.before(voteInfo.getEndDate())) {
+				throw new CustomException(ErrorCode.DUPLICATED_BATTLE);
+			}
+			if (awaitingVoteInfo.getStartDate().before(voteInfo.getStartDate()) && awaitingVoteInfo.getEndDate()
+				.after(voteInfo.getStartDate())) {
+				throw new CustomException(ErrorCode.DUPLICATED_BATTLE);
+			}
+			if (awaitingVoteInfo.getStartDate().after(voteInfo.getStartDate()) && awaitingVoteInfo.getEndDate()
+				.before(voteInfo.getEndDate())) {
+				throw new CustomException(ErrorCode.DUPLICATED_BATTLE);
+			}
+		}
 
 		//투표 정보 저장
 		voteInfoRepository.save(voteInfo);
@@ -154,7 +188,7 @@ public class BattleServiceImpl implements BattleService {
 		BattleBoard battleBoard = battleRepository.findById(battleRespondRequest.getBattleId()).orElseThrow();
 		VoteInfo requestVote = battleBoard.getVoteInfo();
 
-		battleValidator.validateBattleDate(battleBoard.getVoteInfo().getStartDate(), 30);
+		battleValidator.validateStartTime(battleBoard.getVoteInfo().getStartDate(), 0);
 
 		if (battleRespondRequest.getRespond().equals("decline")) {
 			requestVote.setCurrentState(1);
@@ -222,6 +256,7 @@ public class BattleServiceImpl implements BattleService {
 	@Override
 	public int applyBattle(BattleApplyDto battleApplyDto, User user) {
 		BattleBoard battleBoard = battleRepository.findById(battleApplyDto.getBattleId()).orElseThrow();
+		VoteInfo voteInfo = battleBoard.getVoteInfo();
 		if (battleBoard.getOppositeUser().getId() == user.getId()
 			|| battleBoard.getRegistUser().getId() == user.getId()) {
 			//주최자는 참여 신청 X
@@ -240,6 +275,37 @@ public class BattleServiceImpl implements BattleService {
 			return -3;
 		}
 
+		// 이미 일정이 있는 유저라면
+		List<BattleBoard> myList = battleRepository.findMyAwaitingList(user.getId());
+		for (BattleBoard awaitingBoard : myList) {
+			VoteInfo awaitingVoteInfo = awaitingBoard.getVoteInfo();
+
+			if (voteInfo.getCurrentState() == 0 && awaitingBoard.getRegistUser().getId() != user.getId()) {
+				continue;
+			}
+
+			if (voteInfo.getCurrentState() >= 5 || voteInfo.getCurrentState() == 1) {
+				continue;
+			}
+
+			if (awaitingVoteInfo.getStartDate().before(voteInfo.getEndDate()) && awaitingVoteInfo.getStartDate()
+				.after(voteInfo.getStartDate())) {
+				return -4;
+			}
+			if (awaitingVoteInfo.getEndDate().after(voteInfo.getStartDate()) && awaitingVoteInfo.getEndDate()
+				.before(voteInfo.getEndDate())) {
+				return -4;
+			}
+			if (awaitingVoteInfo.getStartDate().before(voteInfo.getStartDate()) && awaitingVoteInfo.getEndDate()
+				.after(voteInfo.getStartDate())) {
+				return -4;
+			}
+			if (awaitingVoteInfo.getStartDate().after(voteInfo.getStartDate()) && awaitingVoteInfo.getEndDate()
+				.before(voteInfo.getEndDate())) {
+				return -4;
+			}
+		}
+
 		BattleApplyUser battleApplyUser = BattleApplyUser.builder()
 			.battleBoard(battleBoard)
 			.user(user)
@@ -252,7 +318,6 @@ public class BattleServiceImpl implements BattleService {
 
 		//최대 인원 충족 체크
 		if (currentPeopleCount >= battleBoard.getMaxPeopleCount()) {
-			VoteInfo voteInfo = battleBoard.getVoteInfo();
 			voteInfo.setCurrentState(3);
 			voteInfoRepository.save(voteInfo);
 			voteScheduler.updatePreVoteCount(battleBoard);
