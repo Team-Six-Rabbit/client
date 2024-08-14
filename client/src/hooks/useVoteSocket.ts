@@ -13,6 +13,7 @@ const useVoteSocket = (stompClient: Client, battleId: string) => {
 		],
 		userVoteOpinion: -1,
 	});
+	const [choice, setChoice] = useState(-1);
 
 	// 초기값 설정
 	useEffect(() => {
@@ -21,6 +22,7 @@ const useVoteSocket = (stompClient: Client, battleId: string) => {
 				const response = await getVoteInfo(battleId);
 				if (response.code === "success" && response.data) {
 					setVoteState(response.data);
+					setChoice(response.data.userVoteOpinion);
 				} else {
 					console.error("Failed to fetch vote info:", response.msg);
 				}
@@ -33,16 +35,12 @@ const useVoteSocket = (stompClient: Client, battleId: string) => {
 	}, [battleId]);
 
 	// 투표 응답 처리
-	const handleVote = useCallback(
-		(data: OpinionWithPercentage[], userVoteOpinion: number) => {
-			setVoteState((prevState) => ({
-				...prevState,
-				opinions: data,
-				userVoteOpinion,
-			}));
-		},
-		[],
-	);
+	const handleVote = useCallback((data: OpinionWithPercentage[]) => {
+		setVoteState((prevState) => ({
+			...prevState,
+			opinions: data,
+		}));
+	}, []);
 
 	// 투표 요청 전송
 	const sendVote = useCallback(
@@ -66,7 +64,7 @@ const useVoteSocket = (stompClient: Client, battleId: string) => {
 		[stompClient, battleId],
 	);
 
-	return { voteState, handleVote, sendVote };
+	return { choice, setChoice, voteState, handleVote, sendVote };
 };
 
 export default useVoteSocket;

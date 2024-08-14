@@ -35,6 +35,8 @@ function VoteGauge({ voteState }: VoteGaugeProps) {
 }
 
 interface LiveVoteProps {
+	choice: number;
+	setChoice: (vote: number) => void;
 	userId: number;
 	role: number;
 	voteState: VoteInfoResponse;
@@ -46,6 +48,8 @@ interface LiveVoteProps {
 }
 
 function LiveVote({
+	choice,
+	setChoice,
 	userId,
 	role,
 	voteState,
@@ -63,14 +67,19 @@ function LiveVote({
 		onVoteEnd(winner);
 	}, [onVoteEnd, optionA, optionB, voteState]);
 
+	const handleVoteClick = (vote: number) => {
+		handleVote(userId, vote);
+		setChoice(vote);
+	};
+
 	return (
 		<div className="flex flex-col items-center mb-2">
 			<h1 className="text-2xl my-2">{title}</h1>
 			<div className="flex flex-row items-center justify-between w-3/4">
 				<button
 					type="button"
-					className={`bg-gray-800 me-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none ${voteState.userVoteOpinion === 0 ? "bg-olive text-white" : ""}`}
-					onClick={() => handleVote(userId, 0)}
+					className={`bg-gray-800 me-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none ${choice === 0 ? "bg-olive text-white" : ""}`}
+					onClick={() => handleVoteClick(0)}
 					disabled={role === 0 || role === 1}
 				>
 					{optionA}
@@ -78,8 +87,8 @@ function LiveVote({
 				<VoteGauge voteState={voteState} />
 				<button
 					type="button"
-					className={`bg-gray-800 ms-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none ${voteState.userVoteOpinion === 1 ? "bg-olive text-white" : ""}`}
-					onClick={() => handleVote(userId, 1)}
+					className={`bg-gray-800 ms-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none ${choice === 1 ? "bg-olive text-white" : ""}`}
+					onClick={() => handleVoteClick(1)}
 					disabled={role === 0 || role === 1}
 				>
 					{optionB}

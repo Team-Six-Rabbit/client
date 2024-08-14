@@ -134,6 +134,8 @@ function ItemBox({
 		VideoAudioIcons,
 	);
 
+	console.log(canUseItem);
+
 	return (
 		<div className="flex justify-between w-full p-2 mt-6 bg-black rounded-lg">
 			<VideoAudioIcons
@@ -142,7 +144,7 @@ function ItemBox({
 				onMicClick={onMicClick}
 				onVideoClick={onVideoClick}
 			/>
-			{canUseItem && <BombTicketIcons />}
+			{/* {canUseItem && <BombTicketIcons />} */}
 		</div>
 	);
 }
