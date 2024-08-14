@@ -14,11 +14,14 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 
 public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> {
 
-	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime BETWEEN vi.startDate AND vi.endDate "
-		+ "AND vi.title LIKE %:keyword% "
-		+ "AND vi.category = :category "
-		+ "AND vi.currentState = 4 "
-		+ "ORDER BY vi.startDate DESC, bb.id ASC")
+	@Query(
+		"SELECT bb FROM BattleBoard bb JOIN FETCH bb.voteInfo vi "
+			+ "WHERE :currentTime BETWEEN vi.startDate AND vi.endDate "
+			+ "LEFT JOIN FETCH bb.registUser ru LEFT JOIN FETCH bb.oppositeUser ou "
+			+ "AND vi.title LIKE %:keyword% "
+			+ "AND vi.category = :category "
+			+ "AND vi.currentState = 4 "
+			+ "ORDER BY vi.startDate DESC, bb.id ASC")
 	Page<BattleBoard> findAllActiveBattleBoardsByCategory(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
@@ -26,17 +29,21 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 		Pageable pageable
 	);
 
-	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime BETWEEN vi.startDate AND vi.endDate "
-		+ "AND vi.title LIKE %:keyword% "
-		+ "AND vi.currentState = 4 "
-		+ "ORDER BY vi.startDate DESC, bb.id ASC")
+	@Query(
+		"SELECT bb FROM BattleBoard bb JOIN FETCH bb.voteInfo vi "
+			+ "WHERE :currentTime BETWEEN vi.startDate AND vi.endDate "
+			+ "LEFT JOIN FETCH bb.registUser ru LEFT JOIN FETCH bb.oppositeUser ou "
+			+ "AND vi.title LIKE %:keyword% "
+			+ "AND vi.currentState = 4 "
+			+ "ORDER BY vi.startDate DESC, bb.id ASC")
 	Page<BattleBoard> findAllActiveBattleBoards(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
 		Pageable pageable
 	);
 
-	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE vi.startDate > :currentTime "
+	@Query("SELECT bb FROM BattleBoard bb JOIN FETCH bb.voteInfo vi WHERE vi.startDate > :currentTime "
+		+ "LEFT JOIN FETCH bb.registUser ru LEFT JOIN FETCH bb.oppositeUser ou "
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.category = :category "
 		+ "AND vi.currentState = 3 "
@@ -48,7 +55,8 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 		Pageable pageable
 	);
 
-	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE vi.startDate > :currentTime "
+	@Query("SELECT bb FROM BattleBoard bb JOIN FETCH bb.voteInfo vi WHERE vi.startDate > :currentTime "
+		+ "LEFT JOIN FETCH bb.registUser ru LEFT JOIN FETCH bb.oppositeUser ou "
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.currentState = 3 "
 		+ "ORDER BY vi.startDate ASC, bb.id ASC")
@@ -58,7 +66,8 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 		Pageable pageable
 	);
 
-	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime > vi.endDate "
+	@Query("SELECT bb FROM BattleBoard bb JOIN FETCH bb.voteInfo vi WHERE :currentTime > vi.endDate "
+		+ "LEFT JOIN FETCH bb.registUser ru LEFT JOIN FETCH bb.oppositeUser ou "
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.category = :category "
 		+ "AND vi.currentState = 8 "
@@ -70,7 +79,9 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 		Pageable pageable
 	);
 
-	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE :currentTime > vi.endDate "
+	@Query("SELECT bb FROM BattleBoard bb JOIN FETCH bb.voteInfo vi "
+		+ "LEFT JOIN FETCH bb.registUser ru LEFT JOIN FETCH bb.oppositeUser ou "
+		+ "WHERE :currentTime > vi.endDate "
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.currentState = 8 "
 		+ "ORDER BY vi.startDate DESC, bb.id ASC")
