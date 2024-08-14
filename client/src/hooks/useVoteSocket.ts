@@ -1,15 +1,17 @@
 import { useCallback, useState } from "react";
 import { Client } from "@stomp/stompjs";
-import { VoteRequest, VoteResponse } from "@/types/liveMessageType";
+import { VoteRequest } from "@/types/liveMessageType";
+import { OpinionWithPercentage } from "@/types/vote";
 
 const useVoteSocket = (stompClient: Client, battleId: string) => {
-	const [voteA, setVoteA] = useState<number>(50);
-	const [voteB, setVoteB] = useState<number>(50);
+	const [voteState, setVoteState] = useState<OpinionWithPercentage[]>([
+		{ index: 0, opinion: "", count: 0, percentage: 50 },
+		{ index: 1, opinion: "", count: 0, percentage: 50 },
+	]);
 
 	// 투표 응답 처리
-	const handleVote = useCallback((data: VoteResponse[]) => {
-		setVoteA(data[0].percentage);
-		setVoteB(data[1].percentage);
+	const handleVote = useCallback((data: OpinionWithPercentage[]) => {
+		setVoteState(data);
 	}, []);
 
 	// 투표 요청 전송
@@ -34,7 +36,7 @@ const useVoteSocket = (stompClient: Client, battleId: string) => {
 		[stompClient, battleId],
 	);
 
-	return { voteA, voteB, handleVote, sendVote };
+	return { voteState, handleVote, sendVote };
 };
 
 export default useVoteSocket;

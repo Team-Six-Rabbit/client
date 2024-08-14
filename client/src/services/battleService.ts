@@ -6,7 +6,7 @@ import {
 	ApplyBattleRequest,
 } from "@/types/api";
 import { BattleWaitingParticipant } from "@/types/battle";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "@/services/axiosInstance";
 
 export const battleService = {
 	// 배틀 목록 가져오기

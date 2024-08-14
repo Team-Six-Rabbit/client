@@ -41,3 +41,13 @@ export interface LiveViewer extends BasicUserInfo {
 	inTime: string;
 	outTime?: string;
 }
+
+export interface SpeakRequest {
+	userVote: 0;
+	requestUserId: 1;
+	hostUserId: 2;
+	connectionId: "abcdefg";
+	idx: 1;
+	nickname: "judy";
+	rating: 200;
+}

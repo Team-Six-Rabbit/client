@@ -1,6 +1,6 @@
 import { Notification } from "@/types/notification";
 import { ApiResponse } from "@/types/api";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "@/services/axiosInstance";
 
 export const notificationService = {
 	// 사용자 알림 전체 조회

@@ -114,7 +114,7 @@ interface ItemBoxProps {
 	canUseItem: boolean;
 	onMicClick: () => void;
 	onVideoClick: () => void;
-	sendItem: (userId: number, targetIndex: number, itemCode: number) => void;
+	// sendItem: (userId: number, targetIndex: number, itemCode: number) => void;
 }
 
 function ItemBox({
@@ -123,7 +123,7 @@ function ItemBox({
 	canUseItem,
 	onMicClick,
 	onVideoClick,
-	sendItem,
+	// sendItem,
 }: ItemBoxProps) {
 	console.debug(
 		isMicMuted,
@@ -133,8 +133,6 @@ function ItemBox({
 		BombTicketIcons,
 		VideoAudioIcons,
 	);
-
-	console.log(sendItem);
 
 	return (
 		<div className="flex justify-between w-full p-2 mt-6 bg-black rounded-lg">

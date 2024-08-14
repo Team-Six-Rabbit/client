@@ -9,14 +9,12 @@ import { Id } from "react-toastify";
 const borderStyles = createLiveStateBorder("black", 4);
 
 interface VideoPlayerProps {
-	userRank: string;
 	userName: string;
 	streamManager?: StreamManager;
 	toastId: MutableRefObject<Id | undefined>;
 }
 
 function VideoPlayerLeft({
-	userRank,
 	userName,
 	streamManager,
 	toastId,
@@ -24,7 +22,7 @@ function VideoPlayerLeft({
 	return (
 		<div className="w-full h-full flex flex-col items-end">
 			<VideoStream
-				className={`w-4/5 h-full mt-5 clip-path-left bg-white flex justify-${streamManager ? "end" : "center"} items-center`}
+				className={`w-4/5 h-full mt-5 mb-8 clip-path-left bg-white flex justify-${streamManager ? "end" : "center"} items-center`}
 				streamManager={streamManager}
 				toastId={toastId}
 			/>
@@ -32,7 +30,6 @@ function VideoPlayerLeft({
 				className="w-full flex flex-col text-white p-2 ps-14 mt-2"
 				style={borderStyles}
 			>
-				<div className="text-3xl mb-2">{userRank}</div>
 				<div className="font-bold text-5xl">{userName}</div>
 			</div>
 		</div>
@@ -40,7 +37,6 @@ function VideoPlayerLeft({
 }
 
 function VideoPlayerRight({
-	userRank,
 	userName,
 	streamManager,
 	toastId,
@@ -51,11 +47,10 @@ function VideoPlayerRight({
 				className="w-full flex flex-col items-end text-white pe-12 mb-4"
 				style={borderStyles}
 			>
-				<div className="text-3xl mb-2">{userRank}</div>
 				<div className="font-bold text-5xl">{userName}</div>
 			</div>
 			<VideoStream
-				className={`w-5/6 h-full mb-9 clip-path-right bg-white flex justify-${streamManager ? "start" : "center"} items-center`}
+				className={`w-5/6 h-full mb-9 mt-6 clip-path-right bg-white flex justify-${streamManager ? "start" : "center"} items-center`}
 				streamManager={streamManager}
 				toastId={toastId}
 			/>
@@ -80,8 +75,7 @@ function VideoScreen({
 		<div className="relative h-70% w-full">
 			<div className="h-full w-full bg-[url('@/assets/images/LivePlayers.png')] bg-contain bg-center bg-no-repeat flex">
 				<VideoPlayerLeft
-					userRank={registerUser?.rating.toString() || "육두품"}
-					userName={registerUser?.nickname || "반반무마니"}
+					userName={registerUser?.nickname || "익명A"}
 					streamManager={subscribers.find(
 						(streamManager) =>
 							streamManager.stream.connection.serverData?.index === 0,
@@ -89,8 +83,7 @@ function VideoScreen({
 					toastId={toastId}
 				/>
 				<VideoPlayerRight
-					userRank={oppositeUser?.rating.toString() || "사두품"}
-					userName={oppositeUser?.nickname || "마라탕탕후루후루"}
+					userName={oppositeUser?.nickname || "익명B"}
 					streamManager={subscribers.find(
 						(streamManager) =>
 							streamManager.stream.connection.serverData?.index === 1,

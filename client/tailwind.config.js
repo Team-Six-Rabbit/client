@@ -18,7 +18,7 @@ export default {
 				"128": "32rem", // 512px
 				"144": "36rem", // 576px
 				"150": "38rem",
-				"160": "40rem", // 640px
+				"160": "39rem", // 640px
 				"192": "48rem", // 768px
 				"224": "56rem", // 896px
 				"70%": "70%",
@@ -30,10 +30,10 @@ export default {
 		function ({ addUtilities }) {
 			const videoCrop = {
 				".clip-path-left": {
-					clipPath: "polygon(0 0, 100% 0, 82% 100%, 0 100%)",
+					clipPath: "polygon(0 0, 100% 0, 79% 100%, 0 100%)",
 				},
 				".clip-path-right": {
-					clipPath: "polygon(18% 0, 100% 0, 100% 100%, 0 100%)",
+					clipPath: "polygon(21% 0, 100% 0, 100% 100%, 0 100%)",
 				},
 			};
 			addUtilities(videoCrop);

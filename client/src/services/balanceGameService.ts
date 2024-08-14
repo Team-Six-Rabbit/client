@@ -4,7 +4,7 @@ import {
 	CreateBalanceGameRequest,
 } from "@/types/api";
 import { OpinionWithPercentage } from "@/types/vote";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "@/services/axiosInstance";
 
 export const balanceGameService = {
 	getBalanceGames: async (
