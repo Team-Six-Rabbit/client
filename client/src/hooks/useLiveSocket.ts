@@ -14,7 +14,7 @@ const useLiveSocket = (battleId: string) => {
 	// 	stompClientRef.current!,
 	// 	battleId,
 	// );
-	const { voteState, handleVote, sendVote } = useVoteSocket(
+	const { voteState, handleVote, sendVote, choice, setChoice } = useVoteSocket(
 		stompClientRef.current!,
 		battleId,
 	);
@@ -57,7 +57,6 @@ const useLiveSocket = (battleId: string) => {
 										percentage,
 									}),
 								),
-								response.userVoteOpinion,
 							);
 							break;
 						case "item":
@@ -90,6 +89,8 @@ const useLiveSocket = (battleId: string) => {
 		voteState,
 		sendVote,
 		sendItem,
+		choice,
+		setChoice,
 	};
 };
 

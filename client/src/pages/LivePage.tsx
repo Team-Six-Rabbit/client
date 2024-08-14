@@ -44,7 +44,7 @@ function LivePage() {
 	// const { speakRequests, sendSpeak, voteState, sendVote } = useLiveSocket(
 	// 	battleId!,
 	// );
-	const { voteState, sendVote } = useLiveSocket(battleId!);
+	const { voteState, sendVote, choice, setChoice } = useLiveSocket(battleId!);
 
 	const handleMicClick = () => setIsMicMuted((prev) => !prev);
 	const handleVideoClick = () => setIsVideoDisabled((prev) => !prev);
@@ -117,6 +117,8 @@ function LivePage() {
 					)}
 					<div className="flex-col w-full justify-center items-center h-144">
 						<LiveVote
+							choice={choice}
+							setChoice={setChoice}
 							userId={userId!}
 							role={index}
 							voteState={voteState}
