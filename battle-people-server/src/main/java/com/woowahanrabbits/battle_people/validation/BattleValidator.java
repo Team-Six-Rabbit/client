@@ -33,9 +33,9 @@ public class BattleValidator {
 		}
 	}
 
-	public void validateStartTime(Date startDate) {
+	public void validateStartTime(Date startDate, int minute) {
 		calendar.setTime(now);
-		calendar.add(Calendar.MINUTE, 3);
+		calendar.add(Calendar.MINUTE, minute);
 		Date minutesLater = calendar.getTime();
 
 		if (startDate.before(minutesLater)) {

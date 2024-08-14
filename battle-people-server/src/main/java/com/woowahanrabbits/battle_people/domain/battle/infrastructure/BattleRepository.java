@@ -28,7 +28,7 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
 
 	@Query("SELECT COUNT(v) > 0 FROM BattleBoard b JOIN b.voteInfo v "
 		+ "WHERE (b.registUser.id = :userId OR b.oppositeUser.id = :userId) AND"
-		+ "(v.currentState = 2 or v.currentState = 3) AND "
+		+ "(v.currentState = 2 or v.currentState = 3 or v.currentState = 4 ) AND "
 		+ "((v.startDate BETWEEN :startDate AND :endDate) OR "
 		+ "(v.endDate BETWEEN :startDate AND :endDate))")
 	boolean checkMyBattles(@Param("userId") long userId,
@@ -52,4 +52,14 @@ public interface BattleRepository extends JpaRepository<BattleBoard, Long> {
 		+ "AND (v.currentState = 3 OR v.currentState = 4 OR v.currentState = 8) "
 		+ "GROUP BY b.id, v.currentState")
 	List<CreateLives> getCreateLives(@Param("userId") Long userId);
+	@Query("SELECT b FROM BattleBoard b JOIN b.voteInfo v "
+		+ "WHERE (b.registUser.id = :userId OR b.oppositeUser.id = :userId) AND"
+		+ "(v.currentState = 3 or v.currentState = 4 or v.currentState = 8)")
+	List<BattleBoard> getCreateLives(Long userId);
+
+	@Query("SELECT DISTINCT b FROM BattleBoard b"
+		+ " LEFT JOIN BattleApplyUser bau ON b.id = bau.battleBoard.id"
+		+ " WHERE b.registUser.id = :userId OR b.oppositeUser.id = :userId OR bau.user.id = :userId")
+	List<BattleBoard> findMyAwaitingList(@Param("userId") Long userId);
+
 }
