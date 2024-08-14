@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 
 const useIntersectionObserver = (options: IntersectionObserverInit) => {
-	const [isIntersecting, setIntersecting] = useState<boolean>(false);
 	const ref = useRef<HTMLDivElement>(null);
+	const [isIntersecting, setIntersecting] = useState<boolean>(false);
+	const hasLoaded = useRef(false);
 
 	useEffect(() => {
-		const observer = new IntersectionObserver(
-			([entry]) => setIntersecting(entry.isIntersecting),
-			options,
-		);
+		const observer = new IntersectionObserver(([entry]) => {
+			if (!hasLoaded.current && entry.isIntersecting) {
+				setIntersecting(entry.isIntersecting);
+				hasLoaded.current = true;
+			}
+		}, options);
 
 		if (ref.current) {
 			observer.observe(ref.current);
