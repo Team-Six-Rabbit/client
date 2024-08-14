@@ -33,7 +33,6 @@ export const generateBasicUser = (): BasicUserInfo => {
 		id: generateInteger(3000),
 		imgUrl: "img/default",
 		nickname: lorem.generateWords(2),
-		rating: generateInteger(),
 	};
 };
 

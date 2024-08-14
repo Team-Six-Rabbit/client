@@ -14,7 +14,6 @@ export const handlers = [
 						id: 1,
 						email: "test@email.com",
 						nickname: "testUser",
-						rating: 99999,
 						imgUrl: "test/url",
 					},
 				};
