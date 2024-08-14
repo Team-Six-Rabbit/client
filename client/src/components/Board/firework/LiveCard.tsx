@@ -6,6 +6,7 @@ import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import { createLiveStateBorder } from "@/utils/textBorder";
 import { convertToTimeZone } from "@/utils/dateUtils";
 import noImage from "@/assets/images/noImage.png";
+import useIntersectionObserver from "@/hooks/useIntersectionObserver";
 
 const getLiveStatusBackgroundColor = (status: string, index: number) => {
 	if (status === "live") return "bg-transparent";
@@ -29,6 +30,7 @@ const getLiveStatusBackgroundText = (status: string) => {
 
 function LiveCard({ card }: { card: CardType }) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const { ref, isIntersecting } = useIntersectionObserver({ threshold: 0.1 });
 	const navigate = useNavigate();
 
 	const handleCardClick = () => {
@@ -89,12 +91,19 @@ function LiveCard({ card }: { card: CardType }) {
 				role="button"
 				aria-pressed="false"
 			>
-				<div className="live-card-image h-44 relative overflow-hidden">
-					<img
-						src={card.image_uri || noImage}
-						alt={card.title}
-						className="w-full h-full object-cover"
-					/>
+				<div
+					ref={ref}
+					className="live-card-image h-44 relative overflow-hidden"
+				>
+					{isIntersecting ? (
+						<img
+							src={card.image_uri || noImage}
+							alt={card.title}
+							className="w-full h-full object-cover"
+						/>
+					) : (
+						<div>Loading...</div>
+					)}
 					{renderStatusOverlay()}
 				</div>
 				<div className="live-card-info bg-white py-4 px-3 border-t-4 border-solid">
