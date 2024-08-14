@@ -5,7 +5,7 @@ import "@/assets/styles/mypageContent.css";
 function MyPageContent() {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const [activeTab, setActiveTab] = useState<string>("win-rate");
+	const [activeTab, setActiveTab] = useState<string>("");
 
 	useEffect(() => {
 		const tabs = [
