@@ -36,12 +36,12 @@ const VoteDate = styled.span`
 	color: #333;
 `;
 
-const VoteStatusIndicator = styled.span<{ statusColor: string }>`
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	background-color: ${({ statusColor }) => statusColor};
-`;
+// const VoteStatusIndicator = styled.span<{ statusColor: string }>`
+// 	width: 20px;
+// 	height: 20px;
+// 	border-radius: 50%;
+// 	background-color: ${({ statusColor }) => statusColor};
+// `;
 
 const TitleContainer = styled.div`
 	flex-grow: 1;
@@ -55,12 +55,18 @@ const DateStatusContainer = styled.div`
 	gap: 10px; /* 날짜와 상태 아이콘 사이의 간격 */
 `;
 
+const StatusText = styled.span`
+	font-size: 14px;
+	color: #333;
+`;
+
 interface Vote {
 	id: number;
 	title: string;
 	date: string;
 	detail: string;
 	statusColor: string;
+	statusText: string;
 }
 
 function ParticipatedVotesList() {
@@ -87,6 +93,7 @@ function ParticipatedVotesList() {
 						date: `${dateOnly}`, // 날짜를 로컬 형식으로 변환
 						detail: vote.detail,
 						statusColor: vote.isWin ? "#BDE3FF" : "#FFC7C2", // 승리 여부에 따른 색상 설정
+						statusText: vote.isWin ? "승" : "패", // 승리 여부에 따른 텍스트 설정
 					};
 				});
 				setVotes(formattedVotes);
@@ -126,7 +133,8 @@ function ParticipatedVotesList() {
 						<TitleContainer>{vote.title}</TitleContainer>
 						<DateStatusContainer>
 							<VoteDate>{vote.date}</VoteDate>
-							<VoteStatusIndicator statusColor={vote.statusColor} />
+							<StatusText>{vote.statusText}</StatusText>
+							{/* <VoteStatusIndicator statusColor={vote.statusColor} /> */}
 						</DateStatusContainer>
 					</VotesListItem>
 				))}
