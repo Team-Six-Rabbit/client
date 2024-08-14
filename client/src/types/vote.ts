@@ -16,3 +16,9 @@ export interface OpinionWithPercentage extends Opinion {
 	count: number;
 	percentage: number;
 }
+
+export interface VoteInfoResponse {
+	totalCount: number;
+	opinions: OpinionWithPercentage[];
+	userVoteOpinion: number;
+}

@@ -18,7 +18,6 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 import { WaitingLiveBattleDetail } from "@/types/live";
 import { useAuthStore } from "@/stores/userAuthStore";
 import { liveBattleService } from "@/services/liveBattleService";
-import { getUserVoteOpinion } from "@/services/liveUserService";
 
 function LivePage() {
 	useRequireAuth();
@@ -29,7 +28,6 @@ function LivePage() {
 	const [isMicMuted, setIsMicMuted] = useState(false);
 	const [isVideoDisabled, setIsVideoDisabled] = useState(false);
 	const [liveData, setLiveData] = useState<WaitingLiveBattleDetail>();
-	const [userVoteOpinion, setUserVoteOpinion] = useState<number>();
 	// const [userRequestStatus, setUserRequestStatus] = useState<number>(0);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -61,9 +59,8 @@ function LivePage() {
 			if (battleId && userId) {
 				try {
 					// isUserRequest 추가 가능(발언권)
-					const [apiData, voteOpinion] = await Promise.all([
+					const [apiData] = await Promise.all([
 						liveBattleService.getWaitDetail(battleId!),
-						getUserVoteOpinion(battleId),
 						// getIsUserRequest(battleId),
 					]);
 
@@ -75,7 +72,6 @@ function LivePage() {
 
 					setLiveData(apiData.data);
 					setIsLoading(false);
-					setUserVoteOpinion(voteOpinion.data);
 
 					// if (voteOpinion.data === -1) {
 					// 	setUserRequestStatus(1);
@@ -97,7 +93,6 @@ function LivePage() {
 
 	const handleVote = (userId: number, voteInfoIndex: number) => {
 		sendVote(userId, voteInfoIndex);
-		setUserVoteOpinion(voteInfoIndex);
 		// setUserRequestStatus(0);
 	};
 
@@ -125,7 +120,6 @@ function LivePage() {
 							userId={userId!}
 							role={index}
 							voteState={voteState}
-							userVoteOpinion={userVoteOpinion!}
 							title={liveData?.title || ""}
 							optionA={liveData?.registerUser.opinion || ""}
 							optionB={liveData?.oppositeUser.opinion || ""}
