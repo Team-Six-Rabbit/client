@@ -28,12 +28,12 @@ function MyPage() {
 	const { user, setUser } = useAuthStore();
 
 	const [profileImage, setProfileImage] = useState<string>(
-		user!.imgUrl || profileImagePlaceholder,
+		user?.imgUrl || profileImagePlaceholder,
 	);
 
-	const [nickname, setNickname] = useState<string>(user!.nickname);
+	const [nickname, setNickname] = useState<string>(user?.nickname || "");
 	const [originalNickname, setOriginalNickname] = useState<string>(
-		user!.nickname,
+		user?.nickname || "",
 	); // 원래 닉네임 저장
 
 	useEffect(() => {
