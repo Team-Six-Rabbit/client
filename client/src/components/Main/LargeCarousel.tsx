@@ -160,10 +160,7 @@ function LargeCarousel({ cards }: { cards: CardType[] }) {
 						<ImageContainer
 							onClick={() => handleSlideClick(card.id.toString())}
 						>
-							{card.image_uri && (
-								// <StyledImage src={card.image_uri || noImage} alt={card.title} />
-								<StyledImage src={noImage} alt={card.title} />
-							)}
+							<StyledImage src={card.image_uri || noImage} alt={card.title} />
 							<TextOverlay animate={currentSlide === index}>
 								<Title textShadow={liveStateBorder.textShadow}>
 									{card.title}
