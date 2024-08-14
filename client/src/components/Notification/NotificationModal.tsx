@@ -37,8 +37,8 @@ function NotificationModal({
 		}
 	};
 
-	const handleParticipateClick = () => {
-		setIsAccepted((prev) => !prev);
+	const handleParticipateClick = (isAccepted: boolean) => {
+		setIsAccepted(isAccepted);
 		setInputValue("");
 	};
 
@@ -95,7 +95,7 @@ function NotificationModal({
 									? "border border-royalBlue"
 									: "border border-slate-200"
 							} hover:border-slate-600 focus:fill-blue-200 focus:bg-blue-400`}
-							onClick={handleParticipateClick}
+							onClick={() => handleParticipateClick(true)}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +112,7 @@ function NotificationModal({
 									? "border border-royalBlue"
 									: "border border-slate-200"
 							} hover:border-slate-600 focus:fill-blue-200 focus:bg-blue-400`}
-							onClick={handleParticipateClick}
+							onClick={() => handleParticipateClick(false)}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
