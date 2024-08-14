@@ -188,7 +188,7 @@ function MyPage() {
 		}
 	};
 
-	const { email } = user!;
+	const { email, rating } = user!;
 
 	return (
 		<div>
