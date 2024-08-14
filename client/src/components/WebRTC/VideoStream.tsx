@@ -57,7 +57,9 @@ function VideoStream({ className, streamManager, toastId }: VideoStreamProps) {
 				autoPlay
 				playsInline
 				preload="none"
-				className={streamManager ? "w-[480px] h-[240px]" : "hidden"}
+				className={
+					streamManager ? "w-[480px] max-w-[480px] max-h-[240px]" : "hidden"
+				}
 			>
 				<track kind="captions" default />
 			</video>
