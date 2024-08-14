@@ -44,6 +44,7 @@ public class JwtUtil {
 			.expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
 			.claim("userId", userId)
 			.claim("nickname", nickname)
+			.claim("role", role)
 			.signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
 			.compact();
 	}

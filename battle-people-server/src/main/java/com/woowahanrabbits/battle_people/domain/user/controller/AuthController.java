@@ -1,6 +1,7 @@
 package com.woowahanrabbits.battle_people.domain.user.controller;
 
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.domain.UserToken;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginRequest;
 import com.woowahanrabbits.battle_people.domain.user.dto.LoginResponse;
+import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.user.jwt.JwtUtil;
 import com.woowahanrabbits.battle_people.domain.user.service.UserService;
 import com.woowahanrabbits.battle_people.util.HttpUtils;
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
+	private final UserRepository userRepository;
 	@Value("${jwt.accessToken.expiration}")
 	private long accessTokenExpiration;
 
@@ -80,10 +83,15 @@ public class AuthController {
 		}
 
 		long userId = jwtUtil.extractUserId(refresh);
-		String username = jwtUtil.extractUsername(refresh);
-		String nickname = jwtUtil.extractNickname(refresh);
-		String userRole = jwtUtil.extractUserRole(refresh);
-		String newAccess = jwtUtil.generateAccessToken(userId, username, nickname, userRole);
+		// String username = jwtUtil.extractUsername(refresh);
+		// String nickname = jwtUtil.extractNickname(refresh);
+		// String userRole = jwtUtil.extractUserRole(refresh);
+
+		Optional<User> user = userRepository.findUserById(userId);
+		String email = user.get().getEmail();
+		String nickname = user.get().getNickname();
+		String role = user.get().getRole();
+		String newAccess = jwtUtil.generateAccessToken(userId, email, nickname, role);
 
 		response.addCookie(HttpUtils.createCookie("access", newAccess, "/"));
 		return ResponseEntity.ok(new ApiResponseDto<>("success", "Refresh", null));
