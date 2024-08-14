@@ -47,10 +47,17 @@ public class RedisSubscriber implements MessageListener {
 						});
 
 					messagingTemplate.convertAndSend("/topic/notify/" + channelId,
-						new RedisTopicDto<>("read", channelId, responseTopicDto.getResponseDto())
-					);
-
+						new RedisTopicDto<>("read", channelId, responseTopicDto.getResponseDto().get(1)));
 				}
+
+				if (redisTopicDto.getType().equals("new")) {
+					RedisTopicDto<String> responseTopicDto = objectMapper.readValue(publishMessage,
+						new TypeReference<>() {
+						});
+					messagingTemplate.convertAndSend("/topic/notify/" + channelId,
+						new RedisTopicDto<>("new", channelId, responseTopicDto.getResponseDto()));
+				}
+
 			} else {
 				RedisTopicDto<?> redisTopicDto = objectMapper.readValue(publishMessage, RedisTopicDto.class);
 				Long channelId = redisTopicDto.getChannelId();

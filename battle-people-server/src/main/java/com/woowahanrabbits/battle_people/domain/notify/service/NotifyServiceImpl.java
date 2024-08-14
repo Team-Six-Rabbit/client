@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.notify.domain.Notify;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationResponseDto;
 import com.woowahanrabbits.battle_people.domain.notify.dto.NotificationType;
@@ -66,10 +67,11 @@ public class NotifyServiceImpl implements NotifyService {
 		}
 
 		notifyRepository.save(notify);
-		Map<String, String> map = new HashMap<>();
-		map.put("title", title);
-		map.put("id", Long.toString(user.getId()));
-		redisTemplate.convertAndSend("notify", map);
+		// Map<String, String> map = new HashMap<>();
+		// map.put("title", title);
+		// map.put("id", Long.toString(user.getId()));
+
+		redisTemplate.convertAndSend("notify", new RedisTopicDto<>("new", user.getId(), title));
 	}
 
 	@Override
