@@ -114,7 +114,7 @@ function CreatedLives() {
 		fetchLives();
 	}, []);
 
-	if (error) {
+	if (error || lives.length === 0) {
 		return (
 			<div style={{ textAlign: "center", fontSize: "x-large" }}>
 				<img

@@ -104,7 +104,7 @@ function ParticipatedVotesList() {
 		fetchVotes();
 	}, []);
 
-	if (error) {
+	if (error || votes.length === 0) {
 		return (
 			<div style={{ textAlign: "center", fontSize: "x-large" }}>
 				<img
