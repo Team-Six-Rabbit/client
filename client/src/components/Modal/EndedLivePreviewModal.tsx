@@ -56,7 +56,7 @@ function EndedLivePreviewModal({
 
 	return (
 		<ModalForm
-			title="종료된 라이브 상세보기"
+			title="라이브 상세보기"
 			infoText={title}
 			summary={summary || "상세정보가 없습니다."}
 			onClose={onClose}
