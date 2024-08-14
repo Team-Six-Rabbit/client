@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+	Optional<User> findUserById(Long id);
+
 	Optional<User> findByEmail(String email);
 
 	List<User> findByNicknameContaining(String nickname);
