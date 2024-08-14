@@ -40,7 +40,7 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.category = :category "
 		+ "AND vi.currentState = 3 "
-		+ "ORDER BY vi.startDate DESC, bb.id ASC")
+		+ "ORDER BY vi.startDate ASC, bb.id ASC")
 	Page<BattleBoard> findAllWaitBattleBoardsByCategory(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
@@ -51,7 +51,7 @@ public interface BattleBoardRepository extends JpaRepository<BattleBoard, Long> 
 	@Query("SELECT bb FROM BattleBoard bb JOIN bb.voteInfo vi WHERE vi.startDate > :currentTime "
 		+ "AND vi.title LIKE %:keyword% "
 		+ "AND vi.currentState = 3 "
-		+ "ORDER BY vi.startDate DESC, bb.id ASC")
+		+ "ORDER BY vi.startDate ASC, bb.id ASC")
 	Page<BattleBoard> findAllWaitBattleBoards(
 		@Param("currentTime") Date currentTime,
 		@Param("keyword") String keyword,
