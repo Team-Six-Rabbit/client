@@ -60,6 +60,6 @@
   margin-top: 0; /* 상단 마진 제거 */
   border: 3px solid #1D3D6B;
   border-radius: 5px;
-  white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 설정 */
-  overflow: hidden; /* 텍스트가 너무 길 경우 오버플로우 처리 */
+  /* white-space: nowrap;
+  overflow: hidden; */
 }
