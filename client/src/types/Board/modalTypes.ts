@@ -2,7 +2,6 @@ export interface User {
 	id: number;
 	nickname: string;
 	imgUrl: string;
-	rating: number;
 	opinion: string;
 }
 

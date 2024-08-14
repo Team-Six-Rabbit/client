@@ -1,6 +1,6 @@
+import { http, HttpResponse, PathParams } from "msw";
 import { JoinRequest, ApiResponse } from "@/types/api";
 import { DetailUserInfo } from "@/types/user";
-import { http, HttpResponse, PathParams } from "msw";
 
 export const handlers = [
 	http.post<PathParams, JoinRequest>(
@@ -30,7 +30,6 @@ export const handlers = [
 				id: 1,
 				email: "test@email.com",
 				nickname: "testUser",
-				rating: 99999,
 				imgUrl: "test/url",
 			},
 		};
@@ -47,7 +46,6 @@ export const handlers = [
 						id: 1,
 						email: "test1.email.com",
 						nickname: "testUser1",
-						rating: 100,
 						imgUrl: "test1/url",
 					},
 				};
@@ -60,7 +58,6 @@ export const handlers = [
 						id: 2,
 						email: "test2.email.com",
 						nickname: "testUser2",
-						rating: 200,
 						imgUrl: "test2/url",
 					},
 				};

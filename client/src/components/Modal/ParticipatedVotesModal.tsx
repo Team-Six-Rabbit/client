@@ -30,7 +30,6 @@ function ParticipatedVotesModal({
 		id: 0,
 		nickname: "",
 		imgUrl: person_orange,
-		rating: 0,
 		opinion: "No opinion",
 	};
 
@@ -38,7 +37,6 @@ function ParticipatedVotesModal({
 		id: 0,
 		nickname: "",
 		imgUrl: person_blue,
-		rating: 0,
 		opinion: "No opinion",
 	};
 
