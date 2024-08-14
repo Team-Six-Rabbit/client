@@ -22,7 +22,7 @@ function VideoPlayerLeft({
 	return (
 		<div className="w-full h-full flex flex-col items-end">
 			<VideoStream
-				className={`w-4/5 h-full mt-5 mb-8 clip-path-left bg-white flex justify-${streamManager ? "end" : "center"} items-center`}
+				className={`w-4/5 h-auto aspect-[255/450] mt-5 mb-8 clip-path-left bg-white flex justify-${streamManager ? "end" : "center"} items-center`}
 				streamManager={streamManager}
 				toastId={toastId}
 			/>
@@ -30,7 +30,12 @@ function VideoPlayerLeft({
 				className="w-full flex flex-col text-white p-2 ps-14 mt-2"
 				style={borderStyles}
 			>
-				<div className="font-bold text-5xl">{userName}</div>
+				<div
+					className="font-bold break-normal whitespace-nowrap"
+					style={{ fontSize: "clamp(1rem, 3.5vw, 3rem)" }}
+				>
+					{userName}
+				</div>
 			</div>
 		</div>
 	);
@@ -47,10 +52,15 @@ function VideoPlayerRight({
 				className="w-full flex flex-col items-end text-white pe-12 mb-4"
 				style={borderStyles}
 			>
-				<div className="font-bold text-5xl">{userName}</div>
+				<div
+					className="font-bold break-normal whitespace-nowrap"
+					style={{ fontSize: "clamp(1rem, 3.5vw, 3rem)" }}
+				>
+					{userName}
+				</div>
 			</div>
 			<VideoStream
-				className={`w-5/6 h-full mb-9 mt-6 clip-path-right bg-white flex justify-${streamManager ? "start" : "center"} items-center`}
+				className={`w-5/6 h-auto aspect-[255/250] mb-9 mt-6 clip-path-right bg-white flex justify-${streamManager ? "start" : "center"} items-center`}
 				streamManager={streamManager}
 				toastId={toastId}
 			/>
