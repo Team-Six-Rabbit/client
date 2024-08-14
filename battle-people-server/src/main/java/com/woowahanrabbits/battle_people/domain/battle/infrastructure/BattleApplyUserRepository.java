@@ -26,5 +26,4 @@ public interface BattleApplyUserRepository
 	int countByBattleBoardIdAndSelectedOpinion(Long id, Integer voteOpinionIndex);
 
 	List<BattleApplyUser> findByBattleBoardId(Long id);
-	
 }
