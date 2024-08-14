@@ -108,7 +108,7 @@ function LiveCard({ card }: { card: CardType }) {
 						)}
 						{card.status === "live" && (
 							<div className="text-sm text-black">
-								{card.currentPeopleCount}명 시청중
+								조회수 {card.currentPeopleCount}
 							</div>
 						)}
 					</div>
