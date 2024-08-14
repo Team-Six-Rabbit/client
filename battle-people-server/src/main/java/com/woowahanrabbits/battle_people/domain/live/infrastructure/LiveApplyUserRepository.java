@@ -12,4 +12,6 @@ public interface LiveApplyUserRepository extends JpaRepository<LiveApplyUser, Li
 	List<LiveApplyUser> findAllByBattleBoardId(Long id);
 
 	LiveApplyUser findByBattleBoardIdAndParticipantId(Long battleBoardId, Long participantId);
+
+	int countByBattleBoardId(Long battleBoardId);
 }
