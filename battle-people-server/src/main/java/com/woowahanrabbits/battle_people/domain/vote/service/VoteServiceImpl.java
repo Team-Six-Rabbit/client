@@ -13,7 +13,7 @@ import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleAppl
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.battle.service.BattleService;
-import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicCustomDto;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.domain.UserVoteOpinion;
@@ -118,7 +118,8 @@ public class VoteServiceImpl implements VoteService {
 	}
 
 	@Override
-	public RedisTopicDto<List<VoteOpinionDtoWithVoteCount>> putLiveVote(Long battleBoardId, VoteRequest voteRequest) {
+	public RedisTopicCustomDto<List<VoteOpinionDtoWithVoteCount>> putLiveVote(Long battleBoardId,
+		VoteRequest voteRequest) {
 		BattleBoard battleBoard = battleBoardRepository.findById(battleBoardId).orElse(null);
 
 		if (battleBoard == null) {
@@ -134,10 +135,11 @@ public class VoteServiceImpl implements VoteService {
 				battleBoard.getVoteInfo().getId(), voteRequest.getVoteInfoIndex());
 		}
 
-		RedisTopicDto redisTopicDto = RedisTopicDto.builder()
+		RedisTopicCustomDto redisTopicDto = RedisTopicCustomDto.builder()
 			.channelId(battleBoardId)
 			.type("vote")
 			.responseDto(currentVoteResponseDto.getOpinions())
+			.userVoteOpinion(voteRequest.getVoteInfoIndex())
 			.build();
 
 		return redisTopicDto;

@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowahanrabbits.battle_people.domain.live.dto.ItemRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.OpenViduTokenResponseDto;
+import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicCustomDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteChatResponseDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.response.WriteTalkResponseDto;
@@ -83,13 +84,13 @@ public class RedisSubscriber implements MessageListener {
 
 					}
 					if (redisTopicDto.getType().equals("vote")) {
-						RedisTopicDto<List<?>> responseTopicDto = objectMapper.readValue(publishMessage,
+						RedisTopicCustomDto<List<?>> responseTopicDto = objectMapper.readValue(publishMessage,
 							new TypeReference<>() {
 							});
 
 						messagingTemplate.convertAndSend("/topic/live/" + channelId,
-							new RedisTopicDto<>("vote", channelId, responseTopicDto.getResponseDto().get(1))
-						);
+							new RedisTopicCustomDto<>("vote", channelId, responseTopicDto.getResponseDto().get(1),
+								responseTopicDto.getUserVoteOpinion()));
 					}
 				}
 			}
