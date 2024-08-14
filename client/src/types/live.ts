@@ -49,5 +49,4 @@ export interface SpeakRequest {
 	connectionId: "abcdefg";
 	idx: 1;
 	nickname: "judy";
-	rating: 200;
 }

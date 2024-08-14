@@ -1,6 +1,5 @@
 export interface SpeakResponse {
 	nickname: string;
-	rating: number;
 	userVote: number;
 	requestUserId: number;
 	hostUserId: number;

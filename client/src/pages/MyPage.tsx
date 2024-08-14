@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/button-has-type */
 import { useState, useEffect, ChangeEvent, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "@/assets/styles/mypage.css";
 import { toast } from "react-toastify";
 import Header from "@/components/header";
@@ -17,8 +17,8 @@ import useRequireAuth from "@/hooks/useRequireAuth";
 
 function MyPage() {
 	useRequireAuth();
+
 	const navigate = useNavigate();
-	const location = useLocation();
 	const [isEditing, setIsEditing] = useState(false);
 	const [isEditingNickname, setIsEditingNickname] = useState(false);
 	const [errors, setErrors] = useState({ nickname: "" });
@@ -26,6 +26,13 @@ function MyPage() {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const formDataRef = useRef<FormData>(new FormData());
 	const { user, setUser } = useAuthStore();
+
+	useEffect(() => {
+		if (!user) {
+			// 로그인이 안 된 경우 로그인 페이지로 이동
+			navigate("/login", { replace: true });
+		}
+	}, [user, navigate]);
 
 	const [profileImage, setProfileImage] = useState<string>(
 		user?.imgUrl || profileImagePlaceholder,
@@ -36,17 +43,13 @@ function MyPage() {
 		user?.nickname || "",
 	); // 원래 닉네임 저장
 
-	useEffect(() => {
-		if (location.pathname === "/my-page") {
-			navigate("/my-page/win-rate");
-		}
-	}, [location.pathname, navigate]);
+	const email = user?.email || "";
 
 	const handleEditClick = () => {
 		if (isEditing) {
 			// Cancel을 눌렀을 때 원래 상태로 복원
 			const resetImage = async () => {
-				const imageUrl = user!.imgUrl;
+				const imageUrl = user?.imgUrl;
 				setProfileImage(imageUrl || profileImagePlaceholder);
 			};
 			resetImage();
@@ -188,8 +191,6 @@ function MyPage() {
 		}
 	};
 
-	const { email } = user!;
-
 	return (
 		<div>
 			<Header />
@@ -297,15 +298,6 @@ function MyPage() {
 								{errors.nickname && (
 									<div className="error-message">{errors.nickname}</div>
 								)}
-							</div>
-							<div className="tier-section">
-								<span className="tier-label">Tier</span>
-								<div className="tier-bar">
-									<div
-										className="tier-progress"
-										style={{ width: `${rating}%` }}
-									/>
-								</div>
 							</div>
 						</div>
 					</div>

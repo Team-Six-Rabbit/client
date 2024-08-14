@@ -57,7 +57,7 @@ const router = createBrowserRouter([
 		element: <MyPage />,
 		children: [
 			{
-				path: "win-rate",
+				path: "",
 				element: <WinRate />,
 			},
 			{

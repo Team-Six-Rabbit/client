@@ -27,12 +27,12 @@ export function ProfileBtn() {
 	const doLogout = async (event: MouseEvent) => {
 		event.preventDefault();
 
+		navigator("/");
+
 		try {
 			await authService.logout();
 		} catch (err) {
 			console.error("로그아웃 실패");
-		} finally {
-			navigator("/");
 		}
 	};
 

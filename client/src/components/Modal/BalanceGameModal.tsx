@@ -13,7 +13,6 @@ const defaultUser1: User = {
 	id: 0,
 	nickname: "",
 	imgUrl: person_orange,
-	rating: 0,
 	opinion: "No opinion",
 };
 
@@ -21,7 +20,6 @@ const defaultUser2: User = {
 	id: 0,
 	nickname: "",
 	imgUrl: person_blue,
-	rating: 0,
 	opinion: "No opinion",
 };
 

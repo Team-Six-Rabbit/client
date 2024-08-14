@@ -59,7 +59,7 @@ function SpeakRequestList({
 					{filteredRequests.map((request) => (
 						<div key={request.idx}>
 							<div className="p-2 border-b-2 border-gray-300">
-								{request.nickname}[{request.rating}]
+								{request.nickname}
 							</div>
 							<button
 								type="button"

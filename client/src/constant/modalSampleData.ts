@@ -9,7 +9,6 @@ const sampleUser: User = {
 	id: 0,
 	nickname: "string",
 	imgUrl: "https://picsum.photos/400/400",
-	rating: 0,
 	opinion: "string",
 };
 
