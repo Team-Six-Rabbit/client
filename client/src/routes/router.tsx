@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import App from "@/App";
 import LoginPage from "@/pages/LoginPage";
@@ -16,6 +16,10 @@ import ParticipatedVotes from "@/components/Tabs/ParticipatedVotes";
 import Interests from "@/components/Tabs/Interests";
 
 const router = createBrowserRouter([
+	{
+		path: "*",
+		element: <Navigate to="/" />,
+	},
 	{
 		path: "/",
 		element: <App />,
