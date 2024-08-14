@@ -4,7 +4,7 @@ import {
 	FinishedLiveBattleDetail,
 	WaitingLiveBattleDetail,
 } from "@/types/live";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "@/services/axiosInstance";
 
 export const liveBattleService = {
 	// 대기 중인 라이브 배틀 목록 가져오기

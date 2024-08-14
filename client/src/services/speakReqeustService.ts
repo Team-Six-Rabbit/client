@@ -1,6 +1,6 @@
 import { ApiResponse } from "@/types/api";
 import { SpeakRequest } from "@/types/live";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "@/services/axiosInstance";
 
 export const getSpeackReqeustList = async (
 	battleId: string,

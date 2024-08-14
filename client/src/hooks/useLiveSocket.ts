@@ -3,11 +3,8 @@ import { Client, Message } from "@stomp/stompjs";
 import useSpeakSocket from "@/hooks/useSpeakSocket";
 import useVoteSocket from "@/hooks/useVoteSocket";
 import useItemSocket from "@/hooks/useItemSocket";
-import {
-	SpeakResponse,
-	VoteResponse,
-	ItemResponse,
-} from "@/types/liveMessageType";
+import { SpeakResponse, ItemResponse } from "@/types/liveMessageType";
+import { OpinionWithPercentage } from "@/types/vote";
 
 const useLiveSocket = (battleId: string) => {
 	const stompClientRef = useRef<Client | null>(null);
@@ -18,7 +15,7 @@ const useLiveSocket = (battleId: string) => {
 		stompClientRef.current!,
 		battleId,
 	);
-	const { voteA, voteB, handleVote, sendVote } = useVoteSocket(
+	const { voteState, handleVote, sendVote } = useVoteSocket(
 		stompClientRef.current!,
 		battleId,
 	);
@@ -48,8 +45,13 @@ const useLiveSocket = (battleId: string) => {
 							break;
 						case "vote":
 							handleVote(
-								(response.responseDto as VoteResponse[]).map(
-									({ index, opinion, count, percentage }: VoteResponse) => ({
+								(response.responseDto as OpinionWithPercentage[]).map(
+									({
+										index,
+										opinion,
+										count,
+										percentage,
+									}: OpinionWithPercentage) => ({
 										index,
 										opinion,
 										count,
@@ -85,8 +87,7 @@ const useLiveSocket = (battleId: string) => {
 	return {
 		speakRequests,
 		sendSpeak,
-		voteA,
-		voteB,
+		voteState,
 		sendVote,
 		sendItem,
 	};

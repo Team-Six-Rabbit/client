@@ -8,13 +8,6 @@ export interface SpeakResponse {
 	idx: number;
 }
 
-export interface VoteResponse {
-	index: number;
-	opinion: string;
-	count: number;
-	percentage: number;
-}
-
 export interface ItemResponse {
 	userId: number;
 	targetIndex: number;

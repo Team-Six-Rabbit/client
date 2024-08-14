@@ -5,10 +5,9 @@ interface SpeechRequestListProps {
 	userId: number;
 	connectionId: string | undefined;
 	speakRequests: SpeakResponse[];
-	sendSpeak: (userId: number, connectionId: string) => void;
+	handleRequestSpeak: (userId: number, connectionId: string) => void;
 	sendRequestAccept: (connectionId: string) => void;
-	buttonDisabled: boolean;
-	onButtonClick: () => void;
+	userRequestStatus: number;
 	role: number;
 }
 
@@ -16,10 +15,9 @@ function SpeakRequestList({
 	userId,
 	connectionId,
 	speakRequests,
-	sendSpeak,
+	handleRequestSpeak,
 	sendRequestAccept,
-	buttonDisabled,
-	onButtonClick,
+	userRequestStatus,
 	role,
 }: SpeechRequestListProps) {
 	const [isOpen, setIsOpen] = useState(false);
@@ -28,21 +26,16 @@ function SpeakRequestList({
 		setIsOpen(!isOpen);
 	};
 
-	const handleRequestSpeech = () => {
-		sendSpeak(userId, connectionId!); // (userId: number, connectionId: string)
-		onButtonClick();
-	};
-
 	if (role === -1) {
 		return (
 			<div className="relative">
 				<button
 					type="button"
-					onClick={handleRequestSpeech}
-					className={`border-solid border-4 border-black p-2 w-full text-left rounded-lg ${buttonDisabled ? "bg-black text-white" : ""}`}
-					disabled={buttonDisabled}
+					onClick={() => handleRequestSpeak(userId, connectionId!)}
+					className={`border-solid border-4 border-black p-2 w-full text-left rounded-lg ${userRequestStatus === 1 ? "bg-black text-white" : ""}`}
+					disabled={userRequestStatus === 1} // 0은 신청X, 1은 신청O
 				>
-					발언권 신청
+					{userRequestStatus === 0 ? "발언권 신청" : ""}
 				</button>
 			</div>
 		);
