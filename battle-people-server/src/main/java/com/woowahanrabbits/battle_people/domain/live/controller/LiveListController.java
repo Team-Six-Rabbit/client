@@ -33,7 +33,7 @@ public class LiveListController {
 	public ResponseEntity<ApiResponseDto<List<LiveListResponseDto>>> getActiveLiveList(
 		@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
 		@RequestParam(value = "category", required = false, defaultValue = "") Integer category,
-		@PageableDefault(page = 0, size = 10, sort = {"maxPeopleCount", "id"}) Pageable pageable) {
+		@PageableDefault(page = 0, size = 10) Pageable pageable) {
 
 		try {
 			return ResponseEntity.status(HttpStatus.OK)
@@ -51,7 +51,7 @@ public class LiveListController {
 	public ResponseEntity<ApiResponseDto<List<LiveListResponseDto>>> getWaitLiveList(
 		@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
 		@RequestParam(value = "category", required = false, defaultValue = "") Integer category,
-		@PageableDefault(page = 0, size = 10, sort = {"maxPeopleCount", "id"}) Pageable pageable) {
+		@PageableDefault(page = 0, size = 10) Pageable pageable) {
 
 		try {
 			return ResponseEntity.status(HttpStatus.OK)
@@ -69,7 +69,7 @@ public class LiveListController {
 	public ResponseEntity<ApiResponseDto<List<LiveListResponseDto>>> getEndBattleBoards(
 		@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
 		@RequestParam(value = "category", required = false, defaultValue = "") Integer category,
-		@PageableDefault(page = 0, size = 10, sort = {"maxPeopleCount", "id"}) Pageable pageable) {
+		@PageableDefault(page = 0, size = 10) Pageable pageable) {
 
 		try {
 			return ResponseEntity.status(HttpStatus.OK)
