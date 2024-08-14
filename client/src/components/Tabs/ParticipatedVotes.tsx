@@ -3,7 +3,6 @@ import styled from "styled-components";
 import "@/assets/styles/scrollbar.css";
 import { authService } from "@/services/userAuthService";
 import { convertToTimeZone } from "@/utils/dateUtils";
-import ParticipatedVotesModal from "@/components/Modal/ParticipatedVotesModal";
 import empty from "@/assets/images/empty.png";
 
 const VotesContainer = styled.div`
@@ -28,7 +27,6 @@ const VotesListItem = styled.li`
 	padding: 5px 20px;
 	margin-bottom: 10px;
 	font-size: 16px;
-	cursor: pointer;
 `;
 
 const VoteDate = styled.span`
@@ -71,7 +69,6 @@ interface Vote {
 
 function ParticipatedVotesList() {
 	const [votes, setVotes] = useState<Vote[]>([]);
-	const [selectedVote, setSelectedVote] = useState<Vote | null>(null);
 	const [, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -129,7 +126,7 @@ function ParticipatedVotesList() {
 		<VotesContainer className="custom-scrollbar">
 			<VotesList>
 				{votes.map((vote) => (
-					<VotesListItem key={vote.id} onClick={() => setSelectedVote(vote)}>
+					<VotesListItem key={vote.id}>
 						<TitleContainer>{vote.title}</TitleContainer>
 						<DateStatusContainer>
 							<VoteDate>{vote.date}</VoteDate>
@@ -139,7 +136,7 @@ function ParticipatedVotesList() {
 					</VotesListItem>
 				))}
 			</VotesList>
-			{selectedVote && (
+			{/* {selectedVote && (
 				<ParticipatedVotesModal
 					voteId={selectedVote.id}
 					title={selectedVote.title}
@@ -147,7 +144,7 @@ function ParticipatedVotesList() {
 					detail={selectedVote.detail}
 					onClose={() => setSelectedVote(null)} // 모달 닫기
 				/>
-			)}
+			)} */}
 		</VotesContainer>
 	);
 }

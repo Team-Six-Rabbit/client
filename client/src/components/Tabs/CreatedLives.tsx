@@ -3,7 +3,6 @@ import styled from "styled-components";
 import "@/assets/styles/scrollbar.css";
 import { authService } from "@/services/userAuthService";
 import { convertToTimeZone } from "@/utils/dateUtils";
-import EndedLivePreviewModal from "@/components/Modal/EndedLivePreviewModal";
 import empty from "@/assets/images/empty.png";
 
 const CreatedLivesContainer = styled.div`
@@ -28,7 +27,6 @@ const CreatedLivesListItem = styled.li`
 	padding: 5px 20px;
 	margin-bottom: 10px;
 	font-size: 16px;
-	cursor: pointer; /* 클릭 가능하게 설정 */
 `;
 
 const Date = styled.span`
@@ -71,7 +69,6 @@ function CreatedLives() {
 	const [lives, setLives] = useState<CreatedLive[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedBattleId, setSelectedBattleId] = useState<number | null>(null);
 
 	useEffect(() => {
 		const fetchLives = async () => {
@@ -135,13 +132,13 @@ function CreatedLives() {
 		);
 	}
 
-	const handleTitleClick = (battleId: number) => {
-		setSelectedBattleId(battleId);
-	};
+	// const handleTitleClick = (battleId: number) => {
+	// 	setSelectedBattleId(battleId);
+	// };
 
-	const closeModal = () => {
-		setSelectedBattleId(null);
-	};
+	// const closeModal = () => {
+	// 	setSelectedBattleId(null);
+	// };
 
 	if (loading) {
 		return <div>Loading...</div>;
@@ -155,10 +152,7 @@ function CreatedLives() {
 		<CreatedLivesContainer className="custom-scrollbar">
 			<CreatedLivesList>
 				{lives.map((live) => (
-					<CreatedLivesListItem
-						key={live.battleBoardId}
-						onClick={() => handleTitleClick(live.battleBoardId)}
-					>
+					<CreatedLivesListItem key={live.battleBoardId}>
 						<TitleContainer>{live.title}</TitleContainer>
 						<DateStatusContainer>
 							<Date>{live.date}</Date>
@@ -169,12 +163,12 @@ function CreatedLives() {
 				))}
 			</CreatedLivesList>
 
-			{selectedBattleId !== null && (
+			{/* {selectedBattleId !== null && (
 				<EndedLivePreviewModal
 					battleId={selectedBattleId}
 					onClose={closeModal}
 				/>
-			)}
+			)} */}
 		</CreatedLivesContainer>
 	);
 }
