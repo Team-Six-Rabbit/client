@@ -1,18 +1,48 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Client } from "@stomp/stompjs";
 import { VoteRequest } from "@/types/liveMessageType";
-import { OpinionWithPercentage } from "@/types/vote";
+import { OpinionWithPercentage, VoteInfoResponse } from "@/types/vote";
+import { getVoteInfo } from "@/services/liveUserService";
 
 const useVoteSocket = (stompClient: Client, battleId: string) => {
-	const [voteState, setVoteState] = useState<OpinionWithPercentage[]>([
-		{ index: 0, opinion: "", count: 0, percentage: 50 },
-		{ index: 1, opinion: "", count: 0, percentage: 50 },
-	]);
+	const [voteState, setVoteState] = useState<VoteInfoResponse>({
+		totalCount: 0,
+		opinions: [
+			{ index: 0, opinion: "", count: 0, percentage: 50 },
+			{ index: 1, opinion: "", count: 0, percentage: 50 },
+		],
+		userVoteOpinion: -1,
+	});
+
+	// 초기값 설정
+	useEffect(() => {
+		const fetchInitialVoteInfo = async () => {
+			try {
+				const response = await getVoteInfo(battleId);
+				if (response.code === "success" && response.data) {
+					setVoteState(response.data);
+				} else {
+					console.error("Failed to fetch vote info:", response.msg);
+				}
+			} catch (error) {
+				console.error("Error fetching vote info:", error);
+			}
+		};
+
+		fetchInitialVoteInfo();
+	}, [battleId]);
 
 	// 투표 응답 처리
-	const handleVote = useCallback((data: OpinionWithPercentage[]) => {
-		setVoteState(data);
-	}, []);
+	const handleVote = useCallback(
+		(data: OpinionWithPercentage[], userVoteOpinion: number) => {
+			setVoteState((prevState) => ({
+				...prevState,
+				opinions: data,
+				userVoteOpinion,
+			}));
+		},
+		[],
+	);
 
 	// 투표 요청 전송
 	const sendVote = useCallback(

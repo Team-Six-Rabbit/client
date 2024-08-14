@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Client, Message } from "@stomp/stompjs";
-import useSpeakSocket from "@/hooks/useSpeakSocket";
 import useVoteSocket from "@/hooks/useVoteSocket";
 import useItemSocket from "@/hooks/useItemSocket";
-import { SpeakResponse, ItemResponse } from "@/types/liveMessageType";
+import { ItemResponse } from "@/types/liveMessageType";
 import { OpinionWithPercentage } from "@/types/vote";
 
 const useLiveSocket = (battleId: string) => {
@@ -11,10 +10,10 @@ const useLiveSocket = (battleId: string) => {
 
 	// livePage에서 가져가면 코드가 너무 길어질 것 같아
 	// 단순히 import해서 내려주는 역할
-	const { speakRequests, handleSpeak, sendSpeak } = useSpeakSocket(
-		stompClientRef.current!,
-		battleId,
-	);
+	// const { speakRequests, handleSpeak, sendSpeak } = useSpeakSocket(
+	// 	stompClientRef.current!,
+	// 	battleId,
+	// );
 	const { voteState, handleVote, sendVote } = useVoteSocket(
 		stompClientRef.current!,
 		battleId,
@@ -41,7 +40,7 @@ const useLiveSocket = (battleId: string) => {
 
 					switch (response.type) {
 						case "speak":
-							handleSpeak(response.responseDto as SpeakResponse);
+							// handleSpeak(response.responseDto as SpeakResponse);
 							break;
 						case "vote":
 							handleVote(
@@ -58,6 +57,7 @@ const useLiveSocket = (battleId: string) => {
 										percentage,
 									}),
 								),
+								response.userVoteOpinion,
 							);
 							break;
 						case "item":
@@ -82,11 +82,11 @@ const useLiveSocket = (battleId: string) => {
 				stompClientRef.current = null;
 			}
 		};
-	}, [battleId, handleSpeak, handleVote, handleItem]);
+	}, [battleId, handleVote, handleItem]);
 
 	return {
-		speakRequests,
-		sendSpeak,
+		// speakRequests,
+		// sendSpeak,
 		voteState,
 		sendVote,
 		sendItem,

@@ -1,29 +1,35 @@
 import { useEffect } from "react";
-import { OpinionWithPercentage } from "@/types/vote";
+import { VoteInfoResponse } from "@/types/vote";
 
 interface VoteGaugeProps {
-	voteState: OpinionWithPercentage[];
+	voteState: VoteInfoResponse;
 }
 
 function VoteGauge({ voteState }: VoteGaugeProps) {
 	return (
 		<div className="relative w-full h-10 flex items-center border-solid border-4 border-black rounded-lg overflow-hidden">
-			<span className="absolute left-0 pl-2 text-black font-bold">
-				{voteState[0].count}
+			{/* 좌측 텍스트 (주황색 쪽) */}
+			<span className="absolute left-0 pl-2 text-black font-bold z-10">
+				{voteState.opinions[0].count}
 			</span>
-			<div className="w-full h-full flex">
+
+			{/* 우측 텍스트 (파란색 쪽) */}
+			<span className="absolute right-0 pr-2 text-black font-bold z-10">
+				{voteState.opinions[1].count}
+			</span>
+
+			{/* 주황색 막대 */}
+			<div className="w-full h-full relative">
 				<div
-					className="bg-orange h-full transition-all duration-500"
-					style={{ width: `${voteState[0].percentage}%` }}
+					className="bg-orange h-full absolute left-0 transition-all duration-500"
+					style={{ width: `${voteState.opinions[0].percentage}%` }}
 				/>
+				{/* 파란색 막대 */}
 				<div
-					className="bg-blue h-full transition-all duration-500"
-					style={{ width: `${voteState[1].percentage}%` }}
+					className="bg-blue h-full absolute right-0 transition-all duration-500"
+					style={{ width: `${voteState.opinions[1].percentage}%` }}
 				/>
 			</div>
-			<span className="absolute right-0 pr-2 text-black font-bold">
-				{voteState[1].count}
-			</span>
 		</div>
 	);
 }
@@ -31,8 +37,7 @@ function VoteGauge({ voteState }: VoteGaugeProps) {
 interface LiveVoteProps {
 	userId: number;
 	role: number;
-	voteState: OpinionWithPercentage[];
-	userVoteOpinion: number;
+	voteState: VoteInfoResponse;
 	title: string;
 	optionA: string;
 	optionB: string;
@@ -44,7 +49,6 @@ function LiveVote({
 	userId,
 	role,
 	voteState,
-	userVoteOpinion,
 	title,
 	optionA,
 	optionB,
@@ -52,7 +56,10 @@ function LiveVote({
 	onVoteEnd,
 }: LiveVoteProps) {
 	useEffect(() => {
-		const winner = voteState[0].count > voteState[1].count ? optionA : optionB;
+		const winner =
+			voteState.opinions[0].count > voteState.opinions[1].count
+				? optionA
+				: optionB;
 		onVoteEnd(winner);
 	}, [onVoteEnd, optionA, optionB, voteState]);
 
@@ -62,7 +69,7 @@ function LiveVote({
 			<div className="flex flex-row items-center justify-between w-3/4">
 				<button
 					type="button"
-					className={`bg-gray-800 me-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none ${userVoteOpinion === 0 ? "bg-olive text-white" : ""}`}
+					className={`bg-gray-800 me-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none ${voteState.userVoteOpinion === 0 ? "bg-olive text-white" : ""}`}
 					onClick={() => handleVote(userId, 0)}
 					disabled={role === 0 || role === 1}
 				>
@@ -71,7 +78,7 @@ function LiveVote({
 				<VoteGauge voteState={voteState} />
 				<button
 					type="button"
-					className={`bg-gray-800 ms-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none ${userVoteOpinion === 1 ? "bg-olive text-white" : ""}`}
+					className={`bg-gray-800 ms-3 mb-4 px-3 py-2 rounded-md text-white tracking-wider shadow-xl animate-bounce hover:animate-none ${voteState.userVoteOpinion === 1 ? "bg-olive text-white" : ""}`}
 					onClick={() => handleVote(userId, 1)}
 					disabled={role === 0 || role === 1}
 				>
