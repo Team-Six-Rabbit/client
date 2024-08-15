@@ -24,6 +24,7 @@ function LiveBoardPage() {
 	};
 
 	const handleStatusSelect = (status: LiveStatus) => {
+		if (selectedStatus === status) return;
 		setSelectedStatus(status);
 		setPage(0);
 		setFilteredCards([]);
