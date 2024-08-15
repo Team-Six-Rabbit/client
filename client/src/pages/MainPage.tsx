@@ -114,7 +114,12 @@ function MainPage() {
 						status: "live",
 					}));
 
-					return { categoryId: categories.at(index)!.id, cards };
+					return {
+						categoryId: categories
+							.filter((category) => category.id !== 7)
+							.at(index)!.id,
+						cards,
+					};
 				});
 
 				const interested: Record<number, CardType[]> = {};
