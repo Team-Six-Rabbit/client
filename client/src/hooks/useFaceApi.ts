@@ -1,65 +1,26 @@
 import * as faceapi from "face-api.js";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef } from "react";
 
 const useFaceApi = (
-	isPublisher: boolean,
 	video: RefObject<HTMLVideoElement>,
 	canvas: RefObject<HTMLCanvasElement>,
 ) => {
-	const [isReady, setIsReady] = useState<boolean>(false);
-	const shouldRenderVideo = useRef<boolean>(true);
 	const shouldRenderMask = useRef<boolean>(false);
-	const timeout = useRef<unknown>();
-	const stream = useRef<MediaStream>();
-
-	const SSD_MOBILENETV1 = "ssd_mobilenetv1";
-	const TINY_FACE_DETECTOR = "tiny_face_detector";
-
-	// ssd_mobilenetv1 options
-	const minConfidence = 0.5;
+	const isModelLoading = useRef<boolean>(false);
 
 	// tiny_face_detector options
 	const inputSize = 224;
 	const scoreThreshold = 0.4;
 
-	let selectedFaceDetector = TINY_FACE_DETECTOR;
-	selectedFaceDetector = TINY_FACE_DETECTOR;
-
-	const clear = () => {
-		if (timeout.current) clearTimeout(timeout.current as number);
-		timeout.current = undefined;
-		if (stream.current) {
-			stream.current.getTracks().forEach((track) => {
-				track.stop();
-				stream.current!.removeTrack(track);
-			});
-			stream.current = undefined;
-		}
-		setIsReady(false);
-	};
-
-	useEffect(() => {
-		return clear;
-	}, []);
-
-	const getCurrentFaceDetectionNet = () => {
-		if (selectedFaceDetector === SSD_MOBILENETV1) {
-			return faceapi.nets.ssdMobilenetv1;
-		}
-		if (selectedFaceDetector === TINY_FACE_DETECTOR) {
-			return faceapi.nets.tinyFaceDetector;
-		}
-		throw new Error("Invalid face detector model");
-	};
-
 	const isFaceDetectionModelLoaded = () => {
-		return !!getCurrentFaceDetectionNet().params;
+		return (
+			!!faceapi.nets.tinyFaceDetector.params &&
+			!!faceapi.nets.faceLandmark68TinyNet.params
+		);
 	};
 
 	const getFaceDetectorOptions = () => {
-		return selectedFaceDetector === SSD_MOBILENETV1
-			? new faceapi.SsdMobilenetv1Options({ minConfidence })
-			: new faceapi.TinyFaceDetectorOptions({ inputSize, scoreThreshold });
+		return new faceapi.TinyFaceDetectorOptions({ inputSize, scoreThreshold });
 	};
 
 	const render2DCharacter = (
@@ -120,91 +81,66 @@ const useFaceApi = (
 		);
 	};
 
-	const renderVideoToCanvas = (ctx: CanvasRenderingContext2D) => {
-		if (!video.current!.paused && !video.current!.ended) {
-			ctx.drawImage(
-				video.current!,
-				0,
-				0,
-				canvas.current!.width,
-				canvas.current!.height,
-			);
-		}
-	};
-
-	const onPlay = async () => {
-		if (
-			!video.current ||
-			(shouldRenderMask.current && !isFaceDetectionModelLoaded())
-		) {
-			console.error(
-				video.current,
-				video.current?.paused,
-				video.current?.ended,
-				shouldRenderMask.current,
-				isFaceDetectionModelLoaded(),
-			);
-			timeout.current = setTimeout(() => onPlay(), 1000);
-			return timeout.current;
-		}
-
-		let resizedResult;
-		if (shouldRenderMask.current) {
-			const options = getFaceDetectorOptions();
-			console.time("onPlay Execution Time");
-			const result = await faceapi
-				.detectSingleFace(video.current!, options)
-				.withFaceLandmarks(true);
-			console.timeEnd("onPlay Execution Time");
-
-			if (result) {
-				const dims = faceapi.matchDimensions(
-					canvas.current!,
-					{ width: 640, height: 480 },
-					true,
-				);
-				resizedResult = faceapi.resizeResults(result, dims);
-			}
-		}
-
-		const ctx = canvas.current!.getContext("2d")!;
-		if (shouldRenderVideo.current) renderVideoToCanvas(ctx);
-		if (resizedResult) render2DCharacter(resizedResult, ctx);
-
-		timeout.current = setTimeout(() => onPlay(), 0);
-		return timeout.current;
-	};
-
 	const loadModel = () => {
-		return Promise.all([
-			faceapi.nets.tinyFaceDetector.loadFromUri("/weights"),
-			faceapi.nets.faceLandmark68TinyNet.loadFromUri("/weights"),
-		]);
-	};
-
-	const startVideo = async () => {
-		stream.current = await navigator.mediaDevices.getUserMedia({
-			video: true,
-		});
-		// eslint-disable-next-line no-param-reassign
-		video.current!.srcObject = stream.current;
-		return stream.current;
+		if (isModelLoading.current === false) {
+			isModelLoading.current = true;
+			return Promise.all([
+				faceapi.nets.tinyFaceDetector.loadFromUri("/weights"),
+				faceapi.nets.faceLandmark68TinyNet.loadFromUri("/weights"),
+			]).then(() => {
+				isModelLoading.current = false;
+			});
+		}
+		return Promise.reject();
 	};
 
 	const drawMask = async () => {
-		if (!isFaceDetectionModelLoaded()) await loadModel();
-		setIsReady(true);
-		onPlay();
+		if (!shouldRenderMask.current) {
+			canvas.current
+				?.getContext("2d")
+				?.clearRect(0, 0, canvas.current.width, canvas.current.height);
+			return;
+		}
+		if (!video.current) {
+			setTimeout(() => drawMask(), 1000);
+			return;
+		}
+
+		if (!isModelLoading.current && !isFaceDetectionModelLoaded()) {
+			loadModel().then(drawMask);
+			return;
+		}
+
+		const options = getFaceDetectorOptions();
+		// console.time("onPlay Execution Time");
+		faceapi
+			.detectSingleFace(video.current!, options)
+			.withFaceLandmarks(true)
+			.run()
+			.then((result) => {
+				// console.timeEnd("onPlay Execution Time");
+				if (!result) return undefined;
+
+				const dims = faceapi.matchDimensions(
+					canvas.current!,
+					video.current!,
+					true,
+				);
+
+				const resizedResult = faceapi.resizeResults(result, dims);
+				const ctx = canvas.current!.getContext("2d")!;
+				if (resizedResult) render2DCharacter(resizedResult, ctx);
+				return undefined;
+			})
+			.then(() => drawMask());
 	};
 
 	useEffect(() => {
-		if (!isPublisher) return;
-
-		startVideo();
+		drawMask();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isPublisher]);
+	}, []);
 
-	return { drawMask, isReady, shouldRenderVideo, shouldRenderMask };
+	return { shouldRenderMask, drawMask };
 };
 
 export default useFaceApi;

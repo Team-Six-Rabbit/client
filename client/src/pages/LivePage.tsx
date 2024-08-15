@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -30,12 +30,18 @@ function LivePage() {
 	const [liveData, setLiveData] = useState<WaitingLiveBattleDetail>();
 	// const [userRequestStatus, setUserRequestStatus] = useState<number>(0);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-
+	const video = useRef<HTMLVideoElement>(null);
+	const canvasForPublish = useRef<HTMLCanvasElement>(null);
+	const canvasForMask = useRef<HTMLCanvasElement>(null);
 	// connectionId는 발언권 추가 시 import
-	const { joinSession, subscribers, index, publisher } = useWebRTC(
-		isMicMuted,
-		isVideoDisabled,
-	);
+	const { joinSession, subscribers, index, publisher, setRenderMask } =
+		useWebRTC(
+			isMicMuted,
+			isVideoDisabled,
+			video,
+			canvasForPublish,
+			canvasForMask,
+		);
 
 	const userId = useAuthStore().user?.id;
 	const { battleId } = useParams();
@@ -46,12 +52,25 @@ function LivePage() {
 	// );
 	const { voteState, sendVote, choice, setChoice } = useLiveSocket(battleId!);
 
-	const handleMicClick = () => setIsMicMuted((prev) => !prev);
-	const handleVideoClick = () => setIsVideoDisabled((prev) => !prev);
+	const handleMicClick = () => {
+		setIsMicMuted((prev) => !prev);
+	};
+
+	const handleVideoClick = () => {
+		setIsVideoDisabled((prev) => {
+			setRenderMask(!prev);
+			return !prev;
+		});
+	};
 
 	useEffect(() => {
 		joinSession(battleId!);
 	}, [battleId, joinSession]);
+
+	useEffect(() => {
+		publisher?.publishAudio(!isMicMuted);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isMicMuted]);
 
 	useEffect(() => {
 		setIsLoading(true);
@@ -104,6 +123,22 @@ function LivePage() {
 	return (
 		<>
 			<Header />
+			<video
+				ref={video}
+				autoPlay
+				muted
+				className="fixed invisible w-[640px] h-[480px]"
+			>
+				<track kind="captions" />
+			</video>
+			<canvas
+				ref={canvasForPublish}
+				className="fixed w-[640px] h-[480px] invisible"
+			/>
+			<canvas
+				ref={canvasForMask}
+				className="fixed w-[640px] h-[480px] invisible"
+			/>
 			<div className="flex flex-col">
 				<div className="flex-1 flex mt-16 px-8 pt-8">
 					{/* 추후에 start와 end시간을 계산해서 duration에 넣기 */}
