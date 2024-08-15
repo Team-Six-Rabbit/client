@@ -124,7 +124,7 @@ public class DalleService {
 			throw new RuntimeException("이미지를 읽는 중 오류가 발생했습니다.", e);
 		}
 
-		int targetWidth = 400;
+		int targetWidth = 800;
 		int targetHeight = (int)((double)originalImage.getHeight() / originalImage.getWidth() * targetWidth);
 
 		BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
