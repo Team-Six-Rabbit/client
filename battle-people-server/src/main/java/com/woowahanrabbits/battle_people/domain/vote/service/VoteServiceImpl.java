@@ -147,36 +147,30 @@ public class VoteServiceImpl implements VoteService {
 	}
 
 	@Override
-	public UserWinHistory getUserWinHistory(Long userId) {
-		List<UserVoteOpinion> userVoteHistory = userVoteOpinionRepository.findByUserId(userId);
-		int totalUserVoteCount = 0;
-		int winCount = 0;
+	public UserWinHistory getUserWinHistory(User user) {
+		List<UserVoteOpinion> userVoteHistory = userVoteOpinionRepository.findWinRateByUserId(user.getId());
+		int debateCnt = userVoteHistory.size();
 
-		for (UserVoteOpinion userVoteOpinion : userVoteHistory) {
-			List<VoteOpinion> opinions = voteOpinionRepository.findByVoteInfoId(userVoteOpinion.getVoteInfoId());
-			int selectIndex = userVoteOpinion.getVoteInfoIndex();
-
-			if (opinions.size() < 2 || opinions.get(selectIndex).getFinalCount() == null
-				|| opinions.get(1 - selectIndex).getFinalCount() == null) {
-				continue;
-			}
-
-			if (opinions.get(selectIndex).getFinalCount() > opinions.get(1 - selectIndex).getFinalCount()) {
-				winCount++;
-			}
-			totalUserVoteCount++;
-		}
-
-		if (totalUserVoteCount == 0) {
+		if (debateCnt == 0) {
 			return new UserWinHistory(0, 0, 0, 0);
 		}
+		int winCnt = 0;
 
-		return UserWinHistory.builder()
-			.debateCnt(totalUserVoteCount)
-			.winCnt(winCount)
-			.loseCnt(totalUserVoteCount - winCount)
-			.winRate(100 * winCount / totalUserVoteCount)
-			.build();
+		for (UserVoteOpinion userVoteOpinion : userVoteHistory) {
+			int myChoice = userVoteOpinion.getVoteInfoIndex();
+			List<VoteOpinion> result = voteOpinionRepository.findAllByVoteInfoId(userVoteOpinion.getVoteInfoId());
+			int opinionA = result.get(0).getFinalCount();
+			int opinionB = result.get(1).getFinalCount();
+
+			if (myChoice == 0 && opinionA > opinionB) {
+				winCnt++;
+			} else if (myChoice == 1 && opinionA < opinionB) {
+				winCnt++;
+			}
+		}
+		int loseCnt = debateCnt - winCnt;
+		int winRate = (winCnt * 100) / debateCnt;
+		return new UserWinHistory(debateCnt, winCnt, loseCnt, winRate);
 	}
 
 	private CurrentVoteResponseDto resultDto(Long voteInfoId) {
