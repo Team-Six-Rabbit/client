@@ -135,8 +135,8 @@ function BattleManualModal({ onClose }: ModalProps) {
 										진행중, 예정된, 종료된 라이브 토론 목록이 뜹니다.
 									</StyledLi>
 									<StyledLi>
-										구경하고 싶은 라이브를 골라 참여하거나, 라이브 카드 클릭시
-										정보를 볼 수 있어요!
+										구경하고 싶은 라이브를 골라 토론에 참여하거나, 라이브 카드
+										클릭시 상세 정보를 볼 수 있어요!
 									</StyledLi>
 								</StyledOl>
 							</ContentWrapper>
@@ -169,7 +169,7 @@ function BattleManualModal({ onClose }: ModalProps) {
 										곧 펼쳐질 라이브 토론 목록이 쫘르르 펼쳐집니다.
 									</StyledLi>
 									<StyledLi>
-										마음에 드는 주제를 골라 사전 투표 & 참여 신청을 완료하세요.
+										마음에 드는 주제를 골라 사전 투표 & 참석 신청을 완료하세요.
 									</StyledLi>
 								</StyledOl>
 							</ContentWrapper>
@@ -200,8 +200,8 @@ function BattleManualModal({ onClose }: ModalProps) {
 									<StyledLi>[모닥불] 메뉴를 클릭!</StyledLi>
 									<StyledLi>다양한 주제의 밸런스 게임이 등장합니다.</StyledLi>
 									<StyledLi>
-										투표에 참여하고, 결과를 확인하며 다른 이들과 대결을
-										펼쳐보세요.
+										투표에 참여하고, 결과를 확인하며 다른 이들의 의견을
+										들어보세요!
 									</StyledLi>
 								</StyledOl>
 							</ContentWrapper>
@@ -231,8 +231,8 @@ function BattleManualModal({ onClose }: ModalProps) {
 								</StyledH3>
 
 								<StyledLi>
-									참여한 투표: 하늘색(이기는 중), 분홍색(지는 중)을 통해 투표
-									현황을 확인하세요.
+									참여한 투표: 승/패/무를 통해 간편하게 내가 참여한 투표의
+									결과를 확인하세요.
 								</StyledLi>
 								<StyledLi>
 									관심사: 관심사를 등록하고 메인에서 먼저 확인 할 수 있어요.
