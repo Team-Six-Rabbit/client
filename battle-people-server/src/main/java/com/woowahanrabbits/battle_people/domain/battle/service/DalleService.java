@@ -140,7 +140,7 @@ public class DalleService {
 
 			ImageWriteParam jpegParams = writer.getDefaultWriteParam();
 			jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-			jpegParams.setCompressionQuality(0.5f);  // 압축 품질 설정 (0.0f ~ 1.0f, 낮을수록 용량이 작아짐)
+			jpegParams.setCompressionQuality(0.8f);  // 압축 품질 설정 (0.0f ~ 1.0f, 낮을수록 용량이 작아짐)
 
 			writer.write(null, new javax.imageio.IIOImage(resizedImage, null, null), jpegParams);
 			writer.dispose();
