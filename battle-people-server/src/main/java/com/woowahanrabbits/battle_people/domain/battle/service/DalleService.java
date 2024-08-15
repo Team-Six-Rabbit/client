@@ -1,11 +1,18 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -94,12 +101,12 @@ public class DalleService {
 		return null;
 	}
 
+	@SuppressWarnings("checkstyle:Indentation")
 	private String saveImageToLocal(String imageUrl, BattleBoard battleBoard) throws Exception {
 		// URL 객체 생성
 		URL url = new URL(imageUrl);
 		String fileName = battleBoard.getId() + ".jpg";  // 예: "13.jpg"
-		String filePath = uploadDir + File.separator
-			+ "thumbnail";  // 예: "uploadDir/thumbnail"
+		String filePath = uploadDir + File.separator + "thumbnail";  // 예: "uploadDir/thumbnail"
 
 		// 파일 경로를 확인하고 디렉토리가 존재하지 않으면 생성
 		File directory = new File(filePath);
@@ -109,18 +116,41 @@ public class DalleService {
 
 		File file = new File(directory, fileName);
 
-		// 이미지 다운로드 및 파일 저장
-		try (InputStream in = url.openStream(); FileOutputStream out = new FileOutputStream(file)) {
-			byte[] buffer = new byte[4096];
-			int bytesRead;
-			while ((bytesRead = in.read(buffer)) != -1) {
-				out.write(buffer, 0, bytesRead);
-			}
+		// 이미지 다운로드
+		BufferedImage originalImage;
+		try (InputStream in = url.openStream()) {
+			originalImage = ImageIO.read(in);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("이미지를 읽는 중 오류가 발생했습니다.", e);
+		}
 
+		// 이미지 크기 조정 (예: 가로 800px, 비율에 따라 높이 조정)
+		int targetWidth = 800;
+		int targetHeight = (int)((double)originalImage.getHeight() / originalImage.getWidth() * targetWidth);
+
+		BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2d = resizedImage.createGraphics();
+		g2d.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+		g2d.dispose();
+
+		// 이미지 저장 시 압축을 적용하여 용량 줄이기
+		try (FileOutputStream fos = new FileOutputStream(file); ImageOutputStream ios = ImageIO.createImageOutputStream(
+			fos)) {
+			ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+			writer.setOutput(ios);
+
+			ImageWriteParam jpegParams = writer.getDefaultWriteParam();
+			jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+			jpegParams.setCompressionQuality(0.5f);  // 압축 품질 설정 (0.0f ~ 1.0f, 낮을수록 용량이 작아짐)
+
+			writer.write(null, new javax.imageio.IIOImage(resizedImage, null, null), jpegParams);
+			writer.dispose();
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", e);
 		}
-		return filePath + File.separator + Long.toString(battleBoard.getId()) + ".jpg"; // 저장된 파일 이름 반환
+
+		return filePath + File.separator + fileName;  // 저장된 파일 이름 반환
 	}
 }
