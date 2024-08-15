@@ -1,11 +1,11 @@
 import { useState } from "react";
 import {
-	FaVideo,
-	FaVideoSlash,
 	FaMicrophone,
 	FaMicrophoneSlash,
 	FaBomb,
 	FaTicketAlt,
+	FaSmileBeam,
+	FaTheaterMasks,
 } from "react-icons/fa";
 
 interface VideoAudioIconsProps {
@@ -28,17 +28,19 @@ function VideoAudioIcons({
 				aria-label="Toggle Video"
 				role="button"
 			>
-				{isVideoDisabled ? (
-					<FaVideoSlash
+				{!isVideoDisabled ? (
+					<FaSmileBeam
 						size={36}
-						className="text-white cursor-pointer transform hover:scale-110 invisible"
+						className="text-white cursor-pointer transform hover:scale-110"
 						onClick={onVideoClick}
+						color="white"
 					/>
 				) : (
-					<FaVideo
+					<FaTheaterMasks
 						size={36}
-						className="text-white cursor-pointer transform hover:scale-110 invisible"
+						className="text-white cursor-pointer transform hover:scale-110"
 						onClick={onVideoClick}
+						color="white"
 					/>
 				)}
 			</div>
@@ -50,13 +52,13 @@ function VideoAudioIcons({
 				{isMicMuted ? (
 					<FaMicrophoneSlash
 						size={36}
-						className="text-white cursor-pointer transform hover:scale-110 hidden"
+						className="text-white cursor-pointer transform hover:scale-110"
 						onClick={onMicClick}
 					/>
 				) : (
 					<FaMicrophone
 						size={34}
-						className="text-white cursor-pointer transform hover:scale-110 hidden"
+						className="text-white cursor-pointer transform hover:scale-110"
 						onClick={onMicClick}
 					/>
 				)}
@@ -137,13 +139,15 @@ function ItemBox({
 	console.log(canUseItem);
 
 	return (
-		<div className="flex justify-between w-full p-2 mt-6 bg-black rounded-lg">
-			<VideoAudioIcons
-				isMicMuted={isMicMuted}
-				isVideoDisabled={isVideoDisabled}
-				onMicClick={onMicClick}
-				onVideoClick={onVideoClick}
-			/>
+		<div className="flex justify-between w-full p-2 mt-6 bg-black rounded-lg h-[52px]">
+			{canUseItem && (
+				<VideoAudioIcons
+					isMicMuted={isMicMuted}
+					isVideoDisabled={isVideoDisabled}
+					onMicClick={onMicClick}
+					onVideoClick={onVideoClick}
+				/>
+			)}
 			{/* {canUseItem && <BombTicketIcons />} */}
 		</div>
 	);
