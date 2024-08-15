@@ -3,6 +3,7 @@ package com.woowahanrabbits.battle_people.domain.vote.service;
 import java.util.List;
 
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicCustomDto;
+import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.domain.VoteOpinion;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
@@ -26,7 +27,7 @@ public interface VoteService {
 
 	RedisTopicCustomDto<List<VoteOpinionDtoWithVoteCount>> putLiveVote(Long battleBoardId, VoteRequest voteRequest);
 
-	UserWinHistory getUserWinHistory(Long userId);
+	UserWinHistory getUserWinHistory(User user);
 
 	CurrentVoteResponseDto getVoteResultByVoteInfoId(Long voteInfoId);
 }

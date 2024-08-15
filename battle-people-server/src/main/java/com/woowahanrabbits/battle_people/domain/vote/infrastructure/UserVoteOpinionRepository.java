@@ -27,5 +27,9 @@ public interface UserVoteOpinionRepository extends JpaRepository<UserVoteOpinion
 		+ "AND uvo.voteInfoIndex = :voteOpinionIndex")
 	int countByVoteInfoIdAndVoteInfoIndex(Long id, Integer voteOpinionIndex);
 
-	List<UserVoteOpinion> findByVoteInfoId(Long id);
+	@Query("SELECT uvo FROM UserVoteOpinion uvo JOIN FETCH uvo.voteInfo vi "
+		+ "WHERE uvo.user.id = :userId "
+		+ "AND (vi.currentState = 6 OR vi.currentState = 8)")
+	List<UserVoteOpinion> findWinRateByUserId(Long userId);
+
 }

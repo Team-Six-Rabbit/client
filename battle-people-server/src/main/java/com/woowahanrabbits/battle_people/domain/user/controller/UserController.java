@@ -72,11 +72,11 @@ public class UserController {
 
 	@GetMapping("/profile/win_rate")
 	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<ApiResponseDto<UserWinHistory>> getLoginUserWinHistory(@LoginUser User loginUser) {
-		User user = userService.getUserProfile(loginUser.getId());
+	public ResponseEntity<ApiResponseDto<UserWinHistory>> getLoginUserWinHistory(@LoginUser User user) {
+		// User user = userService.getUserProfile(loginUser.getId());
 
 		return ResponseEntity.ok(
-			new ApiResponseDto<>("success", "User win history", voteService.getUserWinHistory(user.getId())));
+			new ApiResponseDto<>("success", "User win history", voteService.getUserWinHistory(user)));
 	}
 
 	@GetMapping("/profile/create_lives")

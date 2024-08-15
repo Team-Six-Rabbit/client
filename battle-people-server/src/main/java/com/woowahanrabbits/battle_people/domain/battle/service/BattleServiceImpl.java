@@ -333,6 +333,29 @@ public class BattleServiceImpl implements BattleService {
 
 	@Override // 개최한 라이브 목록 조회
 	public List<CreateLives> getBattleBoardsByUserId(Long userId) {
-		return battleRepository.getCreateLives(userId);
+		List<BattleBoard> myLives = battleRepository.findMyEndLives(userId);
+		List<CreateLives> returnList = new ArrayList<>();
+		for (BattleBoard battleBoard : myLives) {
+			if (battleBoard.getVoteInfo().getCurrentState() == 8) {
+				List<VoteOpinion> voteOpinions = voteOpinionRepository.findAllByVoteInfoId(
+					battleBoard.getVoteInfo().getId());
+
+				int winIndex = 0;
+
+				int opinionA = voteOpinions.get(0).getFinalCount();
+				int opinionB = voteOpinions.get(1).getFinalCount();
+				if (opinionA < opinionB) {
+					winIndex = 1;
+				} else if (opinionA == opinionB) {
+					winIndex = 2;
+				}
+				returnList.add(new CreateLives(battleBoard, winIndex));
+			} else {
+				returnList.add(new CreateLives(battleBoard, 4));
+			}
+		}
+
+		return returnList;
 	}
+
 }
