@@ -29,7 +29,7 @@ public interface UserVoteOpinionRepository extends JpaRepository<UserVoteOpinion
 
 	@Query("SELECT uvo FROM UserVoteOpinion uvo JOIN FETCH uvo.voteInfo vi "
 		+ "WHERE uvo.user.id = :userId "
-		+ "AND (vi.currentState = 5 or vi.currentState = 6 OR vi.currentState = 8)")
+		+ "AND (vi.currentState = 6 OR vi.currentState = 8)")
 	List<UserVoteOpinion> findWinRateByUserId(Long userId);
 
 }
