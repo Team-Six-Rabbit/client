@@ -71,9 +71,6 @@ public class BattleServiceImpl implements BattleService {
 		LocalDateTime endDateTime = startDateTime.plusMinutes(battleInviteRequest.getTime());
 		Date endDate = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-		battleValidator.validateOppositeUser(battleInviteRequest, user);
-		battleValidator.validateTime(battleInviteRequest.getTime());
-		battleValidator.validateStartTime(battleInviteRequest.getStartDate(), 3);
 		battleValidator.checkOtherBattles(user, battleInviteRequest.getStartDate(), endDate);
 
 		//VoteInfo 만들기

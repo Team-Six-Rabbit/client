@@ -17,6 +17,7 @@ import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
 import com.woowahanrabbits.battle_people.domain.vote.dto.LiveCurrentVoteResponseDto;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
+import com.woowahanrabbits.battle_people.validation.VoteValidator;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -27,27 +28,20 @@ import lombok.RequiredArgsConstructor;
 public class VoteController {
 	private final VoteService voteService;
 	private final BattleBoardRepository battleBoardRepository;
+	private final VoteValidator voteValidator;
 
 	@PostMapping("/user-vote-battle/{battleId}")
 	@Operation(summary = "[]")
 	public ResponseEntity<ApiResponseDto<CurrentVoteResponseDto>> putUserVote(@PathVariable Long battleId,
 		@RequestParam Integer voteOpinionIndex,
 		@LoginUser User user) {
-		try {
-			BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElse(null);
-			if (battleBoard != null) {
-				Long voteId = battleBoard.getVoteInfo().getId();
-				return ResponseEntity.status(HttpStatus.OK)
-					.body(new ApiResponseDto<>("success", "",
-						voteService.putVoteOpinion(user.getId(), voteId, voteOpinionIndex)));
-			}
-		} catch (Exception e) {
-			System.out.println(e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "", null));
-		}
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body(new ApiResponseDto<>("fail", "no exist battleBoard", null));
+		BattleBoard battleBoard = battleBoardRepository.findById(battleId).orElseThrow();
+		voteValidator.validateBattleState(battleBoard.getVoteInfo().getCurrentState(), 4);
+		Long voteId = battleBoard.getVoteInfo().getId();
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ApiResponseDto<>("success", "",
+				voteService.putVoteOpinion(user.getId(), voteId, voteOpinionIndex)));
+
 	}
 
 	@PostMapping("/user-vote-balance-game/{voteInfoId}")
@@ -55,15 +49,10 @@ public class VoteController {
 	public ResponseEntity<ApiResponseDto<CurrentVoteResponseDto>> putUserVoteBalanceGame(@PathVariable Long voteInfoId,
 		@RequestParam Integer voteOpinionIndex,
 		@LoginUser User user) {
-		try {
-			return ResponseEntity.status(HttpStatus.OK)
-				.body(new ApiResponseDto<>("success", "",
-					voteService.putVoteOpinion(user.getId(), voteInfoId, voteOpinionIndex)));
-		} catch (Exception e) {
-			System.out.println(e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ApiResponseDto<>("fail", "", null));
-		}
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new ApiResponseDto<>("success", "",
+				voteService.putVoteOpinion(user.getId(), voteInfoId, voteOpinionIndex)));
+
 	}
 
 	@GetMapping("/user-vote/{battleId}")
