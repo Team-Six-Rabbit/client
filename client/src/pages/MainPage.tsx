@@ -54,38 +54,56 @@ function MainPage() {
 	const [selectedInterests, setSelectedInterests] = useState<number[]>([]);
 
 	useEffect(() => {
-		const fetchSelectedInterests = async () => {
-			try {
-				if (isLogin) {
-					const interests = await authService.getUserInterests(); // Fetch user's interests
-					setSelectedInterests(interests);
-				}
-			} catch (error) {
-				console.error("Failed to fetch user interests:", error);
-			}
-		};
-
-		fetchSelectedInterests();
-	}, [isLogin]);
-
-	useEffect(() => {
 		const fetchLiveData = async () => {
 			try {
 				setIsLoading(true);
 				console.log("Fetching live data...");
 
-				// Fetch data for the LargeCarousel independently
-				const largeCarouselResponse = await liveBattleService.getActiveList(
-					undefined,
-					0,
-					5,
-				);
-				const largeCarouselCards = largeCarouselResponse.data!.map(
-					(battle) => ({
+				const [interestsResponse, carouselResponse, ...cardResponses] =
+					await Promise.allSettled([
+						isLogin ? authService.getUserInterests() : Promise.reject(),
+						liveBattleService.getActiveList(undefined, 0, 5),
+						...categories
+							.filter((category) => category.id !== 7)
+							.map((category) => liveBattleService.getActiveList(category.id)),
+					]);
+
+				const interests =
+					interestsResponse.status === "fulfilled"
+						? interestsResponse.value
+						: [];
+
+				const largeCarouselCards =
+					carouselResponse.status === "fulfilled" &&
+					carouselResponse.value.code === "success"
+						? carouselResponse.value.data!.map((battle) => ({
+								id: battle.id,
+								title: battle.title,
+								regist_user_id: battle.registerUser.nickname.toString(),
+								opposite_user_id: battle.oppositeUser.nickname.toString(),
+								start_date: battle.startDate,
+								end_date: battle.endDate,
+								max_people_count: battle.currentPeopleCount || 0,
+								currentPeopleCount: battle.currentPeopleCount || 0,
+								category: battle.category,
+								image_uri: battle.imageUri || "",
+								live_uri: battle.roomId,
+								status: "live",
+							}))
+						: [];
+
+				const cardResults = cardResponses.map((cardResponse, index) => {
+					const liveBattles =
+						cardResponse.status === "fulfilled" &&
+						cardResponse.value.code === "success"
+							? cardResponse.value.data || []
+							: [];
+
+					const cards: CardType[] = liveBattles.map((battle) => ({
 						id: battle.id,
 						title: battle.title,
 						regist_user_id: battle.registerUser.nickname.toString(),
-						opposite_user_id: battle.oppositeUser.nickname.toString(),
+						opposite_user_id: battle.oppositeUser.id.toString(),
 						start_date: battle.startDate,
 						end_date: battle.endDate,
 						max_people_count: battle.currentPeopleCount || 0,
@@ -94,53 +112,23 @@ function MainPage() {
 						image_uri: battle.imageUri || "",
 						live_uri: battle.roomId,
 						status: "live",
-					}),
-				);
+					}));
 
-				// Fetch data by categories
-				const promises = categories
-					.filter((category) => category.id !== 7)
-					.map(async (category) => {
-						const response = await liveBattleService.getActiveList(category.id);
-						console.log(
-							"Received response for category:",
-							category.id,
-							response,
-						);
-
-						const liveBattles = response.data || [];
-
-						const cards: CardType[] = liveBattles.map((battle) => ({
-							id: battle.id,
-							title: battle.title,
-							regist_user_id: battle.registerUser.nickname.toString(),
-							opposite_user_id: battle.oppositeUser.id.toString(),
-							start_date: battle.startDate,
-							end_date: battle.endDate,
-							max_people_count: battle.currentPeopleCount || 0,
-							currentPeopleCount: battle.currentPeopleCount || 0,
-							category: battle.category,
-							image_uri: battle.imageUri || "",
-							live_uri: battle.roomId,
-							status: "live",
-						}));
-
-						return { categoryId: category.id, cards };
-					});
-
-				const results = await Promise.all(promises);
+					return { categoryId: categories.at(index)!.id, cards };
+				});
 
 				const interested: Record<number, CardType[]> = {};
 				const others: Record<number, CardType[]> = {};
 
-				results.forEach(({ categoryId, cards }) => {
-					if (selectedInterests.includes(categoryId)) {
+				cardResults.forEach(({ categoryId, cards }) => {
+					if (interests.includes(categoryId)) {
 						interested[categoryId] = cards;
 					} else {
 						others[categoryId] = cards;
 					}
 				});
 
+				if (interests.length) setSelectedInterests(interests);
 				setLargeCarouselCards(largeCarouselCards);
 				setInterestedCards(interested);
 				setOtherCards(others);
@@ -156,7 +144,7 @@ function MainPage() {
 		};
 
 		fetchLiveData(); // Fetch data for all scenarios
-	}, [selectedInterests, isLogin]);
+	}, [isLogin]);
 
 	if (isLoading) {
 		return <LoadingMessage>Loading...</LoadingMessage>;
