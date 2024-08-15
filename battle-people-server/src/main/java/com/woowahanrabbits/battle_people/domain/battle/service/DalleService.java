@@ -101,7 +101,6 @@ public class DalleService {
 		return null;
 	}
 
-	@SuppressWarnings("checkstyle:Indentation")
 	private String saveImageToLocal(String imageUrl, BattleBoard battleBoard) throws Exception {
 		// URL 객체 생성
 		URL url = new URL(imageUrl);
