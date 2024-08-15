@@ -61,6 +61,8 @@ public class LiveChatController {
 		String key = "live";
 		ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
 
+		BattleBoard battleBoard = battleRepository.findById(battleBoardId).orElseThrow();
+		voteValidator.validateBattleState(battleBoard.getVoteInfo().getCurrentState(), 4);
 		if (type == null) {
 			return;
 		}
