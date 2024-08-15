@@ -124,8 +124,7 @@ public class DalleService {
 			throw new RuntimeException("이미지를 읽는 중 오류가 발생했습니다.", e);
 		}
 
-		// 이미지 크기 조정 (예: 가로 800px, 비율에 따라 높이 조정)
-		int targetWidth = 800;
+		int targetWidth = 400;
 		int targetHeight = (int)((double)originalImage.getHeight() / originalImage.getWidth() * targetWidth);
 
 		BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
