@@ -14,8 +14,10 @@ import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
 import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleBoardRepository;
 import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.resolver.LoginUser;
+import com.woowahanrabbits.battle_people.domain.vote.domain.VoteInfo;
 import com.woowahanrabbits.battle_people.domain.vote.dto.CurrentVoteResponseDto;
 import com.woowahanrabbits.battle_people.domain.vote.dto.LiveCurrentVoteResponseDto;
+import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
 import com.woowahanrabbits.battle_people.validation.VoteValidator;
 
@@ -29,6 +31,7 @@ public class VoteController {
 	private final VoteService voteService;
 	private final BattleBoardRepository battleBoardRepository;
 	private final VoteValidator voteValidator;
+	private final VoteInfoRepository voteInfoRepository;
 
 	@PostMapping("/user-vote-battle/{battleId}")
 	@Operation(summary = "[]")
@@ -49,6 +52,8 @@ public class VoteController {
 	public ResponseEntity<ApiResponseDto<CurrentVoteResponseDto>> putUserVoteBalanceGame(@PathVariable Long voteInfoId,
 		@RequestParam Integer voteOpinionIndex,
 		@LoginUser User user) {
+		VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId).orElseThrow();
+		voteValidator.validateBattleState(voteInfo.getCurrentState(), 5);
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(new ApiResponseDto<>("success", "",
 				voteService.putVoteOpinion(user.getId(), voteInfoId, voteOpinionIndex)));
