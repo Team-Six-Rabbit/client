@@ -27,6 +27,7 @@ import com.woowahanrabbits.battle_people.domain.vote.dto.VoteRequest;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.UserVoteOpinionRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteInfoRepository;
 import com.woowahanrabbits.battle_people.domain.vote.infrastructure.VoteOpinionRepository;
+import com.woowahanrabbits.battle_people.validation.VoteValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,6 +46,7 @@ public class VoteServiceImpl implements VoteService {
 	private final BattleApplyUserRepository battleApplyUserRepository;
 	private final BattleService battleService;
 	private final AppProperties appProperties;
+	private final VoteValidator voteValidator;
 
 	@Override
 	public void addVoteInfo(VoteInfo voteInfo) {
@@ -68,9 +70,9 @@ public class VoteServiceImpl implements VoteService {
 	@Override
 	public CurrentVoteResponseDto putVoteOpinion(Long userId, Long voteInfoId, int voteInfoIndex) {
 		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(userId, voteInfoId);
-		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-		VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId)
-			.orElseThrow(() -> new RuntimeException("VoteInfo not found"));
+		User user = userRepository.findById(userId).orElseThrow();
+		VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId).orElseThrow();
+		voteValidator.validateBattleState(voteInfo.getCurrentState(), 5);
 
 		if (userVoteOpinion != null) {
 			userVoteOpinion.setVoteInfoIndex(voteInfoIndex);
