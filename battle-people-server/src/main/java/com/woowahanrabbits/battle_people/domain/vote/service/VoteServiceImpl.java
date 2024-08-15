@@ -72,7 +72,6 @@ public class VoteServiceImpl implements VoteService {
 		UserVoteOpinion userVoteOpinion = userVoteOpinionRepository.findByUserIdAndVoteInfoId(userId, voteInfoId);
 		User user = userRepository.findById(userId).orElseThrow();
 		VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId).orElseThrow();
-		voteValidator.validateBattleState(voteInfo.getCurrentState(), 5);
 
 		if (userVoteOpinion != null) {
 			userVoteOpinion.setVoteInfoIndex(voteInfoIndex);
