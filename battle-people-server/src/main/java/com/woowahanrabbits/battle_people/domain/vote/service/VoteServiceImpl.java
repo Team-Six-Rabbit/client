@@ -150,6 +150,8 @@ public class VoteServiceImpl implements VoteService {
 	public UserWinHistory getUserWinHistory(User user) {
 		List<UserVoteOpinion> userVoteHistory = userVoteOpinionRepository.findWinRateByUserId(user.getId());
 		int debateCnt = userVoteHistory.size();
+		List<BattleBoard> myLives = battleRepository.findMyEndLives(user.getId());
+		debateCnt += myLives.size();
 
 		if (debateCnt == 0) {
 			return new UserWinHistory(0, 0, 0, 0);
@@ -168,6 +170,29 @@ public class VoteServiceImpl implements VoteService {
 				winCnt++;
 			}
 		}
+
+		for (BattleBoard battleBoard : myLives) {
+			VoteInfo voteInfo = battleBoard.getVoteInfo();
+			if (voteInfo.getCurrentState() != 8) {
+				continue;
+			}
+
+			int myChoice = 0;
+			if (battleBoard.getOppositeUser().getId() == user.getId()) {
+				myChoice = 1;
+			}
+
+			List<VoteOpinion> result = voteOpinionRepository.findAllByVoteInfoId(voteInfo.getId());
+			int opinionA = result.get(0).getFinalCount();
+			int opinionB = result.get(1).getFinalCount();
+
+			if (myChoice == 0 && opinionA > opinionB) {
+				winCnt++;
+			} else if (myChoice == 1 && opinionA < opinionB) {
+				winCnt++;
+			}
+		}
+
 		int loseCnt = debateCnt - winCnt;
 		int winRate = (winCnt * 100) / debateCnt;
 		return new UserWinHistory(debateCnt, winCnt, loseCnt, winRate);
