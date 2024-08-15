@@ -1,6 +1,6 @@
 package com.woowahanrabbits.battle_people.domain.battle.service;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
