@@ -10,6 +10,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.woowahanrabbits.battle_people.domain.battle.domain.BattleBoard;
+import com.woowahanrabbits.battle_people.domain.battle.infrastructure.BattleRepository;
 import com.woowahanrabbits.battle_people.domain.live.dto.ItemRequestDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.RedisTopicDto;
 import com.woowahanrabbits.battle_people.domain.live.dto.request.RoleAcceptRequestDto;
@@ -22,6 +24,8 @@ import com.woowahanrabbits.battle_people.domain.user.domain.User;
 import com.woowahanrabbits.battle_people.domain.user.infrastructure.UserRepository;
 import com.woowahanrabbits.battle_people.domain.vote.dto.VoteRequest;
 import com.woowahanrabbits.battle_people.domain.vote.service.VoteService;
+import com.woowahanrabbits.battle_people.validation.BattleValidator;
+import com.woowahanrabbits.battle_people.validation.VoteValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,10 +41,15 @@ public class LiveChatController {
 
 	private final SimpMessagingTemplate messagingTemplate;
 	private final UserRepository userRepository;
+	private final BattleValidator battleValidator;
+	private final VoteValidator voteValidator;
+	private final BattleRepository battleRepository;
 
 	@MessageMapping("/chat/{battleBoardId}")
 	public void sendMessage(@DestinationVariable Long battleBoardId, WriteChatRequestDto writeChatRequestDto) {
 		String key = "chat";
+		BattleBoard battleBoard = battleRepository.findById(battleBoardId).orElseThrow();
+		voteValidator.validateBattleState(battleBoard.getVoteInfo().getCurrentState(), 4);
 		redisTemplate.convertAndSend(key, liveChatService.saveMessage(battleBoardId, writeChatRequestDto));
 	}
 
