@@ -45,7 +45,7 @@ function BalanceGameBoardPage() {
 	const [page, setPage] = useState<number>(0);
 	const [hasMore, setHasMore] = useState<boolean>(true);
 	const navigate = useNavigate();
-	const { isLogin, user } = useAuthStore();
+	const { isLogin } = useAuthStore();
 
 	const handleCategorySelect = (category: string) => {
 		setSelectedCategory(category);
@@ -143,7 +143,6 @@ function BalanceGameBoardPage() {
 			navigate("/login");
 			return;
 		}
-		console.log("유저 아이디", user);
 
 		try {
 			const selectedOption = updatedOpinions[0]?.index; // 첫 번째 선택된 옵션의 인덱스를 가져옴
@@ -158,7 +157,6 @@ function BalanceGameBoardPage() {
 				cardId,
 				selectedOption,
 			);
-			console.log("응답 데이터:", response);
 
 			if (response.data && response.data.opinions) {
 				const updatedOpinions = response.data.opinions;
